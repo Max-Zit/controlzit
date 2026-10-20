@@ -19,7 +19,7 @@ Local path: C:\Users\Mili\Ai\rmm
 - Brand: same design as BackupZit/MaxZit (indigo square, white line symbol, Inter SemiBold, "Zit" in indigo). brandgen got a `controlzit [a|b|c]` mode (maxzit-brand/tools/brandgen/controlzit.go).
 
 ## Open questions for Stefan
-- Pick icon a (monitor + pulse), b (circuit C) or c (control hub) — full sets in maxzit-brandnceptsntrolzit{a,b,c}. Then copy the chosen set to maxzit-brandntrolzit-logo and into the repo.
+- Pick icon a (monitor + pulse), b (circuit C) or c (control hub) — full sets in maxzit-brand/concepts/controlzit/{a,b,c}. Then copy the chosen set to maxzit-brand/controlzit-logo and into the repo.
 
 ## Status
 - Repo created (README, NOTES, .gitignore).
