@@ -1,0 +1,13 @@
+# secrets — never commit
+credentials.txt
+*.key
+*.pem
+# build output
+/bin/
+/dist/
+/.gotmp/
+*.exe
+*.msi
+# local dev data
+/data/
+/.pgdata/
