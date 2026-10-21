@@ -75,3 +75,12 @@ document.addEventListener("toggle", function (ev) {
   if (!(d instanceof HTMLDetailsElement) || !d.open || !d.classList.contains("pop")) return;
   document.querySelectorAll("details.pop[open]").forEach(function (o) { if (o !== d) o.open = false; });
 }, true);
+
+// Settings on a narrow screen: the side tabs scroll sideways; show the current one.
+document.addEventListener("DOMContentLoaded", function () {
+  "use strict";
+  var on = document.querySelector(".sidetabs a.on");
+  if (on && on.parentElement.scrollWidth > on.parentElement.clientWidth) {
+    on.parentElement.scrollLeft = on.offsetLeft - 10;
+  }
+});

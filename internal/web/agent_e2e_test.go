@@ -314,12 +314,18 @@ func TestFileManager(t *testing.T) {
 	// A read-only user cannot use the file manager.
 	admin.post("/users", "username", "viewer", "password", "viewer password 1", "role", "readonly", "all_customers", "1")
 	v := e.client("192.168.1.31")
-	v.post("/login", "username", "viewer", "password", "viewer password 1")
+	if r := v.post("/login", "username", "viewer", "password", "viewer password 1"); r.code != http.StatusSeeOther {
+		t.Fatalf("viewer sign-in: %d %s", r.code, r.loc)
+	}
 	sec := secretRE.FindStringSubmatch(v.get("/login/enroll").body)[1]
-	v.post("/login/enroll", "code", e.code(sec))
-	v.post("/account/password", "current", "viewer password 1", "password", "viewer password 22", "password2", "viewer password 22")
+	if r := v.post("/login/enroll", "code", e.code(sec)); r.code != http.StatusOK || !strings.Contains(r.body, `class="codes"`) {
+		t.Fatalf("viewer 2FA enrollment: %d %s %s", r.code, r.loc, r.body)
+	}
+	if r := v.post("/account/password", "current", "viewer password 1", "password", "viewer password 22", "password2", "viewer password 22"); r.code != http.StatusSeeOther {
+		t.Fatalf("viewer password change: %d %s", r.code, r.loc)
+	}
 	if r := v.get(base + "?path=" + url.QueryEscape(work)); r.code != http.StatusForbidden {
-		t.Fatalf("read-only user listed files: %d", r.code)
+		t.Fatalf("read-only user listed files: %d %s", r.code, r.loc)
 	}
 
 	r = admin.get("/audit")

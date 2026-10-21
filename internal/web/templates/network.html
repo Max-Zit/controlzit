@@ -1,7 +1,9 @@
 {{template "app" .}}
 {{define "content"}}
 <h1>{{.T "Settings"}}</h1>
+<div class="settings">
 {{template "settingstabs" .}}
+<div class="settings-body">
 {{if .Data.Restart}}<div class="flash warn" role="status">{{template "icon" "alert"}}<span>{{.T "The saved ports differ from the running ones (console %s, agents %s). Restart the ControlZit service to use the new ports." .Data.RunningMgmt .Data.RunningAgent}}</span></div>{{end}}
 {{if .Data.Override}}<div class="flash info" role="status">{{template "icon" "alert"}}<span>{{.T "The service runs with ports from its command line (console %s, agents %s). The addresses saved here are used when it starts without these options." .Data.RunningMgmt .Data.RunningAgent}}</span></div>{{end}}
 <form method="post" action="/settings/network" class="stack wide">
@@ -30,4 +32,6 @@
   </section>
   <div><button class="primary">{{.T "Save"}}</button></div>
 </form>
+</div>
+</div>
 {{end}}

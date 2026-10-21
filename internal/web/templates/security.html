@@ -1,7 +1,9 @@
 {{template "app" .}}
 {{define "content"}}
 <h1>{{.T "Settings"}}</h1>
+<div class="settings">
 {{template "settingstabs" .}}
+<div class="settings-body">
 <section class="panel">
   <h2>{{.T "Sessions and sign-in protection"}}</h2>
   <form method="post" action="/settings/security" class="stack">
@@ -28,4 +30,6 @@
   </table></div>
   {{else}}<p class="muted">{{.T "No address is blocked."}}</p>{{end}}
 </section>
+</div>
+</div>
 {{end}}

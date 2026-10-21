@@ -1,7 +1,9 @@
 {{template "app" .}}
 {{define "content"}}
 <h1>{{.T "Settings"}}</h1>
+<div class="settings">
 {{template "settingstabs" .}}
+<div class="settings-body">
 <section class="panel">
   <h2>{{template "icon" "screen"}}{{.T "Remote desktop"}}</h2>
   <form method="post" action="/settings/remote" class="stack">
@@ -10,4 +12,6 @@
     <div><button class="primary">{{.T "Save"}}</button></div>
   </form>
 </section>
+</div>
+</div>
 {{end}}

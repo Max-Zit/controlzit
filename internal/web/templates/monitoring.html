@@ -1,7 +1,9 @@
 {{template "app" .}}
 {{define "content"}}
 <h1>{{.T "Settings"}}</h1>
+<div class="settings">
 {{template "settingstabs" .}}
+<div class="settings-body">
 {{$m := .Data.M}}
 <form method="post" action="/settings/monitoring" class="stack wide">
   <section class="panel">
@@ -54,4 +56,6 @@
   </form>
   <form method="post" action="/settings/email/test" class="mt"><button class="secondary">{{template "icon" "mail"}}{{.T "Send a test email"}}</button> <small class="muted">{{.T "to the recipients of the alert emails"}}</small></form>
 </section>
+</div>
+</div>
 {{end}}

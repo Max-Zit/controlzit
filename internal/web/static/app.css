@@ -178,6 +178,20 @@ button.link:hover { color: var(--accent); text-decoration: underline; }
 .tabs a:hover { text-decoration: none; color: var(--text); }
 .tabs a.on { background: var(--accent-soft); color: var(--accent); border-color: color-mix(in srgb, var(--accent) 35%, transparent); }
 
+/* ---- settings with side tabs */
+.settings { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 24px; align-items: start; }
+.sidetabs { position: sticky; top: 80px; display: grid; gap: 4px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px; box-shadow: var(--shadow); }
+.sidetabs a { display: flex; gap: 12px; align-items: flex-start; padding: 10px 12px; border-radius: 9px; color: var(--text); font-weight: 600; }
+.sidetabs a .ic { margin-top: 2px; color: var(--muted); flex: none; }
+.sidetabs a span { display: grid; gap: 1px; }
+.sidetabs a small { font-weight: 400; font-size: 12px; color: var(--muted); }
+.sidetabs a:hover { background: var(--panel-2); text-decoration: none; }
+.sidetabs a.on { background: var(--accent-soft); color: var(--accent); }
+.sidetabs a.on .ic { color: var(--accent); }
+.settings-body { min-width: 0; }
+.settings-body > :first-child { margin-top: 0; }
+@media (max-width: 900px) { .settings { grid-template-columns: 1fr; } .sidetabs { position: static; grid-auto-flow: column; overflow-x: auto; } .sidetabs a small { display: none; } .sidetabs a { white-space: nowrap; } }
+
 /* ---- guest pages (setup, sign-in) */
 body.guest { min-height: 100vh; background: radial-gradient(1200px 600px at 10% -10%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 60%), var(--bg); }
 .guest-main { max-width: 460px; padding: 48px 16px; }
