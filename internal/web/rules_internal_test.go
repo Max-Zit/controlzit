@@ -29,13 +29,13 @@ func TestEvaluateRules(t *testing.T) {
 	m.WatchServices = []string{"spooler"}
 	states := []store.MonitorState{
 		{ID: 1, Connected: true, LastSeen: &recent, BootTime: &boot, AvgCPU: 97, AvgMem: 50, Samples: 15,
-			Metrics: &proto.Metrics{Disks: []proto.Disk{{Drive: "C:", Size: 100 << 30, Free: 3 << 30}, {Drive: "D:", Size: 100 << 30, Free: 60 << 30}, {Drive: "E:", Size: 10 << 30, Free: 512 << 20}}},
+			Metrics: &proto.Metrics{Disks: []proto.Disk{{Drive: "C:", Size: 100 << 30, Free: 3 << 30}, {Drive: "D:", Size: 100 << 30, Free: 60 << 30}, {Drive: "E:", Size: 10 << 30, Free: 512 << 20}, {Drive: "F:", Size: 4 << 30, Free: 3700 << 20}}},
 			Security: &proto.SecurityState{DefenderPresent: true, DefenderAV: true, DefenderRealTime: false, PendingReboot: true,
 				Firewall: []proto.Firewall{{Profile: "Domain", Enabled: true}, {Profile: "Public", Enabled: false}}},
 			StoppedAuto: []string{"Spooler", "gupdate"}},
 		{ID: 2, Connected: false, LastSeen: &old},
 		{ID: 3, Connected: true, LastSeen: &recent, AvgCPU: 99, Samples: 3}, // too few samples
-		{ID: 4},                                                             // never connected
+		{ID: 4}, // never connected
 	}
 	conds, keep := evaluate(m, states, now)
 	k := kinds(conds)
@@ -44,7 +44,7 @@ func TestEvaluateRules(t *testing.T) {
 			t.Errorf("missing alert %s", want)
 		}
 	}
-	for _, not := range []string{"memory/", "disk/D:", "firewall/Domain", "service/gupdate"} {
+	for _, not := range []string{"memory/", "disk/D:", "disk/F:", "firewall/Domain", "service/gupdate"} {
 		if _, ok := k[not]; ok {
 			t.Errorf("unexpected alert %s", not)
 		}

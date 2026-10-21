@@ -15,7 +15,7 @@
     </div>
     <div class="cols">
       <label>{{.T "Disk used above (%)"}}<input type="number" name="disk_percent" value="{{$m.DiskPercent}}" min="50" max="100" required></label>
-      <label>{{.T "or less free than (GB)"}}<input type="number" name="disk_min_free_gb" value="{{$m.DiskMinFreeGB}}" min="0" max="10000" required></label>
+      <label>{{.T "or less free than (GB, disks larger than twice this)"}}<input type="number" name="disk_min_free_gb" value="{{$m.DiskMinFreeGB}}" min="0" max="10000" required></label>
       <label>{{.T "Offline longer than (minutes)"}}<input type="number" name="offline_minutes" value="{{$m.OfflineMinutes}}" min="3" max="10080" required></label>
       <label>{{.T "Restart pending and up longer than (days)"}}<input type="number" name="reboot_days" value="{{$m.RebootDays}}" min="0" max="365" required></label>
     </div>

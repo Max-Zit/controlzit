@@ -124,7 +124,9 @@ func evaluate(m MonitoringSettings, states []store.MonitorState, now time.Time) 
 					continue
 				}
 				used := float64(dk.Size-dk.Free) / float64(dk.Size) * 100
-				lowFree := m.DiskMinFreeGB > 0 && dk.Free < uint64(m.DiskMinFreeGB)<<30 // #nosec G115 -- bounded by Validate
+				// The GB limit is for larger disks; small ones go by the percentage.
+				minFree := uint64(m.DiskMinFreeGB) << 30 // #nosec G115 -- bounded by Validate
+				lowFree := minFree > 0 && dk.Size > 2*minFree && dk.Free < minFree
 				if used >= float64(m.DiskPercent) || lowFree {
 					sev := "warning"
 					if dk.Free < 1<<30 || used >= 98 {

@@ -453,7 +453,7 @@
   "email is not set up": "email nije podešen",
   "for (minutes)": "tokom (minuta)",
   "no recipients": "nema primalaca",
-  "or less free than (GB)": "ili slobodno manje od (GB)",
+  "or less free than (GB, disks larger than twice this)": "ili slobodno manje od (GB, za diskove veće od dvostrukog iznosa)",
   "seen by": "video",
   "stored; leave empty to keep it": "sačuvana; ostavite prazno da ostane",
   "the SMTP server must be a host name or an IP address": "SMTP server mora biti ime hosta ili IP adresa",
