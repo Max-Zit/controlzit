@@ -19,7 +19,8 @@ Local path: C:\Users\Mili\Ai\rmm
 - Brand: same design as BackupZit/MaxZit (indigo square, white line symbol, Inter SemiBold, "Zit" in indigo). brandgen got a `controlzit [a|b|c]` mode (maxzit-brand/tools/brandgen/controlzit.go).
 
 ## Open questions for Stefan
-- Pick icon a (monitor + pulse), b (circuit C) or c (control hub) — full sets in maxzit-brand/concepts/controlzit/{a,b,c}. Then copy the chosen set to maxzit-brand/controlzit-logo and into the repo.
+- Keep lab CT 9600 (cz-server) and the ControlZit agent on bz-win11 for the next steps? (assumed yes until he says otherwise)
+- Order after the MSI: feature 3 (monitoring/alerts) or 4 (remote actions)?
 
 ## Status (2026-10-21, afternoon)
 - Feature 1 server skeleton: done (see git log); dev flag `--dev-no-2fa` (only with `--dev-embedded-db`) because Stefan has no authenticator for the dev console yet — the dev console runs with it (banner shown).
