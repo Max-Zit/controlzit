@@ -294,3 +294,25 @@ table.alerts td b { font-weight: 600; }
 .loads span { color: var(--muted); font-size: 12.5px; }
 .loads b { font-weight: 600; }
 .alert-panel { border-color: color-mix(in srgb, var(--bad) 40%, var(--line)); }
+
+/* ---- device header with the main actions */
+.actionbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.devhead { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 24px; margin-bottom: 22px; }
+.devhead-title { min-width: 0; }
+.devhead-title h1 { margin: 0; }
+.devhead-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; }
+.devhead-actions form { display: flex; }
+.tile-btn { display: flex; align-items: center; gap: 12px; padding: 10px 16px 10px 10px; min-width: 210px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--panel); color: var(--text); box-shadow: var(--shadow); transition: border-color .15s, transform .15s; }
+.tile-btn:hover { text-decoration: none; border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); transform: translateY(-1px); }
+.tile-btn .tb-ic { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); flex: none; }
+.tile-btn .tb-ic .ic { width: 20px; height: 20px; }
+.tile-btn > span:last-child { display: grid; line-height: 1.25; }
+.tile-btn b { font-weight: 650; }
+.tile-btn small { color: var(--muted); font-size: 12px; }
+.tile-btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.tile-btn.primary .tb-ic { background: rgba(255, 255, 255, .18); color: var(--on-accent); }
+.tile-btn.primary small { color: color-mix(in srgb, var(--on-accent) 80%, transparent); }
+.tile-btn[aria-disabled="true"] { opacity: .5; pointer-events: none; }
+.iconbtn.bordered { width: auto; height: auto; min-height: 42px; min-width: 46px; padding: 0 14px; border-color: var(--line); background: var(--panel); box-shadow: var(--shadow); }
+.iconbtn.bordered:disabled { opacity: .5; cursor: default; }
+@media (max-width: 600px) { .devhead-actions, .tile-btn { width: 100%; } .tile-btn { min-width: 0; } }

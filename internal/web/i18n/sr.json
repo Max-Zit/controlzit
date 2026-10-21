@@ -473,5 +473,7 @@
   "Service stopped": "Servis zaustavljen",
   "Alert acknowledged.": "Alarm je označen kao viđen.",
   "The alert is already acknowledged or resolved.": "Alarm je već viđen ili rešen."
-
+,
+  "See and control the screen": "Pogled i upravljanje ekranom",
+  "Without connecting to the screen": "Bez povezivanja na ekran"
 }

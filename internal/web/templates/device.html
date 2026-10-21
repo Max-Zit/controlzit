@@ -1,15 +1,19 @@
 {{template "app" .}}
 {{define "content"}}
 {{$d := .Data.D}}{{$i := .Data.Inv}}
-<p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a></p>
-<h1>{{template "icon" "devices"}}{{$d.Hostname}} {{if .Data.Online}}<span class="badge ok"><i></i>{{.T "Online"}}</span>{{else}}<span class="badge bad"><i></i>{{.T "Offline"}}</span>{{end}}</h1>
-{{if .User.CanWrite}}
-<div class="actionbar">
-  <a class="btn primary" href="/devices/{{$d.ID}}/rd"{{if not .Data.Online}} aria-disabled="true"{{end}}>{{template "icon" "screen"}}{{.T "Remote desktop"}}</a>
-  <a class="btn secondary" href="/devices/{{$d.ID}}/files">{{template "icon" "folder"}}{{.T "Files"}}</a>
-  <form method="post" action="/devices/{{$d.ID}}/refresh"><button class="secondary" {{if not .Data.Online}}disabled{{end}}>{{.T "Refresh inventory"}}</button></form>
+<div class="devhead">
+  <div class="devhead-title">
+    <p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a></p>
+    <h1>{{$d.Hostname}} {{if .Data.Online}}<span class="badge ok"><i></i>{{.T "Online"}}</span>{{else}}<span class="badge bad"><i></i>{{.T "Offline"}}</span>{{end}}</h1>
+  </div>
+  {{if .User.CanWrite}}
+  <div class="devhead-actions">
+    <a class="tile-btn primary" href="/devices/{{$d.ID}}/rd"{{if not .Data.Online}} aria-disabled="true"{{end}}><span class="tb-ic">{{template "icon" "screen"}}</span><span><b>{{.T "Remote desktop"}}</b><small>{{.T "See and control the screen"}}</small></span></a>
+    <a class="tile-btn" href="/devices/{{$d.ID}}/files"{{if not .Data.Online}} aria-disabled="true"{{end}}><span class="tb-ic">{{template "icon" "folder"}}</span><span><b>{{.T "Files"}}</b><small>{{.T "Without connecting to the screen"}}</small></span></a>
+    <form method="post" action="/devices/{{$d.ID}}/refresh"><button class="iconbtn bordered" title="{{.T "Refresh inventory"}}" aria-label="{{.T "Refresh inventory"}}" {{if not .Data.Online}}disabled{{end}}>{{template "icon" "refresh"}}</button></form>
+  </div>
+  {{end}}
 </div>
-{{end}}
 {{if .Data.Alerts}}
 <section class="panel alert-panel">
   <h2>{{template "icon" "alert"}}{{.T "Open alerts"}}</h2>
