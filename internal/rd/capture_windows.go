@@ -116,7 +116,7 @@ func (c *Capturer) Capture() (*Frame, bool, error) {
 		c.old, _, _ = pSelectObject.Call(c.mem, c.bmp)
 		c.frame = Frame{W: w, H: h, Pix: make([]byte, w*h*4)}
 	}
-	if r, _, err := pBitBlt.Call(c.mem, 0, 0, uintptr(w), uintptr(h), c.screen, uintptr(x), uintptr(y), srcCopy|captureBlt); r == 0 {
+	if r, _, err := pBitBlt.Call(c.mem, 0, 0, uintptr(w), uintptr(h), c.screen, uintptr(x), uintptr(y), c.rop()); r == 0 {
 		// The desktop may have switched under us; reattach next time.
 		c.release()
 		c.deskName = ""
@@ -153,4 +153,15 @@ func (c *Capturer) drawCursor() {
 	px := int(ci.ScreenP.X-hx) - c.x
 	py := int(ci.ScreenP.Y-hy) - c.y
 	_, _, _ = pDrawIconEx.Call(c.mem, uintptr(px), uintptr(py), uintptr(ci.Cursor), 0, 0, 0, 0, diPNormal)
+}
+
+// NoCaptureBlt skips CAPTUREBLT (much faster BitBlt; with DWM composition
+// layered windows are in the screen image anyway).
+var NoCaptureBlt = true
+
+func (c *Capturer) rop() uintptr {
+	if NoCaptureBlt {
+		return srcCopy
+	}
+	return srcCopy | captureBlt
 }

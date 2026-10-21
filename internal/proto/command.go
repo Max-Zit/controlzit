@@ -105,6 +105,8 @@ type FSEntry struct {
 	Size     int64     `json:"size"`
 	Modified time.Time `json:"modified"`
 	Hidden   bool      `json:"hidden,omitempty"`
+	// Link: a symbolic link or junction (not followed when a folder is zipped).
+	Link bool `json:"link,omitempty"`
 }
 
 // FSListing is the answer of fs.list.

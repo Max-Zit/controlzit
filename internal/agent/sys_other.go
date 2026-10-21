@@ -41,3 +41,5 @@ func startHelper(string, proto.RDStart) error {
 
 // CollectMetrics is not implemented outside Windows yet.
 func CollectMetrics(ctx context.Context) *proto.Metrics { return &proto.Metrics{} }
+
+func isLink(fi os.FileInfo) bool { return fi.Mode()&os.ModeSymlink != 0 }

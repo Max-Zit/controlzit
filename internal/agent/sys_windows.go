@@ -191,3 +191,12 @@ func drives() ([]proto.FSDrive, error) {
 	}
 	return out, nil
 }
+
+// isLink reports reparse points (junctions, symbolic links), which
+// "Application Data"-style folders use to point back into the profile.
+func isLink(fi os.FileInfo) bool {
+	if a, ok := fi.Sys().(*syscall.Win32FileAttributeData); ok {
+		return a.FileAttributes&windows.FILE_ATTRIBUTE_REPARSE_POINT != 0
+	}
+	return false
+}

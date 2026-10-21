@@ -28,6 +28,7 @@
     <details class="pop"><summary class="btn secondary sm">{{template "icon" "plus"}}{{$.T "New folder"}}</summary>
       <form method="post" action="/devices/{{$d.ID}}/files/mkdir" class="row"><input type="hidden" name="dir" value="{{.Path}}"><input name="name" required maxlength="255" aria-label="{{$.T "Folder name"}}" placeholder="{{$.T "Folder name"}}"><button class="primary sm">{{$.T "Create"}}</button></form>
     </details>
+    <a class="btn secondary sm" href="/devices/{{$d.ID}}/files/zip?path={{.Path}}">{{template "icon" "download"}}{{$.T "Download this folder (ZIP)"}}</a>
     <details class="pop"><summary class="btn secondary sm">{{template "icon" "upload"}}{{$.T "Upload file"}}</summary>
       <form method="post" action="/devices/{{$d.ID}}/files/upload" enctype="multipart/form-data" class="stack">
         <input type="hidden" name="dir" value="{{.Path}}">
@@ -45,7 +46,7 @@
       <td class="fname"><div class="fline">{{if .Dir}}<a href="/devices/{{$d.ID}}/files?path={{$p}}">{{template "icon" "folder"}}{{.Name}}</a>{{else}}<a href="/devices/{{$d.ID}}/files/download?path={{$p}}" title="{{$.T "Download"}}">{{template "icon" "file"}}{{.Name}}</a>{{end}}
         <details class="pop right"><summary class="ghost sm" aria-label="{{$.T "Actions"}}">⋯</summary>
           <div class="pop-body">
-            {{if not .Dir}}<a class="btn secondary sm" href="/devices/{{$d.ID}}/files/download?path={{$p}}">{{template "icon" "download"}}{{$.T "Download"}}</a>{{end}}
+            {{if .Dir}}<a class="btn secondary sm" href="/devices/{{$d.ID}}/files/zip?path={{$p}}">{{template "icon" "download"}}{{$.T "Download as ZIP"}}</a>{{else}}<a class="btn secondary sm" href="/devices/{{$d.ID}}/files/download?path={{$p}}">{{template "icon" "download"}}{{$.T "Download"}}</a>{{end}}
             <form method="post" action="/devices/{{$d.ID}}/files/rename" class="row"><input type="hidden" name="path" value="{{$p}}"><input name="name" value="{{.Name}}" required maxlength="255" aria-label="{{$.T "New name"}}"><button class="secondary sm">{{$.T "Rename"}}</button></form>
             <form method="post" action="/devices/{{$d.ID}}/files/delete" data-confirm="{{$.T "Delete this permanently from the computer?"}}"><input type="hidden" name="path" value="{{$p}}">{{if .Dir}}<input type="hidden" name="recursive" value="1">{{end}}<button class="danger sm">{{template "icon" "trash"}}{{if .Dir}}{{$.T "Delete folder and its contents"}}{{else}}{{$.T "Delete"}}{{end}}</button></form>
           </div>

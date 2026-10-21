@@ -1,6 +1,7 @@
 package web_test
 
 import (
+	"archive/zip"
 	"bytes"
 	"context"
 	"crypto/ed25519"
@@ -405,5 +406,58 @@ func TestAlertsEndToEnd(t *testing.T) {
 	}
 	if r := admin.get("/alerts?all=1"); !strings.Contains(r.body, "Resolved") {
 		t.Fatal("resolved alerts not listed")
+	}
+}
+
+func TestFolderZip(t *testing.T) {
+	if runtime.GOOS != "windows" {
+		t.Skip("the console builds Windows paths")
+	}
+	e := newEnv(t)
+	e.now = time.Now()
+	e.srv.SetClock(time.Now)
+	e.st.SetClock(time.Now)
+	_, key, _ := ed25519.GenerateKey(rand.Reader)
+	e.srv.CommandKey = key
+	d, stop := startAgent(t, e)
+	defer stop()
+	admin, _ := e.setupAdmin("192.168.1.10")
+	work := t.TempDir()
+	big := bytes.Repeat([]byte("zip me "), 400000) // 2.8 MB, several chunks
+	os.MkdirAll(filepath.Join(work, "Docs", "Deep"), 0o700)
+	os.WriteFile(filepath.Join(work, "a.txt"), []byte("alpha"), 0o600)
+	os.WriteFile(filepath.Join(work, "Docs", "b.txt"), []byte("beta"), 0o600)
+	os.WriteFile(filepath.Join(work, "Docs", "Deep", "big.bin"), big, 0o600)
+	os.Mkdir(filepath.Join(work, "Empty"), 0o700)
+
+	// The folder's own page links to its ZIP.
+	page := admin.get("/devices/" + itoa(d.ID) + "/files?path=" + url.QueryEscape(work)).body
+	m := regexp.MustCompile(`href="(/devices/\d+/files/zip\?path=[^"]+)"`).FindStringSubmatch(page)
+	if m == nil {
+		t.Fatal("no ZIP link on the folder page")
+	}
+	r := admin.get(html.UnescapeString(m[1]))
+	if r.code != http.StatusOK {
+		t.Fatalf("zip: %d", r.code)
+	}
+	zr, err := zip.NewReader(bytes.NewReader([]byte(r.body)), int64(len(r.body)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := map[string]string{}
+	for _, f := range zr.File {
+		rc, _ := f.Open()
+		b, _ := io.ReadAll(rc)
+		rc.Close()
+		got[f.Name] = string(b)
+	}
+	if got["a.txt"] != "alpha" || got["Docs/b.txt"] != "beta" || got["Docs/Deep/big.bin"] != string(big) {
+		t.Fatalf("zip content: %v", len(got))
+	}
+	if _, ok := got["Empty/"]; !ok {
+		t.Fatal("empty folder missing")
+	}
+	if a := admin.get("/audit").body; !strings.Contains(a, "file.download.folder") {
+		t.Fatal("folder download not audited")
 	}
 }

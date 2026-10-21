@@ -97,4 +97,6 @@ func (b *box) open(purpose, sealed string) (string, error) {
 func (s *Store) SealSecret(purpose, plain string) string { return s.box.seal(purpose, plain) }
 
 // OpenSecret decrypts a value made by SealSecret.
-func (s *Store) OpenSecret(purpose, sealed string) (string, error) { return s.box.open(purpose, sealed) }
+func (s *Store) OpenSecret(purpose, sealed string) (string, error) {
+	return s.box.open(purpose, sealed)
+}

@@ -110,6 +110,7 @@ func fsList(ctx context.Context, raw json.RawMessage) (any, error) {
 				e.Size = info.Size()
 			}
 			e.Hidden = hidden(info)
+			e.Link = de.Type()&os.ModeSymlink != 0 || isLink(info)
 		}
 		out.Entries = append(out.Entries, e)
 	}
