@@ -240,5 +240,7 @@
   "unknown secret format": "nepoznat format tajnog podatka",
   "use host:port or :port, e.g. :8443": "koristite host:port ili :port, npr. :8443",
   "uses must be between 1 and 100000": "broj upotreba mora biti između 1 i 100000",
-  "The service runs with ports from its command line (console %s, agents %s). The addresses saved here are used when it starts without these options.": "Servis radi sa portovima iz komandne linije (konzola %s, agenti %s). Adrese sačuvane ovde koriste se kada se pokrene bez tih opcija."
+  "The service runs with ports from its command line (console %s, agents %s). The addresses saved here are used when it starts without these options.": "Servis radi sa portovima iz komandne linije (konzola %s, agenti %s). Adrese sačuvane ovde koriste se kada se pokrene bez tih opcija.",
+  "Development mode: two-factor sign-in is switched off (--dev-no-2fa). Never use this on a real server.": "Razvojni režim: prijava u dva koraka je isključena (--dev-no-2fa). Nikad ovo ne koristite na pravom serveru.",
+  "bad agent key": "neispravan ključ agenta"
 }

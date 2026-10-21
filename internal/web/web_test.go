@@ -412,3 +412,21 @@ func TestSerbianPages(t *testing.T) {
 		t.Fatalf("Serbian not chosen from Accept-Language")
 	}
 }
+
+func TestDevNo2FA(t *testing.T) {
+	e := newEnv(t)
+	e.setupAdmin("192.168.1.10")
+	c := e.client("192.168.1.40")
+	if r := c.post("/login", "username", "admin", "password", "admin password 123"); !strings.HasPrefix(r.loc, "/login/2fa") {
+		t.Fatalf("2FA skipped without dev mode: %s", r.loc)
+	}
+	e.srv.DevNo2FA = true
+	c = e.client("192.168.1.41")
+	r := c.post("/login", "username", "admin", "password", "admin password 123")
+	if r.loc != "/" {
+		t.Fatalf("dev mode login: %d %s", r.code, r.loc)
+	}
+	if r := c.get("/"); r.code != http.StatusOK || !strings.Contains(r.body, "--dev-no-2fa") {
+		t.Fatalf("dev mode banner missing: %d", r.code)
+	}
+}

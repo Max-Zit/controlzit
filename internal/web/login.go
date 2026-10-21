@@ -246,6 +246,13 @@ func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
 		s.render(w, r, http.StatusUnauthorized, "login", p)
 		return
 	}
+	if s.DevNo2FA {
+		x := &store.Session{UserID: u.ID, IP: ip, UserAgent: r.UserAgent()}
+		if s.finishLogin(w, r, x, u, "password only, development mode") {
+			http.Redirect(w, r, d.Next, http.StatusSeeOther)
+		}
+		return
+	}
 	// Password ok: the second factor follows (setup if it does not exist yet).
 	tok, _, err := s.store.CreateSession(r.Context(), u.ID, store.StageMFA, store.MFATimeout, ip, r.UserAgent())
 	if err != nil {

@@ -47,6 +47,9 @@ type Server struct {
 
 	// SetupTokenFile holds the one-time token the first-run setup asks for.
 	SetupTokenFile string
+	// DevNo2FA skips the second factor (development server only; the
+	// command refuses it without the embedded development database).
+	DevNo2FA bool
 	setupToken     string
 }
 

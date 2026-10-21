@@ -37,6 +37,7 @@
     <form method="post" action="/logout"><button class="iconbtn" title="{{.T "Sign out"}}" aria-label="{{.T "Sign out"}}">{{template "icon" "logout"}}</button></form>
   </header>
   <main>
+    {{if .DevNo2FA}}<div class="flash err" role="alert">{{template "icon" "alert"}}<span>{{.T "Development mode: two-factor sign-in is switched off (--dev-no-2fa). Never use this on a real server."}}</span></div>{{end}}
     {{if .Flash}}<div class="flash ok" role="status">{{template "icon" "check"}}<span>{{.Flash}}</span></div>{{end}}
     {{if .Error}}<div class="flash err" role="alert">{{template "icon" "alert"}}<span>{{.Error}}</span></div>{{end}}
     {{template "content" .}}

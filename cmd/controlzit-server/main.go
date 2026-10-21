@@ -53,6 +53,7 @@ func run() error {
 	mgmtListen := flag.String("mgmt-listen", "", "console address; overrides the saved setting (e.g. 127.0.0.1:8443)")
 	agentListen := flag.String("agent-listen", "", "agent endpoint address; overrides the saved setting (e.g. :8444)")
 	devHTTP := flag.String("dev-http", "", "also serve the console over plain HTTP on this loopback address (development only)")
+	devNo2FA := flag.Bool("dev-no-2fa", false, "sign in with the password only (development only; requires --dev-embedded-db)")
 	resetACL := flag.Bool("reset-allowlist", false, "allow the console again from the private networks (10/8, 172.16/12, 192.168/16, fc00::/7) and exit")
 	unblock := flag.String("unblock-ip", "", "lift the sign-in block of an address (or \"all\") and exit")
 	showVersion := flag.Bool("version", false, "print the version and exit")
@@ -120,6 +121,13 @@ func run() error {
 		return err
 	}
 	srv.Version = version
+	if *devNo2FA {
+		if !*devDB {
+			return errors.New("--dev-no-2fa works only together with --dev-embedded-db")
+		}
+		srv.DevNo2FA = true
+		log.Warn("DEVELOPMENT MODE: two-factor sign-in is switched off")
+	}
 	net0, err := srv.Network(ctx)
 	if err != nil {
 		return err

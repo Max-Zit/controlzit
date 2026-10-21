@@ -75,6 +75,7 @@ type Page struct {
 	Flash   string
 	Error   string
 	Version string
+	DevNo2FA bool
 	Data    any
 	// CSRF-free forms post back to the same origin; nothing else needed.
 }
@@ -176,6 +177,7 @@ func (s *Server) render(w http.ResponseWriter, r *http.Request, status int, name
 		p.User = userFrom(r)
 	}
 	p.Version = s.Version
+	p.DevNo2FA = s.DevNo2FA
 	if f := s.takeFlash(w, r); f != "" && p.Flash == "" {
 		p.Flash = f
 	}
