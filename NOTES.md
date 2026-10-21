@@ -53,3 +53,11 @@ Local path: C:\Users\Mili\Ai\rmm
 - Graceful shutdown on Windows when killed: embedded PG keeps running (dev only).
 - Docs pages in the console (like BackupZit doc_*.html) not started.
 
+
+## Remote desktop plan (draft, 2026-10-21)
+- The service runs as SYSTEM in session 0 and cannot see the desktop. It starts a helper (same exe, `controlzit-agent rdhelper`) in the console/user session with a SYSTEM token whose session ID is set (CreateProcessAsUser), so it can also show the sign-in screen and UAC prompts (like TeamViewer). Helper ↔ service: named pipe with an ACL for SYSTEM only.
+- Capture: DXGI Desktop Duplication (dirty rectangles), GDI BitBlt fallback (Server 2012 R2, RDP sessions). Encoding without external codecs: 64×64 tiles, only changed tiles, JPEG (stdlib) with adaptive quality, lossless PNG option for text; cursor separately.
+- Transport: a second WebSocket per session from the agent (/agent/v1/stream, mTLS + one-time session token from the signed `rd.start` command), binary frames; the console relays to the browser over a WebSocket on the console listener (same origin, session cookie, CSRF Origin check). The control channel stays free.
+- Browser viewer: canvas, JS file under CSP 'self'; mouse, keyboard (scan codes), Ctrl+Alt+Del button (SendSAS), clipboard text, monitor switch, quality/scale, full screen.
+- Security: technician role; signed command; consent prompt on the remote desktop (configurable); visible banner on the remote screen while connected; audit start/end/duration/user; session recording (video) optional later.
+- Open question for Stefan: ask the user for consent by default?
