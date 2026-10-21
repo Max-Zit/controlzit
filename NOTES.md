@@ -50,6 +50,9 @@ Local path: C:\Users\Mili\Ai\rmm
 
 - 2026-10-21: folder download as streamed ZIP (Files → folder menu "Download as ZIP" and "Download this folder (ZIP)"); links/junctions skipped and listed in _controlzit-skipped.txt; limits 50000 files, depth 32; tested on bz-win11 (31 MB in 4.9 s, junctions in Documents skipped). Device page header with large Remote desktop / Files buttons.
 
+- **Release v0.2.0 (2026-10-21, private prerelease):** https://github.com/Max-Zit/controlzit/releases/tag/v0.2.0 — MSI, agent exe, server Linux/Windows, SHA256SUMS. Before it: all tests + vet/staticcheck/gosec/govulncheck clean; lab regression tools/labtest/regress.sh 42/42 on the upgraded agent and again after uninstall + fresh MSI install with an enrollment code (now device #5 on bz-win11). Lab server and bz-win11 run 0.2.0.
+- Copy/paste: "Send text" types the local clipboard on the remote side; real two-way clipboard + monitor choice still open (work on it was interrupted on my side twice in this session — try in a new session).
+
 ## Next steps (resume here)
 1. Remote desktop v2: DXGI Desktop Duplication (faster), monitor choice, clipboard both ways, scaling/bandwidth tuning, session recording option; verify banner + UAC with a signed-in user.
 2. Fresh Windows test VM on Proxmox (VMID 96xx) for interactive MSI tests.
