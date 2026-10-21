@@ -3,6 +3,13 @@
 {{$d := .Data.D}}{{$i := .Data.Inv}}
 <p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a></p>
 <h1>{{template "icon" "devices"}}{{$d.Hostname}} {{if .Data.Online}}<span class="badge ok"><i></i>{{.T "Online"}}</span>{{else}}<span class="badge bad"><i></i>{{.T "Offline"}}</span>{{end}}</h1>
+{{if .User.CanWrite}}
+<div class="actionbar">
+  <a class="btn primary" href="/devices/{{$d.ID}}/rd"{{if not .Data.Online}} aria-disabled="true"{{end}}>{{template "icon" "screen"}}{{.T "Remote desktop"}}</a>
+  <a class="btn secondary" href="/devices/{{$d.ID}}/files">{{template "icon" "folder"}}{{.T "Files"}}</a>
+  <form method="post" action="/devices/{{$d.ID}}/refresh"><button class="secondary" {{if not .Data.Online}}disabled{{end}}>{{.T "Refresh inventory"}}</button></form>
+</div>
+{{end}}
 
 <div class="grid">
   <div class="stat"><span class="si">{{template "icon" "devices"}}</span><b class="sm">{{if $d.OS}}{{$d.OS}}{{else}}—{{end}}</b><span>{{.T "Build"}} {{$d.OSBuild}}</span></div>
@@ -78,11 +85,9 @@
 
 {{if .User.CanWrite}}
 <section class="panel">
-  <h2>{{.T "Actions"}}</h2>
-  <div class="row">
-    <a class="btn primary" href="/devices/{{$d.ID}}/rd">{{template "icon" "screen"}}{{.T "Remote desktop"}}</a>
-    <a class="btn secondary" href="/devices/{{$d.ID}}/files">{{template "icon" "folder"}}{{.T "Files"}}</a>
-    <form method="post" action="/devices/{{$d.ID}}/refresh"><button class="secondary" {{if not .Data.Online}}disabled{{end}}>{{.T "Refresh inventory"}}</button></form>
+  <h2>{{.T "Remove device"}}</h2>
+  <p class="small muted">{{.T "Removing the device stops its agent from connecting. Uninstall the agent on the computer afterwards."}}</p>
+  <div class="actionbar">
     <form method="post" action="/devices/{{$d.ID}}/delete" data-confirm="{{.T "Remove this device? Its agent can no longer connect until it is enrolled again."}}"><button class="danger">{{template "icon" "trash"}}{{.T "Remove device"}}</button></form>
   </div>
 </section>

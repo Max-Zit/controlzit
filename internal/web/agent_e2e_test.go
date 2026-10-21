@@ -6,6 +6,7 @@ import (
 	"crypto/ed25519"
 	"crypto/rand"
 	"crypto/tls"
+	"html"
 	"io"
 	"log/slog"
 	"mime/multipart"
@@ -14,6 +15,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
@@ -258,6 +260,27 @@ func TestFileManager(t *testing.T) {
 	if r := admin.post(base+"/mkdir", "dir", work, "name", "New"); r.code != http.StatusSeeOther {
 		t.Fatalf("mkdir: %d", r.code)
 	}
+	// Follow the links the pages render (drive, folder, breadcrumb), as a
+	// browser does: they must not be escaped twice.
+	follow := func(page, marker string) string {
+		t.Helper()
+		m := regexp.MustCompile(`href="(` + regexp.QuoteMeta(base) + `\?path=[^"]+)"[^>]*>` + marker).FindStringSubmatch(page)
+		if m == nil {
+			t.Fatalf("no link to %q", marker)
+		}
+		r := admin.get(html.UnescapeString(m[1]))
+		if r.code != http.StatusOK || strings.Contains(r.body, "not an absolute path") || strings.Contains(r.body, `role="alert"><svg`) && strings.Contains(r.body, "%5C") {
+			t.Fatalf("link %s: %d", m[1], r.code)
+		}
+		return r.body
+	}
+	follow(admin.get(base).body, `\s*<span class="drive-head">`)
+	listing := admin.get(base + "?path=" + url.QueryEscape(work)).body
+	sub := follow(listing, `<svg[^>]*>.*?</svg>New</a>`)
+	if !strings.Contains(sub, "This folder is empty") {
+		t.Fatal("folder link did not open the folder")
+	}
+	follow(sub, filepath.Base(work)+"</a>") // breadcrumb back to the parent
 	if r := admin.post(base+"/mkdir", "dir", work, "name", `..\evil`); r.code != http.StatusSeeOther {
 		t.Fatalf("bad name: %d", r.code)
 	}

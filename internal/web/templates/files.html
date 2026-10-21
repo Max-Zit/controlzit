@@ -6,7 +6,7 @@
 
 <nav class="crumbs" aria-label="{{.T "Path"}}">
   <a href="/devices/{{$d.ID}}/files">{{template "icon" "devices"}}{{.T "This computer"}}</a>
-  {{range .Data.Crumbs}}<span>›</span><a href="/devices/{{$d.ID}}/files?path={{$.Data.Q .Path}}">{{.Name}}</a>{{end}}
+  {{range .Data.Crumbs}}<span>›</span><a href="/devices/{{$d.ID}}/files?path={{.Path}}">{{.Name}}</a>{{end}}
 </nav>
 
 {{if .Data.Err}}<div class="flash err" role="alert">{{template "icon" "alert"}}<span>{{.Data.Err}}</span></div>{{end}}
@@ -14,7 +14,7 @@
 {{if .Data.Drives}}
 <section class="panel">
   <h2>{{.T "Drives"}}</h2>
-  {{range .Data.Drives}}<a class="drive" href="/devices/{{$d.ID}}/files?path={{$.Data.Q .Path}}">
+  {{range .Data.Drives}}<a class="drive" href="/devices/{{$d.ID}}/files?path={{.Path}}">
     <span class="drive-head">{{template "icon" "disk"}}<b>{{.Path}}</b> <span class="muted">{{.Label}}</span> <span class="badge">{{$.T .Type}}</span>{{if .Size}}<span class="disk-free">{{$.T "%s free of %s" ($.Bytes .Free) ($.Bytes .Size)}}</span>{{end}}</span>
     {{if .Size}}<progress class="meter {{if ge ($.Percent .Free .Size) 90}}bad{{else if ge ($.Percent .Free .Size) 80}}warn{{end}}" max="100" value="{{$.Percent .Free .Size}}">{{$.Percent .Free .Size}} %</progress>{{end}}
   </a>{{end}}
@@ -24,7 +24,7 @@
 {{with .Data.List}}
 <section class="panel">
   <div class="toolbar">
-    {{if $.Data.Parent}}<a class="btn secondary sm" href="/devices/{{$d.ID}}/files?path={{$.Data.Q $.Data.Parent}}">↑ {{$.T "Up"}}</a>{{else}}<a class="btn secondary sm" href="/devices/{{$d.ID}}/files">↑ {{$.T "Drives"}}</a>{{end}}
+    {{if $.Data.Parent}}<a class="btn secondary sm" href="/devices/{{$d.ID}}/files?path={{$.Data.Parent}}">↑ {{$.T "Up"}}</a>{{else}}<a class="btn secondary sm" href="/devices/{{$d.ID}}/files">↑ {{$.T "Drives"}}</a>{{end}}
     <details class="pop"><summary class="btn secondary sm">{{template "icon" "plus"}}{{$.T "New folder"}}</summary>
       <form method="post" action="/devices/{{$d.ID}}/files/mkdir" class="row"><input type="hidden" name="dir" value="{{.Path}}"><input name="name" required maxlength="255" aria-label="{{$.T "Folder name"}}" placeholder="{{$.T "Folder name"}}"><button class="primary sm">{{$.T "Create"}}</button></form>
     </details>
@@ -42,10 +42,10 @@
   <div class="table-wrap mt"><table class="files">
     <thead><tr><th>{{$.T "Name"}}</th><th class="num">{{$.T "Size"}}</th><th class="hide-sm">{{$.T "Modified"}}</th></tr></thead>
     <tbody>{{range .Entries}}{{$p := $.Data.Join .Name}}<tr{{if .Hidden}} class="dim"{{end}}>
-      <td class="fname"><div class="fline">{{if .Dir}}<a href="/devices/{{$d.ID}}/files?path={{$.Data.Q $p}}">{{template "icon" "folder"}}{{.Name}}</a>{{else}}<a href="/devices/{{$d.ID}}/files/download?path={{$.Data.Q $p}}" title="{{$.T "Download"}}">{{template "icon" "file"}}{{.Name}}</a>{{end}}
+      <td class="fname"><div class="fline">{{if .Dir}}<a href="/devices/{{$d.ID}}/files?path={{$p}}">{{template "icon" "folder"}}{{.Name}}</a>{{else}}<a href="/devices/{{$d.ID}}/files/download?path={{$p}}" title="{{$.T "Download"}}">{{template "icon" "file"}}{{.Name}}</a>{{end}}
         <details class="pop right"><summary class="ghost sm" aria-label="{{$.T "Actions"}}">⋯</summary>
           <div class="pop-body">
-            {{if not .Dir}}<a class="btn secondary sm" href="/devices/{{$d.ID}}/files/download?path={{$.Data.Q $p}}">{{template "icon" "download"}}{{$.T "Download"}}</a>{{end}}
+            {{if not .Dir}}<a class="btn secondary sm" href="/devices/{{$d.ID}}/files/download?path={{$p}}">{{template "icon" "download"}}{{$.T "Download"}}</a>{{end}}
             <form method="post" action="/devices/{{$d.ID}}/files/rename" class="row"><input type="hidden" name="path" value="{{$p}}"><input name="name" value="{{.Name}}" required maxlength="255" aria-label="{{$.T "New name"}}"><button class="secondary sm">{{$.T "Rename"}}</button></form>
             <form method="post" action="/devices/{{$d.ID}}/files/delete" data-confirm="{{$.T "Delete this permanently from the computer?"}}"><input type="hidden" name="path" value="{{$p}}">{{if .Dir}}<input type="hidden" name="recursive" value="1">{{end}}<button class="danger sm">{{template "icon" "trash"}}{{if .Dir}}{{$.T "Delete folder and its contents"}}{{else}}{{$.T "Delete"}}{{end}}</button></form>
           </div>

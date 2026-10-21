@@ -403,5 +403,6 @@
   "Type text on the remote computer": "Ukucaj tekst na udaljenom računaru",
   "sign-in or UAC screen": "ekran za prijavu ili UAC",
   "the remote desktop helper did not connect": "pomoćni program za udaljenu radnu površinu se nije povezao"
-
+,
+  "Removing the device stops its agent from connecting. Uninstall the agent on the computer afterwards.": "Uklanjanjem uređaja njegov agent više ne može da se poveže. Posle toga deinstalirajte agent na računaru."
 }

@@ -89,9 +89,6 @@ type filesData struct {
 	Offline bool
 }
 
-// Q is a URL-encoded path for links.
-func (d *filesData) Q(p string) string { return url.QueryEscape(p) }
-
 // Join is the full path of an entry.
 func (d *filesData) Join(name string) string { return winJoin(d.Path, name) }
 
