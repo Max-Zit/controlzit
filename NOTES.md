@@ -42,8 +42,8 @@ Local path: C:\Users\Mili\Ai\rmm
 2. Server command key (ed25519): server signs every command, agent verifies (prerequisite for remote actions).
 3. File manager (browse drives/folders, download, upload, rename, delete) through the agent channel, audited.
 4. Remote desktop (own implementation; plan first).
-5. Server command key (ed25519) + agent verifies signed commands; then feature 3 (monitoring/alerts) or 4 (remote actions) — ask Stefan for order.
-3. Reverse proxy / ACME / uploaded console certificate; docs pages in the console.
+5. Monitoring and alerts (feature 3), patching (5), reports (7).
+6. Reverse proxy / ACME / uploaded console certificate; docs pages in the console.
 
 ## Known gaps / later
 - No reverse-proxy support (X-Forwarded-For) yet; no uploaded/ACME console certificate yet.
