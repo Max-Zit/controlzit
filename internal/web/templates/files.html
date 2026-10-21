@@ -40,12 +40,9 @@
   {{if .Truncated}}<p class="small muted">{{$.T "Only the first 5000 entries are shown."}}</p>{{end}}
   {{if .Entries}}
   <div class="table-wrap mt"><table class="files">
-    <thead><tr><th>{{$.T "Name"}}</th><th class="num">{{$.T "Size"}}</th><th class="hide-sm">{{$.T "Modified"}}</th><th></th></tr></thead>
+    <thead><tr><th>{{$.T "Name"}}</th><th class="num">{{$.T "Size"}}</th><th class="hide-sm">{{$.T "Modified"}}</th></tr></thead>
     <tbody>{{range .Entries}}{{$p := $.Data.Join .Name}}<tr{{if .Hidden}} class="dim"{{end}}>
-      <td class="fname">{{if .Dir}}<a href="/devices/{{$d.ID}}/files?path={{$.Data.Q $p}}">{{template "icon" "folder"}}{{.Name}}</a>{{else}}<a href="/devices/{{$d.ID}}/files/download?path={{$.Data.Q $p}}" title="{{$.T "Download"}}">{{template "icon" "file"}}{{.Name}}</a>{{end}}</td>
-      <td class="num muted">{{if not .Dir}}{{$.Bytes (u64 .Size)}}{{end}}</td>
-      <td class="hide-sm muted nowrap">{{$.Time .Modified}}</td>
-      <td class="actions">
+      <td class="fname"><div class="fline">{{if .Dir}}<a href="/devices/{{$d.ID}}/files?path={{$.Data.Q $p}}">{{template "icon" "folder"}}{{.Name}}</a>{{else}}<a href="/devices/{{$d.ID}}/files/download?path={{$.Data.Q $p}}" title="{{$.T "Download"}}">{{template "icon" "file"}}{{.Name}}</a>{{end}}
         <details class="pop right"><summary class="ghost sm" aria-label="{{$.T "Actions"}}">⋯</summary>
           <div class="pop-body">
             {{if not .Dir}}<a class="btn secondary sm" href="/devices/{{$d.ID}}/files/download?path={{$.Data.Q $p}}">{{template "icon" "download"}}{{$.T "Download"}}</a>{{end}}
@@ -53,7 +50,9 @@
             <form method="post" action="/devices/{{$d.ID}}/files/delete" data-confirm="{{$.T "Delete this permanently from the computer?"}}"><input type="hidden" name="path" value="{{$p}}">{{if .Dir}}<input type="hidden" name="recursive" value="1">{{end}}<button class="danger sm">{{template "icon" "trash"}}{{if .Dir}}{{$.T "Delete folder and its contents"}}{{else}}{{$.T "Delete"}}{{end}}</button></form>
           </div>
         </details>
-      </td>
+        </div></td>
+      <td class="num muted">{{if not .Dir}}{{$.Bytes (u64 .Size)}}{{end}}</td>
+      <td class="hide-sm muted nowrap">{{$.Time .Modified}}</td>
     </tr>{{end}}</tbody>
   </table></div>
   {{else}}<p class="muted mt">{{$.T "This folder is empty."}}</p>{{end}}

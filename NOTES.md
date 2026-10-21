@@ -38,13 +38,13 @@ Local path: C:\Users\Mili\Ai\rmm
 - **MSI done (2026-10-21):** packaging/windows/agent.wxs + build-msi.ps1 (WiX 5.0.2, Util+UI ext; images from tools/msiart; ProgramFilesControlZit Agent, service ControlZitAgent LocalSystem auto + restart on failure). One enrollment code CZ1-<base64url {u,f,t}> (console shows it once after "Create enrollment code", plus msiexec + manual commands and a download link for <data-dir>/downloads/controlzit-agent-x64.msi). Properties ENROLLCODE or SERVER_URL/FINGERPRINT/TOKEN, FORCEENROLL. Custom action `enroll --if-not-enrolled --pending-ok` as SYSTEM before StartServices (HideTarget: code not in the MSI log); unreachable server → pending-enrollment.json, the service finishes it with backoff; refused token → install fails (1603); --force keeps the old enrollment until the new one succeeds (bug found in test and fixed); uninstall runs `forget` (config, key, registry marker HKLMSOFTWAREMaxZitControlZit Agent; log stays). Tested on bz-win11: silent install, upgrade 0.1.0→0.1.1→0.1.2 keeps the device, uninstall clean, pending enrollment finished 11 s after the server came back, bad code with FORCEENROLL → 1603 and the agent stays enrolled. Interactive dialog not tested visually yet (PowerShell Direct has no desktop).
 - Sidebar shows server time zone + ticking clock (as BackupZit). Stefan: reuse BackupZit solutions where they fit.
 
+- **Signed commands + file manager done (2026-10-21):** server command key data-dir/tls/command.key (ed25519); agents get the public key at enrollment (or once via welcome over the pinned channel for older agents — tested on bz-win11 0.1.2→0.1.3); every command is bound to the agent ID, expires (≤30 min, ±2 min skew), is accepted once (replay cache) and must verify, else refused — e2e test with a changed server key. File manager (Devices → Files): drives with space, browse (hidden dimmed, 5000 entries max), download (1 MB chunks, streams any size), upload (multipart → 1 MB chunks into .czpart, rename on the last; up to 4 GB), new folder, rename, delete (recursive for folders); agent refuses relative/UNC/device paths, ADS, and deleting or renaming drive roots and system folders (Windows, Program Files, ProgramData, Users); technician role; every operation audited (file.list/download/upload/mkdir/rename/delete). Tested for real on bz-win11 through the lab server (3 MB roundtrip identical, C:Windows delete refused), UI checked at desktop and 375 px.
+
 ## Next steps (resume here)
-1. Fresh Windows test VM on Proxmox (VMID 96xx; Stefan allowed creating VMs on Proxmox/VMware) for interactive MSI test and later remote desktop.
-2. Server command key (ed25519): server signs every command, agent verifies (prerequisite for remote actions).
-3. File manager (browse drives/folders, download, upload, rename, delete) through the agent channel, audited.
-4. Remote desktop (own implementation; plan first).
-5. Monitoring and alerts (feature 3), patching (5), reports (7).
-6. Reverse proxy / ACME / uploaded console certificate; docs pages in the console.
+1. Remote desktop (own implementation; plan first).
+2. Fresh Windows test VM on Proxmox (VMID 96xx) for interactive MSI and remote desktop tests (needs a real desktop session).
+3. Monitoring and alerts (feature 3), patching (5), reports (7).
+4. Reverse proxy / ACME / uploaded console certificate; docs pages in the console.
 
 ## Known gaps / later
 - No reverse-proxy support (X-Forwarded-For) yet; no uploaded/ACME console certificate yet.

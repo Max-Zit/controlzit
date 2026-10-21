@@ -67,3 +67,11 @@ document.addEventListener("DOMContentLoaded", function () {
       pad(d.getUTCHours()) + ":" + pad(d.getUTCMinutes()) + ":" + pad(d.getUTCSeconds());
   }, 1000);
 });
+
+// Only one action menu open at a time.
+document.addEventListener("toggle", function (ev) {
+  "use strict";
+  var d = ev.target;
+  if (!(d instanceof HTMLDetailsElement) || !d.open || !d.classList.contains("pop")) return;
+  document.querySelectorAll("details.pop[open]").forEach(function (o) { if (o !== d) o.open = false; });
+}, true);
