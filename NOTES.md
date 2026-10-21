@@ -16,6 +16,7 @@ Local path: C:\Users\Mili\Ai\rmm
 - 2026-10-20: architecture confirmed (Go server + PostgreSQL, Go Windows agent, outbound TLS, pinned cert).
 - 2026-10-20: agent port and management console port MUST be separate listeners so the agent port can be isolated on the firewall; expose both (address/port, LAN-only, allowed IP ranges) as options in Settings.
 - 2026-10-20: feature order confirmed: 1 server skeleton, 2 agent/inventory, 3 monitoring/alerts, 4 remote actions, 5 patching, 6 remote desktop, 7 reports.
+- 2026-10-21: Stefan wants remote desktop "like TeamViewer" and a file manager that works without a desktop session. Proposed order: MSI → signed server commands → file manager → remote desktop → monitoring/alerts (confirm).
 - Brand: same design as BackupZit/MaxZit (indigo square, white line symbol, Inter SemiBold, "Zit" in indigo). brandgen got a `controlzit [a|b|c]` mode (maxzit-brand/tools/brandgen/controlzit.go).
 
 ## Open questions for Stefan
@@ -31,11 +32,17 @@ Local path: C:\Users\Mili\Ai\rmm
   - Console: Devices page (search), devices on the site page, device page (system, hardware, security, disk bars, network, software search), refresh inventory, remove device (closes the channel, key stops working), install instructions with server URL + fingerprint (+ token right after creating it). Static files get ?v=hash (browser cache).
   - Tests: e2e agent↔server over real TLS (wrong pin, wrong token, single-use token, hello/inventory stored, console shows it, refresh reaches agent, delete disconnects), client cert required; agent unit tests. vet/staticcheck/gosec clean.
   - Real test: server in **Proxmox CT 9600 "cz-server" (Debian 12, 192.168.101.179, PostgreSQL 15, systemd unit controlzit)**, agent as a service on **bz-win11** (device #1 "DESKTOP-NBB66OQ" in "MaxZit Lab / Lab Hyper-V"): enrolled, online, full inventory incl. BitLocker; stop service → Offline, start → Online; server restart → agent reconnected in seconds. Lab server credentials + TOTP secret: rmm/.devdata/lab-server.txt (gitignored). Stefan's PC firewall blocks inbound 18444 (no admin), so agents on VMs must use the CT server.
-  - Not yet: MSI installer, signed commands, signed self-update, Linux agent, uninstall cleanup of the data dir.
+  - Not yet: signed commands, signed self-update, Linux agent.
+
+- **MSI done (2026-10-21):** packaging/windows/agent.wxs + build-msi.ps1 (WiX 5.0.2, Util+UI ext; images from tools/msiart; ProgramFilesControlZit Agent, service ControlZitAgent LocalSystem auto + restart on failure). One enrollment code CZ1-<base64url {u,f,t}> (console shows it once after "Create enrollment code", plus msiexec + manual commands and a download link for <data-dir>/downloads/controlzit-agent-x64.msi). Properties ENROLLCODE or SERVER_URL/FINGERPRINT/TOKEN, FORCEENROLL. Custom action `enroll --if-not-enrolled --pending-ok` as SYSTEM before StartServices (HideTarget: code not in the MSI log); unreachable server → pending-enrollment.json, the service finishes it with backoff; refused token → install fails (1603); --force keeps the old enrollment until the new one succeeds (bug found in test and fixed); uninstall runs `forget` (config, key, registry marker HKLMSOFTWAREMaxZitControlZit Agent; log stays). Tested on bz-win11: silent install, upgrade 0.1.0→0.1.1→0.1.2 keeps the device, uninstall clean, pending enrollment finished 11 s after the server came back, bad code with FORCEENROLL → 1603 and the agent stays enrolled. Interactive dialog not tested visually yet (PowerShell Direct has no desktop).
+- Sidebar shows server time zone + ticking clock (as BackupZit). Stefan: reuse BackupZit solutions where they fit.
 
 ## Next steps (resume here)
-1. MSI (WiX 5.0.2, as BackupZit): installs to Program Files\ControlZit Agent, ServiceInstall ControlZitAgent, properties SERVER_URL, FINGERPRINT, TOKEN → custom action runs `controlzit-agent enroll` before the service starts; upgrade keeps the enrollment; uninstall removes service (+ optional data). Test silent install on bz-win11 and via GPO on bz-dc1 domain (ask Stefan before changing AD).
-2. Server command key (ed25519) + agent verifies signed commands; then feature 3 (monitoring/alerts) or 4 (remote actions) — ask Stefan for order.
+1. Fresh Windows test VM on Proxmox (VMID 96xx; Stefan allowed creating VMs on Proxmox/VMware) for interactive MSI test and later remote desktop.
+2. Server command key (ed25519): server signs every command, agent verifies (prerequisite for remote actions).
+3. File manager (browse drives/folders, download, upload, rename, delete) through the agent channel, audited.
+4. Remote desktop (own implementation; plan first).
+5. Server command key (ed25519) + agent verifies signed commands; then feature 3 (monitoring/alerts) or 4 (remote actions) — ask Stefan for order.
 3. Reverse proxy / ACME / uploaded console certificate; docs pages in the console.
 
 ## Known gaps / later

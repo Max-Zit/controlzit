@@ -320,5 +320,22 @@
   "The device is offline.": "Uređaj je van mreže.",
   "Inventory requested. Reload the page in a minute.": "Inventar je zatražen. Osvežite stranicu za minut.",
   "Device removed. Uninstall the agent on the machine.": "Uređaj je uklonjen. Deinstalirajte agent na računaru."
+,
+  "Copy it now: it is shown only once. Anyone with this code can add computers to this site until it expires or is used up.": "Kopirajte ga sada: prikazuje se samo jednom. Svako ko ima ovaj kod može dodavati računare na ovu lokaciju dok ne istekne ili se ne potroši.",
+  "Create an enrollment code below first; the commands then contain it.": "Prvo ispod napravite kod za prijavu; komande će ga tada sadržati.",
+  "Create enrollment code": "Napravi kod za prijavu",
+  "Current time of the server": "Trenutno vreme servera",
+  "Double-click it and paste the code, or install it silently (GPO, Intune, script):": "Pokrenite ga dvoklikom i nalepite kod, ili ga instalirajte tiho (GPO, Intune, skripta):",
+  "Download the agent (MSI, 64-bit)": "Preuzmi agent (MSI, 64-bit)",
+  "Enrollment codes": "Kodovi za prijavu",
+  "Installer (MSI)": "Instalacija (MSI)",
+  "New enrollment code": "Novi kod za prijavu",
+  "No devices yet. Install the agent with an enrollment code of this site.": "Još nema uređaja. Instalirajte agent sa kodom za prijavu ove lokacije.",
+  "Server fingerprint (SHA-256):": "Otisak sertifikata servera (SHA-256):",
+  "The MSI is not on this server yet: copy controlzit-agent-x64.msi into the downloads folder of the data directory.": "MSI još nije na ovom serveru: kopirajte controlzit-agent-x64.msi u folder downloads u direktorijumu podataka.",
+  "The code contains the agent server address": "Kod sadrži adresu servera za agente",
+  "Times in the console are in this time zone": "Vremena u konzoli su u ovoj vremenskoj zoni",
+  "Without the installer (PowerShell as administrator)": "Bez instalacije (PowerShell kao administrator)",
+  "the certificate fingerprint and the token": "otisak sertifikata i token"
 
 }

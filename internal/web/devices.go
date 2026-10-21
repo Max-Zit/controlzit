@@ -193,3 +193,22 @@ func (p *Page) Uptime(boot any) string {
 	}
 	return p.T("%d h %d min", int(d.Hours()), int(d.Minutes())%60)
 }
+
+// Zone names the server's time zone, e.g. "CEST, UTC+02:00"; times in the
+// console are shown in it.
+func (p *Page) Zone() string { return time.Now().Format("MST, UTC-07:00") }
+
+// ClockInfo feeds the sidebar clock.
+type ClockInfo struct {
+	Text string
+	MS   int64
+	Off  int
+}
+
+// Clock is the server's time; app.js keeps it ticking from this value, so
+// a wrong clock of the viewer's PC does not matter.
+func (p *Page) Clock() ClockInfo {
+	now := time.Now()
+	_, off := now.Zone()
+	return ClockInfo{Text: now.Format("2006-01-02 15:04:05"), MS: now.UnixMilli(), Off: off}
+}

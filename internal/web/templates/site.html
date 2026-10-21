@@ -4,31 +4,38 @@
 <h1>{{.Data.Site.Name}}</h1>
 {{with .Data.NewToken}}
 <section class="panel accent">
-  <h2>{{template "icon" "key"}}{{$.T "New enrollment token"}}</h2>
-  <p>{{$.T "Copy it now: it is shown only once. Anyone with this token can add computers to this site until it expires or is used up."}}</p>
-  <pre class="token" id="newtoken">{{.}}</pre>
-  <p><button type="button" class="secondary" data-copy="#newtoken">{{template "icon" "copy"}}{{$.T "Copy"}}</button></p>
-  <p class="small muted">{{$.T "Agent server address:"}} <code>{{$.Data.AgentURL}}</code></p>
+  <h2>{{template "icon" "key"}}{{$.T "New enrollment code"}}</h2>
+  <p>{{$.T "Copy it now: it is shown only once. Anyone with this code can add computers to this site until it expires or is used up."}}</p>
+  <pre class="token" id="enrollcode">{{$.Data.EnrollCode}}</pre>
+  <p><button type="button" class="secondary" data-copy="#enrollcode">{{template "icon" "copy"}}{{$.T "Copy"}}</button></p>
+  <p class="small muted">{{$.T "The code contains the agent server address"}} <code>{{$.Data.AgentURL}}</code>, {{$.T "the certificate fingerprint and the token"}} <code>{{.}}</code>.</p>
 </section>
 {{end}}
 <section class="panel">
   <h2>{{.T "Devices"}}</h2>
   {{if .Data.Devices}}{{template "devicetable" .}}
-  {{else}}<div class="empty">{{template "icon" "devices"}}<p>{{.T "No devices yet. Install the agent with an enrollment token of this site."}}</p></div>{{end}}
+  {{else}}<div class="empty">{{template "icon" "devices"}}<p>{{.T "No devices yet. Install the agent with an enrollment code of this site."}}</p></div>{{end}}
 </section>
 {{if .User.CanWrite}}
+{{$code := "CZ1-…"}}{{if .Data.EnrollCode}}{{$code = .Data.EnrollCode}}{{end}}
 <section class="panel install">
   <h2>{{template "icon" "plus"}}{{.T "Add computers"}}</h2>
   <p class="muted">{{.T "The agent connects outbound to the agent port of this server; the computer needs no open ports. It pins the server certificate by its fingerprint, so a fake server cannot take over the agent."}}</p>
-  <h3>{{.T "Manual install (PowerShell as administrator)"}}</h3>
-  <pre id="install-cmd">.\controlzit-agent.exe enroll --server {{.Data.AgentURL}} --fingerprint {{.Data.Fingerprint}} --token {{if .Data.NewToken}}{{.Data.NewToken}}{{else}}&lt;TOKEN&gt;{{end}}
+  {{if not .Data.EnrollCode}}<p class="small">{{.T "Create an enrollment code below first; the commands then contain it."}}</p>{{end}}
+  <h3>{{.T "Installer (MSI)"}}</h3>
+  <p>{{if .Data.MSI}}<a class="btn secondary" href="/downloads/controlzit-agent-x64.msi">{{.T "Download the agent (MSI, 64-bit)"}}</a>{{else}}<span class="small muted">{{.T "The MSI is not on this server yet: copy controlzit-agent-x64.msi into the downloads folder of the data directory."}}</span>{{end}}</p>
+  <p class="small muted">{{.T "Double-click it and paste the code, or install it silently (GPO, Intune, script):"}}</p>
+  <pre id="msi-cmd">msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="{{$code}}"</pre>
+  <p><button type="button" class="secondary" data-copy="#msi-cmd">{{template "icon" "copy"}}{{.T "Copy"}}</button></p>
+  <h3>{{.T "Without the installer (PowerShell as administrator)"}}</h3>
+  <pre id="install-cmd">.\controlzit-agent.exe enroll --code "{{$code}}"
 .\controlzit-agent.exe install</pre>
   <p><button type="button" class="secondary" data-copy="#install-cmd">{{template "icon" "copy"}}{{.T "Copy"}}</button></p>
-  <p class="small muted">{{.T "Copy the agent to a permanent place first (for example a folder under Program Files). The MSI installer for GPO and Intune comes next."}}</p>
+  <p class="small muted">{{.T "Server fingerprint (SHA-256):"}} <code class="wrap">{{.Data.Fingerprint}}</code></p>
 </section>
 {{end}}
 <section class="panel">
-  <h2>{{.T "Enrollment tokens"}}</h2>
+  <h2>{{.T "Enrollment codes"}}</h2>
   {{if .Data.Tokens}}
   <div class="table-wrap"><table>
     <thead><tr><th>{{.T "Label"}}</th><th>{{.T "Status"}}</th><th class="num">{{.T "Used"}}</th><th class="hide-sm">{{.T "Expires"}}</th><th class="hide-sm">{{.T "Created by"}}</th><th></th></tr></thead>
@@ -47,7 +54,7 @@
     <input name="label" placeholder="{{.T "Label (optional)"}}" aria-label="{{.T "Label"}}" maxlength="120">
     <label class="inline">{{.T "Valid for days"}}<input type="number" name="days" value="{{.Data.ValidDays}}" min="1" max="365" required></label>
     <label class="inline">{{.T "Uses"}}<input type="number" name="uses" value="{{.Data.MaxUses}}" min="1" max="100000" required></label>
-    <button class="primary">{{template "icon" "key"}}{{.T "Create token"}}</button>
+    <button class="primary">{{template "icon" "key"}}{{.T "Create enrollment code"}}</button>
   </form>
   {{end}}
 </section>

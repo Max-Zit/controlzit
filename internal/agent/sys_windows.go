@@ -125,3 +125,19 @@ func atoi(s string) int {
 
 // hiddenProc runs PowerShell without a console window.
 var hiddenProc = &syscall.SysProcAttr{HideWindow: true, CreationFlags: windows.CREATE_NO_WINDOW}
+
+// markEnrolled records the enrollment in the registry, where the MSI looks
+// for it (an upgrade then does not ask for a code again).
+func markEnrolled(on bool) {
+	const path = `SOFTWARE\MaxZit\ControlZit Agent`
+	if !on {
+		_ = registry.DeleteKey(registry.LOCAL_MACHINE, path)
+		return
+	}
+	k, _, err := registry.CreateKey(registry.LOCAL_MACHINE, path, registry.SET_VALUE|registry.WOW64_64KEY)
+	if err != nil {
+		return
+	}
+	defer k.Close()
+	_ = k.SetStringValue("Enrolled", "1")
+}

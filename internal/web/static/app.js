@@ -51,3 +51,19 @@
     if (msg && !window.confirm(msg)) ev.preventDefault();
   });
 })();
+
+// Sidebar clock: the server's time, ticking every second from the value at
+// page load (data-ms: Unix ms, data-off: zone offset in seconds).
+document.addEventListener("DOMContentLoaded", function () {
+  "use strict";
+  var el = document.getElementById("clock");
+  if (!el) return;
+  var delta = Number(el.getAttribute("data-ms")) - Date.now();
+  var off = Number(el.getAttribute("data-off")) * 1000;
+  var pad = function (n) { return (n < 10 ? "0" : "") + n; };
+  setInterval(function () {
+    var d = new Date(Date.now() + delta + off); // read in UTC = server zone
+    el.textContent = d.getUTCFullYear() + "-" + pad(d.getUTCMonth() + 1) + "-" + pad(d.getUTCDate()) + " " +
+      pad(d.getUTCHours()) + ":" + pad(d.getUTCMinutes()) + ":" + pad(d.getUTCSeconds());
+  }, 1000);
+});

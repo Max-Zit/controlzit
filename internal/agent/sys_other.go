@@ -20,3 +20,5 @@ func CollectInventory(ctx context.Context) *proto.Inventory {
 	host, _ := os.Hostname()
 	return &proto.Inventory{CollectedAt: time.Now().UTC(), Hostname: host, OS: proto.OSInfo{Name: runtime.GOOS, Arch: runtime.GOARCH}}
 }
+
+func markEnrolled(bool) {}

@@ -14,6 +14,7 @@ package proto
 
 import (
 	"crypto/sha256"
+	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"strings"
@@ -200,4 +201,21 @@ func KeyID(pub []byte) string {
 // NormalizeFingerprint accepts "AB:CD…" or "abcd…" forms.
 func NormalizeFingerprint(s string) string {
 	return strings.ToLower(strings.NewReplacer(":", "", " ", "", "-", "").Replace(strings.TrimSpace(s)))
+}
+
+// EnrollCodePrefix marks an enrollment code: everything an installer needs
+// (server address, certificate fingerprint, token) in one string.
+const EnrollCodePrefix = "CZ1-"
+
+// EnrollData is what an enrollment code carries.
+type EnrollData struct {
+	Server      string `json:"u"`
+	Fingerprint string `json:"f"`
+	Token       string `json:"t"`
+}
+
+// MakeEnrollCode encodes the data as CZ1-<base64url JSON>.
+func MakeEnrollCode(d EnrollData) string {
+	b, _ := json.Marshal(d)
+	return EnrollCodePrefix + base64.RawURLEncoding.EncodeToString(b)
 }

@@ -16,6 +16,7 @@ import (
 	"math/rand/v2"
 	"net/http"
 	"os"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
@@ -40,7 +41,7 @@ func pinnedTLS(fingerprint string, cert tls.Certificate) *tls.Config {
 			}
 			got := sha256.Sum256(cs.PeerCertificates[0].Raw)
 			if subtle.ConstantTimeCompare(got[:], want) != 1 {
-				return fmt.Errorf("server certificate does not match the pinned fingerprint (got %s)", hex.EncodeToString(got[:]))
+				return fmt.Errorf("%w (got %s)", ErrPinMismatch, hex.EncodeToString(got[:]))
 			}
 			return nil
 		},
@@ -88,6 +89,9 @@ func Enroll(ctx context.Context, dir, serverURL, fingerprint, token string) (*Co
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("User-Agent", "controlzit-agent/"+Version)
 	resp, err := httpClient(pinnedTLS(fingerprint, cert)).Do(req)
+	if errors.Is(err, ErrPinMismatch) {
+		return nil, &RefusedError{Msg: err.Error()}
+	}
 	if err != nil {
 		return nil, fmt.Errorf("cannot reach the server: %w", err)
 	}
@@ -95,10 +99,14 @@ func Enroll(ctx context.Context, dir, serverURL, fingerprint, token string) (*Co
 	raw, _ := io.ReadAll(io.LimitReader(resp.Body, 64<<10))
 	if resp.StatusCode != http.StatusOK {
 		var e proto.Error
+		msg := fmt.Sprintf("HTTP %d", resp.StatusCode)
 		if json.Unmarshal(raw, &e) == nil && e.Error != "" {
-			return nil, fmt.Errorf("enrollment refused: %s", e.Error)
+			msg = e.Error
 		}
-		return nil, fmt.Errorf("enrollment refused: HTTP %d", resp.StatusCode)
+		if resp.StatusCode >= 500 || resp.StatusCode == http.StatusTooManyRequests {
+			return nil, fmt.Errorf("server error: %s", msg)
+		}
+		return nil, &RefusedError{Msg: msg}
 	}
 	var er proto.EnrollResponse
 	if err := json.Unmarshal(raw, &er); err != nil || er.AgentID == "" {
@@ -106,8 +114,22 @@ func Enroll(ctx context.Context, dir, serverURL, fingerprint, token string) (*Co
 	}
 	c := &Config{ServerURL: serverURL, Fingerprint: fingerprint, AgentID: er.AgentID, DeviceID: er.DeviceID,
 		Customer: er.Customer, Site: er.Site, EnrolledAt: time.Now().UTC()}
-	return c, c.Save(dir)
+	if err := c.Save(dir); err != nil {
+		return nil, err
+	}
+	_ = os.Remove(filepath.Join(dir, pendingFile))
+	markEnrolled(true)
+	return c, nil
 }
+
+// ErrPinMismatch: the server is not the one the agent was told to trust.
+var ErrPinMismatch = errors.New("server certificate does not match the pinned fingerprint")
+
+// RefusedError is a definitive refusal (wrong token, wrong server); trying
+// again with the same data does not help.
+type RefusedError struct{ Msg string }
+
+func (e *RefusedError) Error() string { return "enrollment refused: " + e.Msg }
 
 // Agent runs the channel to the server.
 type Agent struct {

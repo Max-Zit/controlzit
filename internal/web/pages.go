@@ -4,10 +4,13 @@ import (
 	"errors"
 	"net"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/max-zit/controlzit/internal/proto"
 	"github.com/max-zit/controlzit/internal/store"
 )
 
@@ -227,6 +230,8 @@ type siteData struct {
 	Fingerprint string
 	Tokens      []store.EnrollToken
 	NewToken    string
+	EnrollCode  string
+	MSI         bool
 	AgentURL    string
 	Now         time.Time
 	ValidDays   int
@@ -253,6 +258,7 @@ func (s *Server) showSite(w http.ResponseWriter, r *http.Request, status int, d 
 		return
 	}
 	d.Fingerprint = s.AgentFingerprint
+	d.MSI = s.agentMSI() != ""
 	if d.ValidDays == 0 {
 		d.ValidDays, d.MaxUses = 7, 50
 	}
@@ -344,6 +350,7 @@ func (s *Server) handleTokenCreate(w http.ResponseWriter, r *http.Request) {
 	s.audit(r, "token.create", "site:"+strconv.FormatInt(x.ID, 10), "enrollment token %q for site %q of %q: %d days, %d uses", r.FormValue("label"), x.Name, x.Customer, days, uses)
 	// The token is shown once, in this response only.
 	d.NewToken = tok
+	d.EnrollCode = proto.MakeEnrollCode(proto.EnrollData{Server: s.agentURL(r), Fingerprint: s.AgentFingerprint, Token: tok})
 	s.showSite(w, r, http.StatusOK, d, "")
 }
 
@@ -371,3 +378,29 @@ func joinHostPort(h, p string) string { return net.JoinHostPort(strings.Trim(h, 
 
 // Online is used by the device list of the site page.
 func (d *siteData) Online(x *store.Device) bool { return x.Online(d.Now, onlineWindow) }
+
+// AgentMSIName is the installer the console offers for download; put it
+// into <data-dir>/downloads (release packages will do this).
+const AgentMSIName = "controlzit-agent-x64.msi"
+
+func (s *Server) agentMSI() string {
+	if s.DownloadsDir == "" {
+		return ""
+	}
+	p := filepath.Join(s.DownloadsDir, AgentMSIName)
+	if st, err := os.Stat(p); err != nil || !st.Mode().IsRegular() {
+		return ""
+	}
+	return p
+}
+
+func (s *Server) handleAgentMSI(w http.ResponseWriter, r *http.Request) {
+	p := s.agentMSI()
+	if p == "" {
+		s.notFound(w, r)
+		return
+	}
+	w.Header().Set("Content-Type", "application/x-msi")
+	w.Header().Set("Content-Disposition", `attachment; filename="`+AgentMSIName+`"`)
+	http.ServeFile(w, r, p)
+}

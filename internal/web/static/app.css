@@ -52,6 +52,8 @@ a:hover { text-decoration: underline; text-underline-offset: 2px; }
 .side nav a.on .ic { color: #a5b4fc; }
 .navlabel { margin: 16px 12px 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--side-muted); }
 .side-foot { margin-top: auto; padding: 12px; font-size: 12px; color: var(--side-muted); line-height: 1.6; }
+.side-foot .ic { width: 13px; height: 13px; vertical-align: -2px; }
+#clock { font-variant-numeric: tabular-nums; }
 .scrim { display: none; }
 
 .shell { margin-left: 236px; min-height: 100vh; display: flex; flex-direction: column; }

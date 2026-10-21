@@ -45,3 +45,11 @@ go run ./tools/totp SECRET          # current code of a TOTP secret (tests)
 .\controlzit-agent.exe inventory    # print what the agent reports
 ```
 Run from an elevated prompt. The site page in the console shows the exact command.
+
+## Agent installer (MSI)
+```
+.\packaging\windows\build-msi.ps1 -Version 0.1.2          # → dist\controlzit-agent-0.1.2-x64.msi
+msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="CZ1-…"   # silent (GPO, Intune, scripts)
+```
+The console shows the enrollment code on a site after "Create enrollment code".
+Copy the MSI to `<data-dir>/downloads/controlzit-agent-x64.msi` to offer it for download in the console.

@@ -18,7 +18,6 @@ import (
 	"log/slog"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"syscall"
 	"time"
 
@@ -40,7 +39,9 @@ func usage() error {
 
 commands:
   enroll     join this machine to a ControlZit server
-             --server URL --fingerprint SHA256 --token TOKEN [--dir DIR]
+             --code CZ1-… (or --server URL --fingerprint SHA256 --token TOKEN)
+             [--force] [--if-not-enrolled] [--pending-ok] [--dir DIR]
+  forget     remove the enrollment (configuration and key)
   run        run the agent in the foreground
   install    register and start the Windows service
   uninstall  stop and remove the Windows service
@@ -64,6 +65,9 @@ func run(args []string) error {
 	fp := fs.String("fingerprint", "", "SHA-256 fingerprint of the server's agent certificate")
 	token := fs.String("token", "", "enrollment token of the site")
 	force := fs.Bool("force", false, "enroll again even if already enrolled")
+	code := fs.String("code", "", "enrollment code from the console (CZ1-…), instead of --server, --fingerprint and --token")
+	ifNot := fs.Bool("if-not-enrolled", false, "do nothing when already enrolled (installer upgrades)")
+	pendingOK := fs.Bool("pending-ok", false, "if the server cannot be reached, let the service finish the enrollment later")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -74,19 +78,60 @@ func run(args []string) error {
 		fmt.Println("controlzit-agent", version)
 		return nil
 	case "enroll":
-		if !*force {
-			if c, err := agent.LoadConfig(*dir); err == nil {
-				return fmt.Errorf("already enrolled with %s (customer %q, site %q); use --force to enroll again", c.ServerURL, c.Customer, c.Site)
-			}
+		var d agent.EnrollData
+		var err error
+		if *code != "" {
+			d, err = agent.ParseEnrollCode(*code)
 		} else {
-			// A new enrollment gets a new key, so the old device entry stops working.
-			_ = os.Remove(filepath.Join(*dir, "agent.key"))
+			d, err = agent.EnrollData{Server: *server, Fingerprint: *fp, Token: *token}, nil
 		}
-		c, err := agent.Enroll(ctx, *dir, *server, *fp, *token)
+		if err != nil {
+			return err
+		}
+		if c, err := agent.LoadConfig(*dir); err == nil && !*force {
+			if *ifNot {
+				fmt.Printf("Already enrolled with %s (customer %q, site %q); nothing to do.\n", c.ServerURL, c.Customer, c.Site)
+				return nil
+			}
+			return fmt.Errorf("already enrolled with %s (customer %q, site %q); use --force to enroll again", c.ServerURL, c.Customer, c.Site)
+		}
+		var restore func()
+		if *force {
+			// A new enrollment gets a new key; the old one is kept until the
+			// new enrollment succeeds, so a wrong code does not break the agent.
+			restore, err = agent.SetAside(*dir)
+			if err != nil {
+				return err
+			}
+		}
+		c, err := agent.EnrollWith(ctx, *dir, d)
+		if restore != nil {
+			if err != nil && !(*pendingOK && !errors.As(err, new(*agent.RefusedError))) {
+				restore()
+			} else {
+				restore = nil
+				agent.DropSetAside(*dir)
+			}
+		}
+		var refused *agent.RefusedError
+		if err != nil && *pendingOK && !errors.As(err, &refused) {
+			// No network yet (installed at boot, server down): the service finishes it.
+			if perr := agent.SavePending(*dir, d); perr != nil {
+				return perr
+			}
+			fmt.Println("The server cannot be reached now; the agent service will finish the enrollment:", err)
+			return nil
+		}
 		if err != nil {
 			return err
 		}
 		fmt.Printf("Enrolled: customer %q, site %q, device #%d.\n", c.Customer, c.Site, c.DeviceID)
+		return nil
+	case "forget":
+		if err := agent.Forget(*dir); err != nil {
+			return err
+		}
+		fmt.Println("Enrollment removed.")
 		return nil
 	case "status":
 		c, err := agent.LoadConfig(*dir)
@@ -113,9 +158,10 @@ func run(args []string) error {
 }
 
 func runAgent(ctx context.Context, dir string, log *slog.Logger) error {
-	// Wait for the enrollment (the MSI enrolls before it starts the service,
-	// but a manual install may start the service first).
+	// Wait for the enrollment: the MSI enrolls before it starts the service,
+	// or leaves a pending enrollment when the server could not be reached.
 	var cfg *agent.Config
+	wait := 15 * time.Second
 	for {
 		c, err := agent.LoadConfig(dir)
 		if err == nil {
@@ -125,12 +171,23 @@ func runAgent(ctx context.Context, dir string, log *slog.Logger) error {
 		if !errors.Is(err, agent.ErrNotEnrolled) {
 			return err
 		}
-		log.Warn("not enrolled yet; waiting", "dir", dir)
+		if d, ok := agent.LoadPending(dir); ok {
+			c, err := agent.EnrollWith(ctx, dir, d)
+			if err == nil {
+				log.Info("pending enrollment finished", "customer", c.Customer, "site", c.Site)
+				cfg = c
+				break
+			}
+			log.Warn("pending enrollment failed; trying again later", "server", d.Server, "err", err)
+		} else {
+			log.Warn("not enrolled yet; waiting", "dir", dir)
+		}
 		select {
 		case <-ctx.Done():
 			return nil
-		case <-time.After(time.Minute):
+		case <-time.After(wait):
 		}
+		wait = min(2*wait, 15*time.Minute)
 	}
 	log.Info("ControlZit agent starting", "version", version, "server", cfg.ServerURL, "customer", cfg.Customer, "site", cfg.Site)
 	a := &agent.Agent{Dir: dir, Cfg: cfg, Log: log}

@@ -51,8 +51,10 @@ type Server struct {
 	SetupTokenFile string
 	// DevNo2FA skips the second factor (development server only; the
 	// command refuses it without the embedded development database).
-	DevNo2FA   bool
-	setupToken string
+	DevNo2FA bool
+	// DownloadsDir holds the agent installer offered in the console.
+	DownloadsDir string
+	setupToken   string
 }
 
 // New creates the server; network settings are loaded from the database.
@@ -276,6 +278,7 @@ func (s *Server) Handler() http.Handler {
 	app("POST /sites/{id}/delete", s.handleSiteDelete)
 	app("POST /sites/{id}/tokens", s.handleTokenCreate)
 	app("POST /sites/{id}/tokens/{tid}/revoke", s.handleTokenRevoke)
+	app("GET /downloads/"+AgentMSIName, s.handleAgentMSI)
 	app("GET /devices", s.handleDevices)
 	app("GET /devices/{id}", s.handleDevice)
 	app("POST /devices/{id}/refresh", s.handleDeviceRefresh)

@@ -121,6 +121,7 @@ func run() error {
 		return err
 	}
 	srv.Version = version
+	srv.DownloadsDir = filepath.Join(*dataDir, "downloads")
 	if *devNo2FA {
 		if !*devDB {
 			return errors.New("--dev-no-2fa works only together with --dev-embedded-db")
