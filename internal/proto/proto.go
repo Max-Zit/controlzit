@@ -104,6 +104,7 @@ type Welcome struct {
 type Heartbeat struct {
 	BootTime     time.Time `json:"boot_time"`
 	LoggedOnUser string    `json:"logged_on_user"`
+	Metrics      *Metrics  `json:"metrics,omitempty"`
 }
 
 // Inventory describes a machine.
@@ -225,4 +226,27 @@ type EnrollData struct {
 func MakeEnrollCode(d EnrollData) string {
 	b, _ := json.Marshal(d)
 	return EnrollCodePrefix + base64.RawURLEncoding.EncodeToString(b)
+}
+
+// Metrics are sent with heartbeats (every minute; the slower parts less often).
+type Metrics struct {
+	CPU      float64 `json:"cpu"` // percent, average since the last sample
+	MemTotal uint64  `json:"mem_total"`
+	MemUsed  uint64  `json:"mem_used"`
+	Disks    []Disk  `json:"disks"`
+	// StoppedAuto lists automatic services that are not running; nil when
+	// not collected in this heartbeat (every 5 minutes).
+	StoppedAuto []string `json:"stopped_auto,omitempty"`
+	// Security is collected every 15 minutes; nil otherwise.
+	Security *SecurityState `json:"security,omitempty"`
+}
+
+// SecurityState is the quick security check.
+type SecurityState struct {
+	DefenderPresent  bool       `json:"defender_present"`
+	DefenderAV       bool       `json:"defender_av"`
+	DefenderRealTime bool       `json:"defender_rt"`
+	Firewall         []Firewall `json:"firewall"`
+	PendingReboot    bool       `json:"pending_reboot"`
+	CheckedAt        time.Time  `json:"checked_at"`
 }

@@ -70,16 +70,18 @@ func translate(lang, key string, args ...any) string {
 
 // Page is what every template gets.
 type Page struct {
-	Title    string
-	Nav      string
-	Lang     string
-	User     *store.User
-	Flash    string
-	Error    string
-	Version  string
-	DevNo2FA bool
-	Asset    string
-	Data     any
+	Title      string
+	Nav        string
+	Lang       string
+	User       *store.User
+	Flash      string
+	Error      string
+	Version    string
+	DevNo2FA   bool
+	Asset      string
+	AlertCount int
+	Path       string
+	Data       any
 	// CSRF-free forms post back to the same origin; nothing else needed.
 }
 
@@ -188,6 +190,10 @@ func (s *Server) render(w http.ResponseWriter, r *http.Request, status int, name
 	p.Version = s.Version
 	p.DevNo2FA = s.DevNo2FA
 	p.Asset = assetVersion
+	p.Path = r.URL.RequestURI()
+	if p.User != nil {
+		p.AlertCount, _ = s.store.OpenAlertCount(r.Context(), p.User)
+	}
 	if f := s.takeFlash(w, r); f != "" && p.Flash == "" {
 		p.Flash = f
 	}

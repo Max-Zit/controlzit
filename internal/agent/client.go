@@ -140,6 +140,8 @@ type Agent struct {
 	Collect func(ctx context.Context) *proto.Inventory
 	// Info returns the quick status for hello and heartbeat (tests).
 	Info func() SysInfo
+	// Metrics samples the machine for heartbeats (tests).
+	Metrics func(ctx context.Context) *proto.Metrics
 
 	key ed25519.PrivateKey
 	// lastInventory survives reconnects, so a server restart does not make
@@ -167,6 +169,9 @@ func (a *Agent) Run(ctx context.Context) error {
 	}
 	if a.Info == nil {
 		a.Info = basicInfo
+	}
+	if a.Metrics == nil {
+		a.Metrics = CollectMetrics
 	}
 	backoff := 2 * time.Second
 	for ctx.Err() == nil {
@@ -268,6 +273,8 @@ func (a *Agent) session(ctx context.Context) error {
 
 	heartbeat := time.NewTicker(60 * time.Second)
 	defer heartbeat.Stop()
+	// The first heartbeat with metrics soon after connecting.
+	firstBeat := time.After(10 * time.Second)
 	inventoryEvery := 12 * time.Hour
 	nextInventory := a.lastInventory.Add(inventoryEvery) // zero: right after connecting
 	invTimer := time.NewTimer(5 * time.Second)
@@ -314,8 +321,12 @@ func (a *Agent) session(ctx context.Context) error {
 				}
 			}
 		case <-heartbeat.C:
-			si := a.Info()
-			if err := sendMsg(ctx, ws, proto.TypeHeartbeat, proto.Heartbeat{BootTime: si.BootTime, LoggedOnUser: si.LoggedOnUser}); err != nil {
+			if err := a.heartbeat(sctx, ws); err != nil {
+				return err
+			}
+		case <-firstBeat:
+			firstBeat = nil
+			if err := a.heartbeat(sctx, ws); err != nil {
 				return err
 			}
 		case <-invTimer.C:
@@ -337,3 +348,8 @@ func (a *Agent) session(ctx context.Context) error {
 
 // BasicOS is a fallback OS description.
 func BasicOS() string { return runtime.GOOS + "/" + runtime.GOARCH }
+
+func (a *Agent) heartbeat(ctx context.Context, ws *websocket.Conn) error {
+	si := a.Info()
+	return sendMsg(ctx, ws, proto.TypeHeartbeat, proto.Heartbeat{BootTime: si.BootTime, LoggedOnUser: si.LoggedOnUser, Metrics: a.Metrics(ctx)})
+}

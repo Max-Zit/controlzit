@@ -6,6 +6,7 @@
   <div class="stat"><span class="si">{{template "icon" "site"}}</span><b>{{.Data.Counts.Sites}}</b><span>{{.T "Sites"}}</span></div>
   <div class="stat"><span class="si">{{template "icon" "devices"}}</span><b>{{.Data.Counts.Devices}}</b><span>{{.T "Devices"}}</span></div>
   <div class="stat ok"><span class="si">{{template "icon" "online"}}</span><b>{{.Data.Counts.Online}}</b><span>{{.T "Online now"}}</span></div>
+  <a class="stat {{if .AlertCount}}bad{{else}}ok{{end}}" href="/alerts"><span class="si">{{template "icon" "alert"}}</span><b>{{.AlertCount}}</b><span>{{.T "Open alerts"}}</span></a>
 </div>
 <section class="panel">
   <h2>{{.T "Customers"}}</h2>

@@ -10,6 +10,23 @@
   <form method="post" action="/devices/{{$d.ID}}/refresh"><button class="secondary" {{if not .Data.Online}}disabled{{end}}>{{.T "Refresh inventory"}}</button></form>
 </div>
 {{end}}
+{{if .Data.Alerts}}
+<section class="panel alert-panel">
+  <h2>{{template "icon" "alert"}}{{.T "Open alerts"}}</h2>
+  {{template "alerttable" .}}
+</section>
+{{end}}
+{{with .Data.Metrics}}
+<section class="panel">
+  <h2>{{template "icon" "online"}}{{$.T "Load now"}} <span class="muted small">{{$.Ago $.Data.MetricsAt}}</span></h2>
+  <div class="loads">
+    <div><span>CPU</span><b>{{printf "%.0f" .CPU}} %</b><progress class="meter {{if ge .CPU 90.0}}bad{{else if ge .CPU 75.0}}warn{{end}}" max="100" value="{{printf "%.0f" .CPU}}"></progress></div>
+    {{if .MemTotal}}<div><span>{{$.T "Memory"}}</span><b>{{$.Bytes .MemUsed}} / {{$.Bytes .MemTotal}}</b><progress class="meter" max="{{.MemTotal}}" value="{{.MemUsed}}"></progress></div>{{end}}
+    {{range .Disks}}<div><span>{{.Drive}}</span><b>{{$.T "%s free of %s" ($.Bytes .Free) ($.Bytes .Size)}}</b><progress class="meter {{if ge ($.Percent .Free .Size) 90}}bad{{else if ge ($.Percent .Free .Size) 80}}warn{{end}}" max="100" value="{{$.Percent .Free .Size}}"></progress></div>{{end}}
+  </div>
+  {{with $.Data.Stopped}}<p class="small muted mt">{{$.T "Automatic services that are not running:"}} {{join . ", "}}</p>{{end}}
+</section>
+{{end}}
 
 <div class="grid">
   <div class="stat"><span class="si">{{template "icon" "devices"}}</span><b class="sm">{{if $d.OS}}{{$d.OS}}{{else}}—{{end}}</b><span>{{.T "Build"}} {{$d.OSBuild}}</span></div>

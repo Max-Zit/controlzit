@@ -38,3 +38,6 @@ func drives() ([]proto.FSDrive, error) { return []proto.FSDrive{{Path: "/", Type
 func startHelper(string, proto.RDStart) error {
 	return errors.New("remote desktop is not supported on this system yet")
 }
+
+// CollectMetrics is not implemented outside Windows yet.
+func CollectMetrics(ctx context.Context) *proto.Metrics { return &proto.Metrics{} }

@@ -305,7 +305,19 @@ func (s *Server) agentMessage(ctx context.Context, c *agentConn, d *store.Device
 		if err := json.Unmarshal(env.Data, &hb); err != nil {
 			return err
 		}
-		return s.store.AgentHeartbeat(ctx, d.ID, hb)
+		if err := s.store.AgentHeartbeat(ctx, d.ID, hb); err != nil {
+			return err
+		}
+		if hb.Metrics != nil {
+			if len(hb.Metrics.Disks) > 64 {
+				hb.Metrics.Disks = hb.Metrics.Disks[:64]
+			}
+			if len(hb.Metrics.StoppedAuto) > 500 {
+				hb.Metrics.StoppedAuto = hb.Metrics.StoppedAuto[:500]
+			}
+			return s.store.SaveMetrics(ctx, d.ID, hb.Metrics)
+		}
+		return nil
 	case proto.TypeResult:
 		var res proto.Result
 		if err := json.Unmarshal(env.Data, &res); err != nil {

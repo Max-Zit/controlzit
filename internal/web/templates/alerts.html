@@ -1,0 +1,13 @@
+{{template "app" .}}
+{{define "content"}}
+<h1>{{.T "Alerts"}}</h1>
+<nav class="tabs" aria-label="{{.T "Alerts"}}">
+  <a href="/alerts" class="{{if not .Data.All}}on{{end}}">{{.T "Open"}}</a>
+  <a href="/alerts?all=1" class="{{if .Data.All}}on{{end}}">{{.T "All, including resolved"}}</a>
+</nav>
+<section class="panel">
+  {{if .Data.Alerts}}{{template "alerttable" .}}
+  {{else}}<div class="empty">{{template "icon" "check"}}<p>{{.T "No open alerts. All monitored devices are fine."}}</p></div>{{end}}
+</section>
+{{if .User.IsAdmin}}<p class="small muted">{{.T "The rules and alert emails are in"}} <a href="/settings/monitoring">{{.T "Settings"}} → {{.T "Monitoring and alerts"}}</a>.</p>{{end}}
+{{end}}

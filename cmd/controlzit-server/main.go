@@ -208,6 +208,7 @@ func run() error {
 	}
 	log.Info("ControlZit server started", "version", version, "agent_fingerprint", srv.AgentFingerprint)
 
+	go srv.RunMonitor(ctx)
 	go func() {
 		t := time.NewTicker(time.Hour)
 		defer t.Stop()

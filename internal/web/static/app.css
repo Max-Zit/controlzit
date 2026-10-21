@@ -285,3 +285,12 @@ table.files td.fname { min-width: 180px; }
 .rd:fullscreen .rd-screen { flex: 1; min-height: 0; }
 .rd:fullscreen .rd-screen canvas { max-height: 100%; width: auto; max-width: 100%; }
 .rd.closed .rd-screen canvas { opacity: .4; }
+.side nav a .navcount { margin-left: auto; min-width: 20px; padding: 1px 7px; border-radius: 10px; background: #f87171; color: #1f0606; font-size: 12px; font-weight: 700; text-align: center; }
+table.alerts td b { font-weight: 600; }
+.stat.bad .si { background: var(--bad-bg); color: var(--bad); }
+.stat.bad b { color: var(--bad); }
+.loads { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px 22px; }
+.loads > div { display: grid; gap: 4px; }
+.loads span { color: var(--muted); font-size: 12.5px; }
+.loads b { font-weight: 600; }
+.alert-panel { border-color: color-mix(in srgb, var(--bad) 40%, var(--line)); }

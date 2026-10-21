@@ -55,12 +55,16 @@ func (s *Server) deviceFor(w http.ResponseWriter, r *http.Request) *store.Device
 }
 
 type deviceData struct {
-	D        *store.Device
-	Inv      *proto.Inventory
-	Online   bool
-	Now      time.Time
-	Software []proto.Software
-	SwQuery  string
+	Alerts    []store.Alert
+	Metrics   *proto.Metrics
+	MetricsAt *time.Time
+	Stopped   []string
+	D         *store.Device
+	Inv       *proto.Inventory
+	Online    bool
+	Now       time.Time
+	Software  []proto.Software
+	SwQuery   string
 }
 
 func (s *Server) handleDevice(w http.ResponseWriter, r *http.Request) {
@@ -69,6 +73,8 @@ func (s *Server) handleDevice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	dd := &deviceData{D: d, Inv: d.Inventory, Online: d.Online(s.now(), onlineWindow) && s.Connected(d.ID), Now: s.now()}
+	dd.Alerts, _ = s.store.Alerts(r.Context(), userFrom(r), store.AlertFilter{DeviceID: d.ID, Open: true})
+	dd.Metrics, dd.MetricsAt, dd.Stopped, _ = s.store.DeviceMetrics(r.Context(), d.ID)
 	if d.Inventory != nil {
 		q := strings.ToLower(strings.TrimSpace(r.FormValue("sw")))
 		dd.SwQuery = q

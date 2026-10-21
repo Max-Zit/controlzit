@@ -19,6 +19,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -178,6 +179,15 @@ func itoa(n int64) string { return strconv.FormatInt(n, 10) }
 // startAgent enrolls and runs an agent against the test server.
 func startAgent(t *testing.T, e *env) (*store.Device, context.CancelFunc) {
 	t.Helper()
+	return startAgentWith(t, e, nil)
+}
+
+// startAgentWith runs an agent whose metrics come from metrics (nil: empty).
+func startAgentWith(t *testing.T, e *env, metrics func(context.Context) *proto.Metrics) (*store.Device, context.CancelFunc) {
+	t.Helper()
+	if metrics == nil {
+		metrics = func(context.Context) *proto.Metrics { return &proto.Metrics{} }
+	}
 	agent.ProtectDir = func(string) error { return nil }
 	ctx := context.Background()
 	cust, _ := e.st.CreateCustomer(ctx, "Files Inc", "")
@@ -195,7 +205,7 @@ func startAgent(t *testing.T, e *env) (*store.Device, context.CancelFunc) {
 	runCtx, stop := context.WithCancel(ctx)
 	a := &agent.Agent{Dir: dir, Cfg: cfg, Log: slog.New(slog.NewTextHandler(io.Discard, nil)),
 		Info:    func() agent.SysInfo { return agent.SysInfo{OS: "Windows"} },
-		Collect: func(context.Context) *proto.Inventory { return &proto.Inventory{} }}
+		Collect: func(context.Context) *proto.Inventory { return &proto.Inventory{} }, Metrics: metrics}
 	go a.Run(runCtx)
 	waitFor(t, "agent channel", func() bool { return e.srv.Connected(cfg.DeviceID) })
 	d, _ := e.st.Device(ctx, cfg.DeviceID)
@@ -340,5 +350,60 @@ func TestCommandsNeedTheRightKey(t *testing.T) {
 	e.srv.CommandKey = key
 	if err := e.srv.CallForTest(context.Background(), d.ID, proto.KindFSDrives); err != nil {
 		t.Fatalf("command with the right key: %v", err)
+	}
+}
+
+func TestAlertsEndToEnd(t *testing.T) {
+	e := newEnv(t)
+	e.now = time.Now()
+	e.srv.SetClock(time.Now)
+	e.st.SetClock(time.Now)
+	_, key, _ := ed25519.GenerateKey(rand.Reader)
+	e.srv.CommandKey = key
+	var free atomic.Uint64
+	free.Store(1 << 30) // 1 GB of 100 GB: critical
+	d, stop := startAgentWith(t, e, func(context.Context) *proto.Metrics {
+		return &proto.Metrics{CPU: 10, MemTotal: 8 << 30, MemUsed: 2 << 30, StoppedAuto: []string{"Spooler"},
+			Disks: []proto.Disk{{Drive: "C:", Size: 100 << 30, Free: free.Load()}}}
+	})
+	defer stop()
+	ctx := context.Background()
+	waitFor(t, "first heartbeat with metrics", func() bool {
+		m, _, _, _ := e.st.DeviceMetrics(ctx, d.ID)
+		return m != nil
+	})
+	admin, _ := e.setupAdmin("192.168.1.10")
+	if r := admin.post("/settings/monitoring", "cpu_percent", "90", "cpu_minutes", "15", "mem_percent", "90", "mem_minutes", "15", "disk_percent", "90",
+		"disk_min_free_gb", "5", "offline_minutes", "15", "reboot_days", "7", "watch_services", "Spooler"); r.code != http.StatusSeeOther {
+		t.Fatalf("save monitoring: %d %s", r.code, r.body)
+	}
+	e.srv.CheckAlerts(ctx)
+	r := admin.get("/alerts")
+	if !strings.Contains(r.body, "Low disk space") || !strings.Contains(r.body, "Service stopped") || !strings.Contains(r.body, `class="navcount">2<`) {
+		t.Fatalf("alerts page: %s", r.body)
+	}
+	if r := admin.get("/devices/" + itoa(d.ID)); !strings.Contains(r.body, "Open alerts") || !strings.Contains(r.body, "Load now") {
+		t.Fatal("device page lacks alerts or load")
+	}
+	list, _ := e.st.Alerts(ctx, &store.User{Role: store.RoleAdmin}, store.AlertFilter{Open: true})
+	if r := admin.post("/alerts/"+itoa(list[0].ID)+"/ack", "back", "/alerts"); r.code != http.StatusSeeOther {
+		t.Fatalf("ack: %d", r.code)
+	}
+	if r := admin.get("/alerts"); !strings.Contains(r.body, "seen by admin") || !strings.Contains(r.body, `class="navcount">1<`) {
+		t.Fatal("acknowledged alert not shown as seen")
+	}
+	// The disk gets space: the next heartbeat and check resolve the alert.
+	free.Store(50 << 30)
+	stop()
+	time.Sleep(200 * time.Millisecond)
+	_ = e.st.SaveMetrics(ctx, d.ID, &proto.Metrics{Disks: []proto.Disk{{Drive: "C:", Size: 100 << 30, Free: 50 << 30}}, StoppedAuto: []string{}})
+	_ = e.st.AgentHeartbeat(ctx, d.ID, proto.Heartbeat{})
+	e.st.Pool().Exec(ctx, `UPDATE devices SET connected=true WHERE id=$1`, d.ID)
+	e.srv.CheckAlerts(ctx)
+	if open, _ := e.st.Alerts(ctx, &store.User{Role: store.RoleAdmin}, store.AlertFilter{Open: true}); len(open) != 0 {
+		t.Fatalf("alerts not resolved: %+v", open)
+	}
+	if r := admin.get("/alerts?all=1"); !strings.Contains(r.body, "Resolved") {
+		t.Fatal("resolved alerts not listed")
 	}
 }

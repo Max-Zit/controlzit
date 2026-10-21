@@ -1,0 +1,57 @@
+{{template "app" .}}
+{{define "content"}}
+<h1>{{.T "Settings"}}</h1>
+{{template "settingstabs" .}}
+{{$m := .Data.M}}
+<form method="post" action="/settings/monitoring" class="stack wide">
+  <section class="panel">
+    <h2>{{template "icon" "online"}}{{.T "Alert rules"}}</h2>
+    <p class="muted">{{.T "The server checks every device once a minute. An alert opens while its condition holds and closes by itself when it is gone."}}</p>
+    <div class="cols">
+      <label>{{.T "CPU load above (%)"}}<input type="number" name="cpu_percent" value="{{$m.CPUPercent}}" min="50" max="100" required></label>
+      <label>{{.T "for (minutes)"}}<input type="number" name="cpu_minutes" value="{{$m.CPUMinutes}}" min="2" max="240" required></label>
+      <label>{{.T "Memory use above (%)"}}<input type="number" name="mem_percent" value="{{$m.MemPercent}}" min="50" max="100" required></label>
+      <label>{{.T "for (minutes)"}}<input type="number" name="mem_minutes" value="{{$m.MemMinutes}}" min="2" max="240" required></label>
+    </div>
+    <div class="cols">
+      <label>{{.T "Disk used above (%)"}}<input type="number" name="disk_percent" value="{{$m.DiskPercent}}" min="50" max="100" required></label>
+      <label>{{.T "or less free than (GB)"}}<input type="number" name="disk_min_free_gb" value="{{$m.DiskMinFreeGB}}" min="0" max="10000" required></label>
+      <label>{{.T "Offline longer than (minutes)"}}<input type="number" name="offline_minutes" value="{{$m.OfflineMinutes}}" min="3" max="10080" required></label>
+      <label>{{.T "Restart pending and up longer than (days)"}}<input type="number" name="reboot_days" value="{{$m.RebootDays}}" min="0" max="365" required></label>
+    </div>
+    <label class="check"><input type="checkbox" name="defender_off" value="1" {{if $m.DefenderOff}}checked{{end}}>{{.T "Alert when Microsoft Defender antivirus or real-time protection is off"}}</label>
+    <label class="check"><input type="checkbox" name="firewall_off" value="1" {{if $m.FirewallOff}}checked{{end}}>{{.T "Alert when a Windows Firewall profile is off"}}</label>
+    <label>{{.T "Services that must run"}} <small>{{.T "optional"}}</small><textarea name="watch_services" rows="4" spellcheck="false" placeholder="Spooler&#10;MSSQLSERVER">{{.Data.Services}}</textarea><small>{{.T "Service names (not display names), one per line. An alert opens when one of them is set to start automatically but is not running."}}</small></label>
+  </section>
+  <section class="panel">
+    <h2>{{template "icon" "mail"}}{{.T "Alert emails"}}</h2>
+    <label class="check"><input type="checkbox" name="email_on_open" value="1" {{if $m.EmailOnOpen}}checked{{end}}>{{.T "Send an email when an alert opens"}}</label>
+    <label class="check"><input type="checkbox" name="email_on_resolve" value="1" {{if $m.EmailOnResolve}}checked{{end}}>{{.T "Also when it is resolved"}}</label>
+    <label>{{.T "Recipients"}}<textarea name="recipients" rows="3" spellcheck="false" placeholder="it@example.com">{{.Data.To}}</textarea><small>{{.T "One email address per line."}}</small></label>
+  </section>
+  <div><button class="primary">{{.T "Save"}}</button></div>
+</form>
+
+<section class="panel mt">
+  <h2>{{template "icon" "mail"}}{{.T "Email server (SMTP)"}}</h2>
+  <form method="post" action="/settings/email" class="stack">
+    <div class="cols">
+      <label>{{.T "SMTP server"}}<input name="host" value="{{.Data.E.Host}}" spellcheck="false" placeholder="smtp.example.com"></label>
+      <label>{{.T "Port"}}<input type="number" name="port" value="{{.Data.E.Port}}" min="1" max="65535"></label>
+      <label>{{.T "Connection security"}}<select name="security">
+        <option value="starttls" {{if eq .Data.E.Security "starttls"}}selected{{end}}>STARTTLS (587)</option>
+        <option value="tls" {{if eq .Data.E.Security "tls"}}selected{{end}}>TLS (465)</option>
+        <option value="none" {{if eq .Data.E.Security "none"}}selected{{end}}>{{.T "None (only inside your network)"}}</option>
+      </select></label>
+    </div>
+    <div class="cols">
+      <label>{{.T "Username"}} <small>{{.T "optional"}}</small><input name="username" value="{{.Data.E.Username}}" autocomplete="off" spellcheck="false"></label>
+      <label>{{.T "Password"}} <small>{{if .Data.HasPass}}{{.T "stored; leave empty to keep it"}}{{else}}{{.T "optional"}}{{end}}</small><input type="password" name="password" autocomplete="new-password"></label>
+      <label>{{.T "Sender"}}<input name="from" value="{{.Data.E.From}}" spellcheck="false" placeholder="ControlZit &lt;rmm@example.com&gt;"></label>
+    </div>
+    <p class="small muted">{{.T "Leave the SMTP server empty to switch emails off. The password is stored encrypted."}}</p>
+    <div class="row"><button class="primary">{{.T "Save"}}</button></div>
+  </form>
+  <form method="post" action="/settings/email/test" class="mt"><button class="secondary">{{template "icon" "mail"}}{{.T "Send a test email"}}</button> <small class="muted">{{.T "to the recipients of the alert emails"}}</small></form>
+</section>
+{{end}}
