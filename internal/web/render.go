@@ -135,6 +135,12 @@ var funcs = template.FuncMap{
 		return false
 	},
 	"join": strings.Join,
+	"u64": func(n int64) uint64 {
+		if n < 0 {
+			return 0
+		}
+		return uint64(n)
+	},
 	"roleForm": func(p *Page, role string, all bool, ids []int64, cs []store.Customer) roleForm {
 		return roleForm{P: p, Role: role, All: all, IDs: ids, Customers: cs}
 	},

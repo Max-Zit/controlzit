@@ -1,7 +1,15 @@
 package web_test
 
 import (
+	"bytes"
 	"context"
+	"crypto/ed25519"
+	"crypto/rand"
+	"mime/multipart"
+	"net/url"
+	"os"
+	"path/filepath"
+	"runtime"
 	"crypto/tls"
 	"io"
 	"log/slog"
@@ -164,3 +172,150 @@ func TestAgentEndpointRequiresClientCert(t *testing.T) {
 }
 
 func itoa(n int64) string { return strconv.FormatInt(n, 10) }
+
+// startAgent enrolls and runs an agent against the test server.
+func startAgent(t *testing.T, e *env) (*store.Device, context.CancelFunc) {
+	t.Helper()
+	agent.ProtectDir = func(string) error { return nil }
+	ctx := context.Background()
+	cust, _ := e.st.CreateCustomer(ctx, "Files Inc", "")
+	site, _ := e.st.CreateSite(ctx, cust, "HQ", "", "")
+	tok, _ := e.st.CreateEnrollToken(ctx, site, "", "admin", time.Hour, 1)
+	url, fp := agentServer(t, e)
+	dir := t.TempDir()
+	cfg, err := agent.Enroll(ctx, dir, url, fp, tok)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(cfg.CommandKey) != 32 {
+		t.Fatal("enrollment did not deliver the command key")
+	}
+	runCtx, stop := context.WithCancel(ctx)
+	a := &agent.Agent{Dir: dir, Cfg: cfg, Log: slog.New(slog.NewTextHandler(io.Discard, nil)),
+		Info:    func() agent.SysInfo { return agent.SysInfo{OS: "Windows"} },
+		Collect: func(context.Context) *proto.Inventory { return &proto.Inventory{} }}
+	go a.Run(runCtx)
+	waitFor(t, "agent channel", func() bool { return e.srv.Connected(cfg.DeviceID) })
+	d, _ := e.st.Device(ctx, cfg.DeviceID)
+	return d, stop
+}
+
+func TestFileManager(t *testing.T) {
+	if runtime.GOOS != "windows" {
+		t.Skip("the console builds Windows paths")
+	}
+	e := newEnv(t)
+	e.now = time.Now()
+	e.srv.SetClock(time.Now)
+	e.st.SetClock(time.Now)
+	_, key, _ := ed25519.GenerateKey(rand.Reader)
+	e.srv.CommandKey = key
+	d, stop := startAgent(t, e)
+	defer stop()
+	admin, _ := e.setupAdmin("192.168.1.10")
+	base := "/devices/" + itoa(d.ID) + "/files"
+	work := t.TempDir()
+	os.WriteFile(filepath.Join(work, "hello.txt"), []byte("hello from the agent"), 0o600)
+
+	r := admin.get(base)
+	if r.code != http.StatusOK || !strings.Contains(r.body, `class="drive"`) {
+		t.Fatalf("drives: %d", r.code)
+	}
+	r = admin.get(base + "?path=" + url.QueryEscape(work))
+	if r.code != http.StatusOK || !strings.Contains(r.body, "hello.txt") {
+		t.Fatalf("listing: %d %s", r.code, r.body)
+	}
+	r = admin.get(base + "/download?path=" + url.QueryEscape(filepath.Join(work, "hello.txt")))
+	if r.code != http.StatusOK || r.body != "hello from the agent" {
+		t.Fatalf("download: %d %q", r.code, r.body)
+	}
+
+	// Upload 2.5 MB (three chunks) through a multipart form.
+	payload := bytes.Repeat([]byte("0123456789"), 250000)
+	var mb bytes.Buffer
+	mw := multipart.NewWriter(&mb)
+	mw.WriteField("dir", work)
+	fw, _ := mw.CreateFormFile("file", "big.bin")
+	fw.Write(payload)
+	mw.Close()
+	req := httptest.NewRequest(http.MethodPost, "http://cz.test"+base+"/upload", &mb)
+	req.Header.Set("Content-Type", mw.FormDataContentType())
+	req.Header.Set("Origin", "http://cz.test")
+	req.RemoteAddr = admin.ip + ":1"
+	for k, v := range admin.cookies {
+		req.AddCookie(&http.Cookie{Name: k, Value: v})
+	}
+	w := httptest.NewRecorder()
+	e.h.ServeHTTP(w, req)
+	if w.Code != http.StatusSeeOther {
+		t.Fatalf("upload: %d", w.Code)
+	}
+	got, err := os.ReadFile(filepath.Join(work, "big.bin"))
+	if err != nil || !bytes.Equal(got, payload) {
+		t.Fatalf("uploaded file differs: %v", err)
+	}
+
+	if r := admin.post(base+"/mkdir", "dir", work, "name", "New"); r.code != http.StatusSeeOther {
+		t.Fatalf("mkdir: %d", r.code)
+	}
+	if r := admin.post(base+"/mkdir", "dir", work, "name", `..\evil`); r.code != http.StatusSeeOther {
+		t.Fatalf("bad name: %d", r.code)
+	}
+	if _, err := os.Stat(filepath.Join(filepath.Dir(work), "evil")); err == nil {
+		t.Fatal("folder created outside with a traversal name")
+	}
+	if r := admin.post(base+"/rename", "path", filepath.Join(work, "big.bin"), "name", "renamed.bin"); r.code != http.StatusSeeOther {
+		t.Fatalf("rename: %d", r.code)
+	}
+	if r := admin.post(base+"/delete", "path", filepath.Join(work, "renamed.bin")); r.code != http.StatusSeeOther {
+		t.Fatalf("delete: %d", r.code)
+	}
+	if _, err := os.Stat(filepath.Join(work, "renamed.bin")); err == nil {
+		t.Fatal("file not deleted")
+	}
+	if _, err := os.Stat(filepath.Join(work, "New")); err != nil {
+		t.Fatal("folder not created")
+	}
+
+	// A read-only user cannot use the file manager.
+	admin.post("/users", "username", "viewer", "password", "viewer password 1", "role", "readonly", "all_customers", "1")
+	v := e.client("192.168.1.31")
+	v.post("/login", "username", "viewer", "password", "viewer password 1")
+	sec := secretRE.FindStringSubmatch(v.get("/login/enroll").body)[1]
+	v.post("/login/enroll", "code", e.code(sec))
+	v.post("/account/password", "current", "viewer password 1", "password", "viewer password 22", "password2", "viewer password 22")
+	if r := v.get(base + "?path=" + url.QueryEscape(work)); r.code != http.StatusForbidden {
+		t.Fatalf("read-only user listed files: %d", r.code)
+	}
+
+	r = admin.get("/audit")
+	for _, want := range []string{"file.list", "file.download", "file.upload", "file.mkdir", "file.rename", "file.delete"} {
+		if !strings.Contains(r.body, want) {
+			t.Errorf("audit lacks %s", want)
+		}
+	}
+	stop()
+}
+
+func TestCommandsNeedTheRightKey(t *testing.T) {
+	e := newEnv(t)
+	e.now = time.Now()
+	e.srv.SetClock(time.Now)
+	e.st.SetClock(time.Now)
+	_, key, _ := ed25519.GenerateKey(rand.Reader)
+	e.srv.CommandKey = key
+	d, stop := startAgent(t, e)
+	defer stop()
+	// The server's key changes (e.g. a stolen database on another server):
+	// the agent refuses its commands.
+	_, other, _ := ed25519.GenerateKey(rand.Reader)
+	e.srv.CommandKey = other
+	err := e.srv.CallForTest(context.Background(), d.ID, proto.KindFSDrives)
+	if err == nil || !strings.Contains(err.Error(), "signature") {
+		t.Fatalf("command with a wrong key: %v", err)
+	}
+	e.srv.CommandKey = key
+	if err := e.srv.CallForTest(context.Background(), d.ID, proto.KindFSDrives); err != nil {
+		t.Fatalf("command with the right key: %v", err)
+	}
+}

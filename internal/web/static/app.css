@@ -237,3 +237,25 @@ progress.meter.bad::-moz-progress-bar { background: var(--bad); }
 .install pre { font-size: 12px; }
 .install h3 { font-size: 13.5px; margin: 16px 0 8px; }
 @media (max-width: 420px) { .cards2 { grid-template-columns: 1fr; } }
+
+/* ---- file manager */
+.h1-sub { font-size: 15px; font-weight: 500; }
+.crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: -6px 0 16px; font-weight: 500; }
+.crumbs span { color: var(--muted); }
+.crumbs .ic { width: 16px; height: 16px; margin-right: 4px; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; }
+details.pop { position: relative; }
+details.pop > summary { list-style: none; cursor: pointer; }
+details.pop > summary::-webkit-details-marker { display: none; }
+details.pop[open] > form, details.pop[open] > .pop-body { position: absolute; z-index: 15; top: calc(100% + 6px); left: 0; min-width: 300px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px; box-shadow: 0 10px 30px rgba(15, 23, 42, .18); }
+details.pop.right[open] > .pop-body { left: auto; right: 0; }
+.pop-body { display: grid; gap: 10px; text-align: left; }
+.pop-body form.row > input { flex: 1 1 140px; }
+table.files td.fname a { display: inline-flex; align-items: center; gap: 8px; color: var(--text); overflow-wrap: anywhere; }
+table.files td.fname .ic { color: var(--accent); flex: none; }
+tr.dim td { opacity: .6; }
+a.drive { display: block; color: var(--text); padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+a.drive + a.drive { margin-top: 10px; }
+a.drive:hover { text-decoration: none; border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.drive-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 6px; }
+.drive-head .ic { color: var(--accent); }

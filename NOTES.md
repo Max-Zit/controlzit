@@ -17,6 +17,7 @@ Local path: C:\Users\Mili\Ai\rmm
 - 2026-10-20: agent port and management console port MUST be separate listeners so the agent port can be isolated on the firewall; expose both (address/port, LAN-only, allowed IP ranges) as options in Settings.
 - 2026-10-20: feature order confirmed: 1 server skeleton, 2 agent/inventory, 3 monitoring/alerts, 4 remote actions, 5 patching, 6 remote desktop, 7 reports.
 - 2026-10-21: Stefan wants remote desktop "like TeamViewer" and a file manager that works without a desktop session. Proposed order: MSI → signed server commands → file manager → remote desktop → monitoring/alerts (confirm).
+- 2026-10-21: code must be original (no copied foreign code); dependencies only with AGPL-compatible licenses — current: pgx MIT, coder/websocket ISC, golang.org/x/{crypto,sys,image} BSD-3, rsc.io/qr BSD-3, embedded-postgres MIT (dev/tests only), go-winres (build tool), WiX 5 MS-RL (build tool). Make THIRD_PARTY_LICENSES before going public.
 - Brand: same design as BackupZit/MaxZit (indigo square, white line symbol, Inter SemiBold, "Zit" in indigo). brandgen got a `controlzit [a|b|c]` mode (maxzit-brand/tools/brandgen/controlzit.go).
 
 ## Open questions for Stefan

@@ -6,6 +6,7 @@ import (
 	"context"
 	"os"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/max-zit/controlzit/internal/proto"
@@ -22,3 +23,13 @@ func CollectInventory(ctx context.Context) *proto.Inventory {
 }
 
 func markEnrolled(bool) {}
+
+const isWindows = false
+
+func hidden(fi os.FileInfo) bool { return strings.HasPrefix(fi.Name(), ".") }
+
+func systemFolders() []string {
+	return []string{"/bin", "/boot", "/etc", "/lib", "/usr", "/var", "/proc", "/sys", "/dev"}
+}
+
+func drives() ([]proto.FSDrive, error) { return []proto.FSDrive{{Path: "/", Type: "fixed"}}, nil }

@@ -8,6 +8,7 @@ package tlsutil
 
 import (
 	"crypto/ecdsa"
+	"crypto/ed25519"
 	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/sha256"
@@ -17,6 +18,7 @@ import (
 	"encoding/hex"
 	"encoding/pem"
 	"errors"
+	"fmt"
 	"math/big"
 	"net"
 	"os"
@@ -125,4 +127,40 @@ func AgentServerConfig(c tls.Certificate) *tls.Config {
 	cfg := ServerConfig(c)
 	cfg.ClientAuth = tls.RequestClientCert
 	return cfg
+}
+
+// LoadOrCreateEd25519 returns the ed25519 key in path (PKCS#8 PEM),
+// creating it once. The server signs agent commands with it.
+func LoadOrCreateEd25519(path string) (ed25519.PrivateKey, error) {
+	b, err := os.ReadFile(path) // #nosec G304 -- path under the data directory
+	if err == nil {
+		blk, _ := pem.Decode(b)
+		if blk == nil {
+			return nil, fmt.Errorf("%s is damaged", path)
+		}
+		k, err := x509.ParsePKCS8PrivateKey(blk.Bytes)
+		if err != nil {
+			return nil, err
+		}
+		ek, ok := k.(ed25519.PrivateKey)
+		if !ok {
+			return nil, fmt.Errorf("%s is not an ed25519 key", path)
+		}
+		return ek, nil
+	}
+	if !errors.Is(err, os.ErrNotExist) {
+		return nil, err
+	}
+	_, priv, err := ed25519.GenerateKey(rand.Reader)
+	if err != nil {
+		return nil, err
+	}
+	der, err := x509.MarshalPKCS8PrivateKey(priv)
+	if err != nil {
+		return nil, err
+	}
+	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+		return nil, err
+	}
+	return priv, os.WriteFile(path, pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: der}), 0o600)
 }

@@ -80,6 +80,7 @@
 <section class="panel">
   <h2>{{.T "Actions"}}</h2>
   <div class="row">
+    <a class="btn secondary" href="/devices/{{$d.ID}}/files">{{template "icon" "folder"}}{{.T "Files"}}</a>
     <form method="post" action="/devices/{{$d.ID}}/refresh"><button class="secondary" {{if not .Data.Online}}disabled{{end}}>{{.T "Refresh inventory"}}</button></form>
     <form method="post" action="/devices/{{$d.ID}}/delete" data-confirm="{{.T "Remove this device? Its agent can no longer connect until it is enrolled again."}}"><button class="danger">{{template "icon" "trash"}}{{.T "Remove device"}}</button></form>
   </div>

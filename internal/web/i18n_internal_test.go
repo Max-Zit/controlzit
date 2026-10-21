@@ -1,6 +1,8 @@
 package web
 
 import (
+	"bytes"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -74,5 +76,30 @@ func TestTemplatesParse(t *testing.T) {
 	}
 	if len(m) < 15 {
 		t.Fatalf("only %d pages", len(m))
+	}
+}
+
+func TestCatalogNoDuplicateKeys(t *testing.T) {
+	raw, err := i18nFS.ReadFile("i18n/sr.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	d := json.NewDecoder(bytes.NewReader(raw))
+	if _, err := d.Token(); err != nil { // {
+		t.Fatal(err)
+	}
+	seen := map[string]bool{}
+	for d.More() {
+		k, err := d.Token()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if seen[k.(string)] {
+			t.Errorf("duplicate key %q", k)
+		}
+		seen[k.(string)] = true
+		if _, err := d.Token(); err != nil { // value
+			t.Fatal(err)
+		}
 	}
 }

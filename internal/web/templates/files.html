@@ -1,0 +1,63 @@
+{{template "app" .}}
+{{define "content"}}
+{{$d := .Data.D}}
+<p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a> / <a href="/devices/{{$d.ID}}">{{$d.Hostname}}</a></p>
+<h1>{{template "icon" "folder"}}{{.T "Files"}} <span class="muted h1-sub">{{$d.Hostname}}</span></h1>
+
+<nav class="crumbs" aria-label="{{.T "Path"}}">
+  <a href="/devices/{{$d.ID}}/files">{{template "icon" "devices"}}{{.T "This computer"}}</a>
+  {{range .Data.Crumbs}}<span>›</span><a href="/devices/{{$d.ID}}/files?path={{$.Data.Q .Path}}">{{.Name}}</a>{{end}}
+</nav>
+
+{{if .Data.Err}}<div class="flash err" role="alert">{{template "icon" "alert"}}<span>{{.Data.Err}}</span></div>{{end}}
+
+{{if .Data.Drives}}
+<section class="panel">
+  <h2>{{.T "Drives"}}</h2>
+  {{range .Data.Drives}}<a class="drive" href="/devices/{{$d.ID}}/files?path={{$.Data.Q .Path}}">
+    <span class="drive-head">{{template "icon" "disk"}}<b>{{.Path}}</b> <span class="muted">{{.Label}}</span> <span class="badge">{{$.T .Type}}</span>{{if .Size}}<span class="disk-free">{{$.T "%s free of %s" ($.Bytes .Free) ($.Bytes .Size)}}</span>{{end}}</span>
+    {{if .Size}}<progress class="meter {{if ge ($.Percent .Free .Size) 90}}bad{{else if ge ($.Percent .Free .Size) 80}}warn{{end}}" max="100" value="{{$.Percent .Free .Size}}">{{$.Percent .Free .Size}} %</progress>{{end}}
+  </a>{{end}}
+</section>
+{{end}}
+
+{{with .Data.List}}
+<section class="panel">
+  <div class="toolbar">
+    {{if $.Data.Parent}}<a class="btn secondary sm" href="/devices/{{$d.ID}}/files?path={{$.Data.Q $.Data.Parent}}">↑ {{$.T "Up"}}</a>{{else}}<a class="btn secondary sm" href="/devices/{{$d.ID}}/files">↑ {{$.T "Drives"}}</a>{{end}}
+    <details class="pop"><summary class="btn secondary sm">{{template "icon" "plus"}}{{$.T "New folder"}}</summary>
+      <form method="post" action="/devices/{{$d.ID}}/files/mkdir" class="row"><input type="hidden" name="dir" value="{{.Path}}"><input name="name" required maxlength="255" aria-label="{{$.T "Folder name"}}" placeholder="{{$.T "Folder name"}}"><button class="primary sm">{{$.T "Create"}}</button></form>
+    </details>
+    <details class="pop"><summary class="btn secondary sm">{{template "icon" "upload"}}{{$.T "Upload file"}}</summary>
+      <form method="post" action="/devices/{{$d.ID}}/files/upload" enctype="multipart/form-data" class="stack">
+        <input type="hidden" name="dir" value="{{.Path}}">
+        <input type="file" name="file" required aria-label="{{$.T "File"}}">
+        <label class="check"><input type="checkbox" name="overwrite" value="1">{{$.T "Replace a file with the same name"}}</label>
+        <div><button class="primary sm">{{$.T "Upload"}}</button> <small class="muted">{{$.T "up to 4 GB"}}</small></div>
+      </form>
+    </details>
+  </div>
+  {{if .Truncated}}<p class="small muted">{{$.T "Only the first 5000 entries are shown."}}</p>{{end}}
+  {{if .Entries}}
+  <div class="table-wrap mt"><table class="files">
+    <thead><tr><th>{{$.T "Name"}}</th><th class="num">{{$.T "Size"}}</th><th class="hide-sm">{{$.T "Modified"}}</th><th></th></tr></thead>
+    <tbody>{{range .Entries}}{{$p := $.Data.Join .Name}}<tr{{if .Hidden}} class="dim"{{end}}>
+      <td class="fname">{{if .Dir}}<a href="/devices/{{$d.ID}}/files?path={{$.Data.Q $p}}">{{template "icon" "folder"}}{{.Name}}</a>{{else}}<a href="/devices/{{$d.ID}}/files/download?path={{$.Data.Q $p}}" title="{{$.T "Download"}}">{{template "icon" "file"}}{{.Name}}</a>{{end}}</td>
+      <td class="num muted">{{if not .Dir}}{{$.Bytes (u64 .Size)}}{{end}}</td>
+      <td class="hide-sm muted nowrap">{{$.Time .Modified}}</td>
+      <td class="actions">
+        <details class="pop right"><summary class="ghost sm" aria-label="{{$.T "Actions"}}">⋯</summary>
+          <div class="pop-body">
+            {{if not .Dir}}<a class="btn secondary sm" href="/devices/{{$d.ID}}/files/download?path={{$.Data.Q $p}}">{{template "icon" "download"}}{{$.T "Download"}}</a>{{end}}
+            <form method="post" action="/devices/{{$d.ID}}/files/rename" class="row"><input type="hidden" name="path" value="{{$p}}"><input name="name" value="{{.Name}}" required maxlength="255" aria-label="{{$.T "New name"}}"><button class="secondary sm">{{$.T "Rename"}}</button></form>
+            <form method="post" action="/devices/{{$d.ID}}/files/delete" data-confirm="{{$.T "Delete this permanently from the computer?"}}"><input type="hidden" name="path" value="{{$p}}">{{if .Dir}}<input type="hidden" name="recursive" value="1">{{end}}<button class="danger sm">{{template "icon" "trash"}}{{if .Dir}}{{$.T "Delete folder and its contents"}}{{else}}{{$.T "Delete"}}{{end}}</button></form>
+          </div>
+        </details>
+      </td>
+    </tr>{{end}}</tbody>
+  </table></div>
+  {{else}}<p class="muted mt">{{$.T "This folder is empty."}}</p>{{end}}
+</section>
+{{end}}
+<p class="small muted">{{.T "Every file operation is done by the agent as SYSTEM and written to the audit log with your name."}}</p>
+{{end}}

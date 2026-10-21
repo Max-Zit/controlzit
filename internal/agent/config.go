@@ -37,6 +37,8 @@ type Config struct {
 	Customer    string    `json:"customer"`
 	Site        string    `json:"site"`
 	EnrolledAt  time.Time `json:"enrolled_at"`
+	// CommandKey is the server's ed25519 key; only commands signed with it run.
+	CommandKey []byte `json:"command_key,omitempty"`
 }
 
 // Files in the data directory.

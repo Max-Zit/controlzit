@@ -155,6 +155,9 @@ func run() error {
 		return fmt.Errorf("console certificate: %w", err)
 	}
 	srv.AgentFingerprint = tlsutil.Fingerprint(agentCert)
+	if srv.CommandKey, err = tlsutil.LoadOrCreateEd25519(filepath.Join(tlsDir, "command.key")); err != nil {
+		return fmt.Errorf("command key: %w", err)
+	}
 
 	if n, err := st.UserCount(ctx); err != nil {
 		return err

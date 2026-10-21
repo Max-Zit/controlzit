@@ -60,10 +60,3 @@ func CollectInventory(ctx context.Context) *proto.Inventory {
 	}
 	return inv
 }
-
-func trim(s string, n int) string {
-	if len(s) > n {
-		return s[:n] + "…"
-	}
-	return s
-}

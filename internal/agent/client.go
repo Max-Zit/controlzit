@@ -113,7 +113,7 @@ func Enroll(ctx context.Context, dir, serverURL, fingerprint, token string) (*Co
 		return nil, errors.New("unexpected answer from the server")
 	}
 	c := &Config{ServerURL: serverURL, Fingerprint: fingerprint, AgentID: er.AgentID, DeviceID: er.DeviceID,
-		Customer: er.Customer, Site: er.Site, EnrolledAt: time.Now().UTC()}
+		Customer: er.Customer, Site: er.Site, EnrolledAt: time.Now().UTC(), CommandKey: er.CommandKey}
 	if err := c.Save(dir); err != nil {
 		return nil, err
 	}
@@ -302,9 +302,15 @@ func (a *Agent) session(ctx context.Context) error {
 					if w.InventoryHours >= 1 && w.InventoryHours <= 24*7 {
 						inventoryEvery = time.Duration(w.InventoryHours) * time.Hour
 					}
+					a.learnCommandKey(w.CommandKey)
 				}
 			case proto.TypeInventoryRequest:
 				collect()
+			case proto.TypeCommand:
+				var sc proto.SignedCommand
+				if json.Unmarshal(env.Data, &sc) == nil {
+					go a.runCommand(sctx, ws, sc)
+				}
 			}
 		case <-heartbeat.C:
 			si := a.Info()

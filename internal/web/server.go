@@ -6,6 +6,7 @@ package web
 
 import (
 	"context"
+	"crypto/ed25519"
 	"errors"
 	"fmt"
 	"html/template"
@@ -54,7 +55,9 @@ type Server struct {
 	DevNo2FA bool
 	// DownloadsDir holds the agent installer offered in the console.
 	DownloadsDir string
-	setupToken   string
+	// CommandKey signs every command to agents.
+	CommandKey ed25519.PrivateKey
+	setupToken string
 }
 
 // New creates the server; network settings are loaded from the database.
@@ -281,6 +284,12 @@ func (s *Server) Handler() http.Handler {
 	app("GET /downloads/"+AgentMSIName, s.handleAgentMSI)
 	app("GET /devices", s.handleDevices)
 	app("GET /devices/{id}", s.handleDevice)
+	app("GET /devices/{id}/files", s.handleFiles)
+	app("GET /devices/{id}/files/download", s.handleFileDownload)
+	app("POST /devices/{id}/files/upload", s.handleFileUpload)
+	app("POST /devices/{id}/files/mkdir", s.handleFileMkdir)
+	app("POST /devices/{id}/files/rename", s.handleFileRename)
+	app("POST /devices/{id}/files/delete", s.handleFileDelete)
 	app("POST /devices/{id}/refresh", s.handleDeviceRefresh)
 	app("POST /devices/{id}/delete", s.handleDeviceDelete)
 	app("GET /account", s.handleAccount)

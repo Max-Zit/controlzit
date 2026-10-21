@@ -38,6 +38,8 @@ const (
 	TypeHeartbeat        = "heartbeat"         // agent → server
 	TypeInventory        = "inventory"         // agent → server
 	TypeInventoryRequest = "inventory.request" // server → agent
+	TypeCommand          = "cmd"               // server → agent, a signed Command
+	TypeResult           = "result"            // agent → server, answer to a command
 )
 
 // Limits.
@@ -61,6 +63,9 @@ type EnrollResponse struct {
 	DeviceID int64  `json:"device_id"`
 	Customer string `json:"customer"`
 	Site     string `json:"site"`
+	// CommandKey is the server's ed25519 public key; the agent accepts only
+	// commands signed with it.
+	CommandKey []byte `json:"command_key"`
 }
 
 // Error is the JSON body of a failed agent request.
@@ -91,6 +96,8 @@ type Welcome struct {
 	DeviceID         int64 `json:"device_id"`
 	HeartbeatSeconds int   `json:"heartbeat_seconds"`
 	InventoryHours   int   `json:"inventory_hours"`
+	// CommandKey is sent to agents enrolled before command signing existed.
+	CommandKey []byte `json:"command_key,omitempty"`
 }
 
 // Heartbeat is the periodic sign of life.

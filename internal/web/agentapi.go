@@ -13,6 +13,7 @@ import (
 
 	"github.com/coder/websocket"
 
+	"github.com/max-zit/controlzit/internal/auth"
 	"github.com/max-zit/controlzit/internal/proto"
 	"github.com/max-zit/controlzit/internal/store"
 )
@@ -33,8 +34,82 @@ type hub struct {
 
 type agentConn struct {
 	deviceID int64
+	agentID  string
 	ws       *websocket.Conn
 	cancel   context.CancelFunc
+
+	mu      sync.Mutex
+	pending map[string]chan proto.Result
+}
+
+// ErrOffline is returned for commands to a device without a channel.
+var ErrOffline = errors.New("the device is offline")
+
+// call sends a signed command and waits for its result.
+func (s *Server) call(ctx context.Context, deviceID int64, issuer, kind string, args, out any, timeout time.Duration) error {
+	c := s.hub.get(deviceID)
+	if c == nil {
+		return ErrOffline
+	}
+	if s.CommandKey == nil {
+		return errors.New("the server has no command key")
+	}
+	raw, err := json.Marshal(args)
+	if err != nil {
+		return err
+	}
+	now := s.now()
+	cmd := proto.Command{ID: auth.RandomToken(12), AgentID: c.agentID, Kind: kind, Args: raw, IssuedAt: now, Expires: now.Add(timeout), Issuer: issuer}
+	sc, err := proto.Sign(s.CommandKey, cmd)
+	if err != nil {
+		return err
+	}
+	ch := make(chan proto.Result, 1)
+	c.mu.Lock()
+	c.pending[cmd.ID] = ch
+	c.mu.Unlock()
+	defer func() {
+		c.mu.Lock()
+		delete(c.pending, cmd.ID)
+		c.mu.Unlock()
+	}()
+	if err := send(ctx, c.ws, proto.TypeCommand, sc); err != nil {
+		return ErrOffline
+	}
+	tctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+	select {
+	case res := <-ch:
+		if res.Error != "" {
+			return &AgentError{Msg: res.Error}
+		}
+		if out != nil && len(res.Data) > 0 {
+			return json.Unmarshal(res.Data, out)
+		}
+		return nil
+	case <-tctx.Done():
+		if s.hub.get(deviceID) != c {
+			return ErrOffline
+		}
+		return errors.New("the device did not answer in time")
+	}
+}
+
+// AgentError is an error reported by the agent (file not found, access denied …).
+type AgentError struct{ Msg string }
+
+func (e *AgentError) Error() string { return e.Msg }
+
+func (c *agentConn) deliver(res proto.Result) {
+	c.mu.Lock()
+	ch := c.pending[res.ID]
+	c.mu.Unlock()
+	if ch != nil {
+		select {
+		case ch <- res:
+		default:
+		}
+	}
 }
 
 func newHub() *hub { return &hub{conns: map[int64]*agentConn{}} }
@@ -157,7 +232,7 @@ func (s *Server) handleAgentEnroll(w http.ResponseWriter, r *http.Request) {
 	s.auditAs(r, "agent", "device.enroll", "device:"+strconv.FormatInt(d.ID, 10), "%q enrolled into site %q of %q (agent %s, %s)", d.Hostname, d.Site, d.Customer, req.AgentVersion, req.OS)
 	s.log.Info("device enrolled", "device", d.ID, "hostname", d.Hostname, "site", d.Site, "ip", ip)
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(proto.EnrollResponse{AgentID: d.AgentID, DeviceID: d.ID, Customer: d.Customer, Site: d.Site})
+	_ = json.NewEncoder(w).Encode(proto.EnrollResponse{AgentID: d.AgentID, DeviceID: d.ID, Customer: d.Customer, Site: d.Site, CommandKey: s.commandPub()})
 }
 
 func (s *Server) handleConnect(w http.ResponseWriter, r *http.Request) {
@@ -181,7 +256,7 @@ func (s *Server) handleConnect(w http.ResponseWriter, r *http.Request) {
 	}
 	ws.SetReadLimit(proto.MaxMessageSize)
 	ctx, cancel := context.WithCancel(context.Background())
-	c := &agentConn{deviceID: d.ID, ws: ws, cancel: cancel}
+	c := &agentConn{deviceID: d.ID, agentID: d.AgentID, ws: ws, cancel: cancel, pending: map[string]chan proto.Result{}}
 	s.hub.add(c)
 	ip := clientIP(r)
 	defer func() {
@@ -224,13 +299,20 @@ func (s *Server) agentMessage(ctx context.Context, c *agentConn, d *store.Device
 		if err := s.store.AgentSeen(ctx, d.ID, &h, ip); err != nil {
 			return err
 		}
-		return send(ctx, c.ws, proto.TypeWelcome, proto.Welcome{DeviceID: d.ID, HeartbeatSeconds: heartbeatSeconds, InventoryHours: inventoryHours})
+		return send(ctx, c.ws, proto.TypeWelcome, proto.Welcome{DeviceID: d.ID, HeartbeatSeconds: heartbeatSeconds, InventoryHours: inventoryHours, CommandKey: s.commandPub()})
 	case proto.TypeHeartbeat:
 		var hb proto.Heartbeat
 		if err := json.Unmarshal(env.Data, &hb); err != nil {
 			return err
 		}
 		return s.store.AgentHeartbeat(ctx, d.ID, hb)
+	case proto.TypeResult:
+		var res proto.Result
+		if err := json.Unmarshal(env.Data, &res); err != nil {
+			return err
+		}
+		c.deliver(res)
+		return nil
 	case proto.TypeInventory:
 		var inv proto.Inventory
 		if err := json.Unmarshal(env.Data, &inv); err != nil {
@@ -245,4 +327,11 @@ func (s *Server) agentMessage(ctx context.Context, c *agentConn, d *store.Device
 		return s.store.SaveInventory(ctx, d.ID, &inv)
 	}
 	return errors.New("unknown message type " + strconv.Quote(env.Type))
+}
+
+func (s *Server) commandPub() []byte {
+	if s.CommandKey == nil {
+		return nil
+	}
+	return s.CommandKey.Public().(ed25519.PublicKey)
 }

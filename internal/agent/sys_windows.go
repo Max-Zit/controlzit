@@ -4,6 +4,8 @@ package agent
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 	"syscall"
 	"time"
@@ -11,6 +13,8 @@ import (
 
 	"golang.org/x/sys/windows"
 	"golang.org/x/sys/windows/registry"
+
+	"github.com/max-zit/controlzit/internal/proto"
 )
 
 // protectDir gives only SYSTEM and Administrators access (no inherited
@@ -140,4 +144,50 @@ func markEnrolled(on bool) {
 	}
 	defer k.Close()
 	_ = k.SetStringValue("Enrolled", "1")
+}
+
+const isWindows = true
+
+func hidden(fi os.FileInfo) bool {
+	if a, ok := fi.Sys().(*syscall.Win32FileAttributeData); ok {
+		return a.FileAttributes&(windows.FILE_ATTRIBUTE_HIDDEN|windows.FILE_ATTRIBUTE_SYSTEM) != 0
+	}
+	return false
+}
+
+func systemFolders() []string {
+	return []string{os.Getenv("SystemRoot"), os.Getenv("ProgramFiles"), os.Getenv("ProgramFiles(x86)"), os.Getenv("ProgramData"),
+		filepath.Join(os.Getenv("SystemDrive")+`\`, "Users")}
+}
+
+// drives lists the drive letters with type, label and space.
+func drives() ([]proto.FSDrive, error) {
+	mask, err := windows.GetLogicalDrives()
+	if err != nil {
+		return nil, err
+	}
+	types := map[uint32]string{windows.DRIVE_REMOVABLE: "removable", windows.DRIVE_FIXED: "fixed", windows.DRIVE_REMOTE: "network",
+		windows.DRIVE_CDROM: "cdrom", windows.DRIVE_RAMDISK: "ramdisk"}
+	var out []proto.FSDrive
+	for i := 0; i < 26; i++ {
+		if mask&(1<<uint(i)) == 0 {
+			continue
+		}
+		root := string(rune('A'+i)) + `:\`
+		r16, _ := windows.UTF16PtrFromString(root)
+		d := proto.FSDrive{Path: root, Type: types[windows.GetDriveType(r16)]}
+		if d.Type == "" {
+			d.Type = "other"
+		}
+		var label [261]uint16
+		if windows.GetVolumeInformation(r16, &label[0], uint32(len(label)), nil, nil, nil, nil, 0) == nil {
+			d.Label = windows.UTF16ToString(label[:])
+		}
+		var free, total uint64
+		if windows.GetDiskFreeSpaceEx(r16, nil, &total, &free) == nil {
+			d.Size, d.Free = total, free
+		}
+		out = append(out, d)
+	}
+	return out, nil
 }
