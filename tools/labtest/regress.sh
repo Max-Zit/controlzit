@@ -1,5 +1,5 @@
 #!/bin/bash
-# Usage: DEV=<device id> bash tools/labtest/regress.sh  (credentials from .devdata/lab-server.txt; needs the lab, see NOTES.md)
+# Usage: DEV=<device id> VER=<agent version> bash tools/labtest/regress.sh  (credentials from .devdata/lab-server.txt; needs the lab, see NOTES.md)
 # Lab regression of ControlZit against the lab server (CT 9600) and bz-win11.
 cd /c/Users/Mili/Ai/rmm || exit 1
 S=https://192.168.101.179:8443
@@ -32,7 +32,7 @@ check "audit chain intact" '$C $S/audit | grep -q "is intact"'
 # --- device
 D=$($C $S/devices/$DEV)
 check "device online" 'echo "$D" | grep -q "badge ok\"><i></i>Online"'
-check "agent 0.2.0 reported" 'echo "$D" | grep -q "0.2.0"'
+check "agent ${VER:-0.2.0} reported" 'echo "$D" | grep -q "${VER:-0.2.0}"'
 check "inventory software listed" 'echo "$D" | grep -q "Microsoft Edge"'
 check "load panel" 'echo "$D" | grep -q "Load now"'
 check "refresh inventory" '[ "$($C -o /dev/null -w %{http_code} -X POST $S/devices/$DEV/refresh)" = 303 ]'

@@ -25,6 +25,8 @@ type RDStart struct {
 	Session    string `json:"session"`
 	Token      string `json:"token"`
 	Technician string `json:"technician"`
+	// NoNotice: do not show the notice on the remote screen (setting).
+	NoNotice bool `json:"no_notice,omitempty"`
 }
 
 // Binary messages from the helper start with one of these bytes.

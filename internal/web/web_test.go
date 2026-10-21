@@ -430,3 +430,28 @@ func TestDevNo2FA(t *testing.T) {
 		t.Fatalf("dev mode banner missing: %d", r.code)
 	}
 }
+
+func TestRemoteNoticeSetting(t *testing.T) {
+	e := newEnv(t)
+	admin, _ := e.setupAdmin("192.168.1.10")
+	ctx := context.Background()
+	if !e.srv.Remote(ctx).ShowNotice {
+		t.Fatal("the notice must be on by default")
+	}
+	if r := admin.get("/settings/remote"); r.code != http.StatusOK || !strings.Contains(r.body, `name="show_notice" value="1" checked`) {
+		t.Fatalf("settings page: %d", r.code)
+	}
+	if r := admin.post("/settings/remote"); r.code != http.StatusSeeOther {
+		t.Fatalf("save: %d", r.code)
+	}
+	if e.srv.Remote(ctx).ShowNotice {
+		t.Fatal("notice still on after switching it off")
+	}
+	if r := admin.get("/audit"); !strings.Contains(r.body, "settings.remote") {
+		t.Fatal("setting change not audited")
+	}
+	admin.post("/settings/remote", "show_notice", "1")
+	if !e.srv.Remote(ctx).ShowNotice {
+		t.Fatal("notice not switched on again")
+	}
+}

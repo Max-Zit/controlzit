@@ -20,6 +20,6 @@
     <canvas id="rd-canvas" tabindex="0" width="1280" height="720" aria-label="{{.T "Remote screen"}}"></canvas>
   </div>
 </div>
-<p class="small muted">{{.T "The person at the computer sees a notice that you are connected. Click the screen to type; keys go to the remote computer with its own keyboard layout. The session is written to the audit log."}}</p>
+<p class="small muted">{{if .Data.Notice}}{{.T "The person at the computer sees a notice that you are connected."}}{{else}}{{.T "The notice on the remote screen is switched off in the settings."}}{{end}} {{.T "Click the screen to type; keys go to the remote computer with its own keyboard layout. The session is written to the audit log."}}</p>
 <script src="/static/rd.js?v={{.Asset}}" defer></script>
 {{end}}

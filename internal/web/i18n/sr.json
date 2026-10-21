@@ -477,5 +477,10 @@
   "See and control the screen": "Pogled i upravljanje ekranom",
   "Without connecting to the screen": "Bez povezivanja na ekran",
   "Download as ZIP": "Preuzmi kao ZIP",
-  "Download this folder (ZIP)": "Preuzmi ovaj folder (ZIP)"
+  "Download this folder (ZIP)": "Preuzmi ovaj folder (ZIP)",
+  "Show a notice on the remote screen while a technician is connected": "Prikaži obaveštenje na udaljenom ekranu dok je tehničar povezan",
+  "The notice is a bar at the top of the screen with the technician's name; the technician does not see it in the picture. Switching it off applies to new sessions. Every session is written to the audit log either way.": "Obaveštenje je traka na vrhu ekrana sa imenom tehničara; tehničar je ne vidi na slici. Isključivanje važi za nove sesije. Svaka sesija se u svakom slučaju upisuje u dnevnik aktivnosti.",
+  "The person at the computer sees a notice that you are connected.": "Osoba za računarom vidi obaveštenje da ste povezani.",
+  "The notice on the remote screen is switched off in the settings.": "Obaveštenje na udaljenom ekranu je isključeno u podešavanjima.",
+  "Click the screen to type; keys go to the remote computer with its own keyboard layout. The session is written to the audit log.": "Kliknite na ekran da biste kucali; tasteri idu udaljenom računaru, sa njegovim rasporedom tastature. Sesija se upisuje u dnevnik aktivnosti."
 }

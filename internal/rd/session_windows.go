@@ -24,11 +24,21 @@ const (
 )
 
 // Serve streams the screen over ws and replays the input it receives,
-// until the connection ends. It shows the notice while connected.
-func Serve(ctx context.Context, ws *websocket.Conn, technician string, log *slog.Logger) error {
+// until the connection ends. Unless the console setting switched it off, it
+// shows the notice while connected.
+func Serve(ctx context.Context, ws *websocket.Conn, technician string, notice bool, log *slog.Logger) error {
 	setDPIAware()
-	banner := ShowBanner("ControlZit: " + technician + " is connected to this computer")
-	defer banner.Close()
+	if notice {
+		banner := ShowBanner("ControlZit: " + technician + " is connected to this computer")
+		defer banner.Close()
+		if banner.hwnd == 0 {
+			log.Error("the on-screen notice could not be shown", "err", banner.Err)
+		} else {
+			log.Info("on-screen notice shown", "warnings", banner.Err)
+		}
+	} else {
+		log.Info("on-screen notice switched off in the console settings")
+	}
 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()

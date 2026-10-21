@@ -65,6 +65,7 @@ func (h *rdHub) remove(id string) {
 type rdData struct {
 	D      *store.Device
 	Online bool
+	Notice bool
 }
 
 // handleRD is the viewer page.
@@ -73,7 +74,7 @@ func (s *Server) handleRD(w http.ResponseWriter, r *http.Request) {
 	if d == nil {
 		return
 	}
-	s.render(w, r, http.StatusOK, "rd", &Page{Title: d.Hostname, Nav: "devices", Data: &rdData{D: d, Online: s.Connected(d.ID)}})
+	s.render(w, r, http.StatusOK, "rd", &Page{Title: d.Hostname, Nav: "devices", Data: &rdData{D: d, Online: s.Connected(d.ID), Notice: s.Remote(r.Context()).ShowNotice}})
 }
 
 // handleRDSocket is the browser side of a session.
@@ -108,7 +109,7 @@ func (s *Server) handleRDSocket(w http.ResponseWriter, r *http.Request) {
 	if name == "" {
 		name = u.Username
 	}
-	if err := s.call(ctx, d.ID, u.Username, proto.KindRDStart, proto.RDStart{Session: sess.id, Token: sess.token, Technician: name}, nil, rdStartTimeout); err != nil {
+	if err := s.call(ctx, d.ID, u.Username, proto.KindRDStart, proto.RDStart{Session: sess.id, Token: sess.token, Technician: name, NoNotice: !s.Remote(ctx).ShowNotice}, nil, rdStartTimeout); err != nil {
 		s.log.Warn("remote desktop start failed", "device", d.ID, "err", err)
 		fail(err.Error())
 		return
@@ -122,7 +123,7 @@ func (s *Server) handleRDSocket(w http.ResponseWriter, r *http.Request) {
 	}
 	defer aws.CloseNow()
 	start := s.now()
-	s.audit(r, "rd.start", "device:"+strconv.FormatInt(d.ID, 10), "remote desktop session %s to %q started", sess.id, d.Hostname)
+	s.audit(r, "rd.start", "device:"+strconv.FormatInt(d.ID, 10), "remote desktop session %s to %q started (notice on screen: %v)", sess.id, d.Hostname, s.Remote(ctx).ShowNotice)
 	s.log.Info("remote desktop session started", "device", d.ID, "user", u.Username, "session", sess.id)
 
 	var bytesDown atomic.Int64

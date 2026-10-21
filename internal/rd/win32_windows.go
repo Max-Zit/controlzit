@@ -121,3 +121,5 @@ func setDPIAware() {
 	}
 	_, _, _ = pSetProcessDPIAware.Call()
 }
+
+var pGetModuleHandle = windows.NewLazySystemDLL("kernel32.dll").NewProc("GetModuleHandleW")

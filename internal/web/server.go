@@ -315,6 +315,8 @@ func (s *Server) Handler() http.Handler {
 	admin("GET /settings/network", s.handleNetwork)
 	admin("POST /settings/network", s.handleNetworkSave)
 	admin("GET /settings/monitoring", s.handleMonitoringSettings)
+	admin("GET /settings/remote", s.handleRemoteSettings)
+	admin("POST /settings/remote", s.handleRemoteSave)
 	admin("POST /settings/monitoring", s.handleMonitoringSave)
 	admin("POST /settings/email", s.handleEmailSave)
 	admin("POST /settings/email/test", s.handleEmailTest)

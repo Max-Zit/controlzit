@@ -24,6 +24,9 @@ func startHelper(dir string, a proto.RDStart) error {
 		return err
 	}
 	argv := []string{exe, "rdhelper", "--dir", dir, "--session", a.Session, "--technician", a.Technician}
+	if a.NoNotice {
+		argv = append(argv, "--no-notice")
+	}
 	if !isSystem() {
 		cmd := exec.Command(exe, argv[1:]...) // #nosec G204 -- our own executable
 		cmd.Stdin = strings.NewReader(a.Token + "\n")

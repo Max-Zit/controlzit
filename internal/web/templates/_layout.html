@@ -72,6 +72,7 @@
   <a href="/settings/network" class="{{if eq .Title "Network and access"}}on{{end}}">{{template "icon" "network"}}{{.T "Network and access"}}</a>
   <a href="/settings/security" class="{{if eq .Title "Sign-in and security"}}on{{end}}">{{template "icon" "lock"}}{{.T "Sign-in and security"}}</a>
   <a href="/settings/monitoring" class="{{if eq .Title "Monitoring and alerts"}}on{{end}}">{{template "icon" "online"}}{{.T "Monitoring and alerts"}}</a>
+  <a href="/settings/remote" class="{{if eq .Title "Remote desktop"}}on{{end}}">{{template "icon" "screen"}}{{.T "Remote desktop"}}</a>
 </nav>{{end}}
 
 {{define "qr"}}<svg class="qr" viewBox="0 0 {{.Size}} {{.Size}}" role="img" aria-label="QR"><rect width="{{.Size}}" height="{{.Size}}" fill="#fff"/>{{range .Cells}}<rect x="{{.X}}" y="{{.Y}}" width="1.02" height="1.02" fill="#000"/>{{end}}</svg>{{end}}

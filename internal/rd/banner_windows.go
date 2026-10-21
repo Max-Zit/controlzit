@@ -4,6 +4,7 @@ package rd
 
 import (
 	"runtime"
+	"strings"
 	"sync"
 	"syscall"
 	"unsafe"
@@ -79,6 +80,8 @@ const (
 type Banner struct {
 	mu   sync.Mutex
 	hwnd uintptr
+	// Err tells why the notice could not be shown (logged by Serve).
+	Err  string
 	done chan struct{}
 }
 
@@ -126,9 +129,15 @@ func ShowBanner(text string) *Banner {
 		runtime.LockOSThread()
 		defer runtime.UnlockOSThread()
 		name, _ := windows.UTF16PtrFromString("Default")
-		if h, _, _ := pOpenDesktop.Call(uintptr(unsafe.Pointer(name)), 0, 0, desktopAllAccess); h != 0 { // #nosec G103 -- Win32 string
-			_, _, _ = pSetThreadDesktop.Call(h)
+		var errs []string
+		if h, _, e := pOpenDesktop.Call(uintptr(unsafe.Pointer(name)), 0, 0, desktopAllAccess); h != 0 { // #nosec G103 -- Win32 string
+			if r, _, e := pSetThreadDesktop.Call(h); r == 0 {
+				errs = append(errs, "SetThreadDesktop: "+e.Error())
+			}
+		} else {
+			errs = append(errs, "OpenDesktop: "+e.Error())
 		}
+		inst, _, _ := pGetModuleHandle.Call(0)
 		wndProcOnce.Do(func() {
 			wndProcPtr = syscall.NewCallback(bannerProc)
 			bannerBrush, _, _ = pCreateSolidBrush.Call(0x00E5464F) // BGR of #4f46e5
@@ -138,13 +147,19 @@ func ShowBanner(text string) *Banner {
 		bannerText, _ = windows.UTF16FromString(text)
 		cls, _ := windows.UTF16PtrFromString("ControlZitNotice")
 		arrow, _, _ := pLoadCursor.Call(0, 32512)
-		wc := wndClassEx{WndProc: wndProcPtr, ClassName: cls, Cursor: windows.Handle(arrow)}
+		wc := wndClassEx{WndProc: wndProcPtr, ClassName: cls, Cursor: windows.Handle(arrow), Instance: windows.Handle(inst)}
 		wc.Size = uint32(unsafe.Sizeof(wc))
-		_, _, _ = pRegisterClassEx.Call(uintptr(unsafe.Pointer(&wc)))                                                                                         // #nosec G103 -- Win32 struct; fails harmlessly when already registered
-		x := (metric(0) - bannerW) / 2                                                                                                                        // SM_CXSCREEN
-		hwnd, _, _ := pCreateWindowEx.Call(wsExTopmost|wsExToolWindow|wsExLayered|wsExNoActivate, uintptr(unsafe.Pointer(cls)), uintptr(unsafe.Pointer(cls)), // #nosec G103 -- Win32 strings
-			wsPopup|wsVisible, uintptr(x), 0, bannerW, bannerH, 0, 0, 0, 0)
+		if r, _, e := pRegisterClassEx.Call(uintptr(unsafe.Pointer(&wc))); r == 0 { // #nosec G103 -- Win32 struct
+			errs = append(errs, "RegisterClassEx: "+e.Error())
+		}
+		x := (metric(0) - bannerW) / 2                                                                                                                           // SM_CXSCREEN
+		hwnd, _, cerr := pCreateWindowEx.Call(wsExTopmost|wsExToolWindow|wsExLayered|wsExNoActivate, uintptr(unsafe.Pointer(cls)), uintptr(unsafe.Pointer(cls)), // #nosec G103 -- Win32 strings
+			wsPopup|wsVisible, uintptr(x), 0, bannerW, bannerH, 0, 0, inst, 0)
+		if hwnd == 0 {
+			errs = append(errs, "CreateWindowEx: "+cerr.Error())
+		}
 		b.mu.Lock()
+		b.Err = strings.Join(errs, "; ")
 		b.hwnd = hwnd
 		b.mu.Unlock()
 		close(ready)
