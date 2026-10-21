@@ -147,6 +147,8 @@ type Agent struct {
 	// lastInventory survives reconnects, so a server restart does not make
 	// every agent send its inventory again.
 	lastInventory time.Time
+	// status is published for the tray icon.
+	status Status
 }
 
 // SysInfo is the cheap status sent with hello and heartbeats.
@@ -245,6 +247,8 @@ func (a *Agent) session(ctx context.Context) error {
 		return err
 	}
 	a.Log.Info("connected to the server", "server", a.Cfg.ServerURL)
+	a.publishStatus(true)
+	defer a.publishStatus(false)
 
 	sctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -351,5 +355,6 @@ func BasicOS() string { return runtime.GOOS + "/" + runtime.GOARCH }
 
 func (a *Agent) heartbeat(ctx context.Context, ws *websocket.Conn) error {
 	si := a.Info()
+	a.publishStatus(true)
 	return sendMsg(ctx, ws, proto.TypeHeartbeat, proto.Heartbeat{BootTime: si.BootTime, LoggedOnUser: si.LoggedOnUser, Metrics: a.Metrics(ctx)})
 }

@@ -33,6 +33,13 @@ func (h handler) Execute(_ []string, req <-chan svc.ChangeRequest, st chan<- svc
 	done := make(chan error, 1)
 	go func() { done <- runAgent(ctx, h.dir, log) }()
 	st <- svc.Status{State: svc.Running, Accepts: svc.AcceptStop | svc.AcceptShutdown}
+	go func() {
+		// The icon for the user signed in now (later sign-ins: the Run key).
+		time.Sleep(5 * time.Second)
+		if err := agent.StartTray(); err != nil {
+			log.Warn("cannot start the tray icon", "err", err)
+		}
+	}()
 	for {
 		select {
 		case c := <-req:

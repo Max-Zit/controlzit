@@ -43,3 +43,8 @@ func startHelper(string, proto.RDStart) error {
 func CollectMetrics(ctx context.Context) *proto.Metrics { return &proto.Metrics{} }
 
 func isLink(fi os.FileInfo) bool { return fi.Mode()&os.ModeSymlink != 0 }
+
+func publicStatusDir() string { return "" }
+
+// StartTray does nothing outside Windows.
+func StartTray() error { return nil }

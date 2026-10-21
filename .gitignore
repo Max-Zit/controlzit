@@ -12,3 +12,4 @@ credentials.txt
 /data/
 /.pgdata/
 /.devdata/
+/.pending/

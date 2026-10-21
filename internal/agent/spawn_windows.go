@@ -6,6 +6,7 @@ import (
 	"errors"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"unsafe"
 
@@ -87,4 +88,40 @@ func startHelper(dir string, a proto.RDStart) error {
 func isSystem() bool {
 	tu, err := windows.GetCurrentProcessToken().GetTokenUser()
 	return err == nil && tu.User.Sid.IsWellKnown(windows.WinLocalSystemSid)
+}
+
+// StartTray starts controlzit-tray.exe (next to the agent) for the user
+// signed in at the console, so the icon appears right after installation.
+// Later sign-ins start it from the Run key. It is a no-op when nobody is
+// signed in or the icon already runs in that session.
+func StartTray() error {
+	exe, err := os.Executable()
+	if err != nil {
+		return err
+	}
+	tray := filepath.Join(filepath.Dir(exe), "controlzit-tray.exe")
+	if _, err := os.Stat(tray); err != nil {
+		return nil // not installed (test runs)
+	}
+	session := windows.WTSGetActiveConsoleSessionId()
+	if session == 0xFFFFFFFF {
+		return nil
+	}
+	var tok windows.Token
+	if err := windows.WTSQueryUserToken(session, &tok); err != nil {
+		return nil // nobody signed in
+	}
+	defer tok.Close()
+	desk, _ := windows.UTF16PtrFromString(`winsta0\default`)
+	si := windows.StartupInfo{Desktop: desk}
+	si.Cb = uint32(unsafe.Sizeof(si))
+	var pi windows.ProcessInformation
+	cl, _ := windows.UTF16PtrFromString(windows.ComposeCommandLine([]string{tray}))
+	app, _ := windows.UTF16PtrFromString(tray)
+	if err := windows.CreateProcessAsUser(tok, app, cl, nil, nil, false, windows.CREATE_UNICODE_ENVIRONMENT, nil, nil, &si, &pi); err != nil {
+		return err
+	}
+	_ = windows.CloseHandle(pi.Thread)
+	_ = windows.CloseHandle(pi.Process)
+	return nil
 }

@@ -1,0 +1,22 @@
+// controlzit-tray shows the ControlZit icon in the notification area of a
+// user session: the computer is managed, and whether the agent is connected.
+// The MSI starts it at every sign-in; the agent service starts it for the
+// signed-in user after installation.
+package main
+
+import (
+	"flag"
+	"os"
+	"path/filepath"
+
+	"github.com/max-zit/controlzit/internal/tray"
+)
+
+func main() {
+	def := filepath.Join(os.Getenv("ProgramData"), "ControlZit", "agent-status.json")
+	status := flag.String("status", def, "status file written by the agent service")
+	flag.Parse()
+	if err := tray.Run(*status); err != nil {
+		os.Exit(1)
+	}
+}

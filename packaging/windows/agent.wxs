@@ -70,6 +70,11 @@
           <ServiceControl Id="AgentServiceControl" Name="ControlZitAgent" Start="install" Stop="both" Remove="uninstall" Wait="yes" />
           <RegistryValue Root="HKLM" Key="SOFTWARE\MaxZit\ControlZit Agent\Install" Name="InstallDir" Value="[INSTALLFOLDER]" Type="string" />
         </Component>
+        <!-- Icon in the notification area of every user session (status of the agent). -->
+        <Component Id="TrayExe" Bitness="always64">
+          <File Id="TrayExeFile" Source="$(var.TrayExe)" Name="controlzit-tray.exe" KeyPath="yes" />
+          <RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Run" Name="ControlZit Agent" Value="&quot;[INSTALLFOLDER]controlzit-tray.exe&quot;" Type="string" />
+        </Component>
         <Component Id="License" Bitness="always64">
           <File Id="LicenseFile" Source="$(var.RootDir)\LICENSE" Name="LICENSE.txt" KeyPath="yes" />
         </Component>
@@ -90,6 +95,9 @@
     <CustomAction Id="EnrollPartsForce" FileRef="AgentExeFile"
                   ExeCommand="enroll --force --pending-ok --server &quot;[SERVER_URL]&quot; --fingerprint &quot;[FINGERPRINT]&quot; --token &quot;[TOKEN]&quot;"
                   Execute="deferred" Impersonate="no" Return="check" HideTarget="yes" />
+    <!-- Close the tray icons so their file can be replaced or removed. -->
+    <util:CloseApplication Id="CloseTray" Target="controlzit-tray.exe" TerminateProcess="0" RebootPrompt="no" />
+
     <!-- Uninstall (not an upgrade): remove the enrollment and key. -->
     <CustomAction Id="Forget" FileRef="AgentExeFile" ExeCommand="forget"
                   Execute="deferred" Impersonate="no" Return="ignore" />

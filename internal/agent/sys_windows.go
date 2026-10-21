@@ -200,3 +200,25 @@ func isLink(fi os.FileInfo) bool {
 	}
 	return false
 }
+
+// publicStatusDir is ProgramData\ControlZit, writable by SYSTEM and
+// administrators and readable by users, when the agent runs as SYSTEM.
+func publicStatusDir() string {
+	if !isSystem() {
+		return ""
+	}
+	pd := os.Getenv("ProgramData")
+	if pd == "" {
+		return ""
+	}
+	dir := filepath.Join(pd, "ControlZit")
+	if err := os.MkdirAll(dir, 0o755); err != nil { // #nosec G301 -- users read the public status
+		return ""
+	}
+	if sd, err := windows.SecurityDescriptorFromString("D:PAI(A;OICI;FA;;;SY)(A;OICI;FA;;;BA)(A;OICI;FR;;;BU)"); err == nil {
+		if dacl, _, err := sd.DACL(); err == nil {
+			_ = windows.SetNamedSecurityInfo(dir, windows.SE_FILE_OBJECT, windows.DACL_SECURITY_INFORMATION|windows.PROTECTED_DACL_SECURITY_INFORMATION, nil, nil, dacl, nil)
+		}
+	}
+	return dir
+}
