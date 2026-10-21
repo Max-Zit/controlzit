@@ -53,7 +53,7 @@ func run() error {
 	mgmtListen := flag.String("mgmt-listen", "", "console address; overrides the saved setting (e.g. 127.0.0.1:8443)")
 	agentListen := flag.String("agent-listen", "", "agent endpoint address; overrides the saved setting (e.g. :8444)")
 	devHTTP := flag.String("dev-http", "", "also serve the console over plain HTTP on this loopback address (development only)")
-	devNo2FA := flag.Bool("dev-no-2fa", false, "sign in with the password only (development only; requires --dev-embedded-db)")
+	devNo2FA := flag.Bool("dev-no-2fa", false, "sign in with the password only (development and lab tests only; shown as a warning in the console and audited)")
 	resetACL := flag.Bool("reset-allowlist", false, "allow the console again from the private networks (10/8, 172.16/12, 192.168/16, fc00::/7) and exit")
 	unblock := flag.String("unblock-ip", "", "lift the sign-in block of an address (or \"all\") and exit")
 	showVersion := flag.Bool("version", false, "print the version and exit")
@@ -123,11 +123,11 @@ func run() error {
 	srv.Version = version
 	srv.DownloadsDir = filepath.Join(*dataDir, "downloads")
 	if *devNo2FA {
-		if !*devDB {
-			return errors.New("--dev-no-2fa works only together with --dev-embedded-db")
-		}
+		// For development and lab tests only: the console shows a red warning
+		// on every page and the audit log records each start in this mode.
 		srv.DevNo2FA = true
-		log.Warn("DEVELOPMENT MODE: two-factor sign-in is switched off")
+		log.Warn("TEST MODE: two-factor sign-in is switched off (--dev-no-2fa); never use this on a production server")
+		_ = st.Audit(ctx, "-", "local", "settings.2fa.off", "server", "server started with --dev-no-2fa: sign-in with the password only")
 	}
 	net0, err := srv.Network(ctx)
 	if err != nil {
