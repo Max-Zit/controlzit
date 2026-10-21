@@ -11,3 +11,4 @@ credentials.txt
 # local dev data
 /data/
 /.pgdata/
+/.devdata/

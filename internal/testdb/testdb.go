@@ -34,8 +34,8 @@ func Main(m *testing.M) int {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}
-	port = uint32(l.Addr().(*net.TCPAddr).Port) //nolint:gosec // a TCP port fits
-	l.Close()
+	port = uint32(l.Addr().(*net.TCPAddr).Port) // #nosec G115 -- a TCP port fits
+	_ = l.Close()
 	pg := embeddedpostgres.NewDatabase(embeddedpostgres.DefaultConfig().Port(port).
 		RuntimePath(filepath.Join(dir, "rt")).DataPath(filepath.Join(dir, "data")).Logger(io.Discard))
 	if err := pg.Start(); err != nil {

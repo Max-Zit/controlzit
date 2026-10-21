@@ -18,7 +18,7 @@ const SecretKeyFile = "secret.key"
 // LoadOrCreateSecretKey reads dir/secret.key or creates it.
 func LoadOrCreateSecretKey(dir string) (key []byte, created bool, err error) {
 	p := filepath.Join(dir, SecretKeyFile)
-	b, err := os.ReadFile(p) //nolint:gosec // path under the data directory
+	b, err := os.ReadFile(p) // #nosec G304 -- path under the data directory
 	if err == nil {
 		k, err := base64.StdEncoding.DecodeString(string(b))
 		if err != nil || len(k) != 32 {

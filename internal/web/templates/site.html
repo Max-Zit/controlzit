@@ -1,0 +1,56 @@
+{{template "app" .}}
+{{define "content"}}
+<p class="back"><a href="/customers">{{.T "Customers"}}</a> / <a href="/customers/{{.Data.Site.CustomerID}}">{{.Data.Site.Customer}}</a></p>
+<h1>{{.Data.Site.Name}}</h1>
+{{with .Data.NewToken}}
+<section class="panel accent">
+  <h2>{{template "icon" "key"}}{{$.T "New enrollment token"}}</h2>
+  <p>{{$.T "Copy it now: it is shown only once. Anyone with this token can add computers to this site until it expires or is used up."}}</p>
+  <pre class="token" id="newtoken">{{.}}</pre>
+  <p><button type="button" class="secondary" data-copy="#newtoken">{{template "icon" "copy"}}{{$.T "Copy"}}</button></p>
+  <p class="small muted">{{$.T "Agent server address:"}} <code>{{$.Data.AgentURL}}</code></p>
+</section>
+{{end}}
+<section class="panel">
+  <h2>{{.T "Devices"}}</h2>
+  <div class="empty">{{template "icon" "devices"}}<p>{{if .Data.Site.Devices}}{{.T "%d devices" .Data.Site.Devices}}{{else}}{{.T "No devices yet. Install the agent with an enrollment token of this site."}}{{end}}</p></div>
+</section>
+<section class="panel">
+  <h2>{{.T "Enrollment tokens"}}</h2>
+  {{if .Data.Tokens}}
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{.T "Label"}}</th><th>{{.T "Status"}}</th><th class="num">{{.T "Used"}}</th><th class="hide-sm">{{.T "Expires"}}</th><th class="hide-sm">{{.T "Created by"}}</th><th></th></tr></thead>
+    <tbody>{{range .Data.Tokens}}<tr>
+      <td>{{if .Label}}{{.Label}}{{else}}<span class="muted">#{{.ID}}</span>{{end}}</td>
+      <td>{{if .RevokedAt}}<span class="badge">{{$.T "Revoked"}}</span>{{else if .Active $.Data.Now}}<span class="badge ok"><i></i>{{$.T "Active"}}</span>{{else}}<span class="badge">{{$.T "Expired"}}</span>{{end}}</td>
+      <td class="num">{{.Uses}} / {{.MaxUses}}</td>
+      <td class="hide-sm muted">{{$.Time .ExpiresAt}}</td>
+      <td class="hide-sm muted">{{.CreatedBy}}</td>
+      <td class="actions">{{if and $.User.CanWrite (.Active $.Data.Now)}}<form method="post" action="/sites/{{$.Data.Site.ID}}/tokens/{{.ID}}/revoke" data-confirm="{{$.T "Revoke this token?"}}"><button class="ghost sm">{{$.T "Revoke"}}</button></form>{{end}}</td>
+    </tr>{{end}}</tbody>
+  </table></div>
+  {{else}}<p class="muted">{{.T "No tokens yet."}}</p>{{end}}
+  {{if .User.CanWrite}}
+  <form method="post" action="/sites/{{.Data.Site.ID}}/tokens" class="row mt">
+    <input name="label" placeholder="{{.T "Label (optional)"}}" aria-label="{{.T "Label"}}" maxlength="120">
+    <label class="inline">{{.T "Valid for days"}}<input type="number" name="days" value="{{.Data.ValidDays}}" min="1" max="365" required></label>
+    <label class="inline">{{.T "Uses"}}<input type="number" name="uses" value="{{.Data.MaxUses}}" min="1" max="100000" required></label>
+    <button class="primary">{{template "icon" "key"}}{{.T "Create token"}}</button>
+  </form>
+  {{end}}
+</section>
+{{if .User.CanWrite}}
+<section class="panel">
+  <h2>{{.T "Site details"}}</h2>
+  <form method="post" action="/sites/{{.Data.Site.ID}}" class="stack">
+    <label>{{.T "Name"}}<input name="name" value="{{.Data.Site.Name}}" required maxlength="120"></label>
+    <label>{{.T "Address"}}<input name="address" value="{{.Data.Site.Address}}" maxlength="300"></label>
+    <label>{{.T "Notes"}}<textarea name="notes" maxlength="4000">{{.Data.Site.Notes}}</textarea></label>
+    <div><button class="primary">{{.T "Save"}}</button></div>
+  </form>
+  <form method="post" action="/sites/{{.Data.Site.ID}}/delete" class="mt" data-confirm="{{.T "Delete this site?"}}">
+    <button class="danger">{{template "icon" "trash"}}{{.T "Delete site"}}</button> <small class="muted">{{.T "Only possible when it has no devices."}}</small>
+  </form>
+</section>
+{{end}}
+{{end}}

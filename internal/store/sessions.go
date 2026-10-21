@@ -55,7 +55,7 @@ func (s *Store) SessionByToken(ctx context.Context, tok string, idle time.Durati
 	}
 	now := s.now()
 	if now.After(x.ExpiresAt) || (idle > 0 && x.Stage == StageFull && now.Sub(x.LastSeen) > idle) {
-		s.DeleteSession(ctx, x.Hash)
+		_ = s.DeleteSession(ctx, x.Hash)
 		return nil, ErrNotFound
 	}
 	return x, nil

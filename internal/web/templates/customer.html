@@ -1,0 +1,38 @@
+{{template "app" .}}
+{{define "content"}}
+<p class="back"><a href="/customers">{{.T "Customers"}}</a></p>
+<h1>{{.Data.Customer.Name}}</h1>
+<section class="panel">
+  <h2>{{.T "Sites"}}</h2>
+  {{if .Data.Sites}}
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{.T "Site"}}</th><th class="hide-sm">{{.T "Address"}}</th><th class="num">{{.T "Devices"}}</th></tr></thead>
+    <tbody>{{range .Data.Sites}}<tr><td><a href="/sites/{{.ID}}">{{.Name}}</a></td><td class="hide-sm muted">{{.Address}}</td><td class="num">{{.Devices}}</td></tr>{{end}}</tbody>
+  </table></div>
+  {{else}}
+  <div class="empty">{{template "icon" "site"}}<p>{{.T "No sites yet. Add the first site (for example the main office) to enroll devices."}}</p></div>
+  {{end}}
+  {{if .User.CanWrite}}
+  <form method="post" action="/customers/{{.Data.Customer.ID}}/sites" class="row mt">
+    <input name="name" value="{{.Data.SiteName}}" placeholder="{{.T "Site name"}}" aria-label="{{.T "Site name"}}" required maxlength="120">
+    <input name="address" value="{{.Data.Address}}" placeholder="{{.T "Address (optional)"}}" aria-label="{{.T "Address"}}" maxlength="300">
+    <button class="primary">{{template "icon" "plus"}}{{.T "Add site"}}</button>
+  </form>
+  {{end}}
+</section>
+{{if .User.IsAdmin}}
+<section class="panel">
+  <h2>{{.T "Customer details"}}</h2>
+  <form method="post" action="/customers/{{.Data.Customer.ID}}" class="stack">
+    <label>{{.T "Name"}}<input name="name" value="{{.Data.Customer.Name}}" required maxlength="120"></label>
+    <label>{{.T "Notes"}}<textarea name="notes" maxlength="4000">{{.Data.Customer.Notes}}</textarea></label>
+    <div><button class="primary">{{.T "Save"}}</button></div>
+  </form>
+  <form method="post" action="/customers/{{.Data.Customer.ID}}/delete" class="mt" data-confirm="{{.T "Delete this customer?"}}">
+    <button class="danger">{{template "icon" "trash"}}{{.T "Delete customer"}}</button> <small class="muted">{{.T "Only possible when it has no sites."}}</small>
+  </form>
+</section>
+{{else if .Data.Customer.Notes}}
+<section class="panel"><h2>{{.T "Notes"}}</h2><p class="pre">{{.Data.Customer.Notes}}</p></section>
+{{end}}
+{{end}}

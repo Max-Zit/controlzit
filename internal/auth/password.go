@@ -77,7 +77,7 @@ func VerifyPassword(encoded, pw string) (bool, error) {
 	if err != nil || len(want) == 0 || len(want) > 64 {
 		return false, errors.New("bad argon2 hash")
 	}
-	got := argon2.IDKey([]byte(pw), salt, t, m, p, uint32(len(want)))
+	got := argon2.IDKey([]byte(pw), salt, t, m, p, uint32(len(want))) // #nosec G115 -- len(want) <= 64
 	return subtle.ConstantTimeCompare(got, want) == 1, nil
 }
 
@@ -86,7 +86,7 @@ func VerifyPassword(encoded, pw string) (bool, error) {
 var dummyHash, _ = HashPassword("controlzit-no-such-user")
 
 // BurnTime spends the time of one password verification.
-func BurnTime(pw string) { VerifyPassword(dummyHash, pw) }
+func BurnTime(pw string) { _, _ = VerifyPassword(dummyHash, pw) }
 
 // RandomToken returns n random bytes, URL-safe base64 encoded.
 func RandomToken(n int) string {

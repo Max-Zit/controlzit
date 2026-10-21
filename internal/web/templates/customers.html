@@ -1,0 +1,24 @@
+{{template "app" .}}
+{{define "content"}}
+<h1>{{.T "Customers"}}</h1>
+<section class="panel">
+  {{if .Data.Customers}}
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{.T "Name"}}</th><th class="num">{{.T "Sites"}}</th><th class="num">{{.T "Devices"}}</th><th class="hide-sm">{{.T "Added"}}</th></tr></thead>
+    <tbody>{{range .Data.Customers}}<tr><td><a href="/customers/{{.ID}}">{{.Name}}</a></td><td class="num">{{.Sites}}</td><td class="num">{{.Devices}}</td><td class="hide-sm muted">{{$.Time .CreatedAt}}</td></tr>{{end}}</tbody>
+  </table></div>
+  {{else}}
+  <div class="empty">{{template "icon" "customers"}}<p>{{.T "No customers yet."}}</p></div>
+  {{end}}
+</section>
+{{if .User.IsAdmin}}
+<section class="panel">
+  <h2>{{.T "Add a customer"}}</h2>
+  <form method="post" action="/customers" class="stack">
+    <label>{{.T "Name"}}<input name="name" value="{{.Data.Name}}" required maxlength="120"></label>
+    <label>{{.T "Notes"}} <small>{{.T "optional"}}</small><textarea name="notes" maxlength="4000">{{.Data.Notes}}</textarea></label>
+    <div><button class="primary">{{template "icon" "plus"}}{{.T "Add"}}</button></div>
+  </form>
+</section>
+{{end}}
+{{end}}

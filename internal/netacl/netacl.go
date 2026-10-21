@@ -189,6 +189,6 @@ func (l *Listener) Accept() (net.Conn, error) {
 		if l.OnRefuse != nil {
 			l.OnRefuse(c.RemoteAddr().String())
 		}
-		c.Close()
+		_ = c.Close()
 	}
 }

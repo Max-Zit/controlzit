@@ -43,7 +43,7 @@ func LoadOrCreate(dir, name, commonName string, years int) (tls.Certificate, err
 	if err := os.WriteFile(key, keyPEM, 0o600); err != nil {
 		return tls.Certificate{}, err
 	}
-	if err := os.WriteFile(crt, certPEM, 0o644); err != nil { //nolint:gosec // a certificate is public
+	if err := os.WriteFile(crt, certPEM, 0o644); err != nil { // #nosec G306 -- a certificate is public
 		return tls.Certificate{}, err
 	}
 	return tls.X509KeyPair(certPEM, keyPEM)
