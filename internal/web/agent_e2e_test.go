@@ -160,6 +160,7 @@ func TestAgentEndpointRequiresClientCert(t *testing.T) {
 	resp.Body.Close()
 	if resp.StatusCode != http.StatusUnauthorized {
 		t.Fatalf("connect without client certificate: %d", resp.StatusCode)
-	}}
+	}
+}
 
 func itoa(n int64) string { return strconv.FormatInt(n, 10) }

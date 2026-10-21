@@ -120,6 +120,9 @@ type Agent struct {
 	Info func() SysInfo
 
 	key ed25519.PrivateKey
+	// lastInventory survives reconnects, so a server restart does not make
+	// every agent send its inventory again.
+	lastInventory time.Time
 }
 
 // SysInfo is the cheap status sent with hello and heartbeats.
@@ -243,7 +246,7 @@ func (a *Agent) session(ctx context.Context) error {
 	heartbeat := time.NewTicker(60 * time.Second)
 	defer heartbeat.Stop()
 	inventoryEvery := 12 * time.Hour
-	nextInventory := time.Now() // right after connecting
+	nextInventory := a.lastInventory.Add(inventoryEvery) // zero: right after connecting
 	invTimer := time.NewTimer(5 * time.Second)
 	defer invTimer.Stop()
 	invDone := make(chan *proto.Inventory, 1)
@@ -293,7 +296,8 @@ func (a *Agent) session(ctx context.Context) error {
 			invTimer.Reset(time.Minute)
 		case inv := <-invDone:
 			collecting = false
-			nextInventory = time.Now().Add(inventoryEvery)
+			a.lastInventory = time.Now()
+			nextInventory = a.lastInventory.Add(inventoryEvery)
 			if err := sendMsg(ctx, ws, proto.TypeInventory, inv); err != nil {
 				return err
 			}

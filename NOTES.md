@@ -21,18 +21,21 @@ Local path: C:\Users\Mili\Ai\rmm
 ## Open questions for Stefan
 - Pick icon a (monitor + pulse), b (circuit C) or c (control hub) — full sets in maxzit-brand/concepts/controlzit/{a,b,c}. Then copy the chosen set to maxzit-brand/controlzit-logo and into the repo.
 
-## Status (2026-10-21)
-- Logo A (monitor + pulse) chosen; full set in maxzit-brand/controlzit-logo and repo brand/.
-- **Feature 1 server skeleton: done except the agent MSI** (the MSI needs the agent, feature 2).
-  - internal/auth, netacl, store, tlsutil, testdb as before (tested).
-  - internal/web console: first-run setup with one-time token (data-dir/setup-token.txt), sign-in, mandatory TOTP enrollment + 10 recovery codes, 2FA with replay protection, session rotation after 2FA, `__Host-` cookie, idle/absolute timeouts, brute-force blocks (progressive, in DB, loopback exempt), CSRF Origin/Referer/Sec-Fetch-Site check, CSP without inline code, security headers.
-  - Customers → sites, enrollment tokens (shown once, hashed, expiry + max uses, revoke), users with roles admin/technician/readonly + per-customer access, must-change-password, admin 2FA reset, own account (password, recovery codes, sessions), audit log page with chain verification, Settings → Network and access (separate console/agent listen addresses, both allow-lists, public agent URL, refuses a list that locks out the saving admin), Settings → Sign-in and security (sessions, block policy, unblock).
-  - English + Serbian (i18n/sr.json); a test fails when a UI text lacks a Serbian translation.
-  - cmd/controlzit-server: two TLS listeners (agent cert separate from console cert, agents will pin its SHA-256), netacl check before TLS, TLS 1.2+, --dev-embedded-db, --dev-http (loopback only), --reset-allowlist, --unblock-ip, --mgmt-listen/--agent-listen overrides (console shows a note then).
-  - Agent endpoint answers GET /agent/v1/health only.
-- Tests: `go test ./...` passes (auth, netacl, store, web flows incl. setup token, 2FA, replay, CSRF, allow-list + lock-out guard, login block, roles/customer isolation, token once, i18n completeness). go vet, staticcheck, gosec (0 issues), govulncheck (no called vulns; toolchain go1.27.2) clean.
-- Verified in the preview pane: setup → 2FA → overview → customer → site → token, Serbian, light + dark, 375 px (menu, no horizontal scroll), no console/CSP errors; TLS listeners checked with curl/openssl.
-- Dev console: preview config "controlzit-dev" in C:\Users\Mili\Ai\.claude\launch.json (http://localhost:8095); dev credentials + TOTP secret in rmm/.devdata/dev-admin.txt (gitignored). Stopping it leaves embedded postgres running: `.devdata/pgbin/bin/pg_ctl.exe stop -D .devdata/pgdata -m fast`.
+## Status (2026-10-21, afternoon)
+- Feature 1 server skeleton: done (see git log); dev flag `--dev-no-2fa` (only with `--dev-embedded-db`) because Stefan has no authenticator for the dev console yet — the dev console runs with it (banner shown).
+- **Feature 2 agent: enrollment, online status, inventory — done and tested for real.**
+  - Protocol (internal/proto): agent makes an ed25519 key + self-signed client cert; POST /agent/v1/enroll over TLS with the cert, pinning the server's agent-cert SHA-256; server consumes the token atomically and stores the key (devices.key_id). Afterwards the TLS client certificate is the identity (agent listener uses tls.RequestClientCert; unknown key → 401). WebSocket /agent/v1/connect (github.com/coder/websocket): hello → welcome (heartbeat 60 s, inventory 12 h), heartbeat, inventory, inventory.request. Server drops silent agents after 3 min; agent reconnects with backoff + jitter.
+  - Agent (cmd/controlzit-agent): enroll/run/install/uninstall/status/inventory/version; Windows service ControlZitAgent (auto start, delayed, restart on failure); data dir %ProgramData%\ControlZit Agent with DACL SYSTEM + Administrators (+ the running user if not SYSTEM); agent.log with rotation.
+  - Inventory (internal/agent/inventory.ps1, built-in PowerShell/CIM/registry): OS, build, display version, hardware, CPU, RAM, disks, network, installed software (registry), logged-on user, BitLocker (needs SYSTEM/admin), Defender, firewall profiles, pending reboot.
+  - Console: Devices page (search), devices on the site page, device page (system, hardware, security, disk bars, network, software search), refresh inventory, remove device (closes the channel, key stops working), install instructions with server URL + fingerprint (+ token right after creating it). Static files get ?v=hash (browser cache).
+  - Tests: e2e agent↔server over real TLS (wrong pin, wrong token, single-use token, hello/inventory stored, console shows it, refresh reaches agent, delete disconnects), client cert required; agent unit tests. vet/staticcheck/gosec clean.
+  - Real test: server in **Proxmox CT 9600 "cz-server" (Debian 12, 192.168.101.179, PostgreSQL 15, systemd unit controlzit)**, agent as a service on **bz-win11** (device #1 "DESKTOP-NBB66OQ" in "MaxZit Lab / Lab Hyper-V"): enrolled, online, full inventory incl. BitLocker; stop service → Offline, start → Online; server restart → agent reconnected in seconds. Lab server credentials + TOTP secret: rmm/.devdata/lab-server.txt (gitignored). Stefan's PC firewall blocks inbound 18444 (no admin), so agents on VMs must use the CT server.
+  - Not yet: MSI installer, signed commands, signed self-update, Linux agent, uninstall cleanup of the data dir.
+
+## Next steps (resume here)
+1. MSI (WiX 5.0.2, as BackupZit): installs to Program Files\ControlZit Agent, ServiceInstall ControlZitAgent, properties SERVER_URL, FINGERPRINT, TOKEN → custom action runs `controlzit-agent enroll` before the service starts; upgrade keeps the enrollment; uninstall removes service (+ optional data). Test silent install on bz-win11 and via GPO on bz-dc1 domain (ask Stefan before changing AD).
+2. Server command key (ed25519) + agent verifies signed commands; then feature 3 (monitoring/alerts) or 4 (remote actions) — ask Stefan for order.
+3. Reverse proxy / ACME / uploaded console certificate; docs pages in the console.
 
 ## Known gaps / later
 - No reverse-proxy support (X-Forwarded-For) yet; no uploaded/ACME console certificate yet.
@@ -41,8 +44,3 @@ Local path: C:\Users\Mili\Ai\rmm
 - Graceful shutdown on Windows when killed: embedded PG keeps running (dev only).
 - Docs pages in the console (like BackupZit doc_*.html) not started.
 
-## Next steps (resume here)
-1. Feature 2 — agent (Go, Windows service): enrollment via POST /agent/v1/enroll with token → per-agent ed25519 identity + server-signed agent certificate or key registration; agent pins the agent-endpoint certificate fingerprint; long-lived WebSocket channel; heartbeat → online status; device list per site in the console.
-2. Inventory (OS, build, hardware, disks, network, software, logged-on user, uptime, BitLocker, Defender) via WMI/CIM; device page.
-3. Server command signing key (ed25519) + agent verification; signed self-update.
-4. MSI (WiX 5.0.2) with SERVER_URL, ENROLL_TOKEN, SERVER_FINGERPRINT properties; test on bz-win11 and a Proxmox VM (VMIDs 9600–9699).

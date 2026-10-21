@@ -77,7 +77,9 @@ func (s *Server) handleDevice(w http.ResponseWriter, r *http.Request) {
 				dd.Software = append(dd.Software, x)
 			}
 		}
-		sort.SliceStable(dd.Software, func(i, j int) bool { return strings.ToLower(dd.Software[i].Name) < strings.ToLower(dd.Software[j].Name) })
+		sort.SliceStable(dd.Software, func(i, j int) bool {
+			return strings.ToLower(dd.Software[i].Name) < strings.ToLower(dd.Software[j].Name)
+		})
 	}
 	s.render(w, r, http.StatusOK, "device", &Page{Title: d.Hostname, Nav: "devices", Data: dd})
 }

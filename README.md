@@ -37,3 +37,11 @@ bin/controlzit-server.exe --dev-embedded-db --data-dir .devdata \
   --mgmt-listen 127.0.0.1:18443 --agent-listen 127.0.0.1:18444 --dev-http 127.0.0.1:8095
 go run ./tools/totp SECRET          # current code of a TOTP secret (tests)
 ```
+
+## Agent (Windows)
+```
+.\controlzit-agent.exe enroll --server https://SERVER:8444 --fingerprint <SHA-256 from the console> --token czet_…
+.\controlzit-agent.exe install      # Windows service ControlZitAgent
+.\controlzit-agent.exe inventory    # print what the agent reports
+```
+Run from an elevated prompt. The site page in the console shows the exact command.

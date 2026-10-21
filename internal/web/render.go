@@ -1,7 +1,9 @@
 package web
 
 import (
+	"crypto/sha256"
 	"embed"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -76,6 +78,7 @@ type Page struct {
 	Error    string
 	Version  string
 	DevNo2FA bool
+	Asset    string
 	Data     any
 	// CSRF-free forms post back to the same origin; nothing else needed.
 }
@@ -178,6 +181,7 @@ func (s *Server) render(w http.ResponseWriter, r *http.Request, status int, name
 	}
 	p.Version = s.Version
 	p.DevNo2FA = s.DevNo2FA
+	p.Asset = assetVersion
 	if f := s.takeFlash(w, r); f != "" && p.Flash == "" {
 		p.Flash = f
 	}
@@ -255,3 +259,14 @@ type roleForm struct {
 	IDs       []int64
 	Customers []store.Customer
 }
+
+// assetVersion changes with the static files, so browsers do not keep an
+// old app.css or app.js from their cache after an update.
+var assetVersion = func() string {
+	h := sha256.New()
+	for _, f := range []string{"static/app.css", "static/app.js"} {
+		b, _ := staticFS.ReadFile(f)
+		h.Write(b)
+	}
+	return hex.EncodeToString(h.Sum(nil))[:12]
+}()

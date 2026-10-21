@@ -14,9 +14,14 @@ import (
 )
 
 // protectDir gives only SYSTEM and Administrators access (no inherited
-// "Users: read" from ProgramData).
+// "Users: read" from ProgramData). When the agent runs as another user
+// (enrolled from an elevated prompt, or a test run), that user keeps access.
 func protectDir(dir string) error {
-	sd, err := windows.SecurityDescriptorFromString("D:PAI(A;OICI;FA;;;SY)(A;OICI;FA;;;BA)")
+	sddl := "D:PAI(A;OICI;FA;;;SY)(A;OICI;FA;;;BA)"
+	if tu, err := windows.GetCurrentProcessToken().GetTokenUser(); err == nil && !tu.User.Sid.IsWellKnown(windows.WinLocalSystemSid) {
+		sddl += "(A;OICI;FA;;;" + tu.User.Sid.String() + ")"
+	}
+	sd, err := windows.SecurityDescriptorFromString(sddl)
 	if err != nil {
 		return err
 	}
