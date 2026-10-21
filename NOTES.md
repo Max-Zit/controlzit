@@ -53,6 +53,8 @@ Local path: C:\Users\Mili\Ai\rmm
 - **Release v0.2.0 (2026-10-21, private prerelease):** https://github.com/Max-Zit/controlzit/releases/tag/v0.2.0 — MSI, agent exe, server Linux/Windows, SHA256SUMS. Before it: all tests + vet/staticcheck/gosec/govulncheck clean; lab regression tools/labtest/regress.sh 42/42 on the upgraded agent and again after uninstall + fresh MSI install with an enrollment code (now device #5 on bz-win11). Lab server and bz-win11 run 0.2.0.
 - Copy/paste: "Send text" types the local clipboard on the remote side; real two-way clipboard + monitor choice still open (work on it was interrupted on my side twice in this session — try in a new session).
 
+- **v0.2.2 (2026-10-21, private prerelease):** setting Settings → Remote desktop "Show a notice on the remote screen" (default on, audited, RDStart.no_notice → rdhelper --no-notice); notice verified on bz-win11 in both settings by listing the helper's windows from the user session (a scheduled task as ai, Interactive) — an earlier "not found" was a bug in that check, not in ControlZit. Lab regression 42/42 (DEV=5 VER=0.2.2). Lab server also runs --dev-http 127.0.0.1:8080; for Chrome tests: ssh -L 8096:127.0.0.1:8080 root@192.168.101.179 with the lab key, then http://localhost:8096 (Chrome blocks the self-signed cert page for the extension).
+
 ## Next steps (resume here)
 1. Remote desktop v2: DXGI Desktop Duplication (faster), monitor choice, clipboard both ways, scaling/bandwidth tuning, session recording option; verify banner + UAC with a signed-in user.
 2. Fresh Windows test VM on Proxmox (VMID 96xx) for interactive MSI tests.
