@@ -40,6 +40,9 @@ type RDScreenInfo struct {
 	Height  int    `json:"h"`
 	Desktop string `json:"desktop"` // Default, Winlogon (sign-in/UAC screen)
 	User    string `json:"user"`
+	// Monitors of the machine; Monitor is the one shown (-1: all).
+	Monitors []RDMonitor `json:"monitors,omitempty"`
+	Monitor  int         `json:"monitor"`
 }
 
 // RDInput is a text message from the browser.
@@ -58,6 +61,8 @@ type RDInput struct {
 	Quality int `json:"quality,omitempty"`
 	// text to type (paste)
 	Text string `json:"text,omitempty"`
+	// monitor to show (-1: all monitors)
+	Monitor int `json:"monitor,omitempty"`
 }
 
 // Tile is one changed rectangle, JPEG or PNG encoded.
@@ -112,4 +117,13 @@ func DecodeTiles(b []byte) ([]Tile, error) {
 		out = append(out, t)
 	}
 	return out, nil
+}
+
+// RDMonitor is one display, in virtual-screen pixels.
+type RDMonitor struct {
+	X       int  `json:"x"`
+	Y       int  `json:"y"`
+	W       int  `json:"w"`
+	H       int  `json:"h"`
+	Primary bool `json:"primary"`
 }

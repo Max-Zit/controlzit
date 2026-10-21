@@ -6,6 +6,8 @@ import (
 	"bytes"
 	"image"
 	"image/jpeg"
+	"runtime"
+	"sync"
 
 	"github.com/max-zit/controlzit/internal/proto"
 )
@@ -43,25 +45,15 @@ func tileChanged(a, b *Frame, x0, y0, w, h int) bool {
 }
 
 // Encode returns the tiles that changed since the previous frame (all of
-// them for the first frame or after a size change).
+// them for the first frame or after a size change). The changed strips are
+// encoded in parallel.
 func (e *Encoder) Encode(f *Frame) ([]proto.Tile, error) {
 	full := e.prev == nil || e.prev.W != f.W || e.prev.H != f.H
-	var out []proto.Tile
+	type rect struct{ x, y, w, h int }
+	var rects []rect
 	for ty := 0; ty < f.H; ty += TileSize {
 		th := min(TileSize, f.H-ty)
 		run := -1 // start x of a run of changed tiles
-		flush := func(end int) error {
-			if run < 0 {
-				return nil
-			}
-			t, err := e.encodeRect(f, run, ty, end-run, th)
-			if err != nil {
-				return err
-			}
-			out = append(out, t)
-			run = -1
-			return nil
-		}
 		for tx := 0; tx < f.W; tx += TileSize {
 			tw := min(TileSize, f.W-tx)
 			if full || tileChanged(e.prev, f, tx, ty, tw, th) {
@@ -70,11 +62,36 @@ func (e *Encoder) Encode(f *Frame) ([]proto.Tile, error) {
 				}
 				continue
 			}
-			if err := flush(tx); err != nil {
-				return nil, err
+			if run >= 0 {
+				rects = append(rects, rect{run, ty, tx - run, th})
+				run = -1
 			}
 		}
-		if err := flush(f.W); err != nil {
+		if run >= 0 {
+			rects = append(rects, rect{run, ty, f.W - run, th})
+		}
+	}
+	out := make([]proto.Tile, len(rects))
+	errs := make([]error, len(rects))
+	var wg sync.WaitGroup
+	next := make(chan int)
+	for w := 0; w < min(runtime.NumCPU(), len(rects)); w++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for i := range next {
+				r := rects[i]
+				out[i], errs[i] = e.encodeRect(f, r.x, r.y, r.w, r.h)
+			}
+		}()
+	}
+	for i := range rects {
+		next <- i
+	}
+	close(next)
+	wg.Wait()
+	for _, err := range errs {
+		if err != nil {
 			return nil, err
 		}
 	}
