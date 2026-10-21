@@ -13,8 +13,20 @@
 {{end}}
 <section class="panel">
   <h2>{{.T "Devices"}}</h2>
-  <div class="empty">{{template "icon" "devices"}}<p>{{if .Data.Site.Devices}}{{.T "%d devices" .Data.Site.Devices}}{{else}}{{.T "No devices yet. Install the agent with an enrollment token of this site."}}{{end}}</p></div>
+  {{if .Data.Devices}}{{template "devicetable" .}}
+  {{else}}<div class="empty">{{template "icon" "devices"}}<p>{{.T "No devices yet. Install the agent with an enrollment token of this site."}}</p></div>{{end}}
 </section>
+{{if .User.CanWrite}}
+<section class="panel install">
+  <h2>{{template "icon" "plus"}}{{.T "Add computers"}}</h2>
+  <p class="muted">{{.T "The agent connects outbound to the agent port of this server; the computer needs no open ports. It pins the server certificate by its fingerprint, so a fake server cannot take over the agent."}}</p>
+  <h3>{{.T "Manual install (PowerShell as administrator)"}}</h3>
+  <pre id="install-cmd">.\controlzit-agent.exe enroll --server {{.Data.AgentURL}} --fingerprint {{.Data.Fingerprint}} --token {{if .Data.NewToken}}{{.Data.NewToken}}{{else}}&lt;TOKEN&gt;{{end}}
+.\controlzit-agent.exe install</pre>
+  <p><button type="button" class="secondary" data-copy="#install-cmd">{{template "icon" "copy"}}{{.T "Copy"}}</button></p>
+  <p class="small muted">{{.T "Copy the agent to a permanent place first (for example a folder under Program Files). The MSI installer for GPO and Intune comes next."}}</p>
+</section>
+{{end}}
 <section class="panel">
   <h2>{{.T "Enrollment tokens"}}</h2>
   {{if .Data.Tokens}}

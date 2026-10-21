@@ -1,0 +1,88 @@
+{{template "app" .}}
+{{define "content"}}
+{{$d := .Data.D}}{{$i := .Data.Inv}}
+<p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a></p>
+<h1>{{template "icon" "devices"}}{{$d.Hostname}} {{if .Data.Online}}<span class="badge ok"><i></i>{{.T "Online"}}</span>{{else}}<span class="badge bad"><i></i>{{.T "Offline"}}</span>{{end}}</h1>
+
+<div class="grid">
+  <div class="stat"><span class="si">{{template "icon" "devices"}}</span><b class="sm">{{if $d.OS}}{{$d.OS}}{{else}}—{{end}}</b><span>{{.T "Build"}} {{$d.OSBuild}}</span></div>
+  <div class="stat"><span class="si">{{template "icon" "users"}}</span><b class="sm">{{if $d.LastUser}}{{$d.LastUser}}{{else}}—{{end}}</b><span>{{.T "Signed-in user"}}</span></div>
+  <div class="stat"><span class="si">{{template "icon" "online"}}</span><b class="sm">{{.Uptime $d.BootTime}}</b><span>{{.T "Uptime"}}</span></div>
+  <div class="stat"><span class="si">{{template "icon" "network"}}</span><b class="sm">{{.Ago $d.LastSeenAt}}</b><span>{{.T "Last seen"}} · {{$d.RemoteIP}}</span></div>
+</div>
+
+{{if $i}}
+{{if or $i.PendingReboot $i.Errors}}
+<div class="flash warn" role="status">{{template "icon" "alert"}}<span>{{if $i.PendingReboot}}{{.T "A restart is pending."}} {{end}}{{if $i.Errors}}{{.T "Some information could not be collected:"}} {{join $i.Errors "; "}}{{end}}</span></div>
+{{end}}
+<div class="cards2">
+<section class="panel">
+  <h2>{{.T "System"}}</h2>
+  <dl class="facts">
+    <dt>{{.T "Operating system"}}</dt><dd>{{$i.OS.Name}}{{if $i.OS.DisplayVer}} {{$i.OS.DisplayVer}}{{end}} ({{$i.OS.Arch}})</dd>
+    <dt>{{.T "Version"}}</dt><dd>{{$i.OS.Version}} · {{.T "build"}} {{$i.OS.Build}}</dd>
+    <dt>{{.T "Installed"}}</dt><dd>{{.Time $i.OS.InstallDate}}</dd>
+    <dt>{{.T "Started"}}</dt><dd>{{.Time $i.OS.BootTime}}</dd>
+    <dt>{{.T "Domain"}}</dt><dd>{{$i.Domain}}{{if not $i.PartOfDomain}} <span class="muted">({{.T "workgroup"}})</span>{{end}}</dd>
+    <dt>{{.T "Agent"}}</dt><dd>{{$d.AgentVersion}} · {{.T "enrolled"}} {{.Time $d.EnrolledAt}}</dd>
+  </dl>
+</section>
+<section class="panel">
+  <h2>{{.T "Hardware"}}</h2>
+  <dl class="facts">
+    <dt>{{.T "Model"}}</dt><dd>{{$i.Hardware.Manufacturer}} {{$i.Hardware.Model}}{{if $i.Hardware.Virtual}} <span class="badge">{{.T "virtual machine"}}</span>{{end}}</dd>
+    <dt>{{.T "Serial number"}}</dt><dd>{{$i.Hardware.Serial}}</dd>
+    <dt>{{.T "Processor"}}</dt><dd>{{$i.Hardware.CPU}} · {{.T "%d cores, %d threads" $i.Hardware.Cores $i.Hardware.Threads}}</dd>
+    <dt>{{.T "Memory"}}</dt><dd>{{.Bytes $i.Hardware.MemoryBytes}}</dd>
+    <dt>BIOS</dt><dd>{{$i.Hardware.BIOS}}</dd>
+  </dl>
+</section>
+<section class="panel">
+  <h2>{{.T "Security"}}</h2>
+  <dl class="facts">
+    <dt>Microsoft Defender</dt><dd>{{with $i.Defender}}{{if .Antivirus}}<span class="badge ok"><i></i>{{$.T "On"}}</span>{{else}}<span class="badge bad"><i></i>{{$.T "Off"}}</span>{{end}} {{$.T "real-time"}}: {{if .RealTime}}{{$.T "on"}}{{else}}<b class="bad-text">{{$.T "off"}}</b>{{end}} · {{$.T "signatures"}} {{.SignatureVersion}} ({{$.Ago .SignatureUpdated}}){{else}}<span class="muted">{{.T "not present"}}</span>{{end}}</dd>
+    <dt>{{.T "Firewall"}}</dt><dd>{{range $i.Firewall}}<span class="badge {{if .Enabled}}ok{{else}}bad{{end}}"><i></i>{{.Profile}}</span> {{else}}<span class="muted">—</span>{{end}}</dd>
+    <dt>BitLocker</dt><dd>{{range $i.BitLocker}}<span class="badge {{if eq .Protection "on"}}ok{{end}}">{{.Drive}} {{$.T .Status}}</span> {{else}}<span class="muted">{{.T "no information"}}</span>{{end}}</dd>
+    <dt>{{.T "Restart pending"}}</dt><dd>{{if $i.PendingReboot}}<span class="badge warn">{{.T "Yes"}}</span>{{else}}{{.T "No"}}{{end}}</dd>
+  </dl>
+</section>
+<section class="panel">
+  <h2>{{.T "Disks"}}</h2>
+  {{range $i.Disks}}<div class="disk"><div class="disk-head"><b>{{.Drive}}</b> <span class="muted">{{.Label}} {{.FS}}</span><span class="disk-free">{{$.T "%s free of %s" ($.Bytes .Free) ($.Bytes .Size)}}</span></div>
+    <progress class="meter {{if ge ($.Percent .Free .Size) 90}}bad{{else if ge ($.Percent .Free .Size) 80}}warn{{end}}" max="100" value="{{$.Percent .Free .Size}}">{{$.Percent .Free .Size}} %</progress></div>
+  {{else}}<p class="muted">—</p>{{end}}
+</section>
+</div>
+<section class="panel">
+  <h2>{{.T "Network"}}</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{.T "Adapter"}}</th><th>{{.T "IP addresses"}}</th><th class="hide-sm">{{.T "Gateway"}}</th><th class="hide-sm">DNS</th><th class="hide-sm">MAC</th></tr></thead>
+    <tbody>{{range $i.Network}}<tr><td>{{.Name}}{{if .DHCP}} <span class="badge">DHCP</span>{{end}}</td><td class="mono">{{join .IPs ", "}}</td><td class="hide-sm mono">{{join .Gateways ", "}}</td><td class="hide-sm mono">{{join .DNS ", "}}</td><td class="hide-sm mono">{{.MAC}}</td></tr>{{end}}</tbody>
+  </table></div>
+</section>
+<section class="panel">
+  <h2>{{.T "Installed software"}} <span class="muted small">({{len $i.Software}})</span></h2>
+  <form method="get" action="/devices/{{$d.ID}}" class="row">
+    <input type="search" name="sw" value="{{.Data.SwQuery}}" placeholder="{{.T "Search name or publisher"}}" aria-label="{{.T "Search"}}">
+    <button class="secondary">{{.T "Search"}}</button>
+  </form>
+  <div class="table-wrap mt scroll-y"><table>
+    <thead><tr><th>{{.T "Name"}}</th><th>{{.T "Version"}}</th><th class="hide-sm">{{.T "Publisher"}}</th></tr></thead>
+    <tbody>{{range .Data.Software}}<tr><td>{{.Name}}</td><td class="mono nowrap">{{.Version}}</td><td class="hide-sm muted">{{.Publisher}}</td></tr>{{end}}</tbody>
+  </table></div>
+</section>
+<p class="small muted">{{.T "Inventory collected"}} {{.Time $i.CollectedAt}} ({{.Ago $d.InventoryAt}})</p>
+{{else}}
+<section class="panel"><div class="empty">{{template "icon" "devices"}}<p>{{.T "No inventory yet. It arrives a few seconds after the agent connects."}}</p></div></section>
+{{end}}
+
+{{if .User.CanWrite}}
+<section class="panel">
+  <h2>{{.T "Actions"}}</h2>
+  <div class="row">
+    <form method="post" action="/devices/{{$d.ID}}/refresh"><button class="secondary" {{if not .Data.Online}}disabled{{end}}>{{.T "Refresh inventory"}}</button></form>
+    <form method="post" action="/devices/{{$d.ID}}/delete" data-confirm="{{.T "Remove this device? Its agent can no longer connect until it is enrolled again."}}"><button class="danger">{{template "icon" "trash"}}{{.T "Remove device"}}</button></form>
+  </div>
+</section>
+{{end}}
+{{end}}

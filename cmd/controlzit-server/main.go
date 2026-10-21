@@ -173,12 +173,12 @@ func run() error {
 	}
 	errc := make(chan error, 3)
 	var servers []*http.Server
-	serve := func(addr string, cert tls.Certificate, list *netacl.List, h http.Handler, kind string) error {
+	serve := func(addr string, cfg *tls.Config, list *netacl.List, h http.Handler, kind string) error {
 		raw, err := net.Listen("tcp", addr)
 		if err != nil {
 			return fmt.Errorf("%s listener %s: %w", kind, addr, err)
 		}
-		l := tls.NewListener(&netacl.Listener{Listener: raw, List: list, OnRefuse: refused(kind)}, tlsutil.ServerConfig(cert))
+		l := tls.NewListener(&netacl.Listener{Listener: raw, List: list, OnRefuse: refused(kind)}, cfg)
 		hs := &http.Server{Handler: h, ReadHeaderTimeout: 10 * time.Second, ReadTimeout: 60 * time.Second, WriteTimeout: 120 * time.Second,
 			IdleTimeout: 120 * time.Second, MaxHeaderBytes: 64 << 10, ErrorLog: slog.NewLogLogger(log.Handler(), slog.LevelDebug)}
 		servers = append(servers, hs)
@@ -186,10 +186,10 @@ func run() error {
 		log.Info("listening", "listener", kind, "addr", raw.Addr().String())
 		return nil
 	}
-	if err := serve(net0.MgmtListen, consoleCert, srv.MgmtACL, srv.Handler(), "console"); err != nil {
+	if err := serve(net0.MgmtListen, tlsutil.ServerConfig(consoleCert), srv.MgmtACL, srv.Handler(), "console"); err != nil {
 		return err
 	}
-	if err := serve(net0.AgentListen, agentCert, srv.AgentACL, srv.AgentHandler(), "agent"); err != nil {
+	if err := serve(net0.AgentListen, tlsutil.AgentServerConfig(agentCert), srv.AgentACL, srv.AgentHandler(), "agent"); err != nil {
 		return err
 	}
 	if *devHTTP != "" {

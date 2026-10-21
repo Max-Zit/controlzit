@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/max-zit/controlzit/internal/netacl"
+	"github.com/max-zit/controlzit/internal/proto"
 	"github.com/max-zit/controlzit/internal/store"
 )
 
@@ -30,6 +31,7 @@ type Server struct {
 	tmpl  map[string]*template.Template
 	now   func() time.Time
 	guard *loginGuard
+	hub   *hub
 
 	// MgmtACL guards the console listener, AgentACL the agent listener.
 	MgmtACL  *netacl.List
@@ -49,8 +51,8 @@ type Server struct {
 	SetupTokenFile string
 	// DevNo2FA skips the second factor (development server only; the
 	// command refuses it without the embedded development database).
-	DevNo2FA bool
-	setupToken     string
+	DevNo2FA   bool
+	setupToken string
 }
 
 // New creates the server; network settings are loaded from the database.
@@ -59,7 +61,10 @@ func New(ctx context.Context, st *store.Store, log *slog.Logger) (*Server, error
 	if err != nil {
 		return nil, err
 	}
-	s := &Server{store: st, log: log, tmpl: t, now: time.Now, Version: "dev"}
+	s := &Server{store: st, log: log, tmpl: t, now: time.Now, Version: "dev", hub: newHub()}
+	if err := st.ResetConnected(ctx); err != nil {
+		return nil, err
+	}
 	s.guard = newLoginGuard(st, func() time.Time { return s.now() })
 	n, err := s.Network(ctx)
 	if err != nil {
@@ -271,6 +276,10 @@ func (s *Server) Handler() http.Handler {
 	app("POST /sites/{id}/delete", s.handleSiteDelete)
 	app("POST /sites/{id}/tokens", s.handleTokenCreate)
 	app("POST /sites/{id}/tokens/{tid}/revoke", s.handleTokenRevoke)
+	app("GET /devices", s.handleDevices)
+	app("GET /devices/{id}", s.handleDevice)
+	app("POST /devices/{id}/refresh", s.handleDeviceRefresh)
+	app("POST /devices/{id}/delete", s.handleDeviceDelete)
 	app("GET /account", s.handleAccount)
 	app("POST /account/password", s.handleAccountPassword)
 	app("POST /account/recovery", s.handleAccountRecovery)
@@ -282,7 +291,9 @@ func (s *Server) Handler() http.Handler {
 	admin("POST /users/{id}/password", s.handleUserPassword)
 	admin("POST /users/{id}/reset-2fa", s.handleUserReset2FA)
 	admin("GET /audit", s.handleAudit)
-	admin("GET /settings", func(w http.ResponseWriter, r *http.Request) { http.Redirect(w, r, "/settings/network", http.StatusFound) })
+	admin("GET /settings", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/settings/network", http.StatusFound)
+	})
 	admin("GET /settings/network", s.handleNetwork)
 	admin("POST /settings/network", s.handleNetworkSave)
 	admin("GET /settings/security", s.handleSecurity)
@@ -292,11 +303,13 @@ func (s *Server) Handler() http.Handler {
 	return s.secure(s.aclCheck(s.MgmtACL, s.csrf(s.loadSession(mux))))
 }
 
-// AgentHandler is the agent endpoint (enrollment and the command channel
-// come with the agent; for now it answers a health check only).
+// AgentHandler is the agent endpoint: enrollment, the agent channel and a
+// health check. Agents authenticate with their TLS client certificate.
 func (s *Server) AgentHandler() http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /agent/v1/health", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("POST "+proto.PathEnroll, s.handleAgentEnroll)
+	mux.HandleFunc("GET "+proto.PathConnect, s.handleConnect)
+	mux.HandleFunc("GET "+proto.PathHealth, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`{"status":"ok","product":"controlzit"}`))
 	})

@@ -222,13 +222,15 @@ func (s *Server) siteFor(w http.ResponseWriter, r *http.Request) *store.Site {
 }
 
 type siteData struct {
-	Site      *store.Site
-	Tokens    []store.EnrollToken
-	NewToken  string
-	AgentURL  string
-	Now       time.Time
-	ValidDays int
-	MaxUses   int
+	Site        *store.Site
+	Devices     []*store.Device
+	Fingerprint string
+	Tokens      []store.EnrollToken
+	NewToken    string
+	AgentURL    string
+	Now         time.Time
+	ValidDays   int
+	MaxUses     int
 }
 
 func (s *Server) handleSite(w http.ResponseWriter, r *http.Request) {
@@ -246,6 +248,11 @@ func (s *Server) showSite(w http.ResponseWriter, r *http.Request, status int, d 
 		return
 	}
 	d.Tokens, d.Now = toks, s.now()
+	if d.Devices, err = s.store.Devices(r.Context(), userFrom(r), store.DeviceFilter{SiteID: d.Site.ID}); err != nil {
+		s.serverError(w, r, err)
+		return
+	}
+	d.Fingerprint = s.AgentFingerprint
 	if d.ValidDays == 0 {
 		d.ValidDays, d.MaxUses = 7, 50
 	}
@@ -361,3 +368,6 @@ func (s *Server) handleTokenRevoke(w http.ResponseWriter, r *http.Request) {
 func splitHostPortLoose(hp string) (string, string, error) { return net.SplitHostPort(hp) }
 
 func joinHostPort(h, p string) string { return net.JoinHostPort(strings.Trim(h, "[]"), p) }
+
+// Online is used by the device list of the site page.
+func (d *siteData) Online(x *store.Device) bool { return x.Online(d.Now, onlineWindow) }

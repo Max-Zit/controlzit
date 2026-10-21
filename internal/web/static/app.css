@@ -215,3 +215,23 @@ code.secret { font-size: 13px; overflow-wrap: anywhere; word-break: break-all; }
   .guest-card { padding: 20px; }
   .codes { grid-template-columns: 1fr; }
 }
+
+/* ---- devices */
+.stat b.sm { font-size: 15px; letter-spacing: 0; line-height: 1.3; overflow-wrap: anywhere; }
+.cards2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 0 20px; }
+.disk + .disk { margin-top: 14px; }
+.disk-head { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; margin-bottom: 6px; }
+.disk-free { margin-left: auto; color: var(--muted); font-size: 12.5px; }
+progress.meter { width: 100%; height: 8px; border: 0; border-radius: 99px; background: var(--panel-2); overflow: hidden; appearance: none; -webkit-appearance: none; }
+progress.meter::-webkit-progress-bar { background: var(--line); border-radius: 99px; }
+progress.meter::-webkit-progress-value { background: var(--accent); border-radius: 99px; }
+progress.meter::-moz-progress-bar { background: var(--accent); border-radius: 99px; }
+progress.meter.warn::-webkit-progress-value { background: var(--warn); }
+progress.meter.warn::-moz-progress-bar { background: var(--warn); }
+progress.meter.bad::-webkit-progress-value { background: var(--bad); }
+progress.meter.bad::-moz-progress-bar { background: var(--bad); }
+.scroll-y { max-height: 480px; overflow-y: auto; }
+.bad-text { color: var(--bad); }
+.install pre { font-size: 12px; }
+.install h3 { font-size: 13.5px; margin: 16px 0 8px; }
+@media (max-width: 420px) { .cards2 { grid-template-columns: 1fr; } }

@@ -246,7 +246,7 @@ func (s *Store) Overview(ctx context.Context, u *User, onlineSince time.Time) (C
 		SELECT (SELECT count(*) FROM vis),
 		       (SELECT count(*) FROM sites WHERE customer_id IN (SELECT id FROM vis)),
 		       (SELECT count(*) FROM devices d JOIN sites x ON x.id=d.site_id WHERE x.customer_id IN (SELECT id FROM vis)),
-		       (SELECT count(*) FROM devices d JOIN sites x ON x.id=d.site_id WHERE x.customer_id IN (SELECT id FROM vis) AND d.last_seen_at > $3)`,
+		       (SELECT count(*) FROM devices d JOIN sites x ON x.id=d.site_id WHERE x.customer_id IN (SELECT id FROM vis) AND d.connected AND d.last_seen_at > $3)`,
 		all, u.ID, onlineSince).Scan(&c.Customers, &c.Sites, &c.Devices, &c.Online)
 	return c, err
 }

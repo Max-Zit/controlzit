@@ -117,3 +117,12 @@ func ServerConfig(c tls.Certificate) *tls.Config {
 		},
 	}
 }
+
+// AgentServerConfig is ServerConfig for the agent endpoint: it asks for a
+// client certificate (the agent's ed25519 identity). The chain is not
+// verified; the server looks the key up among the enrolled agents.
+func AgentServerConfig(c tls.Certificate) *tls.Config {
+	cfg := ServerConfig(c)
+	cfg.ClientAuth = tls.RequestClientCert
+	return cfg
+}

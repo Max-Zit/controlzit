@@ -47,13 +47,13 @@ func TestSplit(t *testing.T) {
 func TestManagementList(t *testing.T) {
 	l := NewManagement(mustParse(t, "192.168.101.0/24"))
 	cases := map[string]bool{
-		"192.168.101.104:5000": true,
-		"192.168.102.1:5000":   false,
-		"127.0.0.1:1":          true, // loopback is always allowed
-		"[::1]:1":              true,
+		"192.168.101.104:5000":     true,
+		"192.168.102.1:5000":       false,
+		"127.0.0.1:1":              true, // loopback is always allowed
+		"[::1]:1":                  true,
 		"[::ffff:192.168.101.9]:1": true,
-		"8.8.8.8:443":          false,
-		"garbage":              false,
+		"8.8.8.8:443":              false,
+		"garbage":                  false,
 	}
 	for a, want := range cases {
 		if got := l.AllowsAddr(a); got != want {

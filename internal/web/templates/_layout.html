@@ -17,6 +17,7 @@
   <nav>
     <a href="/" class="{{if eq .Nav "overview"}}on{{end}}">{{template "icon" "overview"}}{{.T "Overview"}}</a>
     <a href="/customers" class="{{if eq .Nav "customers"}}on{{end}}">{{template "icon" "customers"}}{{.T "Customers"}}</a>
+    <a href="/devices" class="{{if eq .Nav "devices"}}on{{end}}">{{template "icon" "devices"}}{{.T "Devices"}}</a>
     {{if .User.IsAdmin}}
     <span class="navlabel">{{.T "Administration"}}</span>
     <a href="/users" class="{{if eq .Nav "users"}}on{{end}}">{{template "icon" "users"}}{{.T "Users"}}</a>
@@ -85,3 +86,15 @@
   {{range .Customers}}<label class="check"><input type="checkbox" name="customers" value="{{.ID}}" {{if contains $.IDs .ID}}checked{{end}}>{{.Name}}</label>{{end}}</div>{{end}}
   <small class="muted">{{.P.T "Administrators always see all customers."}}</small>
 </fieldset>{{end}}
+
+{{define "devicetable"}}<div class="table-wrap"><table>
+  <thead><tr><th>{{.T "Device"}}</th><th>{{.T "Status"}}</th><th class="hide-sm">{{.T "Customer / site"}}</th><th class="hide-sm">{{.T "Operating system"}}</th><th class="hide-sm">{{.T "User"}}</th><th class="hide-sm">{{.T "Last seen"}}</th></tr></thead>
+  <tbody>{{range .Data.Devices}}<tr>
+    <td><a href="/devices/{{.ID}}">{{.Hostname}}</a></td>
+    <td>{{if $.Data.Online .}}<span class="badge ok"><i></i>{{$.T "Online"}}</span>{{else}}<span class="badge bad"><i></i>{{$.T "Offline"}}</span>{{end}}</td>
+    <td class="hide-sm muted">{{.Customer}} / {{.Site}}</td>
+    <td class="hide-sm">{{.OS}}{{if .OSBuild}} <span class="muted">({{.OSBuild}})</span>{{end}}</td>
+    <td class="hide-sm muted">{{.LastUser}}</td>
+    <td class="hide-sm muted">{{$.Ago .LastSeenAt}}</td>
+  </tr>{{end}}</tbody>
+</table></div>{{end}}

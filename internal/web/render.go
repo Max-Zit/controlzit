@@ -68,15 +68,15 @@ func translate(lang, key string, args ...any) string {
 
 // Page is what every template gets.
 type Page struct {
-	Title   string
-	Nav     string
-	Lang    string
-	User    *store.User
-	Flash   string
-	Error   string
-	Version string
+	Title    string
+	Nav      string
+	Lang     string
+	User     *store.User
+	Flash    string
+	Error    string
+	Version  string
 	DevNo2FA bool
-	Data    any
+	Data     any
 	// CSRF-free forms post back to the same origin; nothing else needed.
 }
 
