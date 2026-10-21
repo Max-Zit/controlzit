@@ -11,9 +11,22 @@
     <a class="tile-btn primary" href="/devices/{{$d.ID}}/rd"{{if not .Data.Online}} aria-disabled="true"{{end}}><span class="tb-ic">{{template "icon" "screen"}}</span><span><b>{{.T "Remote desktop"}}</b><small>{{.T "See and control the screen"}}</small></span></a>
     <a class="tile-btn" href="/devices/{{$d.ID}}/files"{{if not .Data.Online}} aria-disabled="true"{{end}}><span class="tb-ic">{{template "icon" "folder"}}</span><span><b>{{.T "Files"}}</b><small>{{.T "Without connecting to the screen"}}</small></span></a>
     <form method="post" action="/devices/{{$d.ID}}/refresh"><button class="iconbtn bordered" title="{{.T "Refresh inventory"}}" aria-label="{{.T "Refresh inventory"}}" {{if not .Data.Online}}disabled{{end}}>{{template "icon" "refresh"}}</button></form>
+    <details class="pop right power">
+      <summary class="iconbtn bordered" title="{{.T "Restart or shut down"}}" aria-label="{{.T "Restart or shut down"}}">{{template "icon" "power"}}</summary>
+      <div class="pop-body">
+        <form method="post" action="/devices/{{$d.ID}}/power" class="stack" data-confirm="{{.T "Restart or shut down %s? Users signed in there lose unsaved work." $d.Hostname}}">
+          <b>{{.T "Restart or shut down"}}</b>
+          <label>{{.T "In (seconds)"}}<input type="number" name="delay" value="60" min="0" max="3600" required></label>
+          <label>{{.T "Message for the signed-in user"}} <small>{{.T "optional"}}</small><input name="message" maxlength="500" placeholder="{{.T "The computer restarts for maintenance."}}"></label>
+          <div class="row"><button class="primary sm" name="action" value="restart" {{if not .Data.Online}}disabled{{end}}>{{.T "Restart"}}</button><button class="danger sm" name="action" value="shutdown" {{if not .Data.Online}}disabled{{end}}>{{.T "Shut down"}}</button></div>
+        </form>
+        <form method="post" action="/devices/{{$d.ID}}/power" class="mt"><button class="ghost sm" name="action" value="cancel" {{if not .Data.Online}}disabled{{end}}>{{.T "Cancel a scheduled restart or shutdown"}}</button></form>
+      </div>
+    </details>
   </div>
   {{end}}
 </div>
+{{template "devtabs" (devtabs . $d "overview")}}
 {{if .Data.Alerts}}
 <section class="panel alert-panel">
   <h2>{{template "icon" "alert"}}{{.T "Open alerts"}}</h2>

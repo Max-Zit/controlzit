@@ -73,6 +73,28 @@ $C -o /dev/null -d "$form&watch_services=Spooler" $S/settings/monitoring
 sleep 4
 check "alert resolves when the rule changes" '! $C $S/alerts | grep -q "$STOPPED"'
 
+# --- remote actions: services, processes, scripts, power
+script() { # shell, script → body of the result page
+  local loc
+  printf "%s" "$2" > .gotmp/r-script.txt  # from a file: Git Bash would re-encode non-ASCII arguments
+  loc=$($C -o /dev/null -w "%{redirect_url}" -d shell=$1 -d timeout=60 --data-urlencode "script@.gotmp/r-script.txt" $S/devices/$DEV/scripts)
+  $C "$loc"
+}
+check "services page lists Spooler" '$C "$S/devices/$DEV/services?q=spooler" | grep -q "<code class=\"small muted\">Spooler</code>"'
+check "processes page lists explorer.exe" '$C "$S/devices/$DEV/processes?q=explorer" | grep -qi "explorer.exe"'
+$C -o /dev/null -d name=W32Time -d action=stop $S/devices/$DEV/services
+check "service stopped from the console" 'script powershell "(Get-Service W32Time).Status" | grep -q "output\">Stopped"'
+$C -o /dev/null -d name=W32Time -d action=start $S/devices/$DEV/services
+check "service started from the console" 'script powershell "(Get-Service W32Time).Status" | grep -q "output\">Running"'
+$C -o /dev/null -d name=ControlZitAgent -d action=stop $S/devices/$DEV/services
+check "agent refuses to stop its own service" 'script cmd "sc query ControlZitAgent" | grep -q "RUNNING"'
+check "PowerShell script output, UTF-8 and exit code" 'script powershell "Write-Output \"lab čćž \$env:USERNAME\"; exit 5" | grep -q "lab čćž SYSTEM\|lab čćž DESKTOP" && $C "$S/audit?q=script.run" | grep -q "exit code 5"'
+check "cmd script output" 'script cmd "echo cmd-ok %COMPUTERNAME%" | grep -q "cmd-ok DESKTOP-NBB66OQ"'
+check "script output in the audit log" '$C "$S/audit?q=script.run" | grep -q "lab čćž"'
+check "service actions audited" '$C "$S/audit?q=service.stop" | grep -q "W32Time"'
+check "unknown power action refused" '[ "$($C -o /dev/null -w %{http_code} -d action=hibernate -d delay=0 $S/devices/$DEV/power)" = 303 ] && ! $C "$S/audit?q=hibernate" | grep -q "hibernate of"'
+check "audit chain still intact" '$C $S/audit | grep -q "is intact\|neprekinut\|netaknut"'
+
 # --- roles: a technician of another customer sees nothing of this device
 $C -o /dev/null -d "name=Other Customer QA" $S/customers
 OC=$($C $S/customers | grep -o 'href="/customers/[0-9]*">Other Customer QA' | grep -o '[0-9]*' | head -1)

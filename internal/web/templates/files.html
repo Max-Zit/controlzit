@@ -3,6 +3,7 @@
 {{$d := .Data.D}}
 <p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a> / <a href="/devices/{{$d.ID}}">{{$d.Hostname}}</a></p>
 <h1>{{template "icon" "folder"}}{{.T "Files"}} <span class="muted h1-sub">{{$d.Hostname}}</span></h1>
+{{template "devtabs" (devtabs . $d "files")}}
 
 <nav class="crumbs" aria-label="{{.T "Path"}}">
   <a href="/devices/{{$d.ID}}/files">{{template "icon" "devices"}}{{.T "This computer"}}</a>

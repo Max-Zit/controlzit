@@ -330,3 +330,17 @@ table.alerts td b { font-weight: 600; }
 .iconbtn.bordered { width: auto; height: auto; min-height: 42px; min-width: 46px; padding: 0 14px; border-color: var(--line); background: var(--panel); box-shadow: var(--shadow); }
 .iconbtn.bordered:disabled { opacity: .5; cursor: default; }
 @media (max-width: 600px) { .devhead-actions, .tile-btn { width: 100%; } .tile-btn { min-width: 0; } }
+
+/* ---- device sections: services, processes, scripts */
+.devtabs { margin: 4px 0 18px; }
+.row.filter { align-items: center; }
+.row.filter input[type=search] { flex: 1 1 220px; min-width: 0; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+td.actions { text-align: right; }
+td.actions form.inline { display: inline-flex; gap: 6px; }
+code.clip { display: inline-block; max-width: 42ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
+textarea.mono { font-family: var(--mono); font-size: 13px; }
+pre.output { max-height: 560px; overflow: auto; word-break: normal; overflow-wrap: anywhere; }
+details.power .pop-body { min-width: 300px; }
+form[data-busy].busy button { opacity: .6; pointer-events: none; }
+.busy-note { margin-top: 8px; }

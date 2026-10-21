@@ -146,6 +146,20 @@ var funcs = template.FuncMap{
 	"roleForm": func(p *Page, role string, all bool, ids []int64, cs []store.Customer) roleForm {
 		return roleForm{P: p, Role: role, All: all, IDs: ids, Customers: cs}
 	},
+	"deref": func(p *int) int {
+		if p == nil {
+			return 0
+		}
+		return *p
+	},
+	"firstLine": func(s string) string {
+		s = strings.TrimSpace(s)
+		if i := strings.IndexByte(s, '\n'); i >= 0 {
+			return s[:i] + " …"
+		}
+		return s
+	},
+	"devtabs": func(p *Page, d *store.Device, cur string) devTabs { return devTabs{P: p, D: d, Cur: cur} },
 }
 
 // loadTemplates parses each page together with the layout.
@@ -282,3 +296,10 @@ var assetVersion = func() string {
 	}
 	return hex.EncodeToString(h.Sum(nil))[:12]
 }()
+
+// devTabs feeds the section menu of a device.
+type devTabs struct {
+	P   *Page
+	D   *store.Device
+	Cur string
+}

@@ -47,7 +47,8 @@
   });
 
   document.addEventListener("submit", function (ev) {
-    var msg = ev.target.getAttribute("data-confirm");
+    var b = ev.submitter;
+    var msg = (b && b.getAttribute("data-confirm")) || ev.target.getAttribute("data-confirm");
     if (msg && !window.confirm(msg)) ev.preventDefault();
   });
 })();
@@ -83,4 +84,17 @@ document.addEventListener("DOMContentLoaded", function () {
   if (on && on.parentElement.scrollWidth > on.parentElement.clientWidth) {
     on.parentElement.scrollLeft = on.offsetLeft - 10;
   }
+});
+
+// Forms that wait for a long answer (scripts): show that the page is working.
+document.addEventListener("submit", function (ev) {
+  "use strict";
+  var f = ev.target;
+  if (ev.defaultPrevented || !f.hasAttribute("data-busy") || f.classList.contains("busy")) return;
+  f.classList.add("busy");
+  var p = document.createElement("p");
+  p.className = "muted small busy-note";
+  p.setAttribute("role", "status");
+  p.textContent = f.getAttribute("data-busy");
+  f.appendChild(p);
 });

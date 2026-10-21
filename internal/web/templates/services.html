@@ -1,0 +1,43 @@
+{{template "app" .}}
+{{define "content"}}
+{{$d := .Data.D}}
+<p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a> / <a href="/devices/{{$d.ID}}">{{$d.Hostname}}</a></p>
+<h1>{{template "icon" "service"}}{{.T "Services"}} <span class="muted h1-sub">{{$d.Hostname}}</span></h1>
+{{template "devtabs" (devtabs . $d "services")}}
+
+{{if .Data.Err}}<div class="flash err" role="alert">{{template "icon" "alert"}}<span>{{.Data.Err}}</span></div>{{end}}
+
+{{if not .Data.Offline}}
+<section class="panel">
+  <form method="get" action="/devices/{{$d.ID}}/services" class="row filter">
+    <input type="search" name="q" value="{{.Data.Q}}" placeholder="{{.T "Search by name"}}" aria-label="{{.T "Search"}}">
+    <select name="state" aria-label="{{.T "State"}}" data-autosubmit>
+      <option value="" {{if eq .Data.State ""}}selected{{end}}>{{.T "All services"}}</option>
+      <option value="running" {{if eq .Data.State "running"}}selected{{end}}>{{.T "Running"}}</option>
+      <option value="stopped" {{if eq .Data.State "stopped"}}selected{{end}}>{{.T "Stopped"}}</option>
+      <option value="auto-stopped" {{if eq .Data.State "auto-stopped"}}selected{{end}}>{{.T "Automatic but not running"}}</option>
+    </select>
+    <button class="secondary">{{.T "Filter"}}</button>
+    <span class="muted small">{{.T "%d of %d" (len .Data.Services) .Data.Total}}</span>
+  </form>
+  {{if .Data.Services}}
+  <div class="table-wrap mt"><table class="svc">
+    <thead><tr><th>{{.T "Service"}}</th><th>{{.T "State"}}</th><th class="hide-sm">{{.T "Startup"}}</th><th></th></tr></thead>
+    <tbody>{{range .Data.Services}}<tr>
+      <td><b>{{.Display}}</b><br><code class="small muted">{{.Name}}</code></td>
+      <td class="nowrap">{{if eq .State "running"}}<span class="badge ok"><i></i>{{$.T "running"}}</span>{{else if eq .State "stopped"}}<span class="badge"><i></i>{{$.T "stopped"}}</span>{{else}}<span class="badge warn"><i></i>{{$.T .State}}</span>{{end}}</td>
+      <td class="hide-sm">{{$.T .StartType}}</td>
+      <td class="nowrap actions">
+        <form method="post" action="/devices/{{$d.ID}}/services" class="inline">
+          <input type="hidden" name="name" value="{{.Name}}"><input type="hidden" name="q" value="{{$.Data.Q}}"><input type="hidden" name="state" value="{{$.Data.State}}">
+          {{if eq .State "stopped"}}<button class="secondary sm" name="action" value="start">{{$.T "Start"}}</button>{{end}}
+          {{if eq .State "running"}}<button class="secondary sm" name="action" value="restart" data-confirm="{{$.T "Restart the service %s?" .Display}}">{{$.T "Restart"}}</button>
+          <button class="ghost sm" name="action" value="stop" data-confirm="{{$.T "Stop the service %s?" .Display}}">{{$.T "Stop"}}</button>{{end}}
+        </form>
+      </td>
+    </tr>{{end}}</tbody>
+  </table></div>
+  {{else}}<p class="muted mt">{{.T "No services match."}}</p>{{end}}
+</section>
+{{end}}
+{{end}}

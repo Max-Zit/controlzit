@@ -1,0 +1,42 @@
+{{template "app" .}}
+{{define "content"}}
+{{$d := .Data.D}}
+<p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a> / <a href="/devices/{{$d.ID}}">{{$d.Hostname}}</a></p>
+<h1>{{template "icon" "cpu"}}{{.T "Processes"}} <span class="muted h1-sub">{{$d.Hostname}}</span></h1>
+{{template "devtabs" (devtabs . $d "processes")}}
+
+{{if .Data.Err}}<div class="flash err" role="alert">{{template "icon" "alert"}}<span>{{.Data.Err}}</span></div>{{end}}
+
+{{if not .Data.Offline}}
+<section class="panel">
+  <form method="get" action="/devices/{{$d.ID}}/processes" class="row filter">
+    <input type="search" name="q" value="{{.Data.Q}}" placeholder="{{.T "Name or PID"}}" aria-label="{{.T "Search"}}">
+    <select name="sort" aria-label="{{.T "Sort"}}" data-autosubmit>
+      <option value="mem" {{if eq .Data.Sort "mem"}}selected{{end}}>{{.T "Most memory first"}}</option>
+      <option value="name" {{if eq .Data.Sort "name"}}selected{{end}}>{{.T "By name"}}</option>
+      <option value="pid" {{if eq .Data.Sort "pid"}}selected{{end}}>{{.T "By PID"}}</option>
+    </select>
+    <button class="secondary">{{.T "Filter"}}</button>
+    <a class="btn ghost sm" href="/devices/{{$d.ID}}/processes?q={{.Data.Q}}&amp;sort={{.Data.Sort}}">{{template "icon" "refresh"}}{{.T "Refresh"}}</a>
+    <span class="muted small">{{.T "%d of %d" (len .Data.Processes) .Data.Total}}</span>
+  </form>
+  {{if .Data.Processes}}
+  <div class="table-wrap mt"><table class="procs">
+    <thead><tr><th>{{.T "Process"}}</th><th class="num">PID</th><th class="num">{{.T "Memory"}}</th><th class="num hide-sm">{{.T "Threads"}}</th><th class="num hide-sm">{{.T "Session"}}</th><th></th></tr></thead>
+    <tbody>{{range .Data.Processes}}<tr>
+      <td><b>{{.Name}}</b></td>
+      <td class="num mono">{{.PID}}</td>
+      <td class="num nowrap">{{if .Memory}}{{$.Bytes (.Memory)}}{{else}}<span class="muted">—</span>{{end}}</td>
+      <td class="num hide-sm">{{.Threads}}</td>
+      <td class="num hide-sm">{{.Session}}</td>
+      <td class="nowrap actions">{{if gt .PID 4}}
+        <form method="post" action="/devices/{{$d.ID}}/processes/kill" class="inline" data-confirm="{{$.T "End the process %s (PID %d)? Unsaved work in it is lost." .Name .PID}}">
+          <input type="hidden" name="pid" value="{{.PID}}"><input type="hidden" name="name" value="{{.Name}}"><input type="hidden" name="q" value="{{$.Data.Q}}"><input type="hidden" name="sort" value="{{$.Data.Sort}}">
+          <button class="ghost sm">{{$.T "End"}}</button>
+        </form>{{end}}</td>
+    </tr>{{end}}</tbody>
+  </table></div>
+  {{else}}<p class="muted mt">{{.T "No processes match."}}</p>{{end}}
+</section>
+{{end}}
+{{end}}
