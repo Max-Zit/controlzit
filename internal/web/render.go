@@ -270,7 +270,7 @@ type roleForm struct {
 // old app.css or app.js from their cache after an update.
 var assetVersion = func() string {
 	h := sha256.New()
-	for _, f := range []string{"static/app.css", "static/app.js"} {
+	for _, f := range []string{"static/app.css", "static/app.js", "static/rd.js"} {
 		b, _ := staticFS.ReadFile(f)
 		h.Write(b)
 	}

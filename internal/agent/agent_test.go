@@ -3,6 +3,7 @@ package agent
 import (
 	"crypto/ed25519"
 	"crypto/x509"
+	"encoding/json"
 	"strings"
 	"testing"
 )
@@ -117,5 +118,12 @@ func TestSetAsideRestore(t *testing.T) {
 	k2, _ := LoadOrCreateKey(dir)
 	if got, err := LoadConfig(dir); err != nil || got.AgentID != "x" || !k1.Equal(k2) {
 		t.Fatal("old enrollment not restored")
+	}
+}
+
+func TestRedact(t *testing.T) {
+	got := redact(json.RawMessage(`{"session":"s1","token":"secret-token","technician":"ana"}`))
+	if strings.Contains(got, "secret-token") || !strings.Contains(got, "s1") {
+		t.Fatalf("redact: %s", got)
 	}
 }

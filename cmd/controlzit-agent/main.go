@@ -9,6 +9,7 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"encoding/json"
 	"errors"
@@ -68,6 +69,8 @@ func run(args []string) error {
 	code := fs.String("code", "", "enrollment code from the console (CZ1-…), instead of --server, --fingerprint and --token")
 	ifNot := fs.Bool("if-not-enrolled", false, "do nothing when already enrolled (installer upgrades)")
 	pendingOK := fs.Bool("pending-ok", false, "if the server cannot be reached, let the service finish the enrollment later")
+	session := fs.String("session", "", "remote desktop session (rdhelper, started by the service)")
+	technician := fs.String("technician", "", "name shown in the notice (rdhelper)")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -149,6 +152,11 @@ func run(args []string) error {
 	case "run":
 		log := slog.New(slog.NewTextHandler(io.MultiWriter(os.Stderr, agent.OpenLog(*dir)), nil))
 		return runAgent(ctx, *dir, log)
+	case "rdhelper":
+		// Started by the service in the console session; the token comes on stdin.
+		line, _ := bufio.NewReader(os.Stdin).ReadString('\n')
+		log := slog.New(slog.NewTextHandler(agent.OpenLog(*dir), nil)).With("helper", *session)
+		return agent.RunHelper(ctx, *dir, *session, *technician, line, log)
 	case "install":
 		return installService()
 	case "uninstall":

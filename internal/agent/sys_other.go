@@ -4,6 +4,7 @@ package agent
 
 import (
 	"context"
+	"errors"
 	"os"
 	"runtime"
 	"strings"
@@ -33,3 +34,7 @@ func systemFolders() []string {
 }
 
 func drives() ([]proto.FSDrive, error) { return []proto.FSDrive{{Path: "/", Type: "fixed"}}, nil }
+
+func startHelper(string, proto.RDStart) error {
+	return errors.New("remote desktop is not supported on this system yet")
+}

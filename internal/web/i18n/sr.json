@@ -384,5 +384,24 @@
   "cdrom": "CD/DVD",
   "ramdisk": "RAM disk",
   "other": "ostalo"
+,
+  "Balanced": "Uravnoteženo",
+  "Connected": "Povezano",
+  "Connecting…": "Povezivanje…",
+  "Disconnect": "Prekini vezu",
+  "Disconnected": "Veza je prekinuta",
+  "Fast": "Brzo",
+  "Full screen": "Ceo ekran",
+  "Quality": "Kvalitet",
+  "Remote desktop": "Udaljena radna površina",
+  "Remote screen": "Udaljeni ekran",
+  "Send Ctrl+Alt+Del": "Pošalji Ctrl+Alt+Del",
+  "Send text": "Pošalji tekst",
+  "Sharp": "Oštro",
+  "Text to type on the remote computer:": "Tekst koji se kuca na udaljenom računaru:",
+  "The person at the computer sees a notice that you are connected. Click the screen to type; keys go to the remote computer with its own keyboard layout. The session is written to the audit log.": "Osoba za računarom vidi obaveštenje da ste povezani. Kliknite na ekran da biste kucali; tasteri idu udaljenom računaru, sa njegovim rasporedom tastature. Sesija se upisuje u dnevnik aktivnosti.",
+  "Type text on the remote computer": "Ukucaj tekst na udaljenom računaru",
+  "sign-in or UAC screen": "ekran za prijavu ili UAC",
+  "the remote desktop helper did not connect": "pomoćni program za udaljenu radnu površinu se nije povezao"
 
 }

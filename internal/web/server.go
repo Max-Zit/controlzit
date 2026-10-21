@@ -33,6 +33,7 @@ type Server struct {
 	now   func() time.Time
 	guard *loginGuard
 	hub   *hub
+	rd    rdHub
 
 	// MgmtACL guards the console listener, AgentACL the agent listener.
 	MgmtACL  *netacl.List
@@ -284,6 +285,8 @@ func (s *Server) Handler() http.Handler {
 	app("GET /downloads/"+AgentMSIName, s.handleAgentMSI)
 	app("GET /devices", s.handleDevices)
 	app("GET /devices/{id}", s.handleDevice)
+	app("GET /devices/{id}/rd", s.handleRD)
+	app("GET /devices/{id}/rd/ws", s.handleRDSocket)
 	app("GET /devices/{id}/files", s.handleFiles)
 	app("GET /devices/{id}/files/download", s.handleFileDownload)
 	app("POST /devices/{id}/files/upload", s.handleFileUpload)
@@ -321,6 +324,7 @@ func (s *Server) AgentHandler() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST "+proto.PathEnroll, s.handleAgentEnroll)
 	mux.HandleFunc("GET "+proto.PathConnect, s.handleConnect)
+	mux.HandleFunc("GET "+proto.PathStream, s.handleStream)
 	mux.HandleFunc("GET "+proto.PathHealth, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`{"status":"ok","product":"controlzit"}`))

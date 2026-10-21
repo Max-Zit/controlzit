@@ -98,7 +98,7 @@ func (a *Agent) runCommand(ctx context.Context, ws *websocket.Conn, sc proto.Sig
 		return
 	}
 	if cmd.Kind != proto.KindFSRead && cmd.Kind != proto.KindFSWrite {
-		a.Log.Info("command", "kind", cmd.Kind, "by", cmd.Issuer, "args", trim(string(cmd.Args), 300))
+		a.Log.Info("command", "kind", cmd.Kind, "by", cmd.Issuer, "args", trim(redact(cmd.Args), 300))
 	}
 	cctx, cancel := context.WithDeadline(ctx, cmd.Expires.Add(proto.MaxCommandAge))
 	defer cancel()
@@ -130,4 +130,19 @@ func trim(s string, n int) string {
 		return s[:n] + "…"
 	}
 	return s
+}
+
+// redact hides secrets (session tokens) in logged command arguments.
+func redact(raw json.RawMessage) string {
+	var m map[string]any
+	if json.Unmarshal(raw, &m) != nil {
+		return string(raw)
+	}
+	for k := range m {
+		if k == "token" || k == "password" || k == "data" {
+			m[k] = "***"
+		}
+	}
+	b, _ := json.Marshal(m)
+	return string(b)
 }

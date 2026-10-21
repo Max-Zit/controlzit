@@ -1,0 +1,25 @@
+{{template "app" .}}
+{{define "content"}}
+{{$d := .Data.D}}
+<p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a> / <a href="/devices/{{$d.ID}}">{{$d.Hostname}}</a></p>
+<div class="rd" id="rd" data-ws="/devices/{{$d.ID}}/rd/ws"
+     data-t-connecting="{{.T "Connecting…"}}" data-t-connected="{{.T "Connected"}}" data-t-closed="{{.T "Disconnected"}}"
+     data-t-signin="{{.T "sign-in or UAC screen"}}" data-t-paste="{{.T "Text to type on the remote computer:"}}">
+  <div class="rd-bar">
+    <b>{{template "icon" "screen"}}{{$d.Hostname}}</b>
+    <span class="rd-status" id="rd-status">{{if .Data.Online}}{{.T "Connecting…"}}{{else}}{{.T "The device is offline."}}{{end}}</span>
+    <span class="rd-tools">
+      <label class="rd-q">{{.T "Quality"}} <select id="rd-quality" aria-label="{{.T "Quality"}}"><option value="40">{{.T "Fast"}}</option><option value="65" selected>{{.T "Balanced"}}</option><option value="88">{{.T "Sharp"}}</option></select></label>
+      <button type="button" class="secondary sm" id="rd-cad" title="{{.T "Send Ctrl+Alt+Del"}}">Ctrl+Alt+Del</button>
+      <button type="button" class="secondary sm" id="rd-paste" title="{{.T "Type text on the remote computer"}}">{{template "icon" "copy"}}{{.T "Send text"}}</button>
+      <button type="button" class="secondary sm" id="rd-full" title="{{.T "Full screen"}}">{{template "icon" "expand"}}</button>
+      <a class="btn danger sm" href="/devices/{{$d.ID}}">{{.T "Disconnect"}}</a>
+    </span>
+  </div>
+  <div class="rd-screen" id="rd-screen">
+    <canvas id="rd-canvas" tabindex="0" width="1280" height="720" aria-label="{{.T "Remote screen"}}"></canvas>
+  </div>
+</div>
+<p class="small muted">{{.T "The person at the computer sees a notice that you are connected. Click the screen to type; keys go to the remote computer with its own keyboard layout. The session is written to the audit log."}}</p>
+<script src="/static/rd.js?v={{.Asset}}" defer></script>
+{{end}}

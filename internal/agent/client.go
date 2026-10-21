@@ -161,6 +161,7 @@ func (a *Agent) Run(ctx context.Context) error {
 		return err
 	}
 	a.key = key
+	helperDir = a.Dir
 	if a.Collect == nil {
 		a.Collect = CollectInventory
 	}

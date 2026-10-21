@@ -267,3 +267,21 @@ table.files details.pop[open] > .pop-body { position: static; box-shadow: none; 
 .fline > details.pop { margin-left: auto; }
 .fline > details.pop[open] { flex-basis: 100%; text-align: right; }
 table.files td.fname { min-width: 180px; }
+
+/* ---- remote desktop */
+.rd { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; margin-bottom: 14px; }
+.rd-bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--panel-2); }
+.rd-bar > b { display: inline-flex; gap: 8px; align-items: center; }
+.rd-bar > b .ic { color: var(--accent); }
+.rd-status { color: var(--muted); font-size: 13px; }
+.rd-status.ok { color: var(--ok); }
+.rd-status.err { color: var(--bad); }
+.rd-tools { margin-left: auto; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.rd-q { display: inline-flex; flex-direction: row; align-items: center; gap: 6px; font-weight: 500; }
+.rd-q select { width: auto; padding: 4px 26px 4px 8px; font-size: 13px; }
+.rd-screen { background: #000; display: grid; place-items: center; }
+.rd-screen canvas { display: block; max-width: 100%; height: auto; outline: none; cursor: default; }
+.rd:fullscreen { border-radius: 0; display: flex; flex-direction: column; height: 100vh; }
+.rd:fullscreen .rd-screen { flex: 1; min-height: 0; }
+.rd:fullscreen .rd-screen canvas { max-height: 100%; width: auto; max-width: 100%; }
+.rd.closed .rd-screen canvas { opacity: .4; }
