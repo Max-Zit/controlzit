@@ -40,9 +40,13 @@ Local path: C:\Users\Mili\Ai\rmm
 
 - **Signed commands + file manager done (2026-10-21):** server command key data-dir/tls/command.key (ed25519); agents get the public key at enrollment (or once via welcome over the pinned channel for older agents — tested on bz-win11 0.1.2→0.1.3); every command is bound to the agent ID, expires (≤30 min, ±2 min skew), is accepted once (replay cache) and must verify, else refused — e2e test with a changed server key. File manager (Devices → Files): drives with space, browse (hidden dimmed, 5000 entries max), download (1 MB chunks, streams any size), upload (multipart → 1 MB chunks into .czpart, rename on the last; up to 4 GB), new folder, rename, delete (recursive for folders); agent refuses relative/UNC/device paths, ADS, and deleting or renaming drive roots and system folders (Windows, Program Files, ProgramData, Users); technician role; every operation audited (file.list/download/upload/mkdir/rename/delete). Tested for real on bz-win11 through the lab server (3 MB roundtrip identical, C:Windows delete refused), UI checked at desktop and 375 px.
 
+- **Remote desktop v1 done (2026-10-21):** internal/rd (GDI capture of the virtual screen + cursor, 64 px tile diff, JPEG strips, credit-based flow control, scan-code keyboard, absolute mouse, Unicode text, SendSAS, notice banner excluded from capture), helper `controlzit-agent rdhelper` started by the service in the console session with a SYSTEM token (token via stdin, never on the command line; redacted in logs), second WebSocket /agent/v1/stream (mTLS + one-time session token), console relay /devices/{id}/rd/ws (Origin checked), viewer /devices/{id}/rd (static/rd.js), audit rd.start/rd.end. Tested: own PC desktop in the preview (1920×1080 live), bz-win11 as SYSTEM with nobody signed in → Winlogon lock/sign-in screen captured, Space opened the password box, mouse click opened the accessibility menu, helpers exit after the session. tools/rdclient = headless viewer for lab tests (writes a PNG).
+- Not yet verified: banner and the Default desktop with a signed-in user on a VM (I do not type Windows passwords — Stefan can sign in, or test with the viewer himself), UAC switch while connected, Ctrl+Alt+Del effect (may need the SoftwareSASGeneration policy), multiple monitors.
+- Stefan can try the lab console in his own browser: https://192.168.101.179:8443 (accept the self-signed certificate), credentials + 10 recovery codes (instead of an authenticator) in rmm/.devdata/lab-server.txt.
+
 ## Next steps (resume here)
-1. Remote desktop (own implementation; plan first).
-2. Fresh Windows test VM on Proxmox (VMID 96xx) for interactive MSI and remote desktop tests (needs a real desktop session).
+1. Remote desktop v2: DXGI Desktop Duplication (faster), monitor choice, clipboard both ways, scaling/bandwidth tuning, session recording option; verify banner + UAC with a signed-in user.
+2. Fresh Windows test VM on Proxmox (VMID 96xx) for interactive MSI tests.
 3. Monitoring and alerts (feature 3), patching (5), reports (7).
 4. Reverse proxy / ACME / uploaded console certificate; docs pages in the console.
 
@@ -60,4 +64,4 @@ Local path: C:\Users\Mili\Ai\rmm
 - Transport: a second WebSocket per session from the agent (/agent/v1/stream, mTLS + one-time session token from the signed `rd.start` command), binary frames; the console relays to the browser over a WebSocket on the console listener (same origin, session cookie, CSRF Origin check). The control channel stays free.
 - Browser viewer: canvas, JS file under CSP 'self'; mouse, keyboard (scan codes), Ctrl+Alt+Del button (SendSAS), clipboard text, monitor switch, quality/scale, full screen.
 - Security: technician role; signed command; consent prompt on the remote desktop (configurable); visible banner on the remote screen while connected; audit start/end/duration/user; session recording (video) optional later.
-- Open question for Stefan: ask the user for consent by default?
+- Decided by Stefan 2026-10-21: no consent prompt — connect directly, but always show a notice on the remote screen that a technician is connected.
