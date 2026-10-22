@@ -56,6 +56,40 @@
   </form>
   <form method="post" action="/settings/email/test" class="mt"><button class="secondary">{{template "icon" "mail"}}{{.T "Send a test email"}}</button> <small class="muted">{{.T "to the recipients of the alert emails"}}</small></form>
 </section>
+<section class="panel" id="channels">
+  <h2>{{template "icon" "online"}}{{.T "Chat and webhooks"}}</h2>
+  <p class="muted">{{.T "Alerts can also go to a Slack or Microsoft Teams channel, or as JSON to any HTTP endpoint (ticket system, automation)."}}</p>
+  {{if .Data.Channels}}
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{.T "Channel"}}</th><th>{{.T "Type"}}</th><th>{{.T "Sends"}}</th><th></th></tr></thead>
+    <tbody>{{range .Data.Channels}}<tr>
+      <td><b>{{.Name}}</b></td>
+      <td>{{if eq .Kind "slack"}}Slack{{else if eq .Kind "teams"}}Microsoft Teams{{else}}{{$.T "Webhook"}}{{if eq .Signed "true"}} <span class="small muted">({{$.T "signed"}})</span>{{end}}{{end}}</td>
+      <td class="small">{{if eq .Critical "true"}}{{$.T "critical alerts"}}{{else}}{{$.T "all alerts"}}{{end}}{{if eq .OnResolve "true"}}, {{$.T "resolved too"}}{{end}}</td>
+      <td class="nowrap actions"><form method="post" action="/settings/channels" class="inline">
+        <input type="hidden" name="id" value="{{.ID}}">
+        <button class="secondary sm" name="action" value="test">{{$.T "Send test"}}</button>
+        <button class="ghost sm" name="action" value="delete" data-confirm="{{$.T "Remove the channel %s?" .Name}}">{{$.T "Remove"}}</button>
+      </form></td>
+    </tr>{{end}}</tbody>
+  </table></div>
+  {{end}}
+  <details class="mt"><summary class="btn secondary sm">{{template "icon" "plus"}}{{.T "Add a channel"}}</summary>
+    <form method="post" action="/settings/channels" class="stack mt" autocomplete="off">
+      <input type="hidden" name="action" value="add">
+      <div class="row">
+        <label>{{.T "Name"}}<input name="name" required maxlength="80" placeholder="#it-alerts"></label>
+        <label>{{.T "Type"}}<select name="kind"><option value="slack">Slack</option><option value="teams">Microsoft Teams</option><option value="webhook">{{.T "Webhook (JSON)"}}</option></select></label>
+      </div>
+      <label>{{.T "Webhook URL"}}<input name="url" required spellcheck="false" placeholder="https://"><small>{{.T "Slack: an incoming webhook. Teams: a channel workflow 'When a Teams webhook request is received'. Webhook: any URL that accepts a JSON POST."}}</small></label>
+      <label>{{.T "Signing secret"}} <small>{{.T "webhook only, optional: requests then carry X-ControlZit-Signature: sha256=HMAC of the body"}}</small><input name="secret" autocomplete="off"></label>
+      <label class="check"><input type="checkbox" name="critical" value="1">{{.T "Only critical alerts"}}</label>
+      <label class="check"><input type="checkbox" name="on_resolve" value="1" checked>{{.T "Also when an alert is resolved"}}</label>
+      <div><button class="primary sm">{{.T "Add channel"}}</button></div>
+    </form>
+  </details>
+  <p class="small muted mt">{{.T "Channel addresses are stored encrypted."}}</p>
+</section>
 </div>
 </div>
 {{end}}

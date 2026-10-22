@@ -72,6 +72,7 @@ type monitoringData struct {
 	HasPass  bool
 	Services string
 	To       string
+	Channels []map[string]string
 }
 
 func (s *Server) handleMonitoringSettings(w http.ResponseWriter, r *http.Request) {
@@ -81,7 +82,7 @@ func (s *Server) handleMonitoringSettings(w http.ResponseWriter, r *http.Request
 func (s *Server) showMonitoring(w http.ResponseWriter, r *http.Request, status int, m MonitoringSettings, e EmailSettings, errMsg string) {
 	hasPass := s.Email(r.Context()).Password != ""
 	e.Password = ""
-	d := &monitoringData{M: m, E: e, HasPass: hasPass, Services: strings.Join(m.WatchServices, "\n"), To: strings.Join(m.Recipients, "\n")}
+	d := &monitoringData{M: m, E: e, HasPass: hasPass, Services: strings.Join(m.WatchServices, "\n"), To: strings.Join(m.Recipients, "\n"), Channels: s.channelRows(r.Context())}
 	if d.E.Port == 0 {
 		d.E.Port, d.E.Security = 587, "starttls"
 	}

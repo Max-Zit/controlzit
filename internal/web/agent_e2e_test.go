@@ -5,8 +5,11 @@ import (
 	"bytes"
 	"context"
 	"crypto/ed25519"
+	"crypto/hmac"
 	"crypto/rand"
+	"crypto/sha256"
 	"crypto/tls"
+	"encoding/hex"
 	"html"
 	"io"
 	"log/slog"
@@ -20,6 +23,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -389,12 +393,62 @@ func TestAlertsEndToEnd(t *testing.T) {
 		return m != nil
 	})
 	admin, _ := e.setupAdmin("192.168.1.10")
+	// Chat and webhook channels receive the alerts.
+	var hookMu sync.Mutex
+	hooks := map[string][]string{}
+	sigOK := true
+	hookSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		b, _ := io.ReadAll(r.Body)
+		hookMu.Lock()
+		defer hookMu.Unlock()
+		hooks[r.URL.Path] = append(hooks[r.URL.Path], string(b))
+		if r.URL.Path == "/hook" {
+			m := hmac.New(sha256.New, []byte("s3cret"))
+			m.Write(b)
+			if r.Header.Get("X-ControlZit-Signature") != "sha256="+hex.EncodeToString(m.Sum(nil)) {
+				sigOK = false
+			}
+		}
+	}))
+	defer hookSrv.Close()
+	got := func(path string) []string {
+		hookMu.Lock()
+		defer hookMu.Unlock()
+		return append([]string(nil), hooks[path]...)
+	}
+	admin.post("/settings/channels", "action", "add", "name", "Ops hook", "kind", "webhook", "url", hookSrv.URL+"/hook", "secret", "s3cret", "on_resolve", "1")
+	admin.post("/settings/channels", "action", "add", "name", "#it", "kind", "slack", "url", hookSrv.URL+"/slack", "critical", "1")
+	admin.post("/settings/channels", "action", "add", "name", "Teams", "kind", "teams", "url", hookSrv.URL+"/teams")
+	if r := admin.post("/settings/channels", "action", "add", "name", "bad", "kind", "slack", "url", "ftp://x"); r.code != http.StatusSeeOther {
+		t.Fatalf("bad channel: %d", r.code)
+	}
+	if mp := admin.get("/settings/monitoring").body; !strings.Contains(mp, "Ops hook") || strings.Contains(mp, hookSrv.URL) || strings.Contains(mp, "bad</b>") {
+		t.Fatal("channels list (URLs must not be shown)")
+	}
 	if r := admin.post("/settings/monitoring", "cpu_percent", "90", "cpu_minutes", "15", "mem_percent", "90", "mem_minutes", "15", "disk_percent", "90",
 		"disk_min_free_gb", "5", "offline_minutes", "15", "reboot_days", "7", "watch_services", "Spooler"); r.code != http.StatusSeeOther {
 		t.Fatalf("save monitoring: %d %s", r.code, r.body)
 	}
 	e.srv.CheckAlerts(ctx)
 	r := admin.get("/alerts")
+	if !strings.Contains(r.body, "Low disk space") {
+		t.Fatalf("no alerts opened: %s", regexp.MustCompile(`<td class="detail">[^<]*`).FindAllString(admin.get("/audit").body, 8))
+	}
+	for i := 0; i < 100 && !(len(got("/hook")) >= 1 && len(got("/slack")) >= 1 && len(got("/teams")) >= 1); i++ {
+		time.Sleep(100 * time.Millisecond)
+	}
+	if n := [3]int{len(got("/hook")), len(got("/slack")), len(got("/teams"))}; n != [3]int{1, 1, 1} {
+		t.Fatalf("notifications per channel: %v; audit %s", n, regexp.MustCompile(`<td class="detail">[^<]*`).FindAllString(admin.get("/audit").body, 6))
+	}
+	if h := got("/hook")[0]; !strings.Contains(h, `"event":"alert.opened"`) || !strings.Contains(h, `"title":"Service stopped"`) || !strings.Contains(h, `"title":"Low disk space"`) {
+		t.Fatalf("webhook body: %s", h)
+	}
+	if s := got("/slack")[0]; !strings.Contains(s, `"text"`) || !strings.Contains(s, "Low disk space") {
+		t.Fatalf("slack: %s", s)
+	}
+	if tm := got("/teams")[0]; !strings.Contains(tm, "AdaptiveCard") {
+		t.Fatalf("teams body: %s", tm)
+	}
 	if !strings.Contains(r.body, "Low disk space") || !strings.Contains(r.body, "Service stopped") || !strings.Contains(r.body, `class="navcount">2<`) {
 		t.Fatalf("alerts page: %s", r.body)
 	}
@@ -418,6 +472,27 @@ func TestAlertsEndToEnd(t *testing.T) {
 	e.srv.CheckAlerts(ctx)
 	if open, _ := e.st.Alerts(ctx, &store.User{Role: store.RoleAdmin}, store.AlertFilter{Open: true}); len(open) != 0 {
 		t.Fatalf("alerts not resolved: %+v", open)
+	}
+	waitFor(t, "resolved notification", func() bool { return len(got("/hook")) == 2 })
+	if h := got("/hook")[1]; !strings.Contains(h, `"event":"alert.resolved"`) {
+		t.Fatalf("resolved webhook: %s", h)
+	}
+	if len(got("/slack")) != 1 {
+		t.Fatal("slack got resolved alerts although switched off")
+	}
+	if !sigOK {
+		t.Fatal("webhook signature wrong")
+	}
+	if mp := admin.get("/settings/monitoring").body; true {
+		id := regexp.MustCompile(`name="id" value="([^"]+)">\s*<button class="secondary sm" name="action" value="test">`).FindStringSubmatch(mp)
+		if id == nil {
+			t.Fatal("no test button")
+		}
+		admin.post("/settings/channels", "action", "test", "id", id[1])
+		waitFor(t, "test notification", func() bool { return len(got("/hook")) == 3 })
+		if !strings.Contains(got("/hook")[2], `"event":"test"`) {
+			t.Fatal("test notification")
+		}
 	}
 	if r := admin.get("/alerts?all=1"); !strings.Contains(r.body, "Resolved") {
 		t.Fatal("resolved alerts not listed")

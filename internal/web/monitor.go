@@ -47,12 +47,16 @@ func (s *Server) CheckAlerts(ctx context.Context) {
 		s.log.Error("monitor: cannot update alerts", "err", err)
 		return
 	}
-	if len(opened) == 0 && (len(resolved) == 0 || !m.EmailOnResolve) {
+	if len(opened) == 0 && len(resolved) == 0 {
 		return
 	}
 	names := map[int64]store.MonitorState{}
 	for _, d := range states {
 		names[d.ID] = d
+	}
+	s.notifyChannels(ctx, opened, resolved, names)
+	if len(opened) == 0 && !m.EmailOnResolve {
+		return
 	}
 	for _, a := range opened {
 		d := names[a.DeviceID]
