@@ -1,0 +1,33 @@
+{{template "app" .}}
+{{define "content"}}
+{{$s := .Data.S}}
+<p class="back"><a href="/scripts">{{.T "Script library"}}</a> / <a href="/scripts/{{$s.ID}}">{{$s.Name}}</a></p>
+<h1>{{template "icon" "terminal"}}{{.T "Run %s" $s.Name}}</h1>
+<form method="post" action="/scripts/{{$s.ID}}/run" class="stack wide" data-confirm="{{.T "Run %s on the selected devices?" $s.Name}}">
+  <section class="panel">
+    <h2>{{.T "Devices"}}</h2>
+    {{if or .User.IsAdmin .User.AllCustomers}}<label class="check"><input type="checkbox" name="all" value="1">{{.T "All devices"}}</label>{{end}}
+    {{if .Data.Customers}}
+    <h3 class="mt">{{.T "Customers"}}</h3>
+    <div class="checks">{{range .Data.Customers}}<label class="check"><input type="checkbox" name="customer" value="{{.ID}}">{{.Name}}</label>{{end}}</div>
+    {{end}}
+    {{if .Data.Sites}}
+    <h3 class="mt">{{.T "Sites"}}</h3>
+    <div class="checks">{{range .Data.Sites}}<label class="check"><input type="checkbox" name="site" value="{{.ID}}">{{.Customer}} / {{.Name}}</label>{{end}}</div>
+    {{end}}
+    {{if .Data.Devices}}
+    <h3 class="mt">{{.T "Single devices"}}</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th class="check-col"><input type="checkbox" data-check-all="device" aria-label="{{.T "Select all"}}"></th><th>{{.T "Device"}}</th><th class="hide-sm">{{.T "Customer"}}</th><th>{{.T "Status"}}</th></tr></thead>
+      <tbody>{{range .Data.Devices}}<tr>
+        <td class="check-col"><input type="checkbox" name="device" value="{{.ID}}" aria-label="{{.Hostname}}"></td>
+        <td>{{.Hostname}}</td><td class="hide-sm">{{.Customer}} / {{.Site}}</td>
+        <td>{{if index $.Data.Online .ID}}<span class="badge ok"><i></i>{{$.T "Online"}}</span>{{else}}<span class="badge"><i></i>{{$.T "Offline"}}</span>{{end}}</td>
+      </tr>{{end}}</tbody>
+    </table></div>
+    {{end}}
+    <p class="small muted mt">{{.T "Devices that are offline run the script when they connect, within 24 hours."}}</p>
+  </section>
+  <div><button class="primary">{{template "icon" "terminal"}}{{.T "Run"}}</button></div>
+</form>
+{{end}}

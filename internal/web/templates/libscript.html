@@ -1,0 +1,58 @@
+{{template "app" .}}
+{{define "content"}}
+{{$s := .Data.S}}
+<p class="back"><a href="/scripts">{{.T "Script library"}}</a></p>
+<div class="pagehead">
+  <h1>{{template "icon" "terminal"}}{{if $s.ID}}{{$s.Name}}{{else}}{{.T "New script"}}{{end}}</h1>
+  {{if $s.ID}}<a class="btn primary" href="/scripts/{{$s.ID}}/run">{{template "icon" "terminal"}}{{.T "Run on devices"}}</a>{{end}}
+</div>
+<section class="panel">
+  {{if .User.IsAdmin}}
+  <form method="post" action="/scripts/{{if $s.ID}}{{$s.ID}}{{else}}new{{end}}" class="stack wide">
+    <div class="row">
+      <label>{{.T "Name"}}<input name="name" value="{{$s.Name}}" required maxlength="120"></label>
+      <label>{{.T "Shell"}}<select name="shell">
+        <option value="powershell" {{if eq $s.Shell "powershell"}}selected{{end}}>PowerShell</option>
+        <option value="cmd" {{if eq $s.Shell "cmd"}}selected{{end}}>{{.T "Command prompt"}} (cmd)</option>
+      </select></label>
+      <label>{{.T "Time limit (seconds)"}}<input type="number" name="timeout" value="{{$s.Timeout}}" min="5" max="1500" required></label>
+    </div>
+    <label>{{.T "Description"}} <small>{{.T "optional"}}</small><input name="description" value="{{$s.Description}}" maxlength="1000"></label>
+    <label>{{.T "Script"}}<textarea name="script" rows="14" required spellcheck="false" class="mono">{{$s.Body}}</textarea>
+      <small>{{.T "Runs as SYSTEM, without a window. Exit code 0 counts as success in jobs."}}</small></label>
+    <div class="row"><button class="primary">{{.T "Save"}}</button></div>
+  </form>
+  {{if $s.ID}}<form method="post" action="/scripts/{{$s.ID}}/delete" class="mt" data-confirm="{{.T "Delete the script %s and its schedules?" $s.Name}}"><button class="danger sm">{{template "icon" "trash"}}{{.T "Delete"}}</button></form>{{end}}
+  {{else}}
+  {{if $s.Description}}<p>{{$s.Description}}</p>{{end}}
+  <p class="muted small">{{if eq $s.Shell "cmd"}}cmd{{else}}PowerShell{{end}} · {{.T "time limit %d s" $s.Timeout}} · {{.T "changed"}} {{.Time $s.UpdatedAt}} ({{$s.UpdatedBy}})</p>
+  <pre class="output">{{$s.Body}}</pre>
+  {{end}}
+</section>
+
+{{if $s.ID}}
+{{if .User.IsAdmin}}
+<section class="panel">
+  <h2>{{template "icon" "clock"}}{{.T "Schedules"}}</h2>
+  {{template "schedtable" .}}
+  <details class="mt"><summary class="btn secondary sm">{{template "icon" "plus"}}{{.T "Add a schedule"}}</summary>
+    <form method="post" action="/scripts/{{$s.ID}}/schedules" class="stack mt">
+      <div class="checks">{{range .Data.Days}}<label class="check"><input type="checkbox" name="day" value="{{.}}">{{$.T (weekday .)}}</label>{{end}}</div>
+      <label>{{.T "Time (server)"}}<input type="time" name="time" value="02:00" required class="narrow"></label>
+      <fieldset class="box"><legend>{{.T "Devices"}}</legend>
+        <label class="check"><input type="checkbox" name="all" value="1">{{.T "All devices (also new ones)"}}</label>
+        {{if .Data.Customers}}<span class="small muted">{{.T "Or all devices of these customers:"}}</span>
+        <div class="checks">{{range .Data.Customers}}<label class="check"><input type="checkbox" name="customer" value="{{.ID}}">{{.Name}}</label>{{end}}</div>{{end}}
+      </fieldset>
+      <small class="muted">{{.T "Devices that are offline at that time run the script when they connect, within 24 hours."}}</small>
+      <div><button class="primary sm">{{.T "Add schedule"}}</button></div>
+    </form>
+  </details>
+</section>
+{{end}}
+<section class="panel">
+  <h2>{{.T "Recent jobs"}}</h2>
+  {{template "jobtable" .}}
+</section>
+{{end}}
+{{end}}

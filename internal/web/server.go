@@ -29,6 +29,7 @@ import (
 type Server struct {
 	store *store.Store
 	pkg   packageCache
+	jobs  jobRunner
 	log   *slog.Logger
 	tmpl  map[string]*template.Template
 	now   func() time.Time
@@ -70,6 +71,10 @@ func New(ctx context.Context, st *store.Store, log *slog.Logger) (*Server, error
 	}
 	s := &Server{store: st, log: log, tmpl: t, now: time.Now, Version: "dev", hub: newHub()}
 	if err := st.ResetConnected(ctx); err != nil {
+		return nil, err
+	}
+	// Job runs in flight when the server stopped cannot report any more.
+	if err := st.ExpireJobs(ctx, true); err != nil {
 		return nil, err
 	}
 	s.guard = newLoginGuard(st, func() time.Time { return s.now() })
@@ -310,6 +315,17 @@ func (s *Server) Handler() http.Handler {
 	app("POST /devices/{id}/updates/scan", s.handlePatchScan)
 	app("POST /devices/{id}/updates/install", s.handlePatchInstall)
 	app("GET /updates", s.handlePatchOverview)
+	app("GET /scripts", s.handleLibrary)
+	app("GET /scripts/{sid}", s.handleLibScript)
+	app("GET /scripts/{sid}/run", s.handleJobNew)
+	app("POST /scripts/{sid}/run", s.handleJobCreate)
+	app("GET /jobs/{jid}", s.handleJob)
+	admin("GET /scripts/new", s.handleLibScript)
+	admin("POST /scripts/new", s.handleLibScriptSave)
+	admin("POST /scripts/{sid}", s.handleLibScriptSave)
+	admin("POST /scripts/{sid}/delete", s.handleLibScriptDelete)
+	admin("POST /scripts/{sid}/schedules", s.handleScheduleAdd)
+	admin("POST /schedules/{id}", s.handleScheduleChange)
 	app("POST /devices/{id}/refresh", s.handleDeviceRefresh)
 	app("POST /devices/{id}/delete", s.handleDeviceDelete)
 	app("GET /account", s.handleAccount)

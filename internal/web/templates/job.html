@@ -1,0 +1,24 @@
+{{template "app" .}}
+{{define "content"}}
+{{$j := .Data.J}}
+<p class="back"><a href="/scripts">{{.T "Script library"}}</a>{{with $j.ScriptID}} / <a href="/scripts/{{.}}">{{$j.Name}}</a>{{end}}</p>
+<h1>{{template "icon" "terminal"}}{{.T "Job #%d" $j.ID}} <span class="muted h1-sub">{{$j.Name}}</span></h1>
+<p class="muted small">{{.Time $j.CreatedAt}} · {{$j.CreatedBy}}{{if $j.ScheduleID}} · {{.T "scheduled"}}{{end}} · {{.T "devices that are offline run it until"}} {{.Time $j.ExpiresAt}}</p>
+<div class="grid">
+  <div class="stat"><span class="si">{{template "icon" "check"}}</span><b>{{$j.Done}}</b><span>{{.T "succeeded"}}</span></div>
+  <div class="stat"><span class="si">{{template "icon" "alert"}}</span><b>{{$j.Failed}}</b><span>{{.T "failed"}}</span></div>
+  <div class="stat"><span class="si">{{template "icon" "clock"}}</span><b>{{$j.Pending}} / {{$j.Running}}</b><span>{{.T "waiting / running"}}</span></div>
+  {{if $j.Expired}}<div class="stat"><span class="si">{{template "icon" "clock"}}</span><b>{{$j.Expired}}</b><span>{{.T "expired (stayed offline)"}}</span></div>{{end}}
+</div>
+<section class="panel" {{if .Data.Active}}data-autorefresh{{end}}>
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{.T "Device"}}</th><th class="hide-sm">{{.T "Customer"}}</th><th>{{.T "Status"}}</th><th>{{.T "Result"}}</th></tr></thead>
+    <tbody>{{range .Data.Devices}}<tr>
+      <td><a href="/devices/{{.DeviceID}}">{{.Hostname}}</a></td>
+      <td class="hide-sm">{{.Customer}} / {{.Site}}</td>
+      <td class="nowrap">{{if eq .Status "done"}}<span class="badge ok"><i></i>{{$.T "succeeded"}}</span>{{else if eq .Status "failed"}}<span class="badge bad"><i></i>{{$.T "failed"}}</span>{{else if eq .Status "running"}}<span class="badge warn"><i></i>{{$.T "running"}}</span>{{else if eq .Status "expired"}}<span class="badge"><i></i>{{$.T "expired"}}</span>{{else}}<span class="badge"><i></i>{{$.T "waiting"}}</span>{{end}}</td>
+      <td>{{if .RunID}}<a href="/devices/{{.DeviceID}}/scripts/{{deref64 .RunID}}">{{if .Error}}{{.Error}}{{else if .TimedOut}}{{$.T "time limit reached"}}{{else}}{{$.T "exit code %d" (deref .ExitCode)}}{{end}}</a>{{else if eq .Status "failed"}}<span class="muted small">{{$.T "the server restarted during the run"}}</span>{{end}}</td>
+    </tr>{{end}}</tbody>
+  </table></div>
+</section>
+{{end}}

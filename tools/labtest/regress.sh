@@ -122,6 +122,17 @@ check "device reports Windows updates" '$C $S/devices/$DEV/updates | grep -q "Se
 check "updates overview lists the device" '$C $S/updates | grep -q "/devices/$DEV/updates"'
 check "update policy page" '$C $S/settings/updates | grep -q "name=\"mode\""'
 
+# --- script library and jobs
+LIBNAME="regress-$RANDOM"
+SLOC=$($C -o /dev/null -w "%{redirect_url}" -d "name=$LIBNAME" -d shell=cmd -d timeout=60 --data-urlencode "script=echo lib-ok %COMPUTERNAME%" $S/scripts/new)
+SID=${SLOC##*/}
+JLOC=$($C -o /dev/null -w "%{redirect_url}" -d device=$DEV $S/scripts/$SID/run)
+sleep 8
+check "library job runs on the device" '$C "$JLOC" | grep -q "badge ok\"><i></i>succeeded"'
+RLINK=$($C "$JLOC" | grep -o "/devices/$DEV/scripts/[0-9]*" | head -1)
+check "library job output stored" '$C "$S$RLINK" | grep -q "lib-ok DESKTOP-NBB66OQ"'
+$C -o /dev/null -d x=1 $S/scripts/$SID/delete
+
 $C -o /dev/null -d lang=sr $S/lang
 echo "----"
 echo "passed $pass, failed $fail"

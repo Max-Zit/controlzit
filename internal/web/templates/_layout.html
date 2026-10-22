@@ -20,6 +20,7 @@
     <a href="/devices" class="{{if eq .Nav "devices"}}on{{end}}">{{template "icon" "devices"}}{{.T "Devices"}}</a>
     <a href="/alerts" class="{{if eq .Nav "alerts"}}on{{end}}">{{template "icon" "alert"}}{{.T "Alerts"}}{{if .AlertCount}} <span class="navcount">{{.AlertCount}}</span>{{end}}</a>
     <a href="/updates" class="{{if eq .Nav "updates"}}on{{end}}">{{template "icon" "download"}}{{.T "Updates"}}</a>
+    {{if .User.CanWrite}}<a href="/scripts" class="{{if eq .Nav "scripts"}}on{{end}}">{{template "icon" "terminal"}}{{.T "Scripts"}}</a>{{end}}
     {{if .User.IsAdmin}}
     <span class="navlabel">{{.T "Administration"}}</span>
     <a href="/users" class="{{if eq .Nav "users"}}on{{end}}">{{template "icon" "users"}}{{.T "Users"}}</a>
@@ -126,3 +127,32 @@
   {{end}}
   <a href="/devices/{{$id}}/updates" class="{{if eq .Cur "updates"}}on{{end}}">{{template "icon" "download"}}{{.P.T "Updates"}}</a>
 </nav>{{end}}
+
+{{define "jobtable"}}{{if .Data.Jobs}}
+<div class="table-wrap"><table>
+  <thead><tr><th>#</th><th>{{.T "Script"}}</th><th class="hide-sm">{{.T "Started"}}</th><th>{{.T "Devices"}}</th><th>{{.T "Result"}}</th></tr></thead>
+  <tbody>{{range .Data.Jobs}}<tr>
+    <td><a href="/jobs/{{.ID}}">{{.ID}}</a></td>
+    <td><a href="/jobs/{{.ID}}">{{.Name}}</a>{{if .ScheduleID}} <span class="muted small" title="{{$.T "scheduled"}}">{{template "icon" "clock"}}</span>{{end}}</td>
+    <td class="hide-sm nowrap small">{{$.Time .CreatedAt}} · {{.CreatedBy}}</td>
+    <td class="num">{{.Total}}</td>
+    <td class="nowrap">{{if .Done}}<span class="badge ok"><i></i>{{.Done}}</span> {{end}}{{if .Failed}}<span class="badge bad"><i></i>{{.Failed}}</span> {{end}}{{if or .Pending .Running}}<span class="badge warn"><i></i>{{$.T "%d waiting" (add .Pending .Running)}}</span> {{end}}{{if .Expired}}<span class="badge"><i></i>{{$.T "%d expired" .Expired}}</span>{{end}}</td>
+  </tr>{{end}}</tbody>
+</table></div>
+{{else}}<p class="muted">{{.T "No jobs yet."}}</p>{{end}}{{end}}
+
+{{define "schedtable"}}{{if .Data.Schedules}}
+<div class="table-wrap"><table>
+  <thead><tr><th>{{.T "Script"}}</th><th>{{.T "When"}}</th><th>{{.T "Devices"}}</th><th class="hide-sm">{{.T "Last run"}}</th><th></th></tr></thead>
+  <tbody>{{range .Data.Schedules}}<tr>
+    <td><a href="/scripts/{{.ScriptID}}">{{.Script}}</a>{{if not .Enabled}} <span class="badge"><i></i>{{$.T "paused"}}</span>{{end}}</td>
+    <td class="small">{{range $i, $d := .Days}}{{if $i}}, {{end}}{{$.T (weekday $d)}}{{end}} · {{clock .Minute}}</td>
+    <td class="small">{{if .Target.All}}{{$.T "All devices"}}{{else}}{{$.T "%d customers" (len .Target.Customers)}}{{end}}</td>
+    <td class="hide-sm small nowrap">{{with .LastFired}}{{$.Time .}}{{else}}—{{end}}</td>
+    <td class="nowrap actions"><form method="post" action="/schedules/{{.ID}}" class="inline">
+      {{if .Enabled}}<button class="ghost sm" name="action" value="disable">{{$.T "Pause"}}</button>{{else}}<button class="ghost sm" name="action" value="enable">{{$.T "Resume"}}</button>{{end}}
+      <button class="ghost sm" name="action" value="delete" data-confirm="{{$.T "Delete this schedule?"}}">{{$.T "Delete"}}</button>
+    </form></td>
+  </tr>{{end}}</tbody>
+</table></div>
+{{else}}<p class="muted">{{.T "No schedules."}}</p>{{end}}{{end}}

@@ -1,6 +1,7 @@
 package web
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"net/url"
@@ -179,6 +180,8 @@ type scriptsData struct {
 	Shell   string
 	Script  string
 	Timeout int
+	Library []store.LibScript
+	LibID   int64
 }
 
 func (s *Server) handleScripts(w http.ResponseWriter, r *http.Request) {
@@ -199,6 +202,17 @@ func (s *Server) handleScripts(w http.ResponseWriter, r *http.Request) {
 		}
 		sd.Run, sd.Shell, sd.Script = run, run.Shell, run.Script
 	}
+	if lid, err := strconv.ParseInt(r.FormValue("lib"), 10, 64); err == nil && lid > 0 {
+		if x, err := s.store.LibScript(r.Context(), lid); err == nil {
+			sd.Shell, sd.Script, sd.Timeout, sd.LibID = x.Shell, x.Body, x.Timeout, x.ID
+		}
+	}
+	lib, err := s.store.LibScripts(r.Context())
+	if err != nil {
+		s.serverError(w, r, err)
+		return
+	}
+	sd.Library = lib
 	runs, err := s.store.ScriptRuns(r.Context(), d.ID, 20)
 	if err != nil {
 		s.serverError(w, r, err)
@@ -213,25 +227,44 @@ func (s *Server) handleScriptRun(w http.ResponseWriter, r *http.Request) {
 	if d == nil {
 		return
 	}
-	a := proto.ScriptRun{Shell: r.FormValue("shell"), Script: strings.ReplaceAll(r.FormValue("script"), "\r\n", "\n")}
-	a.Timeout, _ = strconv.Atoi(r.FormValue("timeout"))
+	shell, body := r.FormValue("shell"), strings.ReplaceAll(r.FormValue("script"), "\r\n", "\n")
+	timeout, _ := strconv.Atoi(r.FormValue("timeout"))
 	back := s.deviceURL(d, "/scripts")
-	switch {
-	case a.Shell != "powershell" && a.Shell != "cmd":
-		s.redirect(w, r, back, "Unknown shell.")
-		return
-	case strings.TrimSpace(a.Script) == "" || len(a.Script) > proto.MaxScriptSize:
-		s.redirect(w, r, back, "The script is empty or longer than 256 KB.")
-		return
-	case a.Timeout < 5 || a.Timeout > maxScriptTimeout:
-		s.redirect(w, r, back, "The time limit must be 5–1500 seconds.")
+	if msg := checkScript(shell, body, timeout); msg != "" {
+		s.redirect(w, r, back, msg)
 		return
 	}
 	// The page waits for the script; lift the server's write timeout.
 	_ = http.NewResponseController(w).SetWriteDeadline(time.Time{})
-	run := &store.ScriptRun{DeviceID: d.ID, Username: s.issuer(r), Shell: a.Shell, Script: a.Script, StartedAt: s.now()}
+	run, err := s.runScript(r.Context(), d, s.issuer(r), shell, body, timeout, nil)
+	if err != nil {
+		s.serverError(w, r, err)
+		return
+	}
+	s.audit(r, "script.run", deviceTarget(d), "%s", scriptAudit(d, run))
+	s.redirect(w, r, s.deviceURL(d, "/scripts/"+strconv.FormatInt(run.ID, 10)), "")
+}
+
+// checkScript validates a script typed in the console ("" when it is fine).
+func checkScript(shell, body string, timeout int) string {
+	switch {
+	case shell != "powershell" && shell != "cmd":
+		return "Unknown shell."
+	case strings.TrimSpace(body) == "" || len(body) > proto.MaxScriptSize:
+		return "The script is empty or longer than 256 KB."
+	case timeout < 5 || timeout > maxScriptTimeout:
+		return "The time limit must be 5–1500 seconds."
+	}
+	return ""
+}
+
+// runScript runs a script on a device, waits for it and stores the run (an
+// agent error is a stored run with Error set; err is a storage failure).
+func (s *Server) runScript(ctx context.Context, d *store.Device, issuer, shell, body string, timeout int, jobID *int64) (*store.ScriptRun, error) {
+	a := proto.ScriptRun{Shell: shell, Script: body, Timeout: timeout}
+	run := &store.ScriptRun{DeviceID: d.ID, Username: issuer, Shell: shell, Script: body, StartedAt: s.now(), JobID: jobID}
 	var res proto.ScriptResult
-	err := s.call(r.Context(), d.ID, s.issuer(r), proto.KindScriptRun, a, &res, time.Duration(a.Timeout)*time.Second+actionTimeout)
+	err := s.call(ctx, d.ID, issuer, proto.KindScriptRun, a, &res, time.Duration(timeout)*time.Second+actionTimeout)
 	if err != nil {
 		run.Error = err.Error()
 		run.Duration = s.now().Sub(run.StartedAt)
@@ -239,12 +272,10 @@ func (s *Server) handleScriptRun(w http.ResponseWriter, r *http.Request) {
 		code := res.ExitCode
 		run.ExitCode, run.TimedOut, run.Truncated, run.Output, run.Duration = &code, res.TimedOut, res.Truncated, res.Output, res.Duration
 	}
-	if err := s.store.AddScriptRun(r.Context(), run); err != nil {
-		s.serverError(w, r, err)
-		return
+	if err := s.store.AddScriptRun(context.WithoutCancel(ctx), run); err != nil {
+		return nil, err
 	}
-	s.audit(r, "script.run", deviceTarget(d), "%s", scriptAudit(d, run))
-	s.redirect(w, r, s.deviceURL(d, "/scripts/"+strconv.FormatInt(run.ID, 10)), "")
+	return run, nil
 }
 
 // scriptAudit is the audit entry of a run: outcome, script and output.

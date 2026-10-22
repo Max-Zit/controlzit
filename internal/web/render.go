@@ -152,6 +152,14 @@ var funcs = template.FuncMap{
 		}
 		return *p
 	},
+	"deref64": func(p *int64) int64 {
+		if p == nil {
+			return 0
+		}
+		return *p
+	},
+	"add":   func(a, b int) int { return a + b },
+	"clock": func(m int) string { return fmt.Sprintf("%02d:%02d", m/60, m%60) },
 	"firstLine": func(s string) string {
 		s = strings.TrimSpace(s)
 		if i := strings.IndexByte(s, '\n'); i >= 0 {

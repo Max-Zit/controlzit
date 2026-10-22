@@ -23,6 +23,15 @@
 <section class="panel">
   <h2>{{.T "Run a script"}}</h2>
   {{if not .Data.Online}}<div class="flash warn" role="status">{{template "icon" "alert"}}<span>{{.T "The device is offline."}}</span></div>{{end}}
+  {{if .Data.Library}}
+  <form method="get" action="/devices/{{$d.ID}}/scripts" class="row filter">
+    <select name="lib" aria-label="{{.T "Script library"}}" data-autosubmit>
+      <option value="">{{.T "From the library…"}}</option>
+      {{range .Data.Library}}<option value="{{.ID}}" {{if eq .ID $.Data.LibID}}selected{{end}}>{{.Name}}</option>{{end}}
+    </select>
+    <noscript><button class="secondary sm">{{.T "Load"}}</button></noscript>
+  </form>
+  {{end}}
   <form method="post" action="/devices/{{$d.ID}}/scripts" class="stack wide" data-busy="{{.T "Running… the page waits for the script to finish."}}">
     <div class="row">
       <label>{{.T "Shell"}}<select name="shell">

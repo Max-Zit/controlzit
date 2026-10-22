@@ -20,14 +20,15 @@ type ScriptRun struct {
 	Truncated bool
 	Output    string
 	Error     string
+	JobID     *int64
 }
 
 // AddScriptRun stores a finished run and sets its ID.
 func (s *Store) AddScriptRun(ctx context.Context, r *ScriptRun) error {
-	return s.db.QueryRow(ctx, `INSERT INTO script_runs(device_id, username, shell, script, started_at, duration_ms, exit_code, timed_out, truncated, output, error)
-		VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING id`,
+	return s.db.QueryRow(ctx, `INSERT INTO script_runs(device_id, username, shell, script, started_at, duration_ms, exit_code, timed_out, truncated, output, error, job_id)
+		VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id`,
 		r.DeviceID, r.Username, r.Shell, r.Script, r.StartedAt, r.Duration.Milliseconds(), r.ExitCode, r.TimedOut, r.Truncated,
-		strings.ToValidUTF8(strings.ReplaceAll(r.Output, "\x00", ""), "?"), r.Error).Scan(&r.ID)
+		strings.ToValidUTF8(strings.ReplaceAll(r.Output, "\x00", ""), "?"), r.Error, r.JobID).Scan(&r.ID)
 }
 
 const scriptCols = `id, device_id, username, shell, script, started_at, duration_ms, exit_code, timed_out, truncated, output, error`

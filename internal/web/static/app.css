@@ -351,3 +351,5 @@ td.check-col input, th.check-col input { width: auto; }
 ul.plain { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
 a.stat { color: inherit; }
 a.stat:hover { text-decoration: none; border-color: var(--accent); }
+.pagehead { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.pagehead h1 { margin-bottom: 0; }

@@ -303,6 +303,7 @@ func (s *Server) agentMessage(ctx context.Context, c *agentConn, d *store.Device
 			return err
 		}
 		go s.autoUpdate(d, h.AgentVersion)
+		go s.DispatchJobs(context.Background())
 		return nil
 	case proto.TypeHeartbeat:
 		var hb proto.Heartbeat

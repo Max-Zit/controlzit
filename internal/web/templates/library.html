@@ -1,0 +1,32 @@
+{{template "app" .}}
+{{define "content"}}
+<div class="pagehead">
+  <h1>{{template "icon" "terminal"}}{{.T "Script library"}}</h1>
+  {{if .User.IsAdmin}}<a class="btn primary" href="/scripts/new">{{template "icon" "plus"}}{{.T "New script"}}</a>{{end}}
+</div>
+<section class="panel">
+  {{if .Data.Scripts}}
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{.T "Script"}}</th><th class="hide-sm">{{.T "Shell"}}</th><th class="hide-sm">{{.T "Changed"}}</th><th></th></tr></thead>
+    <tbody>{{range .Data.Scripts}}<tr>
+      <td><a href="/scripts/{{.ID}}"><b>{{.Name}}</b></a>{{if .Description}}<br><span class="small muted">{{.Description}}</span>{{end}}</td>
+      <td class="hide-sm">{{if eq .Shell "cmd"}}cmd{{else}}PowerShell{{end}}</td>
+      <td class="hide-sm nowrap small muted">{{$.Time .UpdatedAt}} · {{.UpdatedBy}}</td>
+      <td class="nowrap actions"><a class="btn secondary sm" href="/scripts/{{.ID}}/run">{{template "icon" "terminal"}}{{$.T "Run on devices"}}</a></td>
+    </tr>{{end}}</tbody>
+  </table></div>
+  {{else}}<p class="muted">{{.T "The library is empty."}}{{if .User.IsAdmin}} {{.T "Save scripts you use often, then run them on many devices at once or on a schedule."}}{{end}}</p>{{end}}
+</section>
+
+<section class="panel">
+  <h2>{{.T "Recent jobs"}}</h2>
+  {{template "jobtable" .}}
+</section>
+
+{{if .User.IsAdmin}}
+<section class="panel">
+  <h2>{{template "icon" "clock"}}{{.T "Schedules"}}</h2>
+  {{template "schedtable" .}}
+</section>
+{{end}}
+{{end}}
