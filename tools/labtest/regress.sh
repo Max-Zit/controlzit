@@ -42,6 +42,7 @@ check "refresh inventory" '[ "$($C -o /dev/null -w %{http_code} -X POST $S/devic
 # --- files
 B=$S/devices/$DEV/files
 check "drives listed" '$C $B | grep -q "class=\"drive\""'
+$C -o /dev/null --data-urlencode "dir=C:\\" -d name=cztest $B/mkdir  # the work folder (may exist already)
 head -c 2500000 /dev/urandom > .gotmp/r-up.bin
 $C -o /dev/null -F "dir=C:\\cztest" -F "overwrite=1" -F "file=@.gotmp/r-up.bin;filename=r-up.bin" $B/upload
 $C -o .gotmp/r-down.bin "$B/download?path=C%3A%5Ccztest%5Cr-up.bin"
