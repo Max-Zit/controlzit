@@ -72,6 +72,7 @@ func run(args []string) error {
 	session := fs.String("session", "", "remote desktop session (rdhelper, started by the service)")
 	technician := fs.String("technician", "", "name shown in the notice (rdhelper)")
 	noNotice := fs.Bool("no-notice", false, "do not show the notice on the screen (rdhelper; console setting)")
+	noClipboard := fs.Bool("no-clipboard", false, "no clipboard exchange (rdhelper; console setting)")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -157,7 +158,7 @@ func run(args []string) error {
 		// Started by the service in the console session; the token comes on stdin.
 		line, _ := bufio.NewReader(os.Stdin).ReadString('\n')
 		log := slog.New(slog.NewTextHandler(agent.OpenLog(*dir), nil)).With("helper", *session)
-		return agent.RunHelper(ctx, *dir, *session, *technician, line, !*noNotice, log)
+		return agent.RunHelper(ctx, *dir, *session, *technician, line, !*noNotice, !*noClipboard, log)
 	case "install":
 		return installService()
 	case "uninstall":

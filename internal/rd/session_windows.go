@@ -19,14 +19,14 @@ import (
 // Pacing: at most this many frames per second, and at most maxInFlight
 // tile batches the browser has not acknowledged yet (adapts to bandwidth).
 const (
-	frameInterval = 60 * time.Millisecond
+	frameInterval = 40 * time.Millisecond
 	maxInFlight   = 2
 )
 
 // Serve streams the screen over ws and replays the input it receives,
 // until the connection ends. Unless the console setting switched it off, it
 // shows the notice while connected.
-func Serve(ctx context.Context, ws *websocket.Conn, technician string, notice bool, log *slog.Logger) error {
+func Serve(ctx context.Context, ws *websocket.Conn, technician string, notice, clipboard bool, log *slog.Logger) error {
 	setDPIAware()
 	if notice {
 		banner := ShowBanner("ControlZit: " + technician + " is connected to this computer")
@@ -42,6 +42,20 @@ func Serve(ctx context.Context, ws *websocket.Conn, technician string, notice bo
 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
+	// Clipboard: text copied on the remote computer goes to the browser;
+	// the browser sets the remote clipboard before the technician pastes.
+	var clip *Clipboard
+	if clipboard {
+		var err error
+		clip, err = StartClipboard(ctx, func(text string) {
+			wctx, wcancel := context.WithTimeout(ctx, 30*time.Second)
+			defer wcancel()
+			_ = ws.Write(wctx, websocket.MessageBinary, append([]byte{proto.RDClip}, text...))
+		})
+		if err != nil {
+			log.Warn("clipboard not available", "err", err)
+		}
+	}
 	inputs := make(chan proto.RDInput, 256)
 	var credits atomic.Int32
 	credits.Store(maxInFlight)
@@ -70,6 +84,12 @@ func Serve(ctx context.Context, ws *websocket.Conn, technician string, notice bo
 			case "q":
 				if in.Quality >= 10 && in.Quality <= 95 {
 					quality.Store(int32(in.Quality)) // #nosec G115 -- 10..95
+				}
+			case "clip":
+				if clip != nil && len(in.Text) <= proto.MaxClipboard {
+					if err := clip.Set(in.Text); err != nil {
+						log.Warn("cannot set the remote clipboard", "err", err)
+					}
 				}
 			case "full":
 				select {
@@ -107,6 +127,8 @@ func desktopLoop(ctx context.Context, ws *websocket.Conn, inputs <-chan proto.RD
 	defer runtime.UnlockOSThread()
 	var c Capturer
 	defer c.Close()
+	c.Monitor = 0 // the primary display; the browser can choose another or all
+	sendInfo := false
 	var inj Injector
 	defer inj.ReleaseAll()
 	enc := &Encoder{}
@@ -123,6 +145,8 @@ func desktopLoop(ctx context.Context, ws *websocket.Conn, inputs <-chan proto.RD
 		return ws.Write(wctx, t, b)
 	}
 	failures := 0
+	method := ""
+	var lastDXErr error
 	for {
 		select {
 		case <-ctx.Done():
@@ -130,7 +154,8 @@ func desktopLoop(ctx context.Context, ws *websocket.Conn, inputs <-chan proto.RD
 		case in := <-inputs:
 			switch in.T {
 			case "m":
-				_ = inj.Mouse(in.X, in.Y, in.Buttons, in.Wheel, w, h)
+				vx, vy, vw, vh := c.ToVirtual(in.X, in.Y)
+				_ = inj.Mouse(vx, vy, in.Buttons, in.Wheel, vw, vh)
 			case "k":
 				_ = inj.Key(in.Code, in.Down)
 			case "text":
@@ -141,6 +166,10 @@ func desktopLoop(ctx context.Context, ws *websocket.Conn, inputs <-chan proto.RD
 				if err := CtrlAltDel(); err != nil {
 					log.Warn("Ctrl+Alt+Del failed", "err", err)
 				}
+			case "mon":
+				c.Monitor = in.Monitor
+				enc.Reset()
+				sendInfo = true
 			case "full":
 				enc.Reset()
 			}
@@ -160,10 +189,19 @@ func desktopLoop(ctx context.Context, ws *websocket.Conn, inputs <-chan proto.RD
 				continue
 			}
 			failures = 0
-			if changed {
+			if m := map[bool]string{true: "desktop duplication", false: "GDI"}[c.UsingDXGI()]; m != method {
+				method = m
+				log.Info("screen capture", "method", m, "desktop", c.Desktop())
+			}
+			if e := c.DXError(); e != nil && e != lastDXErr {
+				lastDXErr = e
+				log.Info("desktop duplication not used", "reason", e.Error())
+			}
+			if changed || sendInfo || f.W != w || f.H != h {
+				sendInfo = false
 				w, h = f.W, f.H
 				enc.Reset()
-				info, _ := json.Marshal(proto.RDScreenInfo{Width: f.W, Height: f.H, Desktop: c.Desktop()})
+				info, _ := json.Marshal(proto.RDScreenInfo{Width: f.W, Height: f.H, Desktop: c.Desktop(), Monitors: c.Monitors(), Monitor: c.Shown()})
 				if err := write(append([]byte{proto.RDScreen}, info...), true); err != nil {
 					return err
 				}

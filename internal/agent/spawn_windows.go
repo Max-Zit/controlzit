@@ -28,6 +28,9 @@ func startHelper(dir string, a proto.RDStart) error {
 	if a.NoNotice {
 		argv = append(argv, "--no-notice")
 	}
+	if a.NoClipboard {
+		argv = append(argv, "--no-clipboard")
+	}
 	if !isSystem() {
 		cmd := exec.Command(exe, argv[1:]...) // #nosec G204 -- our own executable
 		cmd.Stdin = strings.NewReader(a.Token + "\n")

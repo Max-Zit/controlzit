@@ -729,5 +729,12 @@
   "Choose the devices.": "Izaberite uređaje.",
   "Choose the devices, at least one day and the time.": "Izaberite uređaje, bar jedan dan i vreme.",
   "From the library…": "Iz biblioteke…",
-  "Load": "Učitaj"
+  "Load": "Učitaj",
+  "All monitors": "Svi monitori",
+  "Copied from the remote computer": "Kopirano sa udaljenog računara",
+  "Copy remote text": "Kopiraj udaljeni tekst",
+  "Exchange copied text (clipboard) between the technician and the remote computer": "Razmena kopiranog teksta (clipboard) između tehničara i udaljenog računara",
+  "Monitor": "Monitor",
+  "Text copied on the remote computer": "Tekst kopiran na udaljenom računaru",
+  "primary": "glavni"
 }

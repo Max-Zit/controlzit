@@ -37,6 +37,8 @@ func main() {
 	keys := flag.String("keys", "", "comma-separated KeyboardEvent codes to press after the first frame (a+b = chord)")
 	text := flag.String("text", "", "text to type after the first frame")
 	cad := flag.Bool("cad", false, "send Ctrl+Alt+Del after the first frame")
+	clip := flag.String("clip", "", "text to put on the remote clipboard after the first frame")
+	monitor := flag.Int("monitor", -2, "monitor to show after the first frame (-1: all)")
 	flag.Parse()
 
 	ctx, cancel := context.WithTimeout(context.Background(), *wait+40*time.Second)
@@ -74,10 +76,12 @@ func main() {
 		}
 		bytesIn += len(data)
 		switch data[0] {
+		case proto.RDClip:
+			fmt.Printf("remote clipboard: %q\n", string(data[1:]))
 		case proto.RDScreen:
 			_ = json.Unmarshal(data[1:], &info)
 			canvas = image.NewRGBA(image.Rect(0, 0, info.Width, info.Height))
-			fmt.Printf("screen %dx%d desktop %s\n", info.Width, info.Height, info.Desktop)
+			fmt.Printf("screen %dx%d desktop %s monitors %d shown %d\n", info.Width, info.Height, info.Desktop, len(info.Monitors), info.Monitor)
 		case proto.RDTiles:
 			tiles, err := proto.DecodeTiles(data)
 			if err != nil || canvas == nil {
@@ -118,6 +122,12 @@ func main() {
 				}
 				if *text != "" {
 					send(proto.RDInput{T: "text", Text: *text})
+				}
+				if *clip != "" {
+					send(proto.RDInput{T: "clip", Text: *clip})
+				}
+				if *monitor != -2 {
+					send(proto.RDInput{T: "mon", Monitor: *monitor})
 				}
 			}
 		}

@@ -4,11 +4,14 @@
 <p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a> / <a href="/devices/{{$d.ID}}">{{$d.Hostname}}</a></p>
 <div class="rd" id="rd" data-ws="/devices/{{$d.ID}}/rd/ws"
      data-t-connecting="{{.T "Connecting…"}}" data-t-connected="{{.T "Connected"}}" data-t-closed="{{.T "Disconnected"}}"
-     data-t-signin="{{.T "sign-in or UAC screen"}}" data-t-paste="{{.T "Text to type on the remote computer:"}}">
+     data-t-signin="{{.T "sign-in or UAC screen"}}" data-t-paste="{{.T "Text to type on the remote computer:"}}"
+     data-clip="{{if .Data.Clipboard}}1{{else}}0{{end}}" data-t-monitor="{{.T "Monitor"}}" data-t-primary="{{.T "primary"}}" data-t-allmonitors="{{.T "All monitors"}}" data-t-copied="{{.T "Copied from the remote computer"}}">
   <div class="rd-bar">
     <b>{{template "icon" "screen"}}{{$d.Hostname}}</b>
     <span class="rd-status" id="rd-status">{{if .Data.Online}}{{.T "Connecting…"}}{{else}}{{.T "The device is offline."}}{{end}}</span>
     <span class="rd-tools">
+      <select id="rd-monitor" class="rd-mon" aria-label="{{.T "Monitor"}}" hidden></select>
+      <button type="button" class="secondary sm" id="rd-clip" hidden title="{{.T "Text copied on the remote computer"}}">{{template "icon" "copy"}}{{.T "Copy remote text"}}</button>
       <label class="rd-q">{{.T "Quality"}} <select id="rd-quality" aria-label="{{.T "Quality"}}"><option value="40">{{.T "Fast"}}</option><option value="65" selected>{{.T "Balanced"}}</option><option value="88">{{.T "Sharp"}}</option></select></label>
       <button type="button" class="secondary sm" id="rd-cad" title="{{.T "Send Ctrl+Alt+Del"}}">Ctrl+Alt+Del</button>
       <button type="button" class="secondary sm" id="rd-paste" title="{{.T "Type text on the remote computer"}}">{{template "icon" "copy"}}{{.T "Send text"}}</button>

@@ -12,9 +12,12 @@ type RemoteSettings struct {
 	// ShowNotice shows a notice on the remote screen while a technician is
 	// connected (default on).
 	ShowNotice bool `json:"show_notice"`
+	// Clipboard exchanges copied text between the technician and the remote
+	// computer (default on).
+	Clipboard bool `json:"clipboard"`
 }
 
-func defaultRemote() RemoteSettings { return RemoteSettings{ShowNotice: true} }
+func defaultRemote() RemoteSettings { return RemoteSettings{ShowNotice: true, Clipboard: true} }
 
 // Remote loads the remote desktop settings.
 func (s *Server) Remote(ctx context.Context) RemoteSettings {
@@ -30,11 +33,11 @@ func (s *Server) handleRemoteSettings(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleRemoteSave(w http.ResponseWriter, r *http.Request) {
-	x := RemoteSettings{ShowNotice: r.FormValue("show_notice") == "1"}
+	x := RemoteSettings{ShowNotice: r.FormValue("show_notice") == "1", Clipboard: r.FormValue("clipboard") == "1"}
 	if err := s.store.SetSetting(r.Context(), settingRemote, x); err != nil {
 		s.serverError(w, r, err)
 		return
 	}
-	s.audit(r, "settings.remote", "settings", "remote desktop notice on the remote screen: %v", x.ShowNotice)
+	s.audit(r, "settings.remote", "settings", "remote desktop notice on the remote screen: %v, clipboard: %v", x.ShowNotice, x.Clipboard)
 	s.redirect(w, r, "/settings/remote", "Saved.")
 }

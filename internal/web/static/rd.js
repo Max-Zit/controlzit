@@ -13,6 +13,10 @@
   ws.binaryType = "arraybuffer";
   var open = false;
   var pending = Promise.resolve();
+  var clipOn = root.getAttribute("data-clip") === "1";
+  var lastClip = ""; // text both sides already have
+  var monSel = document.getElementById("rd-monitor");
+  var clipBtn = document.getElementById("rd-clip");
 
   function send(o) { if (open && ws.readyState === 1) ws.send(JSON.stringify(o)); }
   function setStatus(s, cls) { status.textContent = s; status.className = "rd-status " + (cls || ""); }
@@ -38,6 +42,9 @@
       open = true;
       if (canvas.width !== info.w || canvas.height !== info.h) { canvas.width = info.w; canvas.height = info.h; }
       setStatus(t("connected") + " · " + info.w + "×" + info.h + (info.desktop && info.desktop !== "Default" ? " · " + t("signin") : ""), "ok");
+      showMonitors(info.monitors || [], info.monitor);
+    } else if (kind === 4) { // the remote clipboard changed
+      remoteCopied(new TextDecoder().decode(new Uint8Array(ev.data, 1)));
     } else if (kind === 2) { // tiles
       var n = b.getUint16(1), off = 3, jobs = [];
       for (var i = 0; i < n; i++) {
@@ -75,18 +82,27 @@
 
   // ---- keyboard (physical keys; the remote layout applies)
   var down = {};
+  // Keys go out in order; Ctrl+V first waits for the local clipboard.
+  var keys = Promise.resolve();
+  function key(code, isDown) { keys = keys.then(function () { send({ t: "k", code: code, down: isDown }); }); }
   canvas.addEventListener("keydown", function (e) {
     e.preventDefault();
     down[e.code] = true;
-    send({ t: "k", code: e.code, down: true });
+    // Ctrl+V: put the local clipboard on the remote computer first.
+    if (clipOn && e.code === "KeyV" && (e.ctrlKey || e.metaKey) && navigator.clipboard && navigator.clipboard.readText) {
+      keys = keys.then(function () { return navigator.clipboard.readText(); }).then(function (s) {
+        if (s && s !== lastClip) { lastClip = s; send({ t: "clip", text: s.slice(0, 65536) }); }
+      }, function () { /* no permission: paste what the remote computer has */ });
+    }
+    key(e.code, true);
   });
   canvas.addEventListener("keyup", function (e) {
     e.preventDefault();
     delete down[e.code];
-    send({ t: "k", code: e.code, down: false });
+    key(e.code, false);
   });
   canvas.addEventListener("blur", function () {
-    Object.keys(down).forEach(function (c) { send({ t: "k", code: c, down: false }); });
+    Object.keys(down).forEach(function (c) { key(c, false); });
     down = {};
     if (buttons) { buttons = 0; mouse(); }
   });
@@ -105,6 +121,45 @@
       typeIt(window.prompt(t("paste")));
     }
   });
+  // ---- monitors
+  function showMonitors(list, shown) {
+    if (!monSel) return;
+    if (list.length < 2) { monSel.hidden = true; return; }
+    var html = "";
+    list.forEach(function (m, i) {
+      html += "<option value=\"" + i + "\">" + t("monitor") + " " + (i + 1) + (m.primary ? " (" + t("primary") + ")" : "") + " · " + m.w + "×" + m.h + "</option>";
+    });
+    html += "<option value=\"-1\">" + t("allmonitors") + "</option>";
+    monSel.innerHTML = html;
+    monSel.value = String(shown);
+    monSel.hidden = false;
+  }
+  if (monSel) monSel.addEventListener("change", function () { send({ t: "mon", monitor: Number(monSel.value) }); canvas.focus(); });
+
+  // ---- clipboard from the remote computer
+  var remoteText = "";
+  function remoteCopied(s) {
+    remoteText = s;
+    lastClip = s;
+    var done = function () { flash(t("copied")); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(s).then(done, function () { if (clipBtn) clipBtn.hidden = false; });
+    } else if (clipBtn) {
+      clipBtn.hidden = false;
+    }
+  }
+  if (clipBtn) clipBtn.addEventListener("click", function () {
+    if (navigator.clipboard) navigator.clipboard.writeText(remoteText).then(function () { clipBtn.hidden = true; flash(t("copied")); });
+    canvas.focus();
+  });
+  var flashTimer = 0;
+  function flash(s) {
+    var old = status.textContent, cls = status.className;
+    status.textContent = s;
+    clearTimeout(flashTimer);
+    flashTimer = setTimeout(function () { if (status.textContent === s) { status.textContent = old; status.className = cls; } }, 2500);
+  }
+
   document.getElementById("rd-full").addEventListener("click", function () {
     var el = document.getElementById("rd");
     if (document.fullscreenElement) document.exitFullscreen(); else if (el.requestFullscreen) el.requestFullscreen();

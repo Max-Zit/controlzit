@@ -8,6 +8,7 @@
   <h2>{{template "icon" "screen"}}{{.T "Remote desktop"}}</h2>
   <form method="post" action="/settings/remote" class="stack">
     <label class="check"><input type="checkbox" name="show_notice" value="1" {{if .Data.ShowNotice}}checked{{end}}>{{.T "Show a notice on the remote screen while a technician is connected"}}</label>
+    <label class="check"><input type="checkbox" name="clipboard" value="1" {{if .Data.Clipboard}}checked{{end}}>{{.T "Exchange copied text (clipboard) between the technician and the remote computer"}}</label>
     <p class="small muted">{{.T "The notice is a bar at the top of the screen with the technician's name; the technician does not see it in the picture. Switching it off applies to new sessions. Every session is written to the audit log either way."}}</p>
     <div><button class="primary">{{.T "Save"}}</button></div>
   </form>

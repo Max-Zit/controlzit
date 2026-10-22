@@ -4,9 +4,12 @@ package rd
 
 import (
 	"errors"
+	"time"
 	"unsafe"
 
 	"golang.org/x/sys/windows"
+
+	"github.com/max-zit/controlzit/internal/proto"
 )
 
 // Capturer grabs the whole virtual screen (all monitors) with GDI. It must
@@ -23,6 +26,18 @@ type Capturer struct {
 	x, y     int
 	w, h     int
 	frame    Frame
+	// Monitor is the display to capture (index into Monitors; -1 or out of
+	// range: the whole virtual screen).
+	Monitor  int
+	monitors []proto.RDMonitor
+	enumAt   time.Time
+	vx, vy   int // virtual screen origin and size
+	vw, vh   int
+	// Desktop Duplication state (nil: GDI)
+	dx    *dupl
+	dxOff time.Time // GDI only until then (after a failure)
+	dxErr error
+	bits  uintptr // DIB section memory in DXGI mode
 }
 
 // Desktop is the name of the attached input desktop.
@@ -81,6 +96,7 @@ func (c *Capturer) release() {
 
 // Close releases the GDI objects and the desktop handle.
 func (c *Capturer) Close() {
+	c.closeDX()
 	c.release()
 	if c.desk != 0 {
 		_, _, _ = pCloseDesktop.Call(c.desk)
@@ -95,9 +111,35 @@ func (c *Capturer) Capture() (*Frame, bool, error) {
 	if err != nil {
 		return nil, false, err
 	}
-	x, y, w, h := metric(smXVirtualScreen), metric(smYVirtualScreen), metric(smCXVirtualScreen), metric(smCYVirtualScreen)
-	if w <= 0 || h <= 0 {
+	vx, vy, vw, vh := metric(smXVirtualScreen), metric(smYVirtualScreen), metric(smCXVirtualScreen), metric(smCYVirtualScreen)
+	if vw <= 0 || vh <= 0 {
 		return nil, false, errors.New("no screen")
+	}
+	if changed || vx != c.vx || vy != c.vy || vw != c.vw || vh != c.vh || time.Since(c.enumAt) > 2*time.Second {
+		c.vx, c.vy, c.vw, c.vh = vx, vy, vw, vh
+		c.enumAt = time.Now()
+		if m := Monitors(); !sameMonitors(m, c.monitors) {
+			c.monitors = m
+			changed = true
+		}
+	}
+	x, y, w, h := vx, vy, vw, vh
+	if c.Monitor >= 0 && c.Monitor < len(c.monitors) {
+		m := c.monitors[c.Monitor]
+		x, y, w, h = m.X, m.Y, m.W, m.H
+	}
+	if UseDXGI && c.deskName == "Default" && time.Now().After(c.dxOff) && (c.Shown() >= 0 || len(c.monitors) == 1) {
+		f, ch, err := c.captureDX(x, y, w, h, changed)
+		if err == nil {
+			return f, ch, nil
+		}
+		c.dxErr = err
+		c.closeDX()
+		c.dxOff = time.Now().Add(10 * time.Second)
+		changed = true
+	} else if c.dx != nil {
+		c.closeDX()
+		changed = true
 	}
 	if c.mem == 0 || w != c.w || h != c.h || x != c.x || y != c.y {
 		c.release()
@@ -164,4 +206,95 @@ func (c *Capturer) rop() uintptr {
 		return srcCopy
 	}
 	return srcCopy | captureBlt
+}
+
+// Monitors are the displays found at the last capture.
+func (c *Capturer) Monitors() []proto.RDMonitor { return c.monitors }
+
+// Shown is the index of the captured monitor (-1: all).
+func (c *Capturer) Shown() int {
+	if c.Monitor >= 0 && c.Monitor < len(c.monitors) {
+		return c.Monitor
+	}
+	return -1
+}
+
+// ToVirtual turns a position in the captured image into one relative to
+// the virtual screen, and returns the virtual screen size (for input).
+func (c *Capturer) ToVirtual(x, y int) (int, int, int, int) {
+	return x + c.x - c.vx, y + c.y - c.vy, c.vw, c.vh
+}
+
+func sameMonitors(a, b []proto.RDMonitor) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
+// UseDXGI captures with Desktop Duplication where it works.
+var UseDXGI = true
+
+// DXError is why Desktop Duplication was last given up (nil: never).
+func (c *Capturer) DXError() error { return c.dxErr }
+
+// UsingDXGI reports whether the last capture used Desktop Duplication.
+func (c *Capturer) UsingDXGI() bool { return c.dx != nil && c.dx.have }
+
+func (c *Capturer) closeDX() {
+	if c.dx != nil {
+		c.dx.close()
+		c.dx = nil
+		c.release()
+		c.bits = 0
+	}
+}
+
+// captureDX captures the display at x, y (w×h) with Desktop Duplication and
+// draws the mouse pointer into a DIB section.
+func (c *Capturer) captureDX(x, y, w, h int, changed bool) (*Frame, bool, error) {
+	mon := proto.RDMonitor{X: x, Y: y, W: w, H: h}
+	if c.dx == nil || c.dx.mon.X != x || c.dx.mon.Y != y || c.dx.mon.W != w || c.dx.mon.H != h {
+		c.closeDX()
+		c.release()
+		d, err := newDupl(mon)
+		if err != nil {
+			return nil, false, err
+		}
+		c.dx = d
+		changed = true
+		c.screen, _, _ = pGetDC.Call(0)
+		c.mem, _, _ = pCreateCompatibleDC.Call(c.screen)
+		bi := bitmapInfoHeader{BitCount: 32, Planes: 1, Width: int32(w), Height: -int32(h)} // #nosec G115 -- screen size
+		bi.Size = uint32(unsafe.Sizeof(bi))
+		c.bmp, _, _ = pCreateDIBSection.Call(c.screen, uintptr(unsafe.Pointer(&bi)), 0, uintptr(unsafe.Pointer(&c.bits)), 0, 0) // #nosec G103 -- Win32 out-parameter
+		if c.mem == 0 || c.bmp == 0 || c.bits == 0 {
+			return nil, false, errors.New("cannot create the DIB section")
+		}
+		c.old, _, _ = pSelectObject.Call(c.mem, c.bmp)
+		c.x, c.y, c.w, c.h = x, y, w, h
+		c.frame = Frame{W: w, H: h, Pix: make([]byte, w*h*4)}
+	}
+	if _, err := c.dx.next(0); err != nil {
+		return nil, false, err
+	}
+	dib := unsafe.Slice((*byte)(ptrOf(c.bits)), w*h*4) // #nosec G103 -- DIB section of w×h pixels
+	if c.dx.have {
+		copy(dib, c.dx.clean)
+	} else {
+		// Some display drivers deliver the first image only after something
+		// changes: until then GDI fills the same buffer.
+		if r, _, err := pBitBlt.Call(c.mem, 0, 0, uintptr(w), uintptr(h), c.screen, uintptr(x), uintptr(y), c.rop()); r == 0 {
+			return nil, false, errors.New("BitBlt: " + err.Error())
+		}
+	}
+	c.drawCursor()
+	_, _, _ = pGdiFlush.Call()
+	copy(c.frame.Pix, dib)
+	return &c.frame, changed, nil
 }

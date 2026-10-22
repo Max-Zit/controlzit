@@ -27,6 +27,8 @@ type RDStart struct {
 	Technician string `json:"technician"`
 	// NoNotice: do not show the notice on the remote screen (setting).
 	NoNotice bool `json:"no_notice,omitempty"`
+	// NoClipboard: no clipboard exchange (setting).
+	NoClipboard bool `json:"no_clipboard,omitempty"`
 }
 
 // Binary messages from the helper start with one of these bytes.
@@ -34,6 +36,7 @@ const (
 	RDScreen byte = 1 // JSON RDScreenInfo follows
 	RDTiles  byte = 2 // tile batch, see EncodeTiles
 	RDCursor byte = 3 // int16 x, int16 y (screen pixels), uint8 visible
+	RDClip   byte = 4 // UTF-8 text: the remote clipboard changed
 )
 
 // RDScreenInfo describes the captured screen (all monitors).
@@ -49,7 +52,7 @@ type RDScreenInfo struct {
 
 // RDInput is a text message from the browser.
 type RDInput struct {
-	T string `json:"t"` // m mouse, k key, ack, q quality, cad, text
+	T string `json:"t"` // m mouse, k key, ack, q quality, cad, text, clip (set the remote clipboard), mon (monitor)
 	// mouse: position in screen pixels, buttons bit mask (1 left, 2 right,
 	// 4 middle), wheel delta (120 per notch)
 	X       int `json:"x,omitempty"`
@@ -129,3 +132,6 @@ type RDMonitor struct {
 	H       int  `json:"h"`
 	Primary bool `json:"primary"`
 }
+
+// MaxClipboard limits clipboard text exchanged in either direction.
+const MaxClipboard = 64 << 10

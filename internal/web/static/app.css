@@ -353,3 +353,4 @@ a.stat { color: inherit; }
 a.stat:hover { text-decoration: none; border-color: var(--accent); }
 .pagehead { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
 .pagehead h1 { margin-bottom: 0; }
+.rd-mon { width: auto; padding: 4px 26px 4px 8px; font-size: 13px; }

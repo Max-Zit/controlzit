@@ -1,8 +1,10 @@
 package web
 
 import (
+	"bytes"
 	"context"
 	"crypto/subtle"
+	"encoding/json"
 	"net/http"
 	"strconv"
 	"sync"
@@ -25,7 +27,7 @@ import (
 const (
 	rdStartTimeout = 30 * time.Second
 	// maxBrowserMsg limits a message from the browser (input, paste).
-	maxBrowserMsg = 16 << 10
+	maxBrowserMsg = 256 << 10
 )
 
 type rdSession struct {
@@ -63,9 +65,10 @@ func (h *rdHub) remove(id string) {
 }
 
 type rdData struct {
-	D      *store.Device
-	Online bool
-	Notice bool
+	D         *store.Device
+	Online    bool
+	Notice    bool
+	Clipboard bool
 }
 
 // handleRD is the viewer page.
@@ -74,7 +77,7 @@ func (s *Server) handleRD(w http.ResponseWriter, r *http.Request) {
 	if d == nil {
 		return
 	}
-	s.render(w, r, http.StatusOK, "rd", &Page{Title: d.Hostname, Nav: "devices", Data: &rdData{D: d, Online: s.Connected(d.ID), Notice: s.Remote(r.Context()).ShowNotice}})
+	s.render(w, r, http.StatusOK, "rd", &Page{Title: d.Hostname, Nav: "devices", Data: &rdData{D: d, Online: s.Connected(d.ID), Notice: s.Remote(r.Context()).ShowNotice, Clipboard: s.Remote(r.Context()).Clipboard}})
 }
 
 // handleRDSocket is the browser side of a session.
@@ -109,7 +112,8 @@ func (s *Server) handleRDSocket(w http.ResponseWriter, r *http.Request) {
 	if name == "" {
 		name = u.Username
 	}
-	if err := s.call(ctx, d.ID, u.Username, proto.KindRDStart, proto.RDStart{Session: sess.id, Token: sess.token, Technician: name, NoNotice: !s.Remote(ctx).ShowNotice}, nil, rdStartTimeout); err != nil {
+	settings := s.Remote(ctx)
+	if err := s.call(ctx, d.ID, u.Username, proto.KindRDStart, proto.RDStart{Session: sess.id, Token: sess.token, Technician: name, NoNotice: !settings.ShowNotice, NoClipboard: !settings.Clipboard}, nil, rdStartTimeout); err != nil {
 		s.log.Warn("remote desktop start failed", "device", d.ID, "err", err)
 		fail(err.Error())
 		return
@@ -123,10 +127,11 @@ func (s *Server) handleRDSocket(w http.ResponseWriter, r *http.Request) {
 	}
 	defer aws.CloseNow()
 	start := s.now()
-	s.audit(r, "rd.start", "device:"+strconv.FormatInt(d.ID, 10), "remote desktop session %s to %q started (notice on screen: %v)", sess.id, d.Hostname, s.Remote(ctx).ShowNotice)
+	s.audit(r, "rd.start", "device:"+strconv.FormatInt(d.ID, 10), "remote desktop session %s to %q started (notice on screen: %v, clipboard: %v)", sess.id, d.Hostname, settings.ShowNotice, settings.Clipboard)
 	s.log.Info("remote desktop session started", "device", d.ID, "user", u.Username, "session", sess.id)
 
 	var bytesDown atomic.Int64
+	var clipIn, clipOut atomic.Int64 // clipboard texts to and from the remote computer
 	errc := make(chan error, 2)
 	go func() { // agent → browser
 		for {
@@ -136,6 +141,12 @@ func (s *Server) handleRDSocket(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			bytesDown.Add(int64(len(data)))
+			if typ == websocket.MessageBinary && len(data) > 0 && data[0] == proto.RDClip {
+				if !settings.Clipboard {
+					continue
+				}
+				clipOut.Add(1)
+			}
 			wctx, wcancel := context.WithTimeout(ctx, 30*time.Second)
 			err = bws.Write(wctx, typ, data)
 			wcancel()
@@ -155,6 +166,12 @@ func (s *Server) handleRDSocket(w http.ResponseWriter, r *http.Request) {
 			if typ != websocket.MessageText {
 				continue
 			}
+			if isClip(data) {
+				if !settings.Clipboard {
+					continue
+				}
+				clipIn.Add(1)
+			}
 			wctx, wcancel := context.WithTimeout(ctx, 30*time.Second)
 			err = aws.Write(wctx, websocket.MessageText, data)
 			wcancel()
@@ -169,7 +186,7 @@ func (s *Server) handleRDSocket(w http.ResponseWriter, r *http.Request) {
 	// The request context ends with the browser connection; log with a fresh one.
 	r = r.WithContext(context.Background())
 	dur := s.now().Sub(start).Round(time.Second)
-	s.audit(r, "rd.end", "device:"+strconv.FormatInt(d.ID, 10), "remote desktop session %s to %q ended after %s (%d KB sent)", sess.id, d.Hostname, dur, bytesDown.Load()>>10)
+	s.audit(r, "rd.end", "device:"+strconv.FormatInt(d.ID, 10), "remote desktop session %s to %q ended after %s (%d KB sent; clipboard: %d texts to the computer, %d from it)", sess.id, d.Hostname, dur, bytesDown.Load()>>10, clipIn.Load(), clipOut.Load())
 	s.log.Info("remote desktop session ended", "device", d.ID, "session", sess.id, "duration", dur.String(), "reason", errString(err))
 }
 
@@ -210,4 +227,15 @@ func (s *Server) handleStream(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	<-sess.done
+}
+
+// isClip reports whether a browser message sets the remote clipboard.
+func isClip(data []byte) bool {
+	if !bytes.Contains(data, []byte(`"clip"`)) {
+		return false
+	}
+	var m struct {
+		T string `json:"t"`
+	}
+	return json.Unmarshal(data, &m) == nil && m.T == "clip"
 }
