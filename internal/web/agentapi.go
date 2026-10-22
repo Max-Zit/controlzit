@@ -299,7 +299,11 @@ func (s *Server) agentMessage(ctx context.Context, c *agentConn, d *store.Device
 		if err := s.store.AgentSeen(ctx, d.ID, &h, ip); err != nil {
 			return err
 		}
-		return send(ctx, c.ws, proto.TypeWelcome, proto.Welcome{DeviceID: d.ID, HeartbeatSeconds: heartbeatSeconds, InventoryHours: inventoryHours, CommandKey: s.commandPub()})
+		if err := send(ctx, c.ws, proto.TypeWelcome, proto.Welcome{DeviceID: d.ID, HeartbeatSeconds: heartbeatSeconds, InventoryHours: inventoryHours, CommandKey: s.commandPub()}); err != nil {
+			return err
+		}
+		go s.autoUpdate(d, h.AgentVersion)
+		return nil
 	case proto.TypeHeartbeat:
 		var hb proto.Heartbeat
 		if err := json.Unmarshal(env.Data, &hb); err != nil {

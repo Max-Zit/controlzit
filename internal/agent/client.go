@@ -166,6 +166,7 @@ func (a *Agent) Run(ctx context.Context) error {
 	}
 	a.key = key
 	helperDir = a.Dir
+	self = a
 	if a.Collect == nil {
 		a.Collect = CollectInventory
 	}
@@ -198,8 +199,10 @@ func (a *Agent) Run(ctx context.Context) error {
 			return nil
 		case <-time.After(wait):
 		}
-		if backoff < 5*time.Minute {
-			backoff *= 2
+		// At most about a minute and a half: after a server restart the
+		// devices should be back online quickly.
+		if backoff < time.Minute {
+			backoff = min(backoff*2, time.Minute)
 		}
 	}
 	return nil

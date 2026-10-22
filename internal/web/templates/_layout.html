@@ -73,6 +73,7 @@
   <a href="/settings/security" class="{{if eq .Title "Sign-in and security"}}on{{end}}">{{template "icon" "lock"}}<span>{{.T "Sign-in and security"}}<small>{{.T "Session length, blocked addresses"}}</small></span></a>
   <a href="/settings/monitoring" class="{{if eq .Title "Monitoring and alerts"}}on{{end}}">{{template "icon" "online"}}<span>{{.T "Monitoring and alerts"}}<small>{{.T "Rules and alert emails"}}</small></span></a>
   <a href="/settings/remote" class="{{if eq .Title "Remote desktop"}}on{{end}}">{{template "icon" "screen"}}<span>{{.T "Remote desktop"}}<small>{{.T "Notice on the remote screen"}}</small></span></a>
+  <a href="/settings/agents" class="{{if eq .Title "Agent updates"}}on{{end}}">{{template "icon" "download"}}<span>{{.T "Agent updates"}}<small>{{.T "Installer and automatic updates"}}</small></span></a>
 </nav>{{end}}
 
 {{define "qr"}}<svg class="qr" viewBox="0 0 {{.Size}} {{.Size}}" role="img" aria-label="QR"><rect width="{{.Size}}" height="{{.Size}}" fill="#fff"/>{{range .Cells}}<rect x="{{.X}}" y="{{.Y}}" width="1.02" height="1.02" fill="#000"/>{{end}}</svg>{{end}}

@@ -23,6 +23,8 @@ check "CSP header without inline" 'curl -skI $S/login | grep -qi "content-securi
 
 # --- sign-in
 $C -o /dev/null --data-urlencode username=admin --data-urlencode "password=$PW" $S/login
+# The checks read English texts; the admin account is switched back to Serbian at the end.
+$C -o /dev/null -d lang=en $S/lang
 check "admin signs in" '[ "$($C -o /dev/null -w %{http_code} $S/)" = 200 ]'
 for p in / /customers /devices /alerts /users /audit /settings/network /settings/security /settings/monitoring /account /devices/$DEV /devices/$DEV/files /devices/$DEV/rd /sites/1; do
   check "page $p" '[ "$($C -o /dev/null -w %{http_code} $S$p)" = 200 ]'
@@ -110,5 +112,11 @@ check "technician cannot open users" '[ "$(curl -sk -b $T -o /dev/null -w %{http
 QU=$($C $S/users | grep -o "href=\"/users/[0-9]*\">$QN" | grep -o '[0-9]*' | head -1)
 $C -o /dev/null -d role=technician -d disabled=1 $S/users/$QU
 
+# --- agent updates
+check "agent updates page shows the installer" '$C $S/settings/agents | grep -q "SHA-256"'
+check "installer download needs an agent identity" '[ "$(curl -sk -o /dev/null -w %{http_code} $A/agent/v1/package)" = 401 ]'
+check "agent runs the installer version" '$C $S/settings/agents | grep -q "All agents run the current version"'
+
+$C -o /dev/null -d lang=sr $S/lang
 echo "----"
 echo "passed $pass, failed $fail"

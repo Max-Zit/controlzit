@@ -195,11 +195,11 @@ func (s *Server) render(w http.ResponseWriter, r *http.Request, status int, name
 		s.serverError(w, r, fmt.Errorf("no template %q", name))
 		return
 	}
-	if p.Lang == "" {
-		p.Lang = s.lang(r, p.User)
-	}
 	if p.User == nil {
 		p.User = userFrom(r)
+	}
+	if p.Lang == "" {
+		p.Lang = s.lang(r, p.User) // the user's own language first
 	}
 	p.Version = s.Version
 	p.DevNo2FA = s.DevNo2FA

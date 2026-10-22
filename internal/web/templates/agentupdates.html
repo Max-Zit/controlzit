@@ -1,0 +1,58 @@
+{{template "app" .}}
+{{define "content"}}
+<h1>{{.T "Settings"}}</h1>
+<div class="settings">
+{{template "settingstabs" .}}
+<div class="settings-body">
+<section class="panel">
+  <h2>{{template "icon" "download"}}{{.T "Agent installer"}}</h2>
+  {{with .Data.Package}}
+  <dl class="facts">
+    <dt>{{$.T "Version"}}</dt><dd><b>{{.Version}}</b></dd>
+    <dt>{{$.T "Size"}}</dt><dd>{{$.Bytes (u64 .Size)}}</dd>
+    <dt>{{$.T "Uploaded"}}</dt><dd>{{$.Time .Modified}}</dd>
+    <dt>SHA-256</dt><dd><code class="wrap">{{.SHA256}}</code></dd>
+  </dl>
+  {{else}}<p class="muted">{{.T "No installer with a known version is on the server yet. Upload the MSI of a release."}}</p>{{end}}
+  <details class="mt"><summary class="btn secondary sm">{{template "icon" "upload"}}{{.T "Upload a new installer"}}</summary>
+    <form method="post" action="/settings/agents/package" enctype="multipart/form-data" class="stack mt">
+      <input type="file" name="file" accept=".msi" required aria-label="{{.T "Installer"}}">
+      <label>{{.T "Version"}} <small>{{.T "optional: read from the file name, such as controlzit-agent-0.2.8-x64.msi"}}</small><input name="version" placeholder="0.2.8" pattern="\d+\.\d+\.\d+" class="narrow"></label>
+      <div><button class="primary">{{.T "Upload"}}</button></div>
+    </form>
+  </details>
+  <p class="small muted mt">{{.T "Agents download the installer from this server over their own encrypted connection and install it only if it matches the SHA-256 in the signed update command."}}</p>
+</section>
+
+<section class="panel">
+  <h2>{{template "icon" "refresh"}}{{.T "Automatic updates"}}</h2>
+  <form method="post" action="/settings/agents" class="stack">
+    <label class="check"><input type="checkbox" name="auto" value="1" {{if .Data.Settings.Auto}}checked{{end}}>{{.T "Update outdated agents automatically when they connect"}}</label>
+    <small class="muted">{{.T "The update takes about a minute; the device is offline meanwhile. A device that fails is tried again after an hour."}}</small>
+    <div><button class="primary">{{.T "Save"}}</button></div>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>{{template "icon" "devices"}}{{.T "Agent versions"}}</h2>
+  {{if .Data.Outdated}}
+  <form method="post" action="/settings/agents/update-all" class="row" data-confirm="{{.T "Update all outdated agents that are online now?"}}">
+    <span>{{.T "%d agents run an older version." .Data.Outdated}}</span>
+    <button class="secondary sm">{{.T "Update all online agents now"}}</button>
+  </form>
+  {{else if .Data.Package}}<p class="muted">{{.T "All agents run the current version."}}</p>{{end}}
+  {{if .Data.Devices}}
+  <div class="table-wrap mt"><table>
+    <thead><tr><th>{{.T "Device"}}</th><th class="hide-sm">{{.T "Customer"}}</th><th>{{.T "Agent"}}</th><th>{{.T "Status"}}</th></tr></thead>
+    <tbody>{{range .Data.Devices}}<tr>
+      <td><a href="/devices/{{.ID}}">{{.Hostname}}</a></td>
+      <td class="hide-sm">{{.Customer}}</td>
+      <td class="nowrap">{{.AgentVersion}} {{if $.Data.Package.Outdated .AgentVersion}}<span class="badge warn"><i></i>{{$.T "outdated"}}</span>{{end}}</td>
+      <td>{{if index $.Data.Online .ID}}<span class="badge ok"><i></i>{{$.T "Online"}}</span>{{else}}<span class="badge"><i></i>{{$.T "Offline"}}</span>{{end}}</td>
+    </tr>{{end}}</tbody>
+  </table></div>
+  {{end}}
+</section>
+</div>
+</div>
+{{end}}

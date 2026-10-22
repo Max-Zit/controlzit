@@ -28,6 +28,7 @@ import (
 // Server serves the console and the agent endpoint.
 type Server struct {
 	store *store.Store
+	pkg   packageCache
 	log   *slog.Logger
 	tmpl  map[string]*template.Template
 	now   func() time.Time
@@ -304,6 +305,7 @@ func (s *Server) Handler() http.Handler {
 	app("GET /devices/{id}/scripts/{rid}", s.handleScripts)
 	app("POST /devices/{id}/scripts", s.handleScriptRun)
 	app("POST /devices/{id}/power", s.handlePower)
+	app("POST /devices/{id}/agent-update", s.handleDeviceUpdate)
 	app("POST /devices/{id}/refresh", s.handleDeviceRefresh)
 	app("POST /devices/{id}/delete", s.handleDeviceDelete)
 	app("GET /account", s.handleAccount)
@@ -331,6 +333,10 @@ func (s *Server) Handler() http.Handler {
 	admin("GET /settings/security", s.handleSecurity)
 	admin("POST /settings/security", s.handleSecuritySave)
 	admin("POST /settings/security/unblock", s.handleUnblock)
+	admin("GET /settings/agents", s.handleAgentUpdates)
+	admin("POST /settings/agents", s.handleAgentUpdatesSave)
+	admin("POST /settings/agents/package", s.handlePackageUpload)
+	admin("POST /settings/agents/update-all", s.handleUpdateAll)
 
 	return s.secure(s.aclCheck(s.MgmtACL, s.csrf(s.loadSession(mux))))
 }
@@ -342,6 +348,7 @@ func (s *Server) AgentHandler() http.Handler {
 	mux.HandleFunc("POST "+proto.PathEnroll, s.handleAgentEnroll)
 	mux.HandleFunc("GET "+proto.PathConnect, s.handleConnect)
 	mux.HandleFunc("GET "+proto.PathStream, s.handleStream)
+	mux.HandleFunc("GET "+proto.PathPackage, s.handlePackage)
 	mux.HandleFunc("GET "+proto.PathHealth, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`{"status":"ok","product":"controlzit"}`))

@@ -344,3 +344,5 @@ pre.output { max-height: 560px; overflow: auto; word-break: normal; overflow-wra
 details.power .pop-body { min-width: 300px; }
 form[data-busy].busy button { opacity: .6; pointer-events: none; }
 .busy-note { margin-top: 8px; }
+.update-note { align-items: center; flex-wrap: wrap; }
+.update-note form { margin-left: auto; }
