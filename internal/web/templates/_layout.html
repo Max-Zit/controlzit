@@ -126,6 +126,8 @@
   <a href="/devices/{{$id}}/services" class="{{if eq .Cur "services"}}on{{end}}">{{template "icon" "service"}}{{.P.T "Services"}}</a>
   <a href="/devices/{{$id}}/processes" class="{{if eq .Cur "processes"}}on{{end}}">{{template "icon" "cpu"}}{{.P.T "Processes"}}</a>
   <a href="/devices/{{$id}}/scripts" class="{{if eq .Cur "scripts"}}on{{end}}">{{template "icon" "terminal"}}{{.P.T "Scripts"}}</a>
+  <a href="/devices/{{$id}}/events" class="{{if eq .Cur "events"}}on{{end}}">{{template "icon" "audit"}}{{.P.T "Events"}}</a>
+  <a href="/devices/{{$id}}/software" class="{{if eq .Cur "software"}}on{{end}}">{{template "icon" "plus"}}{{.P.T "Programs"}}</a>
   {{end}}
   <a href="/devices/{{$id}}/updates" class="{{if eq .Cur "updates"}}on{{end}}">{{template "icon" "download"}}{{.P.T "Updates"}}</a>
 </nav>{{end}}

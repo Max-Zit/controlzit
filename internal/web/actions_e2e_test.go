@@ -146,3 +146,32 @@ func windowsDir() string {
 	}
 	return `C:\Windows`
 }
+
+func TestEventLogs(t *testing.T) {
+	if runtime.GOOS != "windows" {
+		t.Skip("Windows event logs")
+	}
+	e := newEnv(t)
+	e.now = time.Now()
+	e.srv.SetClock(time.Now)
+	e.st.SetClock(time.Now)
+	_, key, _ := ed25519.GenerateKey(rand.Reader)
+	e.srv.CommandKey = key
+	d, stop := startAgent(t, e)
+	defer stop()
+	admin, _ := e.setupAdmin("192.168.1.10")
+	base := "/devices/" + itoa(d.ID) + "/events"
+	if r := admin.get(base); r.code != http.StatusOK || !strings.Contains(r.body, "Choose a log") {
+		t.Fatalf("events page: %d", r.code)
+	}
+	r := admin.get(base + "?log=System&level=0&hours=720")
+	if r.code != http.StatusOK || !strings.Contains(r.body, "events, newest first") {
+		t.Fatalf("System log: %d %s", r.code, r.body)
+	}
+	if r := admin.get(base + "?log=Nope&level=0&hours=24"); !strings.Contains(r.body, "bad event query") {
+		t.Fatal("unknown log accepted")
+	}
+	if !strings.Contains(admin.get("/audit?q=event.query").body, "read the System log") {
+		t.Fatal("not audited")
+	}
+}

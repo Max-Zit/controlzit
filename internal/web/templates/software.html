@@ -1,0 +1,60 @@
+{{template "app" .}}
+{{define "content"}}
+{{$d := .Data.D}}
+<p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a> / <a href="/devices/{{$d.ID}}">{{$d.Hostname}}</a></p>
+<h1>{{template "icon" "plus"}}{{.T "Programs"}} <span class="muted h1-sub">{{$d.Hostname}}</span></h1>
+{{template "devtabs" (devtabs . $d "software")}}
+
+<nav class="tabs" aria-label="{{.T "Programs"}}">
+  <a href="/devices/{{$d.ID}}/software" class="{{if eq .Data.View "upgrades"}}on{{end}}">{{.T "Updates available"}}</a>
+  <a href="/devices/{{$d.ID}}/software?view=list" class="{{if eq .Data.View "list"}}on{{end}}">{{.T "Installed"}}</a>
+  <a href="/devices/{{$d.ID}}/software?view=search" class="{{if eq .Data.View "search"}}on{{end}}">{{.T "Install a program"}}</a>
+</nav>
+
+{{if eq .Data.View "search"}}
+<section class="panel">
+  <form method="get" action="/devices/{{$d.ID}}/software" class="row filter">
+    <input type="hidden" name="view" value="search">
+    <input type="search" name="q" value="{{.Data.Query}}" minlength="2" maxlength="80" required placeholder="{{.T "Program name, for example 7-Zip or Chrome"}}" aria-label="{{.T "Search"}}">
+    <button class="primary">{{.T "Search"}}</button>
+  </form>
+  <p class="small muted mt">{{.T "Programs come from the winget community repository and are installed silently for all users."}}</p>
+</section>
+{{end}}
+
+{{if .Data.Err}}<div class="flash err" role="alert">{{template "icon" "alert"}}<span>{{.Data.Err}}</span></div>{{end}}
+
+{{with .Data.Result}}
+<section class="panel">
+  {{if .Packages}}
+  {{if eq $.Data.View "upgrades"}}
+  <form method="post" action="/devices/{{$d.ID}}/software" class="row" data-confirm="{{$.T "Update all programs on %s?" $d.Hostname}}" data-busy="{{$.T "Working… installers can take several minutes."}}">
+    <input type="hidden" name="action" value="upgrade"><input type="hidden" name="id" value="--all"><input type="hidden" name="view" value="upgrades">
+    <span>{{$.T "%d programs can be updated." (len .Packages)}}</span>
+    <button class="secondary sm">{{$.T "Update all"}}</button>
+  </form>
+  {{end}}
+  <div class="table-wrap mt"><table>
+    <thead><tr><th>{{$.T "Program"}}</th><th class="hide-sm">ID</th><th>{{$.T "Version"}}</th>{{if eq $.Data.View "upgrades"}}<th>{{$.T "Available"}}</th>{{end}}<th></th></tr></thead>
+    <tbody>{{range .Packages}}<tr>
+      <td><b>{{.Name}}</b></td>
+      <td class="hide-sm small mono">{{.ID}}</td>
+      <td class="small">{{.Version}}</td>
+      {{if eq $.Data.View "upgrades"}}<td class="small">{{.Available}}</td>{{end}}
+      <td class="nowrap actions">
+        <form method="post" action="/devices/{{$d.ID}}/software" class="inline" data-busy="{{$.T "Working… installers can take several minutes."}}"
+          {{if eq $.Data.View "list"}}data-confirm="{{$.T "Uninstall %s?" .Name}}"{{end}}>
+          <input type="hidden" name="id" value="{{.ID}}"><input type="hidden" name="view" value="{{$.Data.View}}"><input type="hidden" name="q" value="{{$.Data.Query}}">
+          {{if eq $.Data.View "upgrades"}}<button class="secondary sm" name="action" value="upgrade">{{$.T "Update the program"}}</button>
+          {{else if eq $.Data.View "list"}}<button class="ghost sm" name="action" value="uninstall">{{$.T "Uninstall"}}</button>
+          {{else}}<button class="secondary sm" name="action" value="install">{{$.T "Install"}}</button>{{end}}
+        </form>
+      </td>
+    </tr>{{end}}</tbody>
+  </table></div>
+  {{else}}
+  <p class="muted">{{if eq $.Data.View "upgrades"}}{{$.T "All programs that winget knows are up to date."}}{{else if eq $.Data.View "list"}}{{$.T "winget knows none of the installed programs."}}{{else}}{{$.T "Nothing found."}}{{end}}</p>
+  {{end}}
+</section>
+{{end}}
+{{end}}

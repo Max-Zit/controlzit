@@ -376,3 +376,5 @@ body.report { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; backgr
   .report-devices tr { break-inside: avoid; }
 }
 .report-head .brand span { color: var(--text); }
+table.events details summary { cursor: pointer; overflow-wrap: anywhere; }
+table.events details pre { margin-top: 6px; max-height: 320px; }

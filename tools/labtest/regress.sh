@@ -118,6 +118,10 @@ check "agent updates page shows the installer" '$C $S/settings/agents | grep -q 
 check "installer download needs an agent identity" '[ "$(curl -sk -o /dev/null -w %{http_code} $A/agent/v1/package)" = 401 ]'
 check "agent runs the installer version" '$C $S/settings/agents | grep -q "All agents run the current version"'
 
+# --- event logs and programs (winget)
+check "System event log readable" '$C "$S/devices/$DEV/events?log=System&level=0&hours=720" | grep -q "events, newest first"'
+check "winget lists installed programs" '$C "$S/devices/$DEV/software?view=list" | grep -q "value=\"Microsoft.Edge\""'
+
 # --- Windows updates
 check "device reports Windows updates" '$C $S/devices/$DEV/updates | grep -q "Searched"'
 check "updates overview lists the device" '$C $S/updates | grep -q "/devices/$DEV/updates"'

@@ -203,11 +203,20 @@ func startAgentWith(t *testing.T, e *env, metrics func(context.Context) *proto.M
 	if len(cfg.CommandKey) != 32 {
 		t.Fatal("enrollment did not deliver the command key")
 	}
-	runCtx, stop := context.WithCancel(ctx)
+	runCtx, cancel := context.WithCancel(ctx)
 	a := &agent.Agent{Dir: dir, Cfg: cfg, Log: slog.New(slog.NewTextHandler(io.Discard, nil)),
 		Info:    func() agent.SysInfo { return agent.SysInfo{OS: "Windows"} },
 		Collect: func(context.Context) *proto.Inventory { return &proto.Inventory{} }, Metrics: metrics}
-	go a.Run(runCtx)
+	done := make(chan struct{})
+	go func() { _ = a.Run(runCtx); close(done) }()
+	// stop waits for the agent to end, so the test can remove its folder.
+	stop := func() {
+		cancel()
+		select {
+		case <-done:
+		case <-time.After(15 * time.Second):
+		}
+	}
 	waitFor(t, "agent channel", func() bool { return e.srv.Connected(cfg.DeviceID) })
 	d, _ := e.st.Device(ctx, cfg.DeviceID)
 	return d, stop

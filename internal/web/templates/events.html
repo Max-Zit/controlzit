@@ -1,0 +1,48 @@
+{{template "app" .}}
+{{define "content"}}
+{{$d := .Data.D}}{{$q := .Data.Q}}
+<p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a> / <a href="/devices/{{$d.ID}}">{{$d.Hostname}}</a></p>
+<h1>{{template "icon" "audit"}}{{.T "Events"}} <span class="muted h1-sub">{{$d.Hostname}}</span></h1>
+{{template "devtabs" (devtabs . $d "events")}}
+
+<section class="panel">
+  <form method="get" action="/devices/{{$d.ID}}/events" class="row filter">
+    <label>{{.T "Log"}}<select name="log">{{range .Data.Logs}}<option value="{{.}}" {{if eq . $q.Log}}selected{{end}}>{{$.T .}}</option>{{end}}</select></label>
+    <label>{{.T "Level"}}<select name="level">
+      <option value="0" {{if eq $q.Level 0}}selected{{end}}>{{.T "All"}}</option>
+      <option value="3" {{if eq $q.Level 3}}selected{{end}}>{{.T "Warnings and errors"}}</option>
+      <option value="2" {{if eq $q.Level 2}}selected{{end}}>{{.T "Errors"}}</option>
+      <option value="1" {{if eq $q.Level 1}}selected{{end}}>{{.T "Critical"}}</option>
+    </select></label>
+    <label>{{.T "Period"}}<select name="hours">
+      <option value="1" {{if eq $q.Hours 1}}selected{{end}}>{{.T "last hour"}}</option>
+      <option value="24" {{if eq $q.Hours 24}}selected{{end}}>{{.T "last 24 hours"}}</option>
+      <option value="168" {{if eq $q.Hours 168}}selected{{end}}>{{.T "last 7 days"}}</option>
+      <option value="720" {{if eq $q.Hours 720}}selected{{end}}>{{.T "last 30 days"}}</option>
+    </select></label>
+    <label>{{.T "Event ID"}}<input type="number" name="id" min="0" max="65535" value="{{if $q.ID}}{{$q.ID}}{{end}}" class="narrow"></label>
+    <label>{{.T "Text"}}<input type="search" name="text" value="{{$q.Text}}" maxlength="200" placeholder="{{.T "in the message or source"}}"></label>
+    <button class="primary">{{.T "Show"}}</button>
+  </form>
+</section>
+
+{{if .Data.Err}}<div class="flash err" role="alert">{{template "icon" "alert"}}<span>{{.Data.Err}}</span></div>{{end}}
+
+{{with .Data.Result}}
+<section class="panel">
+  {{if .Events}}
+  <p class="small muted">{{$.T "%d events, newest first." (len .Events)}}{{if .Truncated}} {{$.T "There are more: narrow the search."}}{{end}}</p>
+  <div class="table-wrap"><table class="events">
+    <thead><tr><th>{{$.T "Time"}}</th><th>{{$.T "Level"}}</th><th class="num">ID</th><th>{{$.T "Source"}}</th><th>{{$.T "Message"}}</th></tr></thead>
+    <tbody>{{range .Events}}<tr>
+      <td class="nowrap small">{{$.Time .Time}}</td>
+      <td class="nowrap">{{if eq .Level 1}}<span class="badge bad"><i></i>{{$.T "critical"}}</span>{{else if eq .Level 2}}<span class="badge bad"><i></i>{{$.T "error"}}</span>{{else if eq .Level 3}}<span class="badge warn"><i></i>{{$.T "warning"}}</span>{{else}}<span class="badge"><i></i>{{$.T "information"}}</span>{{end}}</td>
+      <td class="num mono">{{.ID}}</td>
+      <td class="small">{{.Provider}}</td>
+      <td class="detail small"><details><summary>{{firstLine .Message}}</summary><pre class="output">{{.Message}}</pre></details></td>
+    </tr>{{end}}</tbody>
+  </table></div>
+  {{else}}<p class="muted">{{$.T "No events match."}}</p>{{end}}
+</section>
+{{else}}{{if not .Data.Asked}}<p class="muted">{{.T "Choose a log and press Show. Reading the log of a device is written to the audit log."}}</p>{{end}}{{end}}
+{{end}}
