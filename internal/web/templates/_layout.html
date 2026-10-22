@@ -21,6 +21,7 @@
     <a href="/alerts" class="{{if eq .Nav "alerts"}}on{{end}}">{{template "icon" "alert"}}{{.T "Alerts"}}{{if .AlertCount}} <span class="navcount">{{.AlertCount}}</span>{{end}}</a>
     <a href="/updates" class="{{if eq .Nav "updates"}}on{{end}}">{{template "icon" "download"}}{{.T "Updates"}}</a>
     {{if .User.CanWrite}}<a href="/scripts" class="{{if eq .Nav "scripts"}}on{{end}}">{{template "icon" "terminal"}}{{.T "Scripts"}}</a>{{end}}
+    <a href="/reports" class="{{if eq .Nav "reports"}}on{{end}}">{{template "icon" "audit"}}{{.T "Reports"}}</a>
     {{if .User.IsAdmin}}
     <span class="navlabel">{{.T "Administration"}}</span>
     <a href="/users" class="{{if eq .Nav "users"}}on{{end}}">{{template "icon" "users"}}{{.T "Users"}}</a>
@@ -76,6 +77,7 @@
   <a href="/settings/monitoring" class="{{if eq .Title "Monitoring and alerts"}}on{{end}}">{{template "icon" "online"}}<span>{{.T "Monitoring and alerts"}}<small>{{.T "Rules and alert emails"}}</small></span></a>
   <a href="/settings/remote" class="{{if eq .Title "Remote desktop"}}on{{end}}">{{template "icon" "screen"}}<span>{{.T "Remote desktop"}}<small>{{.T "Notice on the remote screen"}}</small></span></a>
   <a href="/settings/updates" class="{{if eq .Title "Windows updates"}}on{{end}}">{{template "icon" "refresh"}}<span>{{.T "Windows updates"}}<small>{{.T "Automatic installation schedule"}}</small></span></a>
+  <a href="/settings/reports" class="{{if eq .Title "Reports"}}on{{end}}">{{template "icon" "mail"}}<span>{{.T "Reports"}}<small>{{.T "Email reports to customers"}}</small></span></a>
   <a href="/settings/agents" class="{{if eq .Title "Agent updates"}}on{{end}}">{{template "icon" "download"}}<span>{{.T "Agent updates"}}<small>{{.T "Installer and automatic updates"}}</small></span></a>
 </nav>{{end}}
 

@@ -3,7 +3,12 @@ package web
 import (
 	"bufio"
 	"context"
+	"encoding/base64"
+	"io"
+	"mime"
+	"mime/multipart"
 	"net"
+	"net/mail"
 	"strings"
 	"testing"
 	"time"
@@ -156,5 +161,44 @@ func TestSendMail(t *testing.T) {
 		if !strings.Contains(msg, want) {
 			t.Errorf("mail lacks %q:\n%s", want, msg)
 		}
+	}
+}
+
+func TestSendMailHTML(t *testing.T) {
+	addr, got := fakeSMTP(t)
+	host, port, _ := net.SplitHostPort(addr)
+	p := 0
+	for _, c := range port {
+		p = p*10 + int(c-'0')
+	}
+	e := EmailSettings{Host: host, Port: p, Security: "none", From: "rmm@example.com"}
+	html := "<html><body><h1>Izveštaj čćž</h1>" + strings.Repeat("<p>line</p>", 50) + "</body></html>"
+	if err := sendMailHTML(context.Background(), e, []string{"it@example.com"}, "Report", "plain text", html); err != nil {
+		t.Fatal(err)
+	}
+	msg := <-got
+	m, err := mail.ReadMessage(strings.NewReader(msg))
+	if err != nil {
+		t.Fatal(err)
+	}
+	mt, params, err := mime.ParseMediaType(m.Header.Get("Content-Type"))
+	if err != nil || mt != "multipart/alternative" {
+		t.Fatalf("content type %q %v", mt, err)
+	}
+	mr := multipart.NewReader(m.Body, params["boundary"])
+	var parts []string
+	for {
+		pt, err := mr.NextPart()
+		if err != nil {
+			break
+		}
+		b, _ := io.ReadAll(pt)
+		if pt.Header.Get("Content-Transfer-Encoding") == "base64" {
+			b, _ = base64.StdEncoding.DecodeString(strings.ReplaceAll(strings.ReplaceAll(string(b), "\r\n", ""), "\n", ""))
+		}
+		parts = append(parts, pt.Header.Get("Content-Type")+"|"+string(b))
+	}
+	if len(parts) != 2 || !strings.Contains(parts[0], "plain text") || !strings.Contains(parts[1], "text/html") || !strings.Contains(parts[1], "Izveštaj čćž") {
+		t.Fatalf("parts: %q", parts)
 	}
 }

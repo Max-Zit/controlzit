@@ -3,6 +3,7 @@ package web
 import (
 	"context"
 	"crypto/tls"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"mime"
@@ -12,6 +13,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/max-zit/controlzit/internal/auth"
 )
 
 const settingEmail = "email"
@@ -97,6 +100,15 @@ func headerSafe(s string) string { return strings.NewReplacer("\r", " ", "\n", "
 
 // sendMail sends a plain-text message to the recipients.
 func sendMail(ctx context.Context, e EmailSettings, to []string, subject, body string) error {
+	return sendMailParts(ctx, e, to, subject, body, "")
+}
+
+// sendMailHTML sends a message with a text and an HTML version.
+func sendMailHTML(ctx context.Context, e EmailSettings, to []string, subject, text, html string) error {
+	return sendMailParts(ctx, e, to, subject, text, html)
+}
+
+func sendMailParts(ctx context.Context, e EmailSettings, to []string, subject, body, html string) error {
 	if !e.Configured() {
 		return errors.New("email is not set up")
 	}
@@ -159,8 +171,22 @@ func sendMail(ctx context.Context, e EmailSettings, to []string, subject, body s
 	b.WriteString("To: " + headerSafe(strings.Join(to, ", ")) + "\r\n")
 	b.WriteString("Subject: " + mime.QEncoding.Encode("utf-8", headerSafe(subject)) + "\r\n")
 	b.WriteString("Date: " + time.Now().Format(time.RFC1123Z) + "\r\n")
-	b.WriteString("MIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Transfer-Encoding: 8bit\r\n\r\n")
-	b.WriteString(strings.ReplaceAll(strings.ReplaceAll(body, "\r\n", "\n"), "\n", "\r\n"))
+	b.WriteString("MIME-Version: 1.0\r\n")
+	text := strings.ReplaceAll(strings.ReplaceAll(body, "\r\n", "\n"), "\n", "\r\n")
+	if html == "" {
+		b.WriteString("Content-Type: text/plain; charset=utf-8\r\nContent-Transfer-Encoding: 8bit\r\n\r\n" + text)
+	} else {
+		boundary := "cz-" + auth.RandomToken(12)
+		b.WriteString("Content-Type: multipart/alternative; boundary=\"" + boundary + "\"\r\n\r\n")
+		b.WriteString("--" + boundary + "\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Transfer-Encoding: 8bit\r\n\r\n" + text + "\r\n")
+		b.WriteString("--" + boundary + "\r\nContent-Type: text/html; charset=utf-8\r\nContent-Transfer-Encoding: base64\r\n\r\n")
+		enc := base64.StdEncoding.EncodeToString([]byte(html))
+		for len(enc) > 76 {
+			b.WriteString(enc[:76] + "\r\n")
+			enc = enc[76:]
+		}
+		b.WriteString(enc + "\r\n--" + boundary + "--\r\n")
+	}
 	if _, err := w.Write([]byte(b.String())); err != nil {
 		return err
 	}

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="{{.Lang}}">
+<head><meta charset="utf-8"><title>{{.T "Report"}}</title></head>
+<body style="margin:0;padding:0;background:#f4f6fb;font-family:Segoe UI,Arial,sans-serif;color:#0f172a">
+{{$r := .Data}}
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6fb"><tr><td align="center" style="padding:24px 12px">
+<table role="presentation" width="640" cellpadding="0" cellspacing="0" style="max-width:640px;width:100%;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px">
+  <tr><td style="padding:24px 28px 8px">
+    <div style="font-size:14px;color:#4f46e5;font-weight:700">ControlZit</div>
+    <h1 style="margin:6px 0 4px;font-size:22px">{{with $r.Customer}}{{.}}{{else}}{{$.T "All customers"}}{{end}}</h1>
+    <div style="font-size:13px;color:#475569">{{.T "Report for the last %d days" $r.Days}} · {{.Time $r.From}} – {{.Time $r.To}}</div>
+  </td></tr>
+  <tr><td style="padding:12px 28px">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+      <td style="padding:10px;background:#f8fafc;border-radius:8px;text-align:center"><div style="font-size:22px;font-weight:700">{{len $r.Devices}}</div><div style="font-size:12px;color:#475569">{{.T "devices"}}</div></td>
+      <td width="8"></td>
+      <td style="padding:10px;background:#f8fafc;border-radius:8px;text-align:center"><div style="font-size:22px;font-weight:700">{{$r.Online}}</div><div style="font-size:12px;color:#475569">{{.T "online now"}}</div></td>
+      <td width="8"></td>
+      <td style="padding:10px;background:#f8fafc;border-radius:8px;text-align:center"><div style="font-size:22px;font-weight:700">{{$r.Alerts.Opened}}</div><div style="font-size:12px;color:#475569">{{.T "alerts in the period"}}</div></td>
+      <td width="8"></td>
+      <td style="padding:10px;background:#f8fafc;border-radius:8px;text-align:center"><div style="font-size:22px;font-weight:700">{{$r.Missing}}</div><div style="font-size:12px;color:#475569">{{.T "devices with missing updates"}}</div></td>
+    </tr></table>
+  </td></tr>
+  <tr><td style="padding:8px 28px">
+    <h2 style="font-size:16px;margin:12px 0 6px">{{.T "Windows updates"}}</h2>
+    <div style="font-size:14px;line-height:1.6">
+      {{.T "up to date"}}: <b>{{$r.UpToDate}}</b> · {{.T "missing security updates"}}: <b>{{$r.Security}}</b> · {{.T "devices waiting for a restart"}}: <b>{{$r.Reboot}}</b>{{if $r.NoReport}} · {{.T "no report yet"}}: <b>{{$r.NoReport}}</b>{{end}}
+    </div>
+    <h2 style="font-size:16px;margin:16px 0 6px">{{.T "Alerts"}}</h2>
+    <div style="font-size:14px;line-height:1.6">
+      {{if $r.Alerts.Opened}}{{.T "%d alerts were opened, %d of them resolved; %d are open now." $r.Alerts.Opened $r.Alerts.Resolved $r.Alerts.OpenNow}}<br>
+      {{range $r.Alerts.ByKind}}{{$.T ($r.AlertTitle .Name)}}: <b>{{.Count}}</b><br>{{end}}
+      {{else}}{{.T "No alerts in the period."}}{{end}}
+    </div>
+    <h2 style="font-size:16px;margin:16px 0 6px">{{.T "Technician work"}}</h2>
+    <div style="font-size:14px;line-height:1.6">
+      {{.T "remote desktop sessions"}}: <b>{{$r.Count "rd.start"}}</b> · {{.T "scripts run"}}: <b>{{$r.Count "script.run"}}</b> · {{.T "update installations"}}: <b>{{$r.Count "patch.install"}}</b>
+    </div>
+  </td></tr>
+  <tr><td style="padding:8px 28px 20px">
+    <h2 style="font-size:16px;margin:12px 0 6px">{{.T "Devices"}}</h2>
+    <table role="presentation" width="100%" cellpadding="6" cellspacing="0" style="font-size:13px;border-collapse:collapse">
+      <tr style="background:#f8fafc;text-align:left"><th>{{.T "Device"}}</th><th>{{.T "Last seen"}}</th><th style="text-align:right">{{.T "Missing"}}</th><th style="text-align:right">{{.T "Open alerts"}}</th></tr>
+      {{range $r.Devices}}<tr style="border-top:1px solid #e2e8f0">
+        <td><b>{{.Hostname}}</b><br><span style="color:#475569">{{.Site}}</span></td>
+        <td>{{if .Online}}{{$.T "online"}}{{else if .LastSeenAt}}{{$.Time .LastSeenAt}}{{else}}—{{end}}</td>
+        <td style="text-align:right">{{if .Searched}}{{.Missing}}{{if .Security}} ({{.Security}}){{end}}{{else}}—{{end}}</td>
+        <td style="text-align:right">{{.OpenAlerts}}</td>
+      </tr>{{end}}
+    </table>
+  </td></tr>
+  <tr><td style="padding:12px 28px 24px;font-size:12px;color:#64748b;border-top:1px solid #e2e8f0">{{.T "Created by ControlZit"}} {{.Version}}</td></tr>
+</table>
+</td></tr></table>
+</body>
+</html>

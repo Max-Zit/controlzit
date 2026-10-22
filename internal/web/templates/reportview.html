@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="{{.Lang}}" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{.T "Report"}} · {{with .Data.Customer}}{{.}}{{else}}{{$.T "All customers"}}{{end}} · ControlZit</title>
+<link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/static/app.css?v={{.Asset}}">
+<script src="/static/app.js?v={{.Asset}}" defer></script>
+</head>
+<body class="report">
+{{$r := .Data}}
+<div class="report-tools noprint">
+  <a class="btn secondary sm" href="/reports">← {{.T "Reports"}}</a>
+  <button type="button" class="primary sm" data-print>{{template "icon" "download"}}{{.T "Print or save as PDF"}}</button>
+</div>
+<header class="report-head">
+  <div class="brand">{{template "logo"}}<span>Control<b>Zit</b></span></div>
+  <h1>{{with $r.Customer}}{{.}}{{else}}{{$.T "All customers"}}{{end}}</h1>
+  <p class="muted">{{.T "Report for the last %d days" $r.Days}} · {{.Time $r.From}} – {{.Time $r.To}}</p>
+</header>
+
+<section class="report-grid">
+  <div class="stat"><b>{{len $r.Devices}}</b><span>{{.T "devices"}}</span></div>
+  <div class="stat"><b>{{$r.Online}}</b><span>{{.T "online now"}}</span></div>
+  <div class="stat"><b>{{$r.Offline7}}</b><span>{{.T "not seen for over 7 days"}}</span></div>
+  <div class="stat"><b>{{$r.Alerts.Opened}}</b><span>{{.T "alerts in the period"}}{{if $r.Alerts.Critical}} ({{.T "%d critical" $r.Alerts.Critical}}){{end}}</span></div>
+</section>
+
+<section class="panel">
+  <h2>{{.T "Windows updates"}}</h2>
+  <div class="report-grid">
+    <div class="stat"><b>{{$r.UpToDate}}</b><span>{{.T "up to date"}}</span></div>
+    <div class="stat"><b>{{$r.Missing}}</b><span>{{.T "devices with missing updates"}} ({{.T "%d updates" $r.Updates}})</span></div>
+    <div class="stat"><b>{{$r.Security}}</b><span>{{.T "missing security updates"}}</span></div>
+    <div class="stat"><b>{{$r.Reboot}}</b><span>{{.T "devices waiting for a restart"}}</span></div>
+  </div>
+  {{if $r.NoReport}}<p class="small muted">{{.T "%d devices have not reported updates yet." $r.NoReport}}</p>{{end}}
+</section>
+
+<section class="panel">
+  <h2>{{.T "Alerts"}}</h2>
+  {{if $r.Alerts.Opened}}
+  <p>{{.T "%d alerts were opened, %d of them resolved; %d are open now." $r.Alerts.Opened $r.Alerts.Resolved $r.Alerts.OpenNow}}{{if $r.Alerts.Resolved}} {{if lt $r.Alerts.MeanHours 1.0}}{{.T "Resolved after %d minutes on average." ($r.Alerts.MeanMinutes)}}{{else}}{{.T "Resolved after %.1f hours on average." $r.Alerts.MeanHours}}{{end}}{{end}}</p>
+  <div class="cards2">
+    <table><thead><tr><th>{{.T "Alert"}}</th><th class="num">{{.T "Count"}}</th></tr></thead>
+      <tbody>{{range $r.Alerts.ByKind}}<tr><td>{{$.T ($r.AlertTitle .Name)}}</td><td class="num">{{.Count}}</td></tr>{{end}}</tbody></table>
+    <table><thead><tr><th>{{.T "Device"}}</th><th class="num">{{.T "Alerts"}}</th></tr></thead>
+      <tbody>{{range $r.Alerts.ByDevice}}<tr><td>{{.Name}}</td><td class="num">{{.Count}}</td></tr>{{end}}</tbody></table>
+  </div>
+  {{else}}<p>{{.T "No alerts in the period."}}{{if $r.Alerts.OpenNow}} {{.T "%d are open now." $r.Alerts.OpenNow}}{{end}}</p>{{end}}
+</section>
+
+<section class="panel">
+  <h2>{{.T "Technician work"}}</h2>
+  <div class="report-grid">
+    <div class="stat"><b>{{$r.Count "rd.start"}}</b><span>{{.T "remote desktop sessions"}}</span></div>
+    <div class="stat"><b>{{$r.Count "script.run"}}</b><span>{{.T "scripts run"}}</span></div>
+    <div class="stat"><b>{{$r.Count "patch.install"}}</b><span>{{.T "update installations"}}</span></div>
+    <div class="stat"><b>{{add (add ($r.Count "file.upload") ($r.Count "file.download")) ($r.Count "file.delete")}}</b><span>{{.T "file operations"}}</span></div>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>{{.T "Operating systems"}}</h2>
+  <table><tbody>{{range $r.OS}}<tr><td>{{if eq .Name "unknown"}}{{$.T "unknown"}}{{else}}{{.Name}}{{end}}</td><td class="num">{{.Count}}</td></tr>{{end}}</tbody></table>
+  {{if $r.Outdated}}<p class="small muted mt">{{.T "%d agents run an older version." $r.Outdated}}</p>{{end}}
+</section>
+
+<section class="panel">
+  <h2>{{.T "Devices"}}</h2>
+  {{if $r.Devices}}
+  <div class="table-wrap"><table class="report-devices">
+    <thead><tr><th>{{.T "Device"}}</th><th>{{.T "Site"}}</th><th>{{.T "Operating system"}}</th><th>{{.T "Last seen"}}</th><th class="num">{{.T "Missing"}}</th><th class="num">{{.T "Open alerts"}}</th></tr></thead>
+    <tbody>{{range $r.Devices}}<tr>
+      <td><b>{{.Hostname}}</b>{{if .Reboot}} <span class="badge warn"><i></i>{{$.T "restart required"}}</span>{{end}}</td>
+      <td>{{.Site}}</td>
+      <td class="small">{{.OS}}</td>
+      <td class="nowrap small">{{if .Online}}{{$.T "online"}}{{else if .LastSeenAt}}{{$.Time .LastSeenAt}}{{else}}—{{end}}</td>
+      <td class="num">{{if .Searched}}{{.Missing}}{{if .Security}} ({{.Security}}){{end}}{{else}}—{{end}}</td>
+      <td class="num">{{.OpenAlerts}}</td>
+    </tr>{{end}}</tbody>
+  </table></div>
+  <p class="small muted mt">{{.T "Missing: updates not installed (security updates in brackets)."}}</p>
+  {{else}}<p class="muted">{{.T "No devices."}}</p>{{end}}
+</section>
+<footer class="report-foot small muted">{{.T "Created by ControlZit"}} {{.Version}} · {{.Time $r.To}}</footer>
+</body>
+</html>

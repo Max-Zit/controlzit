@@ -167,6 +167,13 @@ var funcs = template.FuncMap{
 		}
 		return s
 	},
+	"seq": func(a, b int) []int {
+		var out []int
+		for i := a; i <= b; i++ {
+			out = append(out, i)
+		}
+		return out
+	},
 	"weekday": func(d int) string { return time.Weekday(d).String() },
 	"wuResult": func(code int) string {
 		switch code {
@@ -326,4 +333,17 @@ type devTabs struct {
 	P   *Page
 	D   *store.Device
 	Cur string
+}
+
+// renderString renders a page template to a string (emails).
+func (s *Server) renderString(name string, p *Page) (string, error) {
+	t, ok := s.tmpl[name]
+	if !ok {
+		return "", fmt.Errorf("no template %q", name)
+	}
+	var b strings.Builder
+	if err := t.ExecuteTemplate(&b, name+".html", p); err != nil {
+		return "", err
+	}
+	return b.String(), nil
 }

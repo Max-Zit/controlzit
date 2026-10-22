@@ -1,0 +1,20 @@
+{{template "app" .}}
+{{define "content"}}
+<h1>{{template "icon" "audit"}}{{.T "Reports"}}</h1>
+<section class="panel">
+  <p class="muted">{{.T "A report shows a customer's devices over a period: Windows updates, alerts and the work of technicians. Print it or save it as PDF from the browser."}}</p>
+  <form method="get" action="/reports/view" class="row filter">
+    <label>{{.T "Customer"}}<select name="customer">
+      {{if or .User.IsAdmin .User.AllCustomers}}<option value="0">{{.T "All customers"}}</option>{{end}}
+      {{range .Data.Customers}}<option value="{{.ID}}">{{.Name}}</option>{{end}}
+    </select></label>
+    <label>{{.T "Period"}}<select name="days">
+      <option value="7">{{.T "last 7 days"}}</option>
+      <option value="30" selected>{{.T "last 30 days"}}</option>
+      <option value="90">{{.T "last 90 days"}}</option>
+    </select></label>
+    <button class="primary">{{.T "Show report"}}</button>
+  </form>
+  {{if .User.IsAdmin}}<p class="small muted mt">{{.T "Reports can also go to each customer by email every week or month:"}} <a href="/settings/reports">{{.T "Settings → Reports"}}</a></p>{{end}}
+</section>
+{{end}}

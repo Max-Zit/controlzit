@@ -53,7 +53,7 @@ func (s *Store) Customers(ctx context.Context, u *User) ([]Customer, error) {
 		(SELECT count(*) FROM devices d JOIN sites x ON x.id=d.site_id WHERE x.customer_id=c.id)
 		FROM customers c
 		WHERE $1 OR c.id IN (SELECT customer_id FROM user_customers WHERE user_id=$2)
-		ORDER BY lower(c.name)`, u.IsAdmin() || u.AllCustomers, u.ID)
+		ORDER BY lower(c.name)`, u == nil || u.IsAdmin() || u.AllCustomers, userID(u))
 	if err != nil {
 		return nil, err
 	}

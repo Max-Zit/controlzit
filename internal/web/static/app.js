@@ -113,3 +113,9 @@ document.addEventListener("DOMContentLoaded", function () {
     setTimeout(function () { window.location.reload(); }, 15000);
   }
 });
+
+// Report page: print (the browser can save it as PDF).
+document.addEventListener("click", function (ev) {
+  "use strict";
+  if (ev.target.closest && ev.target.closest("[data-print]")) window.print();
+});

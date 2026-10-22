@@ -1,0 +1,38 @@
+{{template "app" .}}
+{{define "content"}}
+<h1>{{.T "Settings"}}</h1>
+<div class="settings">
+{{template "settingstabs" .}}
+<div class="settings-body">
+<section class="panel">
+  <h2>{{template "icon" "mail"}}{{.T "Reports by email"}}</h2>
+  {{if not .Data.Emailing}}<div class="flash warn" role="status">{{template "icon" "alert"}}<span>{{.T "Email is not set up yet: Settings → Monitoring and alerts."}}</span></div>{{end}}
+  <form method="post" action="/settings/reports" class="stack">
+    <div class="row">
+      <label>{{.T "Send"}}<select name="mode">
+        <option value="off" {{if eq .Data.S.Mode "off"}}selected{{end}}>{{.T "never"}}</option>
+        <option value="weekly" {{if eq .Data.S.Mode "weekly"}}selected{{end}}>{{.T "every week (last 7 days)"}}</option>
+        <option value="monthly" {{if eq .Data.S.Mode "monthly"}}selected{{end}}>{{.T "every month (last 30 days)"}}</option>
+      </select></label>
+      <label>{{.T "Weekly on"}}<select name="weekday">{{range .Data.Days}}<option value="{{.}}" {{if and (eq $.Data.S.Mode "weekly") (eq . $.Data.S.Day)}}selected{{end}}>{{$.T (weekday .)}}</option>{{end}}</select></label>
+      <label>{{.T "Monthly on day"}}<select name="monthday">{{range $i := (seq 1 28)}}<option value="{{$i}}" {{if and (eq $.Data.S.Mode "monthly") (eq $i $.Data.S.Day)}}selected{{end}}>{{$i}}.</option>{{end}}</select></label>
+      <label>{{.T "At (server time)"}}<select name="hour">{{range .Data.Hours}}<option value="{{.}}" {{if eq . $.Data.S.Hour}}selected{{end}}>{{printf "%02d:00" .}}</option>{{end}}</select></label>
+      <label>{{.T "Language"}}<select name="language">{{range .Languages}}<option value="{{.Code}}" {{if eq .Code $.Data.S.Language}}selected{{end}}>{{.Name}}</option>{{end}}</select></label>
+    </div>
+    <label>{{.T "Always send a copy to"}} <small>{{.T "optional; every customer's report"}}</small><input name="copy" value="{{join .Data.S.Copy ", "}}" placeholder="it@company.com"></label>
+    {{if .Data.Customers}}
+    <div class="table-wrap"><table>
+      <thead><tr><th>{{.T "Customer"}}</th><th>{{.T "Recipients"}}</th><th></th></tr></thead>
+      <tbody>{{range .Data.Customers}}<tr>
+        <td>{{.Name}}</td>
+        <td><input name="to_{{.ID}}" value="{{$.Data.S.Emails .ID}}" placeholder="{{$.T "addresses, separated by commas"}}" aria-label="{{$.T "Recipients"}} {{.Name}}"></td>
+        <td class="nowrap"><button class="ghost sm" formaction="/settings/reports/send" name="customer" value="{{.ID}}" title="{{$.T "Send this customer's report now (save first)"}}">{{$.T "Send now"}}</button></td>
+      </tr>{{end}}</tbody>
+    </table></div>
+    {{end}}
+    <div><button class="primary">{{.T "Save"}}</button></div>
+  </form>
+</section>
+</div>
+</div>
+{{end}}
