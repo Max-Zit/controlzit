@@ -14,6 +14,8 @@
       <label>{{.T "Shell"}}<select name="shell">
         <option value="powershell" {{if eq $s.Shell "powershell"}}selected{{end}}>PowerShell</option>
         <option value="cmd" {{if eq $s.Shell "cmd"}}selected{{end}}>{{.T "Command prompt"}} (cmd)</option>
+        <option value="bash" {{if eq $s.Shell "bash"}}selected{{end}}>bash (Linux)</option>
+        <option value="sh" {{if eq $s.Shell "sh"}}selected{{end}}>sh (Linux)</option>
       </select></label>
       <label>{{.T "Time limit (seconds)"}}<input type="number" name="timeout" value="{{$s.Timeout}}" min="5" max="1500" required></label>
     </div>
@@ -25,7 +27,7 @@
   {{if $s.ID}}<form method="post" action="/scripts/{{$s.ID}}/delete" class="mt" data-confirm="{{.T "Delete the script %s and its schedules?" $s.Name}}"><button class="danger sm">{{template "icon" "trash"}}{{.T "Delete"}}</button></form>{{end}}
   {{else}}
   {{if $s.Description}}<p>{{$s.Description}}</p>{{end}}
-  <p class="muted small">{{if eq $s.Shell "cmd"}}cmd{{else}}PowerShell{{end}} · {{.T "time limit %d s" $s.Timeout}} · {{.T "changed"}} {{.Time $s.UpdatedAt}} ({{$s.UpdatedBy}})</p>
+  <p class="muted small">{{shellName $s.Shell}} · {{.T "time limit %d s" $s.Timeout}} · {{.T "changed"}} {{.Time $s.UpdatedAt}} ({{$s.UpdatedBy}})</p>
   <pre class="output">{{$s.Body}}</pre>
   {{end}}
 </section>

@@ -190,6 +190,9 @@ func (s *Server) handleScripts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sd := &scriptsData{D: d, Online: s.Connected(d.ID), Shell: "powershell", Timeout: 300}
+	if !d.IsWindows() {
+		sd.Shell = "bash"
+	}
 	if rid, ok := pathID(r, "rid"); ok {
 		run, err := s.store.ScriptRun(r.Context(), d.ID, rid)
 		if errors.Is(err, store.ErrNotFound) {
@@ -248,7 +251,7 @@ func (s *Server) handleScriptRun(w http.ResponseWriter, r *http.Request) {
 // checkScript validates a script typed in the console ("" when it is fine).
 func checkScript(shell, body string, timeout int) string {
 	switch {
-	case shell != "powershell" && shell != "cmd":
+	case shell != "powershell" && shell != "cmd" && shell != "bash" && shell != "sh":
 		return "Unknown shell."
 	case strings.TrimSpace(body) == "" || len(body) > proto.MaxScriptSize:
 		return "The script is empty or longer than 256 KB."

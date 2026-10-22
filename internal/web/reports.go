@@ -126,7 +126,7 @@ func (s *Server) buildReport(ctx context.Context, u *store.User, customerID int6
 			name = "unknown"
 		}
 		os[name]++
-		if pkg.Outdated(dp.AgentVersion) {
+		if pkg.Offers(dp.Device) {
 			rep.Outdated++
 		}
 		if r := dp.Report; r != nil && !r.ScannedAt.IsZero() {

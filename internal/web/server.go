@@ -289,6 +289,7 @@ func (s *Server) Handler() http.Handler {
 	app("POST /sites/{id}/tokens", s.handleTokenCreate)
 	app("POST /sites/{id}/tokens/{tid}/revoke", s.handleTokenRevoke)
 	app("GET /downloads/"+AgentMSIName, s.handleAgentMSI)
+	app("GET /downloads/"+AgentLinuxName, s.handleAgentLinux)
 	app("GET /alerts", s.handleAlerts)
 	app("POST /alerts/{id}/ack", s.handleAlertAck)
 	app("GET /devices", s.handleDevices)

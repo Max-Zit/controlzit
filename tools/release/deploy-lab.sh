@@ -10,4 +10,5 @@ H=root@192.168.101.179
 scp $K "dist/controlzit-server-$V-linux-amd64" $H:/usr/local/bin/controlzit-server.new
 scp $K "dist/controlzit-agent-$V-x64.msi" $H:/var/lib/controlzit/downloads/controlzit-agent-x64.msi
 scp $K "dist/controlzit-agent-$V-x64.json" $H:/var/lib/controlzit/downloads/controlzit-agent-x64.json
+scp $K "dist/controlzit-agent-$V-linux-amd64" $H:/var/lib/controlzit/downloads/controlzit-agent-linux-amd64
 ssh $K $H "chmod 755 /usr/local/bin/controlzit-server.new && mv /usr/local/bin/controlzit-server.new /usr/local/bin/controlzit-server && systemctl restart controlzit && sleep 3 && /usr/local/bin/controlzit-server -version"

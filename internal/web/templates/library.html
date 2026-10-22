@@ -10,7 +10,7 @@
     <thead><tr><th>{{.T "Script"}}</th><th class="hide-sm">{{.T "Shell"}}</th><th class="hide-sm">{{.T "Changed"}}</th><th></th></tr></thead>
     <tbody>{{range .Data.Scripts}}<tr>
       <td><a href="/scripts/{{.ID}}"><b>{{.Name}}</b></a>{{if .Description}}<br><span class="small muted">{{.Description}}</span>{{end}}</td>
-      <td class="hide-sm">{{if eq .Shell "cmd"}}cmd{{else}}PowerShell{{end}}</td>
+      <td class="hide-sm">{{shellName .Shell}}</td>
       <td class="hide-sm nowrap small muted">{{$.Time .UpdatedAt}} · {{.UpdatedBy}}</td>
       <td class="nowrap actions"><a class="btn secondary sm" href="/scripts/{{.ID}}/run">{{template "icon" "terminal"}}{{$.T "Run on devices"}}</a></td>
     </tr>{{end}}</tbody>

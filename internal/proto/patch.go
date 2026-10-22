@@ -108,10 +108,17 @@ type PatchInstall struct {
 	By     string `json:"by"`
 }
 
-var updateIDRE = regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`)
+var (
+	guidRE    = regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`)
+	packageRE = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9+._~-]{0,200}$`)
+)
 
-// ValidUpdateID reports whether s is a Windows Update identity.
-func ValidUpdateID(s string) bool { return updateIDRE.MatchString(s) }
+// ValidGUID reports whether s is a Windows Update identity.
+func ValidGUID(s string) bool { return guidRE.MatchString(s) }
+
+// ValidUpdateID reports whether s names an update: a Windows Update
+// identity or a Linux package name.
+func ValidUpdateID(s string) bool { return guidRE.MatchString(s) || packageRE.MatchString(s) }
 
 // MaxPatchInstall limits the updates of one installation.
 const MaxPatchInstall = 200

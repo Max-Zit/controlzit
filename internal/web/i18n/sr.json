@@ -644,8 +644,8 @@
   "Update": "Ažuriranje",
   "Updates": "Ažuriranja",
   "When": "Kada",
-  "Windows is up to date.": "Windows je ažuran.",
-  "Windows needs a restart to finish installing updates.": "Windows mora ponovo da se pokrene da bi završio instalaciju ažuriranja.",
+  "All updates are installed.": "Sva ažuriranja su instalirana.",
+  "The computer needs a restart to finish installing updates.": "Računar mora ponovo da se pokrene da bi završio instalaciju ažuriranja.",
   "Windows updates": "Windows ažuriranja",
   "change": "promeni",
   "devices waiting for a restart": "uređaja čeka ponovno pokretanje",
@@ -872,5 +872,15 @@
   "the channel URL cannot be read; enter it again": "adresa kanala ne može da se pročita; unesite je ponovo",
   "webhook only, optional: requests then carry X-ControlZit-Signature: sha256=HMAC of the body": "samo za webhook, neobavezno: zahtevi tada nose X-ControlZit-Signature: sha256=HMAC tela",
   "Enter a name and choose the type.": "Unesite naziv i izaberite vrstu.",
-  "At most 20 channels.": "Najviše 20 kanala."
+  "At most 20 channels.": "Najviše 20 kanala.",
+  "this agent runs on Linux and is updated with the Linux installer": "ovaj agent radi na Linux-u i ažurira se Linux instalacijom",
+  "this device runs bash or sh scripts": "ovaj uređaj pokreće bash ili sh skripte",
+  "this system has no systemd": "ovaj sistem nema systemd",
+  "remote desktop is not available on this system": "udaljena radna površina nije dostupna na ovom sistemu",
+  "no supported package manager (apt or dnf)": "nema podržanog upravljača paketima (apt ili dnf)",
+  "bad package name": "neispravan naziv paketa",
+  "Copy it to the machine and run as root; it installs itself in /usr/local/bin and starts the controlzit-agent service:": "Kopirajte ga na računar i pokrenite kao root; sam se instalira u /usr/local/bin i pokreće servis controlzit-agent:",
+  "Download the Linux agent (x86-64)": "Preuzmi Linux agenta (x86-64)",
+  "Linux (systemd)": "Linux (systemd)",
+  "The Linux agent is not on this server yet: copy controlzit-agent-linux-amd64 into the downloads folder of the data directory.": "Linux agent još nije na ovom serveru: kopirajte controlzit-agent-linux-amd64 u fasciklu downloads u direktorijumu podataka."
 }

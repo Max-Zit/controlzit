@@ -232,6 +232,7 @@ type siteData struct {
 	NewToken    string
 	EnrollCode  string
 	MSI         bool
+	Linux       bool
 	AgentURL    string
 	Now         time.Time
 	ValidDays   int
@@ -259,6 +260,7 @@ func (s *Server) showSite(w http.ResponseWriter, r *http.Request, status int, d 
 	}
 	d.Fingerprint = s.AgentFingerprint
 	d.MSI = s.agentMSI() != ""
+	d.Linux = s.download(AgentLinuxName) != ""
 	if d.ValidDays == 0 {
 		d.ValidDays, d.MaxUses = 7, 50
 	}
@@ -378,6 +380,32 @@ func joinHostPort(h, p string) string { return net.JoinHostPort(strings.Trim(h, 
 
 // Online is used by the device list of the site page.
 func (d *siteData) Online(x *store.Device) bool { return x.Online(d.Now, onlineWindow) }
+
+// AgentLinuxName is the Linux agent (64-bit x86) offered for download.
+const AgentLinuxName = "controlzit-agent-linux-amd64"
+
+// download returns the path of a file in the downloads folder, or "".
+func (s *Server) download(name string) string {
+	if s.DownloadsDir == "" {
+		return ""
+	}
+	p := filepath.Join(s.DownloadsDir, name)
+	if st, err := os.Stat(p); err != nil || !st.Mode().IsRegular() {
+		return ""
+	}
+	return p
+}
+
+func (s *Server) handleAgentLinux(w http.ResponseWriter, r *http.Request) {
+	p := s.download(AgentLinuxName)
+	if p == "" {
+		s.notFound(w, r)
+		return
+	}
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Disposition", `attachment; filename="`+AgentLinuxName+`"`)
+	http.ServeFile(w, r, p)
+}
 
 // AgentMSIName is the installer the console offers for download; put it
 // into <data-dir>/downloads (release packages will do this).

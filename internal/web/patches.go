@@ -98,7 +98,7 @@ func (s *Server) savePatchReport(ctx context.Context, d *store.Device, r *proto.
 				failed++
 			}
 		}
-		detail := "Windows updates on " + d.Hostname + ": " + strconv.Itoa(ok) + " installed, " + strconv.Itoa(failed) + " failed"
+		detail := "updates on " + d.Hostname + ": " + strconv.Itoa(ok) + " installed, " + strconv.Itoa(failed) + " failed"
 		if in.Error != "" {
 			detail += "; error: " + in.Error
 		}

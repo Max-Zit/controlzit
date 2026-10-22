@@ -118,7 +118,7 @@ func patchScan(ctx context.Context) (*PatchScanResult, error) {
 func patchInstall(ctx context.Context, ids []string) (*PatchInstallResult, error) {
 	quoted := make([]string, 0, len(ids))
 	for _, id := range ids {
-		if !proto.ValidUpdateID(id) {
+		if !proto.ValidGUID(id) {
 			return nil, errors.New("bad update ID")
 		}
 		quoted = append(quoted, "'"+strings.ToLower(id)+"'")

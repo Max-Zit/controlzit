@@ -108,6 +108,12 @@ func (p *AgentPackage) Outdated(v string) bool {
 	return p != nil && v != "" && proto.CompareVersions(v, p.Version) < 0
 }
 
+// Offers reports whether the package updates the device (the MSI is for
+// Windows agents only).
+func (p *AgentPackage) Offers(d *store.Device) bool {
+	return d.IsWindows() && p.Outdated(d.AgentVersion)
+}
+
 // handlePackage serves the installer to enrolled agents (agent endpoint).
 func (s *Server) handlePackage(w http.ResponseWriter, r *http.Request) {
 	pub := peerKey(r)
@@ -134,6 +140,9 @@ func (s *Server) updateDevice(ctx context.Context, d *store.Device, issuer strin
 	if pkg == nil {
 		return errors.New("there is no agent installer with a known version on the server")
 	}
+	if !d.IsWindows() {
+		return errors.New("this agent runs on Linux and is updated with the Linux installer")
+	}
 	if !pkg.Outdated(d.AgentVersion) {
 		return errors.New("the agent already runs this version")
 	}
@@ -151,7 +160,7 @@ func (s *Server) updateDevice(ctx context.Context, d *store.Device, issuer strin
 // older agent (at most once per autoRetry).
 func (s *Server) autoUpdate(d *store.Device, version string) {
 	pkg := s.agentPackage()
-	if !pkg.Outdated(version) {
+	if !d.IsWindows() || !pkg.Outdated(version) {
 		return
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Minute)
@@ -201,7 +210,7 @@ func (s *Server) handleAgentUpdates(w http.ResponseWriter, r *http.Request) {
 	d := &agentUpdatesData{Settings: s.AgentUpdate(r.Context()), Package: s.agentPackage(), Devices: list, Online: map[int64]bool{}}
 	for _, dev := range list {
 		d.Online[dev.ID] = s.Connected(dev.ID)
-		if d.Package.Outdated(dev.AgentVersion) {
+		if d.Package.Offers(dev) {
 			d.Outdated++
 		}
 	}
@@ -299,7 +308,7 @@ func (s *Server) handleUpdateAll(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 	for _, d := range list {
-		if !pkg.Outdated(d.AgentVersion) || !s.Connected(d.ID) {
+		if !pkg.Offers(d) || !s.Connected(d.ID) {
 			continue
 		}
 		wg.Add(1)

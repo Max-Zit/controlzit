@@ -73,7 +73,7 @@ func runService(dir string) error {
 	return svc.Run(serviceName, handler{dir: dir})
 }
 
-func installService() error {
+func installService(string) error {
 	exe, err := os.Executable()
 	if err != nil {
 		return err

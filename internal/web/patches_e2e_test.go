@@ -87,10 +87,11 @@ func TestWindowsUpdates(t *testing.T) {
 	}
 	admin.post(base+"/install", "id", otherID)
 	waitFor(t, "installation result", func() bool { return strings.Contains(admin.get("/audit?q=patch.result").body, "1 installed, 0 failed") })
-	r = admin.get(base)
-	if !strings.Contains(r.body, "Last installation") || strings.Contains(r.body, `value="`+otherID+`"`) || !strings.Contains(r.body, "restart required") {
-		t.Fatalf("after install: %s", r.body)
-	}
+	// The agent reports the installation, then the new search.
+	waitFor(t, "updated list", func() bool {
+		r = admin.get(base)
+		return strings.Contains(r.body, "Last installation") && !strings.Contains(r.body, `value="`+otherID+`"`) && strings.Contains(r.body, "restart required")
+	})
 	if !strings.Contains(admin.get("/audit?q=patch.install").body, "install 1 Windows updates") {
 		t.Fatal("install not audited")
 	}

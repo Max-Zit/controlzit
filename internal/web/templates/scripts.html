@@ -10,7 +10,7 @@
   <h2>{{$.T "Run #%d" .ID}}
     {{if .Error}}<span class="badge bad"><i></i>{{$.T "failed"}}</span>{{else if .TimedOut}}<span class="badge bad"><i></i>{{$.T "time limit reached"}}</span>{{else if eq (deref .ExitCode) 0}}<span class="badge ok"><i></i>{{$.T "exit code %d" 0}}</span>{{else}}<span class="badge warn"><i></i>{{$.T "exit code %d" (deref .ExitCode)}}</span>{{end}}
   </h2>
-  <p class="muted small">{{$.Time .StartedAt}} · {{.Username}} · {{if eq .Shell "cmd"}}{{$.T "Command prompt"}}{{else}}PowerShell{{end}} · {{.Duration}}</p>
+  <p class="muted small">{{$.Time .StartedAt}} · {{.Username}} · {{shellName .Shell}} · {{.Duration}}</p>
   {{if .Error}}<div class="flash err" role="alert">{{template "icon" "alert"}}<span>{{$.T .Error}}</span></div>{{end}}
   {{if not .Error}}
   <h3>{{$.T "Output"}}</h3>
@@ -35,8 +35,9 @@
   <form method="post" action="/devices/{{$d.ID}}/scripts" class="stack wide" data-busy="{{.T "Running… the page waits for the script to finish."}}">
     <div class="row">
       <label>{{.T "Shell"}}<select name="shell">
-        <option value="powershell" {{if eq .Data.Shell "powershell"}}selected{{end}}>PowerShell</option>
-        <option value="cmd" {{if eq .Data.Shell "cmd"}}selected{{end}}>{{.T "Command prompt"}} (cmd)</option>
+        {{if $d.IsWindows}}<option value="powershell" {{if eq .Data.Shell "powershell"}}selected{{end}}>PowerShell</option>
+        <option value="cmd" {{if eq .Data.Shell "cmd"}}selected{{end}}>{{.T "Command prompt"}} (cmd)</option>{{else}}<option value="bash" {{if eq .Data.Shell "bash"}}selected{{end}}>bash</option>
+        <option value="sh" {{if eq .Data.Shell "sh"}}selected{{end}}>sh</option>{{end}}
       </select></label>
       <label>{{.T "Time limit (seconds)"}}<input type="number" name="timeout" value="{{.Data.Timeout}}" min="5" max="1500" required></label>
     </div>

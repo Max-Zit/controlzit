@@ -44,8 +44,8 @@ commands:
              [--force] [--if-not-enrolled] [--pending-ok] [--dir DIR]
   forget     remove the enrollment (configuration and key)
   run        run the agent in the foreground
-  install    register and start the Windows service
-  uninstall  stop and remove the Windows service
+  install    install and start the service (Linux: --code CZ1-… enrolls too)
+  uninstall  stop and remove the service
   status     show the enrollment
   inventory  print the inventory of this machine as JSON
   version    print the version`)
@@ -160,7 +160,7 @@ func run(args []string) error {
 		log := slog.New(slog.NewTextHandler(agent.OpenLog(*dir), nil)).With("helper", *session)
 		return agent.RunHelper(ctx, *dir, *session, *technician, line, !*noNotice, !*noClipboard, log)
 	case "install":
-		return installService()
+		return installService(*code)
 	case "uninstall":
 		return uninstallService()
 	}

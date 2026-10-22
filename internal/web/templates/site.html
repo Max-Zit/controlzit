@@ -31,6 +31,12 @@
   <pre id="install-cmd">.\controlzit-agent.exe enroll --code "{{$code}}"
 .\controlzit-agent.exe install</pre>
   <p><button type="button" class="secondary" data-copy="#install-cmd">{{template "icon" "copy"}}{{.T "Copy"}}</button></p>
+  <h3>{{.T "Linux (systemd)"}}</h3>
+  <p>{{if .Data.Linux}}<a class="btn secondary" href="/downloads/controlzit-agent-linux-amd64">{{.T "Download the Linux agent (x86-64)"}}</a>{{else}}<span class="small muted">{{.T "The Linux agent is not on this server yet: copy controlzit-agent-linux-amd64 into the downloads folder of the data directory."}}</span>{{end}}</p>
+  <p class="small muted">{{.T "Copy it to the machine and run as root; it installs itself in /usr/local/bin and starts the controlzit-agent service:"}}</p>
+  <pre id="linux-cmd">chmod +x controlzit-agent-linux-amd64
+sudo ./controlzit-agent-linux-amd64 install --code "{{$code}}"</pre>
+  <p><button type="button" class="secondary" data-copy="#linux-cmd">{{template "icon" "copy"}}{{.T "Copy"}}</button></p>
   <p class="small muted">{{.T "Server fingerprint (SHA-256):"}} <code class="wrap">{{.Data.Fingerprint}}</code></p>
 </section>
 {{end}}

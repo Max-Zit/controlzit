@@ -47,7 +47,7 @@
     <tbody>{{range .Data.Devices}}<tr>
       <td><a href="/devices/{{.ID}}">{{.Hostname}}</a></td>
       <td class="hide-sm">{{.Customer}}</td>
-      <td class="nowrap">{{.AgentVersion}} {{if $.Data.Package.Outdated .AgentVersion}}<span class="badge warn"><i></i>{{$.T "outdated"}}</span>{{end}}</td>
+      <td class="nowrap">{{.AgentVersion}} {{if $.Data.Package.Offers .}}<span class="badge warn"><i></i>{{$.T "outdated"}}</span>{{end}}</td>
       <td>{{if index $.Data.Online .ID}}<span class="badge ok"><i></i>{{$.T "Online"}}</span>{{else}}<span class="badge"><i></i>{{$.T "Offline"}}</span>{{end}}</td>
     </tr>{{end}}</tbody>
   </table></div>

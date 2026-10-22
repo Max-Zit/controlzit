@@ -94,7 +94,7 @@ func TestRemoteActions(t *testing.T) {
 	if r := admin.get(base + "/scripts"); !strings.Contains(r.body, "Recent runs") || strings.Count(r.body, base+"/scripts/") < 4 {
 		t.Fatal("script history")
 	}
-	if r := admin.post(base+"/scripts", "shell", "bash", "timeout", "30", "script", "ls"); r.code != http.StatusSeeOther || r.loc != base+"/scripts" {
+	if r := admin.post(base+"/scripts", "shell", "zsh", "timeout", "30", "script", "ls"); r.code != http.StatusSeeOther || r.loc != base+"/scripts" {
 		t.Fatalf("unknown shell: %d %s", r.code, r.loc)
 	}
 	if r := admin.post(base+"/scripts", "shell", "cmd", "timeout", "9999", "script", "ver"); r.loc != base+"/scripts" {

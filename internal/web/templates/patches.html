@@ -14,7 +14,7 @@
 
 {{if eq $r.State "scanning"}}<div class="flash info" role="status" data-autorefresh>{{template "icon" "refresh"}}<span>{{.T "Searching for updates…"}}</span></div>{{end}}
 {{if eq $r.State "installing"}}<div class="flash info" role="status" data-autorefresh>{{template "icon" "download"}}<span>{{.T "Installing %d updates since %s…" $r.Install.Requested (.Time $r.Install.Started)}}</span></div>{{end}}
-{{if $r.RebootRequired}}<div class="flash warn" role="status">{{template "icon" "alert"}}<span>{{.T "Windows needs a restart to finish installing updates."}}</span></div>{{end}}
+{{if $r.RebootRequired}}<div class="flash warn" role="status">{{template "icon" "alert"}}<span>{{.T "The computer needs a restart to finish installing updates."}}</span></div>{{end}}
 {{if $r.ScanError}}<div class="flash err" role="alert">{{template "icon" "alert"}}<span>{{.T "The last search failed:"}} {{$r.ScanError}}</span></div>{{end}}
 
 {{with $r.Install}}{{if not .Finished.IsZero}}
@@ -48,7 +48,7 @@
     </div>
     {{end}}
   </form>
-  {{else if not $r.ScannedAt.IsZero}}<p class="mt">{{template "icon" "check"}} {{.T "Windows is up to date."}}</p>{{end}}
+  {{else if not $r.ScannedAt.IsZero}}<p class="mt">{{template "icon" "check"}} {{.T "All updates are installed."}}</p>{{end}}
 </section>
 
 {{if $r.History}}

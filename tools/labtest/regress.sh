@@ -138,6 +138,17 @@ RLINK=$($C "$JLOC" | grep -o "/devices/$DEV/scripts/[0-9]*" | head -1)
 check "library job output stored" '$C "$S$RLINK" | grep -q "lib-ok DESKTOP-NBB66OQ"'
 $C -o /dev/null -d x=1 $S/scripts/$SID/delete
 
+# --- Linux agent (LDEV: device ID of deb-vm)
+if [ -n "$LDEV" ]; then
+  check "Linux device online with its OS" '$C $S/devices/$LDEV | grep -q "Debian GNU/Linux"'
+  check "Linux services listed" '$C "$S/devices/$LDEV/services?q=ssh" | grep -q ">ssh</code>"'
+  printf '%s' 'echo linux-ok $(id -un)' > .gotmp/r-script.txt
+  LLOC=$($C -o /dev/null -w "%{redirect_url}" -d shell=bash -d timeout=60 --data-urlencode "script@.gotmp/r-script.txt" $S/devices/$LDEV/scripts)
+  check "Linux bash script as root" '$C "$LLOC" | grep -q "linux-ok root"'
+  check "Linux updates searched" '$C $S/devices/$LDEV/updates | grep -q "Searched"'
+  check "no remote desktop tab for Linux" '! $C $S/devices/$LDEV | grep -q "/devices/$LDEV/rd"'
+fi
+
 $C -o /dev/null -d lang=sr $S/lang
 echo "----"
 echo "passed $pass, failed $fail"

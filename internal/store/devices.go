@@ -211,3 +211,9 @@ func (s *Store) DeleteDevice(ctx context.Context, id int64) error {
 	}
 	return err
 }
+
+// IsWindows reports whether the device runs Windows (unknown counts as
+// Windows: every agent before the Linux one).
+func (d *Device) IsWindows() bool {
+	return d.OS == "" || strings.Contains(d.OS, "Windows")
+}
