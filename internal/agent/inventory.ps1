@@ -89,5 +89,7 @@ try {
 
 $r.errors = @($errs)
 $r.collected_at = (Get-Date).ToUniversalTime().ToString('o')
-[Console]::OutputEncoding = New-Object System.Text.UTF8Encoding $false
-$r | ConvertTo-Json -Depth 6 -Compress
+# A service has no console: write UTF-8 ourselves (OutputEncoding is ignored).
+$w = New-Object IO.StreamWriter([Console]::OpenStandardOutput(), (New-Object System.Text.UTF8Encoding $false))
+$w.Write(($r | ConvertTo-Json -Depth 6 -Compress))
+$w.Flush()

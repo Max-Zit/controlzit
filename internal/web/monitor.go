@@ -16,6 +16,7 @@ func (s *Server) RunMonitor(ctx context.Context) {
 	purge := time.Now()
 	for {
 		s.CheckAlerts(ctx)
+		s.RunPatchSchedule(ctx)
 		if time.Since(purge) > 6*time.Hour {
 			purge = time.Now()
 			if err := s.store.PurgeSamples(ctx, 7*24*time.Hour); err != nil {

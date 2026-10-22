@@ -149,6 +149,9 @@ type Agent struct {
 	lastInventory time.Time
 	// status is published for the tray icon.
 	status Status
+	// patch is the Windows Update state; runCtx outlives a connection.
+	patch  *patchState
+	runCtx context.Context
 }
 
 // SysInfo is the cheap status sent with hello and heartbeats.
@@ -167,6 +170,8 @@ func (a *Agent) Run(ctx context.Context) error {
 	a.key = key
 	helperDir = a.Dir
 	self = a
+	a.runCtx = ctx
+	a.initPatches()
 	if a.Collect == nil {
 		a.Collect = CollectInventory
 	}
@@ -286,6 +291,14 @@ func (a *Agent) session(ctx context.Context) error {
 	nextInventory := a.lastInventory.Add(inventoryEvery) // zero: right after connecting
 	invTimer := time.NewTimer(5 * time.Second)
 	defer invTimer.Stop()
+	// Windows Update: resend the last report, scan when due.
+	a.markPatchesUnsent()
+	select {
+	case a.patch.notify <- struct{}{}:
+	default:
+	}
+	patchTimer := time.NewTimer(2 * time.Minute)
+	defer patchTimer.Stop()
 	invDone := make(chan *proto.Inventory, 1)
 	collecting := false
 	collect := func() {
@@ -341,6 +354,18 @@ func (a *Agent) session(ctx context.Context) error {
 				collect()
 			}
 			invTimer.Reset(time.Minute)
+		case <-a.patch.notify:
+			if r := a.pendingPatchReport(); r != nil {
+				if err := sendMsg(ctx, ws, proto.TypePatchReport, r); err != nil {
+					a.markPatchesUnsent()
+					return err
+				}
+			}
+		case <-patchTimer.C:
+			if a.scanDue() {
+				_ = a.startPatchJob(a.scanJob)
+			}
+			patchTimer.Reset(30 * time.Minute)
 		case inv := <-invDone:
 			collecting = false
 			a.lastInventory = time.Now()

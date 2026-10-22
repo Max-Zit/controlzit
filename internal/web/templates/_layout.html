@@ -19,6 +19,7 @@
     <a href="/customers" class="{{if eq .Nav "customers"}}on{{end}}">{{template "icon" "customers"}}{{.T "Customers"}}</a>
     <a href="/devices" class="{{if eq .Nav "devices"}}on{{end}}">{{template "icon" "devices"}}{{.T "Devices"}}</a>
     <a href="/alerts" class="{{if eq .Nav "alerts"}}on{{end}}">{{template "icon" "alert"}}{{.T "Alerts"}}{{if .AlertCount}} <span class="navcount">{{.AlertCount}}</span>{{end}}</a>
+    <a href="/updates" class="{{if eq .Nav "updates"}}on{{end}}">{{template "icon" "download"}}{{.T "Updates"}}</a>
     {{if .User.IsAdmin}}
     <span class="navlabel">{{.T "Administration"}}</span>
     <a href="/users" class="{{if eq .Nav "users"}}on{{end}}">{{template "icon" "users"}}{{.T "Users"}}</a>
@@ -73,6 +74,7 @@
   <a href="/settings/security" class="{{if eq .Title "Sign-in and security"}}on{{end}}">{{template "icon" "lock"}}<span>{{.T "Sign-in and security"}}<small>{{.T "Session length, blocked addresses"}}</small></span></a>
   <a href="/settings/monitoring" class="{{if eq .Title "Monitoring and alerts"}}on{{end}}">{{template "icon" "online"}}<span>{{.T "Monitoring and alerts"}}<small>{{.T "Rules and alert emails"}}</small></span></a>
   <a href="/settings/remote" class="{{if eq .Title "Remote desktop"}}on{{end}}">{{template "icon" "screen"}}<span>{{.T "Remote desktop"}}<small>{{.T "Notice on the remote screen"}}</small></span></a>
+  <a href="/settings/updates" class="{{if eq .Title "Windows updates"}}on{{end}}">{{template "icon" "refresh"}}<span>{{.T "Windows updates"}}<small>{{.T "Automatic installation schedule"}}</small></span></a>
   <a href="/settings/agents" class="{{if eq .Title "Agent updates"}}on{{end}}">{{template "icon" "download"}}<span>{{.T "Agent updates"}}<small>{{.T "Installer and automatic updates"}}</small></span></a>
 </nav>{{end}}
 
@@ -122,4 +124,5 @@
   <a href="/devices/{{$id}}/processes" class="{{if eq .Cur "processes"}}on{{end}}">{{template "icon" "cpu"}}{{.P.T "Processes"}}</a>
   <a href="/devices/{{$id}}/scripts" class="{{if eq .Cur "scripts"}}on{{end}}">{{template "icon" "terminal"}}{{.P.T "Scripts"}}</a>
   {{end}}
+  <a href="/devices/{{$id}}/updates" class="{{if eq .Cur "updates"}}on{{end}}">{{template "icon" "download"}}{{.P.T "Updates"}}</a>
 </nav>{{end}}

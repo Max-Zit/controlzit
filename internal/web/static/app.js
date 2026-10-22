@@ -98,3 +98,18 @@ document.addEventListener("submit", function (ev) {
   p.textContent = f.getAttribute("data-busy");
   f.appendChild(p);
 });
+
+// "Select all" checkboxes (data-check-all="field name") and pages that wait
+// for an agent (data-autorefresh: reload every 15 s while it is shown).
+document.addEventListener("change", function (ev) {
+  "use strict";
+  var name = ev.target.getAttribute && ev.target.getAttribute("data-check-all");
+  if (!name) return;
+  ev.target.form.querySelectorAll('input[type=checkbox][name="' + name + '"]').forEach(function (c) { c.checked = ev.target.checked; });
+});
+document.addEventListener("DOMContentLoaded", function () {
+  "use strict";
+  if (document.querySelector("[data-autorefresh]")) {
+    setTimeout(function () { window.location.reload(); }, 15000);
+  }
+});

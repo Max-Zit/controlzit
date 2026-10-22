@@ -1,0 +1,64 @@
+{{template "app" .}}
+{{define "content"}}
+{{$d := .Data.D}}{{$r := .Data.Report}}
+<p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a> / <a href="/devices/{{$d.ID}}">{{$d.Hostname}}</a></p>
+<h1>{{template "icon" "download"}}{{.T "Updates"}} <span class="muted h1-sub">{{$d.Hostname}}</span></h1>
+{{template "devtabs" (devtabs . $d "updates")}}
+
+{{if not $r}}
+<section class="panel">
+  <p class="muted">{{.T "The agent has not reported Windows updates yet. It searches a few minutes after it starts and then twice a day (agent 0.2.11 or newer)."}}</p>
+  {{if .User.CanWrite}}<form method="post" action="/devices/{{$d.ID}}/updates/scan"><button class="secondary" {{if not .Data.Online}}disabled{{end}}>{{template "icon" "refresh"}}{{.T "Search now"}}</button></form>{{end}}
+</section>
+{{else}}
+
+{{if eq $r.State "scanning"}}<div class="flash info" role="status" data-autorefresh>{{template "icon" "refresh"}}<span>{{.T "Searching for updates…"}}</span></div>{{end}}
+{{if eq $r.State "installing"}}<div class="flash info" role="status" data-autorefresh>{{template "icon" "download"}}<span>{{.T "Installing %d updates since %s…" $r.Install.Requested (.Time $r.Install.Started)}}</span></div>{{end}}
+{{if $r.RebootRequired}}<div class="flash warn" role="status">{{template "icon" "alert"}}<span>{{.T "Windows needs a restart to finish installing updates."}}</span></div>{{end}}
+{{if $r.ScanError}}<div class="flash err" role="alert">{{template "icon" "alert"}}<span>{{.T "The last search failed:"}} {{$r.ScanError}}</span></div>{{end}}
+
+{{with $r.Install}}{{if not .Finished.IsZero}}
+<section class="panel">
+  <h2>{{$.T "Last installation"}} {{if .Error}}<span class="badge bad"><i></i>{{$.T "failed"}}</span>{{else}}<span class="badge {{if eq .Result 2}}ok{{else}}warn{{end}}"><i></i>{{$.T (wuResult .Result)}}</span>{{end}}</h2>
+  <p class="muted small">{{$.Time .Started}} – {{$.Time .Finished}} · {{if eq .By "automatic"}}{{$.T "automatic"}}{{else}}{{.By}}{{end}}{{if .RebootRequired}} · {{$.T "restart required"}}{{if .Rebooting}} ({{$.T "restarting"}}){{end}}{{end}}</p>
+  {{if .Error}}<p>{{.Error}}</p>{{end}}
+  {{if .Results}}<ul class="plain">{{range .Results}}<li>{{if or (eq .Result 2) (eq .Result 3)}}<span class="badge ok"><i></i>{{$.T (wuResult .Result)}}</span>{{else}}<span class="badge bad"><i></i>{{$.T (wuResult .Result)}}</span>{{end}} {{.Title}}</li>{{end}}</ul>{{end}}
+</section>
+{{end}}{{end}}
+
+<section class="panel">
+  <h2>{{.T "Missing updates"}} <span class="muted small">{{len $r.Updates}}{{if .Data.Security}} · {{.T "%d security" .Data.Security}}{{end}}</span></h2>
+  <p class="muted small">{{if $r.ScannedAt.IsZero}}{{.T "Not searched yet."}}{{else}}{{.T "Searched"}} {{.Ago $r.ScannedAt}}{{end}}</p>
+  {{if .User.CanWrite}}<form method="post" action="/devices/{{$d.ID}}/updates/scan" class="inline"><button class="ghost sm" {{if or (not .Data.Online) (ne $r.State "idle")}}disabled{{end}}>{{template "icon" "refresh"}}{{.T "Search now"}}</button></form>{{end}}
+  {{if $r.Updates}}
+  <form method="post" action="/devices/{{$d.ID}}/updates/install" class="mt" data-confirm="{{.T "Install the selected updates on %s?" $d.Hostname}}">
+    <div class="table-wrap"><table>
+      <thead><tr>{{if $.User.CanWrite}}<th class="check-col"><input type="checkbox" data-check-all="id" aria-label="{{.T "Select all"}}"></th>{{end}}<th>{{.T "Update"}}</th><th class="hide-sm">{{.T "Category"}}</th><th class="num hide-sm">{{.T "Size"}}</th></tr></thead>
+      <tbody>{{range $r.Updates}}<tr>
+        {{if $.User.CanWrite}}<td class="check-col"><input type="checkbox" name="id" value="{{.ID}}" {{if and .Security (not .Upgrade)}}checked{{end}} aria-label="{{.Title}}"></td>{{end}}
+        <td>{{.Title}}{{if .Security}} <span class="badge {{if eq .Severity "Critical"}}bad{{else}}warn{{end}}"><i></i>{{if .Severity}}{{$.T .Severity}}{{else}}{{$.T "security"}}{{end}}</span>{{end}}{{if .Reboot}} <span class="muted small" title="{{$.T "may need a restart"}}">↻</span>{{end}}</td>
+        <td class="hide-sm small muted">{{join .Categories ", "}}</td>
+        <td class="num hide-sm">{{if .Size}}{{$.Bytes (u64 .Size)}}{{end}}</td>
+      </tr>{{end}}</tbody>
+    </table></div>
+    {{if .User.CanWrite}}
+    <div class="row mt">
+      <label class="check"><input type="checkbox" name="reboot" value="1">{{.T "Restart automatically if needed (in 5 minutes, with a notice)"}}</label>
+      <button class="primary" {{if or (not .Data.Online) (ne $r.State "idle")}}disabled{{end}}>{{template "icon" "download"}}{{.T "Install selected"}}</button>
+    </div>
+    {{end}}
+  </form>
+  {{else if not $r.ScannedAt.IsZero}}<p class="mt">{{template "icon" "check"}} {{.T "Windows is up to date."}}</p>{{end}}
+</section>
+
+{{if $r.History}}
+<section class="panel">
+  <h2>{{.T "Installed recently"}}</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{.T "Date"}}</th><th>{{.T "Update"}}</th><th>{{.T "Result"}}</th></tr></thead>
+    <tbody>{{range $r.History}}<tr><td class="nowrap">{{$.Time .Date}}</td><td>{{.Title}}</td><td class="nowrap">{{if or (eq .Result 2) (eq .Result 3)}}<span class="badge ok"><i></i>{{$.T (wuResult .Result)}}</span>{{else}}<span class="badge bad"><i></i>{{$.T (wuResult .Result)}}</span>{{end}}</td></tr>{{end}}</tbody>
+  </table></div>
+</section>
+{{end}}
+{{end}}
+{{end}}

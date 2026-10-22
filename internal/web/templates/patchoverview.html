@@ -1,0 +1,32 @@
+{{template "app" .}}
+{{define "content"}}
+<h1>{{template "icon" "download"}}{{.T "Windows updates"}}</h1>
+<div class="grid">
+  <a class="stat" href="/updates?show=missing"><span class="si">{{template "icon" "download"}}</span><b>{{.Data.Missing}}</b><span>{{.T "devices with missing updates"}}</span></a>
+  <a class="stat" href="/updates?show=reboot"><span class="si">{{template "icon" "refresh"}}</span><b>{{.Data.Reboot}}</b><span>{{.T "devices waiting for a restart"}}</span></a>
+  <div class="stat"><span class="si">{{template "icon" "clock"}}</span><b class="sm">{{if eq .Data.Policy.Mode "off"}}{{.T "off"}}{{else}}{{.T (print "auto-" .Data.Policy.Mode)}}{{end}}</b><span>{{.T "Automatic installation"}}{{if .User.IsAdmin}} · <a href="/settings/updates">{{.T "change"}}</a>{{end}}</span></div>
+</div>
+<section class="panel">
+  <nav class="tabs" aria-label="{{.T "Filter"}}">
+    <a href="/updates" class="{{if eq .Data.Filter ""}}on{{end}}">{{.T "All devices"}}</a>
+    <a href="/updates?show=missing" class="{{if eq .Data.Filter "missing"}}on{{end}}">{{.T "Missing updates"}}</a>
+    <a href="/updates?show=security" class="{{if eq .Data.Filter "security"}}on{{end}}">{{.T "Missing security updates"}}</a>
+    <a href="/updates?show=reboot" class="{{if eq .Data.Filter "reboot"}}on{{end}}">{{.T "Restart required"}}</a>
+  </nav>
+  {{if .Data.Rows}}
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{.T "Device"}}</th><th class="hide-sm">{{.T "Customer"}}</th><th class="num">{{.T "Missing"}}</th><th class="num">{{.T "Security"}}</th><th>{{.T "State"}}</th><th class="hide-sm">{{.T "Searched"}}</th></tr></thead>
+    <tbody>{{range .Data.Rows}}<tr>
+      <td><a href="/devices/{{.ID}}/updates">{{.Hostname}}</a>{{if not .Online}} <span class="badge"><i></i>{{$.T "Offline"}}</span>{{end}}</td>
+      <td class="hide-sm">{{.Customer}} / {{.Site}}</td>
+      {{if .Report}}
+      <td class="num">{{.Missing}}</td>
+      <td class="num">{{if .Security}}<span class="badge warn"><i></i>{{.Security}}</span>{{else}}0{{end}}</td>
+      <td>{{if ne .Report.State "idle"}}<span class="badge"><i></i>{{$.T .Report.State}}</span>{{else if .Report.RebootRequired}}<span class="badge warn"><i></i>{{$.T "restart required"}}</span>{{else if .Report.ScanError}}<span class="badge bad"><i></i>{{$.T "search failed"}}</span>{{else if eq .Missing 0}}<span class="badge ok"><i></i>{{$.T "up to date"}}</span>{{else}}—{{end}}</td>
+      <td class="hide-sm nowrap">{{if not .Report.ScannedAt.IsZero}}{{$.Ago .Report.ScannedAt}}{{end}}</td>
+      {{else}}<td class="num">—</td><td class="num">—</td><td colspan="2" class="muted small">{{$.T "no report yet"}}</td>{{end}}
+    </tr>{{end}}</tbody>
+  </table></div>
+  {{else}}<p class="muted">{{.T "No devices match."}}</p>{{end}}
+</section>
+{{end}}

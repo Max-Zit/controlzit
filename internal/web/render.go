@@ -159,6 +159,22 @@ var funcs = template.FuncMap{
 		}
 		return s
 	},
+	"weekday": func(d int) string { return time.Weekday(d).String() },
+	"wuResult": func(code int) string {
+		switch code {
+		case 2:
+			return "succeeded"
+		case 3:
+			return "succeeded with errors"
+		case 4:
+			return "failed"
+		case 5:
+			return "aborted"
+		case 1:
+			return "in progress"
+		}
+		return "not started"
+	},
 	"devtabs": func(p *Page, d *store.Device, cur string) devTabs { return devTabs{P: p, D: d, Cur: cur} },
 }
 

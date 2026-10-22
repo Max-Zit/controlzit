@@ -329,6 +329,12 @@ func (s *Server) agentMessage(ctx context.Context, c *agentConn, d *store.Device
 		}
 		c.deliver(res)
 		return nil
+	case proto.TypePatchReport:
+		var rep proto.PatchReport
+		if err := json.Unmarshal(env.Data, &rep); err != nil {
+			return err
+		}
+		return s.savePatchReport(ctx, d, &rep)
 	case proto.TypeInventory:
 		var inv proto.Inventory
 		if err := json.Unmarshal(env.Data, &inv); err != nil {

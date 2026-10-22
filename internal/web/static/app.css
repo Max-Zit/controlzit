@@ -346,3 +346,8 @@ form[data-busy].busy button { opacity: .6; pointer-events: none; }
 .busy-note { margin-top: 8px; }
 .update-note { align-items: center; flex-wrap: wrap; }
 .update-note form { margin-left: auto; }
+th.check-col, td.check-col { width: 32px; }
+td.check-col input, th.check-col input { width: auto; }
+ul.plain { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+a.stat { color: inherit; }
+a.stat:hover { text-decoration: none; border-color: var(--accent); }
