@@ -22,7 +22,7 @@
     </tr></table>
   </td></tr>
   <tr><td style="padding:8px 28px">
-    <h2 style="font-size:16px;margin:12px 0 6px">{{.T "Windows updates"}}</h2>
+    <h2 style="font-size:16px;margin:12px 0 6px">{{.T "Updates"}}</h2>
     <div style="font-size:14px;line-height:1.6">
       {{.T "up to date"}}: <b>{{$r.UpToDate}}</b> · {{.T "missing security updates"}}: <b>{{$r.Security}}</b> · {{.T "devices waiting for a restart"}}: <b>{{$r.Reboot}}</b>{{if $r.NoReport}} · {{.T "no report yet"}}: <b>{{$r.NoReport}}</b>{{end}}
     </div>
@@ -34,7 +34,7 @@
     </div>
     <h2 style="font-size:16px;margin:16px 0 6px">{{.T "Technician work"}}</h2>
     <div style="font-size:14px;line-height:1.6">
-      {{.T "remote desktop sessions"}}: <b>{{$r.Count "rd.start"}}</b> · {{.T "scripts run"}}: <b>{{$r.Count "script.run"}}</b> · {{.T "update installations"}}: <b>{{$r.Count "patch.install"}}</b>
+      {{.T "remote desktop sessions"}}: <b>{{$r.Count "rd.start"}}</b> · {{.T "terminal sessions"}}: <b>{{$r.Count "term.start"}}</b> · {{.T "scripts run"}}: <b>{{$r.Count "script.run"}}</b> · {{.T "update installations"}}: <b>{{$r.Count "patch.install"}}</b>
     </div>
   </td></tr>
   <tr><td style="padding:8px 28px 20px">

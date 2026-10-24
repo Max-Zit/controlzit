@@ -16,7 +16,7 @@
     {{else}}{{template "icon" "alert"}}<div><b>{{$.T "Ended with an error code"}}</b><span>{{$.T "exit code %d" (deref .ExitCode)}}</span></div>{{end}}
   </div>
   <dl class="run-facts">
-    <div><dt>{{$.T "Run"}}</dt><dd>#{{.ID}}</dd></div>
+    <div><dt>{{$.T "Run no."}}</dt><dd>#{{.ID}}</dd></div>
     <div><dt>{{$.T "Started"}}</dt><dd>{{$.Time .StartedAt}}</dd></div>
     <div><dt>{{$.T "Duration"}}</dt><dd>{{.Duration}}</dd></div>
     <div><dt>{{$.T "By"}}</dt><dd>{{.Username}}</dd></div>

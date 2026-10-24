@@ -126,7 +126,7 @@
 {{if .User.CanWrite}}
 <section class="panel">
   <h2>{{.T "Remove device"}}</h2>
-  <p class="small muted">{{.T "Removing the device stops its agent from connecting. Uninstall the agent on the computer afterwards."}}</p>
+  <p class="small muted">{{.T "If the computer is online, its agent uninstalls itself and Windows Update gets its own settings back. An offline computer can no longer connect; uninstall the agent there by hand."}}</p>
   <div class="actionbar">
     <form method="post" action="/devices/{{$d.ID}}/delete" data-confirm="{{.T "Remove this device? If it is online, the agent uninstalls itself from the computer (Windows Update gets its own settings back)."}}"><button class="danger">{{template "icon" "trash"}}{{.T "Remove device"}}</button></form>
   </div>

@@ -78,7 +78,7 @@ func (s *Server) handleRD(w http.ResponseWriter, r *http.Request) {
 	if d == nil {
 		return
 	}
-	data := &rdData{D: d, Online: s.Connected(d.ID), Notice: s.Remote(r.Context()).ShowNotice, Clipboard: s.Remote(r.Context()).Clipboard, Window: r.FormValue("w") == "1"}
+	data := &rdData{D: d, Online: s.Connected(d.ID), Notice: s.Remote(r.Context()).ShowNotice, Clipboard: s.Remote(r.Context()).Clipboard && d.IsWindows(), Window: r.FormValue("w") == "1"}
 	page := "rd"
 	if data.Window {
 		page = "rdwin"
@@ -119,6 +119,9 @@ func (s *Server) handleRDSocket(w http.ResponseWriter, r *http.Request) {
 		name = u.Username
 	}
 	settings := s.Remote(ctx)
+	if !d.IsWindows() {
+		settings.Clipboard = false // not on Linux yet
+	}
 	if err := s.call(ctx, d.ID, u.Username, proto.KindRDStart, proto.RDStart{Session: sess.id, Token: sess.token, Technician: name, NoNotice: !settings.ShowNotice, NoClipboard: !settings.Clipboard}, nil, rdStartTimeout); err != nil {
 		s.log.Warn("remote desktop start failed", "device", d.ID, "err", err)
 		fail(err.Error())
@@ -189,10 +192,11 @@ func (s *Server) handleRDSocket(w http.ResponseWriter, r *http.Request) {
 	}()
 	err = <-errc
 	cancel()
-	// The request context ends with the browser connection; log with a fresh one.
-	r = r.WithContext(context.Background())
+	// The request context ends with the browser connection; log without its
+	// cancellation (the signed-in user stays in it).
+	r = r.WithContext(context.WithoutCancel(r.Context()))
 	dur := s.now().Sub(start).Round(time.Second)
-	s.audit(r, "rd.end", "device:"+strconv.FormatInt(d.ID, 10), "remote desktop session %s to %q ended after %s (%d KB sent; clipboard: %d texts to the computer, %d from it)", sess.id, d.Hostname, dur, bytesDown.Load()>>10, clipIn.Load(), clipOut.Load())
+	s.audit(r, "rd.end", "device:"+strconv.FormatInt(d.ID, 10), "remote desktop session %s to %q ended after %s (%s sent; clipboard: %d texts to the computer, %d from it)", sess.id, d.Hostname, dur, formatBytes(uint64(bytesDown.Load())), clipIn.Load(), clipOut.Load()) // #nosec G115 -- a byte count
 	s.log.Info("remote desktop session ended", "device", d.ID, "session", sess.id, "duration", dur.String(), "reason", errString(err))
 }
 

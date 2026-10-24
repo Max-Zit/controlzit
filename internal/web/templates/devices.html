@@ -8,7 +8,7 @@
   </form>
   <div class="mt">
   {{if .Data.Devices}}{{template "devicetable" .}}
-  {{else}}<div class="empty">{{template "icon" "devices"}}<p>{{if .Data.Q}}{{.T "No device matches."}}{{else}}{{.T "No devices yet. Open a site of a customer, create an enrollment token and install the agent."}}{{end}}</p></div>{{end}}
+  {{else}}<div class="empty">{{template "icon" "devices"}}<p>{{if .Data.Q}}{{.T "No device matches."}}{{else}}{{.T "No devices yet. Open a site of a customer, create an enrollment code and install the agent."}}{{end}}</p></div>{{end}}
   </div>
 </section>
 {{end}}

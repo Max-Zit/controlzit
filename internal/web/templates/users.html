@@ -2,16 +2,11 @@
 {{define "content"}}
 <h1>{{.T "Users"}}</h1>
 <section class="panel">
-  <div class="table-wrap"><table>
-    <thead><tr><th>{{.T "Username"}}</th><th>{{.T "Role"}}</th><th class="hide-sm">{{.T "Customers"}}</th><th>{{.T "Two-factor"}}</th><th class="hide-sm">{{.T "Last sign-in"}}</th></tr></thead>
-    <tbody>{{range .Data.Users}}<tr>
-      <td><a href="/users/{{.ID}}">{{.Username}}</a>{{if .DisplayName}} <span class="muted">· {{.DisplayName}}</span>{{end}}{{if .Disabled}} <span class="badge bad">{{$.T "Disabled"}}</span>{{end}}</td>
-      <td>{{$.RoleName .Role}}</td>
-      <td class="hide-sm muted">{{if or .IsAdmin .AllCustomers}}{{$.T "All"}}{{else}}{{len .CustomerIDs}}{{end}}</td>
-      <td>{{if .TOTPEnabled}}<span class="badge ok"><i></i>{{$.T "On"}}</span>{{else}}<span class="badge warn">{{$.T "At next sign-in"}}</span>{{end}}</td>
-      <td class="hide-sm muted">{{$.Time .LastLoginAt}}</td>
-    </tr>{{end}}</tbody>
-  </table></div>
+  {{template "usertable" (userTable . .Data.Users)}}
+  {{with .Data.Disabled}}<details class="mt">
+    <summary class="muted">{{$.T "Disabled users"}} ({{len .}})</summary>
+    {{template "usertable" (userTable $ .)}}
+  </details>{{end}}
 </section>
 <section class="panel">
   <h2>{{.T "Add a user"}}</h2>
@@ -26,3 +21,14 @@
   </form>
 </section>
 {{end}}
+
+{{define "usertable"}}{{$p := .P}}<div class="table-wrap"><table>
+    <thead><tr><th>{{$p.T "Username"}}</th><th>{{$p.T "Role"}}</th><th class="hide-sm">{{$p.T "Customers"}}</th><th>{{$p.T "Two-factor"}}</th><th class="hide-sm">{{$p.T "Last sign-in"}}</th></tr></thead>
+    <tbody>{{range .Users}}<tr>
+      <td><a href="/users/{{.ID}}">{{.Username}}</a>{{if .DisplayName}} <span class="muted">· {{.DisplayName}}</span>{{end}}{{if .Disabled}} <span class="badge bad">{{$p.T "Disabled"}}</span>{{end}}</td>
+      <td>{{$p.RoleName .Role}}</td>
+      <td class="hide-sm muted">{{if or .IsAdmin .AllCustomers}}{{$p.T "All"}}{{else}}{{len .CustomerIDs}}{{end}}</td>
+      <td>{{if .TOTPEnabled}}<span class="badge ok"><i></i>{{$p.T "On"}}</span>{{else}}<span class="badge warn">{{$p.T "At next sign-in"}}</span>{{end}}</td>
+      <td class="hide-sm muted">{{$p.Time .LastLoginAt}}</td>
+    </tr>{{end}}</tbody>
+  </table></div>{{end}}

@@ -2,6 +2,7 @@
 {{define "content"}}
 <p class="back"><a href="/customers">{{.T "Customers"}}</a> / <a href="/customers/{{.Data.Site.CustomerID}}">{{.Data.Site.Customer}}</a></p>
 <h1>{{.Data.Site.Name}}</h1>
+{{if and .User.CanWrite .Data.AgentLocal}}<div class="flash err" role="alert">{{template "icon" "alert"}}<span>{{.T "Agents would connect to %s, which is only this server itself: the console is open on localhost and no public address for agents is set. Set it in Settings → Network and access before you install agents." .Data.AgentURL}}{{if .User.IsAdmin}} <a href="/settings/network">{{.T "Open settings"}}</a>{{end}}</span></div>{{end}}
 {{with .Data.NewToken}}
 <section class="panel accent">
   <h2>{{template "icon" "key"}}{{$.T "New enrollment code"}}</h2>
@@ -32,7 +33,7 @@
 .\controlzit-agent.exe install</pre>
   <p><button type="button" class="secondary" data-copy="#install-cmd">{{template "icon" "copy"}}{{.T "Copy"}}</button></p>
   <h3>{{.T "Linux (systemd)"}}</h3>
-  <p>{{if .Data.Linux}}<a class="btn secondary" href="/downloads/controlzit-agent-linux-amd64">{{.T "Download the Linux agent (x86-64)"}}</a>{{else}}<span class="small muted">{{.T "The Linux agent is not on this server yet: copy controlzit-agent-linux-amd64 into the downloads folder of the data directory."}}</span>{{end}}</p>
+  <p>{{if .Data.Linux}}<a class="btn secondary" href="/downloads/controlzit-agent-linux-amd64">{{.T "Download the Linux agent (x86-64)"}}</a>{{if .Data.LinuxARM64}} <a class="btn ghost" href="/downloads/controlzit-agent-linux-arm64">{{.T "ARM64 (Raspberry Pi and other ARM servers)"}}</a>{{end}}{{else}}<span class="small muted">{{.T "The Linux agent is not on this server yet: copy controlzit-agent-linux-amd64 into the downloads folder of the data directory."}}</span>{{end}}</p>
   <p class="small muted">{{.T "Copy it to the machine and run as root; it installs itself in /usr/local/bin and starts the controlzit-agent service:"}}</p>
   <pre id="linux-cmd">chmod +x controlzit-agent-linux-amd64
 sudo ./controlzit-agent-linux-amd64 install --code "{{$code}}"</pre>
@@ -51,10 +52,10 @@ sudo ./controlzit-agent-linux-amd64 install --code "{{$code}}"</pre>
       <td class="num">{{.Uses}} / {{.MaxUses}}</td>
       <td class="hide-sm muted">{{$.Time .ExpiresAt}}</td>
       <td class="hide-sm muted">{{.CreatedBy}}</td>
-      <td class="actions">{{if and $.User.CanWrite (.Active $.Data.Now)}}<form method="post" action="/sites/{{$.Data.Site.ID}}/tokens/{{.ID}}/revoke" data-confirm="{{$.T "Revoke this token?"}}"><button class="ghost sm">{{$.T "Revoke"}}</button></form>{{end}}</td>
+      <td class="actions">{{if and $.User.CanWrite (.Active $.Data.Now)}}<form method="post" action="/sites/{{$.Data.Site.ID}}/tokens/{{.ID}}/revoke" data-confirm="{{$.T "Revoke this enrollment code?"}}"><button class="ghost sm">{{$.T "Revoke"}}</button></form>{{end}}</td>
     </tr>{{end}}</tbody>
   </table></div>
-  {{else}}<p class="muted">{{.T "No tokens yet."}}</p>{{end}}
+  {{else}}<p class="muted">{{.T "No enrollment codes yet."}}</p>{{end}}
   {{if .User.CanWrite}}
   <form method="post" action="/sites/{{.Data.Site.ID}}/tokens" class="row mt">
     <input name="label" placeholder="{{.T "Label (optional)"}}" aria-label="{{.T "Label"}}" maxlength="120">

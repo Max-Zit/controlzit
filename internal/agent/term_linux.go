@@ -111,7 +111,7 @@ func startTerminal(ws *websocket.Conn, a proto.TermStart) error {
 	}
 	setSize(master, a.Cols, a.Rows)
 	shell := rootShell()
-	cmd := exec.Command(shell) // #nosec G204 -- root's login shell
+	cmd := exec.Command(shell)                      // #nosec G204 -- root's login shell
 	cmd.Args = []string{"-" + filepath.Base(shell)} // a login shell
 	cmd.Dir = "/root"
 	if _, err := os.Stat(cmd.Dir); err != nil {

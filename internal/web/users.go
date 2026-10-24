@@ -10,7 +10,8 @@ import (
 )
 
 type usersData struct {
-	Users     []*store.User
+	Users     []*store.User // active
+	Disabled  []*store.User
 	Customers []store.Customer
 	Form      store.NewUser
 }
@@ -20,10 +21,18 @@ func (s *Server) handleUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) showUsers(w http.ResponseWriter, r *http.Request, status int, d *usersData, errMsg string) {
-	var err error
-	if d.Users, err = s.store.Users(r.Context()); err != nil {
+	all, err := s.store.Users(r.Context())
+	if err != nil {
 		s.serverError(w, r, err)
 		return
+	}
+	d.Users, d.Disabled = nil, nil
+	for _, u := range all {
+		if u.Disabled {
+			d.Disabled = append(d.Disabled, u)
+		} else {
+			d.Users = append(d.Users, u)
+		}
 	}
 	if d.Customers, err = s.store.AllCustomers(r.Context()); err != nil {
 		s.serverError(w, r, err)
@@ -245,4 +254,10 @@ func (s *Server) handleAccountSignout(w http.ResponseWriter, r *http.Request) {
 	}
 	s.audit(r, "account.signout", "user:"+u.Username, "signed out %d other sessions", n)
 	s.redirect(w, r, "/account", "Your other sessions were signed out.")
+}
+
+// userTable is the argument of the usertable template.
+type userTable struct {
+	P     *Page
+	Users []*store.User
 }

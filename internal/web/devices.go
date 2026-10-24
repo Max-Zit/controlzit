@@ -139,7 +139,9 @@ func (s *Server) handleDeviceDelete(w http.ResponseWriter, r *http.Request) {
 // ---- template helpers
 
 // Bytes formats a size (1024-based, as Windows shows it).
-func (p *Page) Bytes(n uint64) string {
+func (p *Page) Bytes(n uint64) string { return formatBytes(n) }
+
+func formatBytes(n uint64) string {
 	const unit = 1024
 	if n < unit {
 		return fmt.Sprintf("%d B", n)

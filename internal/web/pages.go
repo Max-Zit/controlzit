@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -233,7 +234,9 @@ type siteData struct {
 	EnrollCode  string
 	MSI         bool
 	Linux       bool
+	LinuxARM64  bool
 	AgentURL    string
+	AgentLocal  bool // the address is this machine only (console opened on localhost)
 	Now         time.Time
 	ValidDays   int
 	MaxUses     int
@@ -261,10 +264,15 @@ func (s *Server) showSite(w http.ResponseWriter, r *http.Request, status int, d 
 	d.Fingerprint = s.AgentFingerprint
 	d.MSI = s.agentMSI() != ""
 	d.Linux = s.download(AgentLinuxName) != ""
+	d.LinuxARM64 = s.download(AgentLinuxARM64Name) != ""
 	if d.ValidDays == 0 {
 		d.ValidDays, d.MaxUses = 7, 50
 	}
 	d.AgentURL = s.agentURL(r)
+	if u, err := url.Parse(d.AgentURL); err == nil {
+		ip := net.ParseIP(u.Hostname())
+		d.AgentLocal = u.Hostname() == "localhost" || (ip != nil && ip.IsLoopback())
+	}
 	p := &Page{Title: d.Site.Name, Nav: "customers", Data: d}
 	if errMsg != "" {
 		p.Error = translate(s.lang(r, userFrom(r)), errMsg)
@@ -341,7 +349,7 @@ func (s *Server) handleTokenCreate(w http.ResponseWriter, r *http.Request) {
 	uses, err2 := strconv.Atoi(r.FormValue("uses"))
 	d := &siteData{Site: x, ValidDays: days, MaxUses: uses}
 	if err1 != nil || err2 != nil || days < 1 || days > 365 {
-		s.showSite(w, r, http.StatusBadRequest, d, "A token must be valid between 1 and 365 days.")
+		s.showSite(w, r, http.StatusBadRequest, d, "An enrollment code must be valid between 1 and 365 days.")
 		return
 	}
 	tok, err := s.store.CreateEnrollToken(r.Context(), x.ID, r.FormValue("label"), u.Username, time.Duration(days)*24*time.Hour, uses)
@@ -371,7 +379,7 @@ func (s *Server) handleTokenRevoke(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "token.revoke", "site:"+strconv.FormatInt(x.ID, 10), "revoked enrollment token #%d of site %q", tid, x.Name)
-	s.redirect(w, r, "/sites/"+strconv.FormatInt(x.ID, 10), "Token revoked.")
+	s.redirect(w, r, "/sites/"+strconv.FormatInt(x.ID, 10), "Enrollment code revoked.")
 }
 
 func splitHostPortLoose(hp string) (string, string, error) { return net.SplitHostPort(hp) }
@@ -381,8 +389,11 @@ func joinHostPort(h, p string) string { return net.JoinHostPort(strings.Trim(h, 
 // Online is used by the device list of the site page.
 func (d *siteData) Online(x *store.Device) bool { return x.Online(d.Now, onlineWindow) }
 
-// AgentLinuxName is the Linux agent (64-bit x86) offered for download.
-const AgentLinuxName = "controlzit-agent-linux-amd64"
+// The Linux agents offered for download (64-bit x86 and ARM).
+const (
+	AgentLinuxName      = "controlzit-agent-linux-amd64"
+	AgentLinuxARM64Name = "controlzit-agent-linux-arm64"
+)
 
 // download returns the path of a file in the downloads folder, or "".
 func (s *Server) download(name string) string {
@@ -396,15 +407,17 @@ func (s *Server) download(name string) string {
 	return p
 }
 
-func (s *Server) handleAgentLinux(w http.ResponseWriter, r *http.Request) {
-	p := s.download(AgentLinuxName)
-	if p == "" {
-		s.notFound(w, r)
-		return
+func (s *Server) agentLinux(name string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		p := s.download(name)
+		if p == "" {
+			s.notFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "application/octet-stream")
+		w.Header().Set("Content-Disposition", `attachment; filename="`+name+`"`)
+		http.ServeFile(w, r, p)
 	}
-	w.Header().Set("Content-Type", "application/octet-stream")
-	w.Header().Set("Content-Disposition", `attachment; filename="`+AgentLinuxName+`"`)
-	http.ServeFile(w, r, p)
 }
 
 // AgentMSIName is the installer the console offers for download; put it

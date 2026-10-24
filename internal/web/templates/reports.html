@@ -2,7 +2,7 @@
 {{define "content"}}
 <h1>{{template "icon" "audit"}}{{.T "Reports"}}</h1>
 <section class="panel">
-  <p class="muted">{{.T "A report shows a customer's devices over a period: Windows updates, alerts and the work of technicians. Print it or save it as PDF from the browser."}}</p>
+  <p class="muted">{{.T "A report shows a customer's devices over a period: updates, alerts and the work of technicians. Print it or save it as PDF from the browser."}}</p>
   <form method="get" action="/reports/view" class="row filter">
     <label>{{.T "Customer"}}<select name="customer">
       {{if or .User.IsAdmin .User.AllCustomers}}<option value="0">{{.T "All customers"}}</option>{{end}}

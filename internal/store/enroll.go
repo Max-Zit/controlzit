@@ -80,7 +80,7 @@ func (s *Store) RevokeEnrollToken(ctx context.Context, siteID, id int64) error {
 }
 
 // ErrTokenInvalid is returned for unknown, expired, used up or revoked tokens.
-var ErrTokenInvalid = errors.New("enrollment token is invalid, expired or used up")
+var ErrTokenInvalid = errors.New("enrollment code is invalid, expired or used up")
 
 // UseEnrollToken consumes one use of a token and returns its site. It is
 // atomic, so a single-use token cannot enroll two devices.

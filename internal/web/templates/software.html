@@ -39,7 +39,7 @@
     <tbody>{{range .Packages}}<tr>
       <td><b>{{.Name}}</b></td>
       <td class="hide-sm small mono">{{.ID}}</td>
-      <td class="small">{{.Version}}</td>
+      <td class="small">{{if eq .Version "Unknown"}}{{$.T "unknown"}}{{else}}{{.Version}}{{end}}</td>
       {{if eq $.Data.View "upgrades"}}<td class="small">{{.Available}}</td>{{end}}
       <td class="nowrap actions">
         <form method="post" action="/devices/{{$d.ID}}/software" class="inline" data-busy="{{$.T "Working… installers can take several minutes."}}"

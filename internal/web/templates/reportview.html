@@ -28,7 +28,7 @@
 </section>
 
 <section class="panel">
-  <h2>{{.T "Windows updates"}}</h2>
+  <h2>{{.T "Updates"}}</h2>
   <div class="report-grid">
     <div class="stat"><b>{{$r.UpToDate}}</b><span>{{.T "up to date"}}</span></div>
     <div class="stat"><b>{{$r.Missing}}</b><span>{{.T "devices with missing updates"}} ({{.T "%d updates" $r.Updates}})</span></div>
@@ -55,6 +55,7 @@
   <h2>{{.T "Technician work"}}</h2>
   <div class="report-grid">
     <div class="stat"><b>{{$r.Count "rd.start"}}</b><span>{{.T "remote desktop sessions"}}</span></div>
+    <div class="stat"><b>{{$r.Count "term.start"}}</b><span>{{.T "terminal sessions"}}</span></div>
     <div class="stat"><b>{{$r.Count "script.run"}}</b><span>{{.T "scripts run"}}</span></div>
     <div class="stat"><b>{{$r.Count "patch.install"}}</b><span>{{.T "update installations"}}</span></div>
     <div class="stat"><b>{{add (add ($r.Count "file.upload") ($r.Count "file.download")) ($r.Count "file.delete")}}</b><span>{{.T "file operations"}}</span></div>

@@ -152,6 +152,8 @@ if [ -n "$LDEV" ]; then
   check "Linux terminal runs a root shell" 'grep -q "term-42 root" .gotmp/r-term.log'
   GOTMPDIR=C:/Users/Mili/Ai/rmm/.gotmp go run ./tools/rdclient -console $S -device $LDEV -cookie "$CK" -out .gotmp/r-lrd.png -wait 6s > .gotmp/r-lrd.log 2>&1
   check "Linux remote desktop streams the X11 screen" 'grep -q "^screen 1600x900" .gotmp/r-lrd.log'
+  sleep 2
+  check "session ends keep the technician in the audit log" '$C "$S/audit?q=term.end" | grep -o "<td>[^<]*</td><td><code>term.end" | head -1 | grep -q "<td>admin</td>" && $C "$S/audit?q=rd.end" | grep -o "<td>[^<]*</td><td><code>rd.end" | head -1 | grep -q "<td>admin</td>"'
 fi
 
 $C -o /dev/null -d lang=sr $S/lang

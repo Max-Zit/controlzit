@@ -93,7 +93,7 @@ func crumbs(p string) []crumb {
 		}
 		return out
 	}
-	parts :=strings.Split(strings.TrimRight(p, `\`), `\`)
+	parts := strings.Split(strings.TrimRight(p, `\`), `\`)
 	acc := ""
 	for i, part := range parts {
 		if part == "" {

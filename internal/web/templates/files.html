@@ -60,5 +60,5 @@
   {{else}}<p class="muted mt">{{$.T "This folder is empty."}}</p>{{end}}
 </section>
 {{end}}
-<p class="small muted">{{.T "Every file operation is done by the agent as SYSTEM and written to the audit log with your name."}}</p>
+<p class="small muted">{{if $d.IsWindows}}{{.T "Every file operation is done by the agent as SYSTEM and written to the audit log with your name."}}{{else}}{{.T "Every file operation is done by the agent as root and written to the audit log with your name."}}{{end}}</p>
 {{end}}

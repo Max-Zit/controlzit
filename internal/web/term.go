@@ -127,8 +127,8 @@ func (s *Server) handleTermSocket(w http.ResponseWriter, r *http.Request) {
 	}()
 	err = <-errc
 	cancel()
-	r = r.WithContext(context.Background())
+	r = r.WithContext(context.WithoutCancel(r.Context()))
 	dur := s.now().Sub(start).Round(time.Second)
-	s.audit(r, "term.end", "device:"+strconv.FormatInt(d.ID, 10), "terminal session %s to %q ended after %s (%d KB shown, %d KB typed)", sess.id, d.Hostname, dur, bytesDown.Load()>>10, bytesUp.Load()>>10)
+	s.audit(r, "term.end", "device:"+strconv.FormatInt(d.ID, 10), "terminal session %s to %q ended after %s (%s shown, %s typed)", sess.id, d.Hostname, dur, formatBytes(uint64(bytesDown.Load())), formatBytes(uint64(bytesUp.Load()))) // #nosec G115 -- byte counts
 	s.log.Info("terminal session ended", "device", d.ID, "session", sess.id, "duration", dur.String(), "reason", errString(err))
 }
