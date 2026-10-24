@@ -28,7 +28,7 @@
 </div>
 {{template "devtabs" (devtabs . $d "overview")}}
 {{if and .User.CanWrite (.Data.Package.Offers $d)}}
-<div class="flash info update-note" role="status">{{template "icon" "download"}}<span>{{.T "The agent runs version %s; version %s is available." $d.AgentVersion .Data.Package.Version}}</span>
+<div class="flash info update-note" role="status">{{template "icon" "download"}}<span>{{.T "The agent runs version %s; version %s is available." $d.AgentVersion (.Data.Package.For $d).Version}}</span>
   {{if .Data.Online}}<form method="post" action="/devices/{{$d.ID}}/agent-update"><button class="secondary sm">{{.T "Update the agent now"}}</button></form>{{end}}
 </div>
 {{end}}

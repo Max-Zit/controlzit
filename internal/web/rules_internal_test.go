@@ -202,3 +202,27 @@ func TestSendMailHTML(t *testing.T) {
 		t.Fatalf("parts: %q", parts)
 	}
 }
+
+func TestPackagePlatform(t *testing.T) {
+	elf := func(machine byte) []byte {
+		h := make([]byte, 20)
+		copy(h, "\x7fELF")
+		h[4], h[5], h[18] = 2, 1, machine
+		return h
+	}
+	for _, c := range []struct {
+		head []byte
+		want string
+	}{
+		{[]byte("\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1rest-of-header"), proto.PlatformWindows},
+		{elf(0x3e), proto.PlatformLinuxAMD64},
+		{elf(0xb7), proto.PlatformLinuxARM64},
+		{elf(0x28), ""}, // 32-bit ARM
+		{[]byte("MZ\x90\x00 windows exe......"), ""},
+		{[]byte("short"), ""},
+	} {
+		if got := packagePlatform(c.head); got != c.want {
+			t.Errorf("%q: %q, want %q", c.head[:4], got, c.want)
+		}
+	}
+}

@@ -79,3 +79,18 @@ func ValidVersion(v string) bool {
 	n, s := splitVersion(v)
 	return len(n) == 3 && s == ""
 }
+
+// Agent package platforms.
+const (
+	PlatformWindows    = "windows-x64"
+	PlatformLinuxAMD64 = "linux-amd64"
+	PlatformLinuxARM64 = "linux-arm64"
+)
+
+// Platform names the agent package for an operating system and CPU.
+func Platform(goos, goarch string) string {
+	if goos == "windows" {
+		return PlatformWindows
+	}
+	return goos + "-" + goarch
+}

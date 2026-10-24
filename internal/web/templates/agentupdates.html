@@ -5,19 +5,23 @@
 {{template "settingstabs" .}}
 <div class="settings-body">
 <section class="panel">
-  <h2>{{template "icon" "download"}}{{.T "Agent installer"}}</h2>
-  {{with .Data.Package}}
-  <dl class="facts">
-    <dt>{{$.T "Version"}}</dt><dd><b>{{.Version}}</b></dd>
-    <dt>{{$.T "Size"}}</dt><dd>{{$.Bytes (u64 .Size)}}</dd>
-    <dt>{{$.T "Uploaded"}}</dt><dd>{{$.Time .Modified}}</dd>
-    <dt>SHA-256</dt><dd><code class="wrap">{{.SHA256}}</code></dd>
-  </dl>
+  <h2>{{template "icon" "download"}}{{.T "Agent installers"}}</h2>
+  {{if .Data.Packages.List}}
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{.T "Platform"}}</th><th>{{.T "Version"}}</th><th class="hide-sm">{{.T "Size"}}</th><th class="hide-sm">{{.T "Uploaded"}}</th><th class="hide-sm">SHA-256</th></tr></thead>
+    <tbody>{{range .Data.Packages.List}}<tr>
+      <td>{{if eq .Platform "windows-x64"}}Windows (MSI){{else if eq .Platform "linux-amd64"}}Linux x86-64{{else}}Linux ARM64{{end}}</td>
+      <td><b>{{.Version}}</b></td>
+      <td class="hide-sm">{{$.Bytes (u64 .Size)}}</td>
+      <td class="hide-sm small">{{$.Time .Modified}}</td>
+      <td class="hide-sm"><code class="clip" title="{{.SHA256}}">{{.SHA256}}</code></td>
+    </tr>{{end}}</tbody>
+  </table></div>
   {{else}}<p class="muted">{{.T "No installer with a known version is on the server yet. Upload the MSI of a release."}}</p>{{end}}
   <details class="mt"><summary class="btn secondary sm">{{template "icon" "upload"}}{{.T "Upload a new installer"}}</summary>
     <form method="post" action="/settings/agents/package" enctype="multipart/form-data" class="stack mt">
-      <input type="file" name="file" accept=".msi" required aria-label="{{.T "Installer"}}">
-      <label>{{.T "Version"}} <small>{{.T "optional: read from the file name, such as controlzit-agent-0.2.8-x64.msi"}}</small><input name="version" placeholder="0.2.8" pattern="\d+\.\d+\.\d+" class="narrow"></label>
+      <input type="file" name="file" required aria-label="{{.T "Installer"}}">
+      <label>{{.T "Version"}} <small>{{.T "optional: read from the file name, such as controlzit-agent-0.2.8-x64.msi or controlzit-agent-0.2.8-linux-amd64"}}</small><input name="version" placeholder="0.2.8" pattern="\d+\.\d+\.\d+" class="narrow"></label>
       <div><button class="primary">{{.T "Upload"}}</button></div>
     </form>
   </details>
@@ -40,14 +44,14 @@
     <span>{{.T "%d agents run an older version." .Data.Outdated}}</span>
     <button class="secondary sm">{{.T "Update all online agents now"}}</button>
   </form>
-  {{else if .Data.Package}}<p class="muted">{{.T "All agents run the current version."}}</p>{{end}}
+  {{else if .Data.Packages.List}}<p class="muted">{{.T "All agents run the current version."}}</p>{{end}}
   {{if .Data.Devices}}
   <div class="table-wrap mt"><table>
     <thead><tr><th>{{.T "Device"}}</th><th class="hide-sm">{{.T "Customer"}}</th><th>{{.T "Agent"}}</th><th>{{.T "Status"}}</th></tr></thead>
     <tbody>{{range .Data.Devices}}<tr>
       <td><a href="/devices/{{.ID}}">{{.Hostname}}</a></td>
       <td class="hide-sm">{{.Customer}}</td>
-      <td class="nowrap">{{.AgentVersion}} {{if $.Data.Package.Offers .}}<span class="badge warn"><i></i>{{$.T "outdated"}}</span>{{end}}</td>
+      <td class="nowrap">{{.AgentVersion}} {{if $.Data.Packages.Offers .}}<span class="badge warn"><i></i>{{$.T "outdated"}}</span>{{end}}</td>
       <td>{{if index $.Data.Online .ID}}<span class="badge ok"><i></i>{{$.T "Online"}}</span>{{else}}<span class="badge"><i></i>{{$.T "Offline"}}</span>{{end}}</td>
     </tr>{{end}}</tbody>
   </table></div>

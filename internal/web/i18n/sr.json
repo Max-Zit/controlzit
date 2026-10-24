@@ -882,5 +882,11 @@
   "Copy it to the machine and run as root; it installs itself in /usr/local/bin and starts the controlzit-agent service:": "Kopirajte ga na računar i pokrenite kao root; sam se instalira u /usr/local/bin i pokreće servis controlzit-agent:",
   "Download the Linux agent (x86-64)": "Preuzmi Linux agenta (x86-64)",
   "Linux (systemd)": "Linux (systemd)",
-  "The Linux agent is not on this server yet: copy controlzit-agent-linux-amd64 into the downloads folder of the data directory.": "Linux agent još nije na ovom serveru: kopirajte controlzit-agent-linux-amd64 u fasciklu downloads u direktorijumu podataka."
+  "The Linux agent is not on this server yet: copy controlzit-agent-linux-amd64 into the downloads folder of the data directory.": "Linux agent još nije na ovom serveru: kopirajte controlzit-agent-linux-amd64 u fasciklu downloads u direktorijumu podataka.",
+  "Agent installers": "Instalacije agenta",
+  "Platform": "Platforma",
+  "optional: read from the file name, such as controlzit-agent-0.2.8-x64.msi or controlzit-agent-0.2.8-linux-amd64": "neobavezno: čita se iz naziva fajla, npr. controlzit-agent-0.2.8-x64.msi ili controlzit-agent-0.2.8-linux-amd64",
+  "there is no agent installer with a known version for this device on the server": "na serveru nema instalacije agenta sa poznatom verzijom za ovaj uređaj",
+  "This is neither the Windows installer (.msi) nor a Linux agent.": "Ovo nije ni Windows instalacija (.msi) ni Linux agent.",
+  "the new agent does not start here": "novi agent ne može da se pokrene ovde"
 }

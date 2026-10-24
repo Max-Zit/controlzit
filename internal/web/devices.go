@@ -65,7 +65,7 @@ type deviceData struct {
 	Now       time.Time
 	Software  []proto.Software
 	SwQuery   string
-	Package   *AgentPackage
+	Package   *Packages
 }
 
 func (s *Server) handleDevice(w http.ResponseWriter, r *http.Request) {
@@ -73,7 +73,7 @@ func (s *Server) handleDevice(w http.ResponseWriter, r *http.Request) {
 	if d == nil {
 		return
 	}
-	dd := &deviceData{D: d, Inv: d.Inventory, Online: d.Online(s.now(), onlineWindow) && s.Connected(d.ID), Now: s.now(), Package: s.agentPackage()}
+	dd := &deviceData{D: d, Inv: d.Inventory, Online: d.Online(s.now(), onlineWindow) && s.Connected(d.ID), Now: s.now(), Package: s.packages()}
 	dd.Alerts, _ = s.store.Alerts(r.Context(), userFrom(r), store.AlertFilter{DeviceID: d.ID, Open: true})
 	dd.Metrics, dd.MetricsAt, dd.Stopped, _ = s.store.DeviceMetrics(r.Context(), d.ID)
 	if d.Inventory != nil {

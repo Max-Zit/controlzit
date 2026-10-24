@@ -92,6 +92,17 @@ func TestAgentSelfUpdate(t *testing.T) {
 		t.Fatal("update not audited")
 	}
 
+	// A Linux agent is uploaded next to the MSI.
+	elf := make([]byte, 4096)
+	copy(elf, "\x7fELF")
+	elf[4], elf[5], elf[18] = 2, 1, 0x3e
+	if r := uploadPackage(t, e, admin, "controlzit-agent-9.9.9-linux-amd64", elf); r.code != http.StatusSeeOther {
+		t.Fatalf("linux upload: %d", r.code)
+	}
+	if r := admin.get("/settings/agents"); !strings.Contains(r.body, "Linux x86-64") || !strings.Contains(r.body, "Windows (MSI)") {
+		t.Fatal("both installers should be listed")
+	}
+
 	// The package endpoint needs an agent identity.
 	if r := e.client("10.0.0.9").get("/agent/v1/package"); r.code == http.StatusOK {
 		t.Fatal("package served on the console without an agent certificate")

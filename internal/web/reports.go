@@ -106,7 +106,7 @@ func (s *Server) buildReport(ctx context.Context, u *store.User, customerID int6
 	if err != nil {
 		return nil, err
 	}
-	pkg := s.agentPackage()
+	pkg := s.packages()
 	os := map[string]int{}
 	var ids []int64
 	for _, dp := range all {

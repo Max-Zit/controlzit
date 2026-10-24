@@ -146,6 +146,7 @@ if [ -n "$LDEV" ]; then
   LLOC=$($C -o /dev/null -w "%{redirect_url}" -d shell=bash -d timeout=60 --data-urlencode "script@.gotmp/r-script.txt" $S/devices/$LDEV/scripts)
   check "Linux bash script as root" '$C "$LLOC" | grep -q "linux-ok root"'
   check "Linux updates searched" '$C $S/devices/$LDEV/updates | grep -q "Searched"'
+  check "Linux agent runs $VER (self-update)" '$C $S/devices/$LDEV | grep -q "$VER"'
   check "no remote desktop tab for Linux" '! $C $S/devices/$LDEV | grep -q "/devices/$LDEV/rd"'
 fi
 

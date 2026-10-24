@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"sync/atomic"
 	"time"
 
@@ -82,7 +83,7 @@ func (a *Agent) downloadPackage(ctx context.Context, u proto.AgentUpdate, want [
 	}
 	hc := httpClient(pinnedTLS(a.Cfg.Fingerprint, cert))
 	hc.Timeout = 10 * time.Minute
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, a.Cfg.ServerURL+proto.PathPackage, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, a.Cfg.ServerURL+proto.PathPackage+"?platform="+proto.Platform(runtime.GOOS, runtime.GOARCH), nil)
 	if err != nil {
 		return "", err
 	}

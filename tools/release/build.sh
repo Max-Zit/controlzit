@@ -16,5 +16,9 @@ for os in linux windows; do
   GOOS=$os GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -ldflags "-s -w -X main.version=$V" -o "dist/controlzit-server-$V-$os-amd64$ext" ./cmd/controlzit-server
 done
 printf '{"version":"%s"}\n' "$V" > "dist/controlzit-agent-$V-x64.json"
+for arch in amd64 arm64; do printf '{"version":"%s"}\n' "$V" > "dist/controlzit-agent-$V-linux-$arch.json"; done
+# Licenses of everything linked into the programs (fails on an unknown license).
+go run ./tools/licenses -out THIRD_PARTY_LICENSES.md "dist/controlzit-server-$V-linux-amd64" "dist/controlzit-server-$V-windows-amd64.exe" "dist/controlzit-agent-$V-windows-amd64.exe" "dist/controlzit-agent-$V-linux-amd64" "dist/controlzit-agent-$V-linux-arm64"
+cp THIRD_PARTY_LICENSES.md "dist/THIRD_PARTY_LICENSES-$V.md"
 (cd dist && sha256sum "controlzit-agent-$V-x64.msi" "controlzit-agent-$V-windows-amd64.exe" "controlzit-agent-$V-linux-amd64" "controlzit-agent-$V-linux-arm64" "controlzit-server-$V-linux-amd64" "controlzit-server-$V-windows-amd64.exe" > "SHA256SUMS-$V.txt")
 echo "built $V"
