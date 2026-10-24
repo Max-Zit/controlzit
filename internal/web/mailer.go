@@ -135,7 +135,7 @@ func sendMailParts(ctx context.Context, e EmailSettings, to []string, subject, b
 	}
 	c, err := smtp.NewClient(conn, e.Host)
 	if err != nil {
-		conn.Close()
+		_ = conn.Close()
 		return err
 	}
 	defer c.Close()

@@ -73,7 +73,7 @@ func copySelf() error {
 		return err
 	}
 	if _, err := io.Copy(dst, src); err != nil {
-		dst.Close()
+		_ = dst.Close()
 		return err
 	}
 	if err := dst.Close(); err != nil {

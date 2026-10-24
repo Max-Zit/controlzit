@@ -29,7 +29,7 @@ func icon(dst *image.RGBA, src image.Image, r image.Rectangle) {
 }
 
 func save(path string, img image.Image) {
-	f, err := os.Create(path) // #nosec G304 -- build tool, path from its own command line
+	f, err := os.Create(path) // #nosec G304 G703 -- build tool, path from its own command line
 	if err != nil {
 		panic(err)
 	}
@@ -40,12 +40,12 @@ func save(path string, img image.Image) {
 }
 
 func main() {
-	f, err := os.Open(os.Args[1]) // #nosec G304 -- build tool input
+	f, err := os.Open(os.Args[1]) // #nosec G304 G703 -- build tool input
 	if err != nil {
 		panic(err)
 	}
 	src, err := png.Decode(f)
-	f.Close()
+	_ = f.Close()
 	if err != nil {
 		panic(err)
 	}

@@ -57,7 +57,7 @@ func (s *Server) DispatchJobs(ctx context.Context) {
 		return
 	}
 	for _, jr := range runs {
-		go s.runJob(jr)
+		go s.runJob(jr) // #nosec G118 -- a job run outlives the request that started it; own timeout
 	}
 }
 
@@ -321,7 +321,7 @@ func (s *Server) handleJobCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "job.create", "job:"+strconv.FormatInt(j.ID, 10), "run library script %q on %d devices", x.Name, len(ids))
-	go s.DispatchJobs(context.Background())
+	go s.DispatchJobs(context.Background()) // #nosec G118 -- the job runs after the page has answered
 	s.redirect(w, r, "/jobs/"+strconv.FormatInt(j.ID, 10), "")
 }
 

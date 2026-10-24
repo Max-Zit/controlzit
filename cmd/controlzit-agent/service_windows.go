@@ -84,7 +84,7 @@ func installService(string) error {
 	}
 	defer m.Disconnect()
 	if s, err := m.OpenService(serviceName); err == nil {
-		s.Close()
+		_ = s.Close()
 		return fmt.Errorf("service %s already exists", serviceName)
 	}
 	s, err := m.CreateService(serviceName, exe, mgr.Config{DisplayName: "ControlZit Agent", Description: serviceDesc,

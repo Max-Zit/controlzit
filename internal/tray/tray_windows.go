@@ -202,7 +202,7 @@ func showMenu() {
 	var p point
 	_, _, _ = pGetCursorPos.Call(uintptr(unsafe.Pointer(&p))) // #nosec G103 -- Win32 out-parameter
 	_, _, _ = pSetForeground.Call(st.hwnd)
-	cmd, _, _ := pTrackPopupMenu.Call(m, tpmReturn|tpmRight, uintptr(p.X), uintptr(p.Y), 0, st.hwnd, 0)
+	cmd, _, _ := pTrackPopupMenu.Call(m, tpmReturn|tpmRight, uintptr(p.X), uintptr(p.Y), 0, st.hwnd, 0) // #nosec G115 -- screen coordinates as Win32 arguments
 	if cmd == cmdHide {
 		removeIcon()
 		_, _, _ = pPostQuitMessage.Call(0)
@@ -279,7 +279,7 @@ func Run(statusPath string) error {
 	var m msg
 	for {
 		r, _, _ := pGetMessage.Call(uintptr(unsafe.Pointer(&m)), 0, 0, 0) // #nosec G103 -- Win32 struct
-		if r == 0 || int32(r) == -1 {
+		if r == 0 || int32(r) == -1 {                                     // #nosec G115 -- GetMessage returns -1 on error
 			return nil
 		}
 		_, _, _ = pTranslateMessage.Call(uintptr(unsafe.Pointer(&m))) // #nosec G103 -- Win32 struct

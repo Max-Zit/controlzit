@@ -182,9 +182,9 @@ func (c *Capturer) drawCursor() {
 		return
 	}
 	var ii iconInfo
-	hx, hy := int32(0), int32(0)
+	hx, hy := 0, 0
 	if r, _, _ := pGetIconInfo.Call(uintptr(ci.Cursor), uintptr(unsafe.Pointer(&ii))); r != 0 { // #nosec G103 -- Win32 struct
-		hx, hy = int32(ii.XHotspot), int32(ii.YHotspot) // #nosec G115 -- small hotspot offsets
+		hx, hy = int(ii.XHotspot), int(ii.YHotspot)
 		if ii.HbmMask != 0 {
 			_, _, _ = pDeleteObject.Call(uintptr(ii.HbmMask))
 		}
@@ -192,8 +192,8 @@ func (c *Capturer) drawCursor() {
 			_, _, _ = pDeleteObject.Call(uintptr(ii.HbmColor))
 		}
 	}
-	px := int(ci.ScreenP.X-hx) - c.x
-	py := int(ci.ScreenP.Y-hy) - c.y
+	px := int(ci.ScreenP.X) - hx - c.x
+	py := int(ci.ScreenP.Y) - hy - c.y
 	_, _, _ = pDrawIconEx.Call(c.mem, uintptr(px), uintptr(py), uintptr(ci.Cursor), 0, 0, 0, 0, diPNormal)
 }
 

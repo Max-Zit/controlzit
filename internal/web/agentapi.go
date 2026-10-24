@@ -302,8 +302,8 @@ func (s *Server) agentMessage(ctx context.Context, c *agentConn, d *store.Device
 		if err := send(ctx, c.ws, proto.TypeWelcome, proto.Welcome{DeviceID: d.ID, HeartbeatSeconds: heartbeatSeconds, InventoryHours: inventoryHours, CommandKey: s.commandPub()}); err != nil {
 			return err
 		}
-		go s.autoUpdate(d, h.AgentVersion)
-		go s.DispatchJobs(context.Background())
+		go s.autoUpdate(d, h.AgentVersion)      // #nosec G118 -- outlives the agent's message; own timeouts inside
+		go s.DispatchJobs(context.Background()) // #nosec G118 -- background work, not tied to this message
 		return nil
 	case proto.TypeHeartbeat:
 		var hb proto.Heartbeat

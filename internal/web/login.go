@@ -126,7 +126,12 @@ func (s *Server) requireAdmin(next http.HandlerFunc) http.HandlerFunc {
 
 // safeNext keeps only local paths (no open redirects).
 func safeNext(p string) string {
-	if !strings.HasPrefix(p, "/") || strings.HasPrefix(p, "//") || strings.HasPrefix(p, "/\\") || strings.ContainsAny(p, "\r\n") {
+	// Browsers drop tabs and newlines from URLs, so "/<TAB>/evil.example"
+	// would become "//evil.example": refuse every control character.
+	if strings.IndexFunc(p, func(r rune) bool { return r < 0x20 || r == 0x7f }) >= 0 {
+		return "/"
+	}
+	if !strings.HasPrefix(p, "/") || strings.HasPrefix(p, "//") || strings.HasPrefix(p, "/\\") {
 		return "/"
 	}
 	return p

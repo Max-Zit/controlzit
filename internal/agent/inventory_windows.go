@@ -34,7 +34,7 @@ func encodeCommand(script string) string {
 	u := utf16.Encode([]rune(script))
 	b := make([]byte, 2*len(u))
 	for i, c := range u {
-		b[2*i], b[2*i+1] = byte(c), byte(c>>8)
+		b[2*i], b[2*i+1] = byte(c), byte(c>>8) // #nosec G115 -- UTF-16 code unit split into bytes
 	}
 	return base64.StdEncoding.EncodeToString(b)
 }

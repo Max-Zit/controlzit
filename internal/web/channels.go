@@ -189,7 +189,7 @@ func (s *Server) notifyChannels(ctx context.Context, opened, resolved []store.Al
 		if len(events) > 50 {
 			events = events[:50]
 		}
-		go func(c Channel, events []alertEvent) {
+		go func(c Channel, events []alertEvent) { // #nosec G118 -- posting must not end with the monitor pass; own 30 s timeout
 			cctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 			defer cancel()
 			if err := s.postChannel(cctx, c, events); err != nil {

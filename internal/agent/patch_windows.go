@@ -134,7 +134,7 @@ func patchInstall(ctx context.Context, ids []string) (*PatchInstallResult, error
 // scheduleRestart restarts Windows after d with a notice to signed-in users.
 func scheduleRestart(d time.Duration, msg string) error {
 	exe := filepath.Join(os.Getenv("SystemRoot"), "System32", "shutdown.exe")
-	out, err := exec.Command(exe, "/r", "/t", strconv.Itoa(int(d.Seconds())), "/d", "p:2:17", "/c", msg).CombinedOutput() // #nosec G204 -- fixed system binary and text
+	out, err := exec.Command(exe, "/r", "/t", strconv.Itoa(int(d.Seconds())), "/d", "p:2:17", "/c", msg).CombinedOutput() // #nosec G702 G204 -- fixed system binary and text
 	if err != nil {
 		return fmt.Errorf("%v: %s", err, strings.TrimSpace(string(out)))
 	}

@@ -63,7 +63,7 @@ func listServices() ([]proto.Service, error) {
 		s := &mgr.Service{Name: n, Handle: sh}
 		cfg, err1 := s.Config()
 		st, err2 := s.Query()
-		s.Close()
+		_ = s.Close()
 		if err1 != nil || err2 != nil {
 			continue
 		}
@@ -266,7 +266,7 @@ func power(ctx context.Context, raw json.RawMessage) (any, error) {
 	if a.Message != "" && a.Action != "cancel" {
 		argv = append(argv, "/c", strings.NewReplacer("\r", " ", "\n", " ", "\"", "'").Replace(a.Message))
 	}
-	out, err := exec.CommandContext(ctx, exe, argv...).CombinedOutput() // #nosec G204 -- fixed system binary, validated arguments
+	out, err := exec.CommandContext(ctx, exe, argv...).CombinedOutput() // #nosec G702 G204 -- fixed system binary, validated arguments
 	if err != nil {
 		return nil, fmt.Errorf("%v: %s", err, strings.TrimSpace(string(out)))
 	}
@@ -342,7 +342,7 @@ func runScript(ctx context.Context, raw json.RawMessage) (any, error) {
 			"try { & '" + strings.ReplaceAll(name, "'", "''") + "' *>&1 | Out-String -Stream -Width 250 | ForEach-Object { $w.WriteLine($_) } } finally { $w.Flush() }; exit $LASTEXITCODE"
 		cmd = exec.CommandContext(cctx, powershell(), "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", run) // #nosec G204 -- our own temp file
 	} else {
-		cmd = exec.CommandContext(cctx, filepath.Join(os.Getenv("SystemRoot"), "System32", "cmd.exe"), "/d", "/c", name) // #nosec G204 -- our own temp file
+		cmd = exec.CommandContext(cctx, filepath.Join(os.Getenv("SystemRoot"), "System32", "cmd.exe"), "/d", "/c", name) // #nosec G702 G204 -- our own temp file
 	}
 	cmd.SysProcAttr = hiddenProc
 	out := &capWriter{max: proto.MaxScriptOutput}

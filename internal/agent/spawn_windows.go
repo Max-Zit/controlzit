@@ -65,7 +65,7 @@ func startHelper(dir string, a proto.RDStart) error {
 	}
 	defer r.Close()
 	if err := windows.SetHandleInformation(windows.Handle(r.Fd()), windows.HANDLE_FLAG_INHERIT, windows.HANDLE_FLAG_INHERIT); err != nil {
-		w.Close()
+		_ = w.Close()
 		return err
 	}
 	desk, _ := windows.UTF16PtrFromString(`winsta0\default`)
@@ -77,13 +77,13 @@ func startHelper(dir string, a proto.RDStart) error {
 	exe16, _ := windows.UTF16PtrFromString(exe)
 	err = windows.CreateProcessAsUser(tok, exe16, cl, nil, nil, true, windows.CREATE_NO_WINDOW|windows.CREATE_UNICODE_ENVIRONMENT, nil, nil, &si, &pi)
 	if err != nil {
-		w.Close()
+		_ = w.Close()
 		return err
 	}
 	_ = windows.CloseHandle(pi.Thread)
 	_ = windows.CloseHandle(pi.Process)
 	_, err = w.Write([]byte(a.Token + "\n"))
-	w.Close()
+	_ = w.Close()
 	return err
 }
 

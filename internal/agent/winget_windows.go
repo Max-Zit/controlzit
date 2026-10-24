@@ -27,7 +27,7 @@ func wingetExe() (string, error) {
 	sort.Sort(sort.Reverse(sort.StringSlice(dirs)))
 	for _, d := range dirs {
 		exe := filepath.Join(d, "winget.exe")
-		if _, err := os.Stat(exe); err == nil {
+		if _, err := os.Stat(exe); err == nil { // #nosec G703 -- path under ProgramFiles
 			return exe, nil
 		}
 	}

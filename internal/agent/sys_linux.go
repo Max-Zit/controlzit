@@ -215,7 +215,7 @@ func defaultGateways() map[string][]string {
 		if err != nil || v == 0 {
 			continue
 		}
-		ip := net.IPv4(byte(v), byte(v>>8), byte(v>>16), byte(v>>24))
+		ip := net.IPv4(byte(v), byte(v>>8), byte(v>>16), byte(v>>24)) // #nosec G115 -- bytes of an IPv4 address
 		out[fl[0]] = append(out[fl[0]], ip.String())
 	}
 	return out

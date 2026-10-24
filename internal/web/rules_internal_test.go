@@ -226,3 +226,22 @@ func TestPackagePlatform(t *testing.T) {
 		}
 	}
 }
+
+func TestSafeNext(t *testing.T) {
+	for in, want := range map[string]string{
+		"/devices/4":            "/devices/4",
+		"/audit?q=x":            "/audit?q=x",
+		"//evil.example":        "/",
+		"/\\evil.example":       "/",
+		"/\t/evil.example":      "/",
+		"/\n/evil.example":      "/",
+		"/\x00/evil.example":    "/",
+		"https://evil.example/": "/",
+		"evil.example":          "/",
+		"":                      "/",
+	} {
+		if got := safeNext(in); got != want {
+			t.Errorf("safeNext(%q) = %q, want %q", in, got, want)
+		}
+	}
+}

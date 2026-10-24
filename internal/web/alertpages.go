@@ -127,7 +127,7 @@ func (s *Server) handleMonitoringSave(w http.ResponseWriter, r *http.Request) {
 	s.audit(r, "settings.monitoring", "settings", "cpu %d%%/%dmin, memory %d%%/%dmin, disk %d%% or <%d GB, offline %dmin, restart %dd, defender %v, firewall %v, services %v, email %v/%v to %v",
 		m.CPUPercent, m.CPUMinutes, m.MemPercent, m.MemMinutes, m.DiskPercent, m.DiskMinFreeGB, m.OfflineMinutes, m.RebootDays, m.DefenderOff, m.FirewallOff,
 		m.WatchServices, m.EmailOnOpen, m.EmailOnResolve, m.Recipients)
-	go s.CheckAlerts(context.Background())
+	go s.CheckAlerts(context.Background()) // #nosec G118 -- runs after the response; own work
 	s.redirect(w, r, "/settings/monitoring", "Saved.")
 }
 

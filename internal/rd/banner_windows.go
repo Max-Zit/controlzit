@@ -171,7 +171,7 @@ func ShowBanner(text string) *Banner {
 		var m msg
 		for {
 			r, _, _ := pGetMessage.Call(uintptr(unsafe.Pointer(&m)), 0, 0, 0) // #nosec G103 -- Win32 struct
-			if r == 0 || int32(r) == -1 {
+			if r == 0 || int32(r) == -1 {                                     // #nosec G115 -- GetMessage returns -1 on error
 				return
 			}
 			_, _, _ = pTranslateMessage.Call(uintptr(unsafe.Pointer(&m))) // #nosec G103 -- Win32 struct

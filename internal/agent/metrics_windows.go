@@ -117,7 +117,7 @@ func stoppedAutoServices() []string {
 		}
 		cfg, err1 := s.Config()
 		st, err2 := s.Query()
-		s.Close()
+		_ = s.Close()
 		if err1 != nil || err2 != nil {
 			continue
 		}

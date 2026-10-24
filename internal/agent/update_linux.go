@@ -48,16 +48,16 @@ func startInstaller(bin, _ string) error {
 		return err
 	}
 	if _, err := io.Copy(dst, src); err != nil {
-		dst.Close()
-		os.Remove(tmp)
+		_ = dst.Close()
+		_ = os.Remove(tmp)
 		return err
 	}
 	if err := dst.Close(); err != nil {
-		os.Remove(tmp)
+		_ = os.Remove(tmp)
 		return err
 	}
 	if err := os.Rename(tmp, exe); err != nil {
-		os.Remove(tmp)
+		_ = os.Remove(tmp)
 		return errors.New("cannot replace the agent: " + err.Error())
 	}
 	// Let the result reach the server, then restart through systemd.

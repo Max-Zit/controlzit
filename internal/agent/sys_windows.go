@@ -78,7 +78,7 @@ func consoleUser() string {
 
 func bootTime() time.Time {
 	ms, _, _ := procGetTickCount64.Call()
-	return time.Now().Add(-time.Duration(ms) * time.Millisecond).Truncate(time.Second).UTC()
+	return time.Now().Add(-time.Duration(ms) * time.Millisecond).Truncate(time.Second).UTC() // #nosec G115 -- uptime in ms fits int64
 }
 
 // basicInfo reads the OS version from the registry (fast; no WMI).
@@ -212,7 +212,7 @@ func publicStatusDir() string {
 		return ""
 	}
 	dir := filepath.Join(pd, "ControlZit")
-	if err := os.MkdirAll(dir, 0o755); err != nil { // #nosec G301 -- users read the public status
+	if err := os.MkdirAll(dir, 0o755); err != nil { // #nosec G703 G301 -- users read the public status
 		return ""
 	}
 	if sd, err := windows.SecurityDescriptorFromString("D:PAI(A;OICI;FA;;;SY)(A;OICI;FA;;;BA)(A;OICI;FR;;;BU)"); err == nil {
