@@ -86,6 +86,10 @@ func EnrollWith(ctx context.Context, dir string, d EnrollData) (*Config, error) 
 // a pending enrollment. The log stays.
 func Forget(dir string) error {
 	var errs []error
+	// Windows Update gets its own settings back.
+	if err := RestoreWUPolicy(dir); err != nil {
+		errs = append(errs, err)
+	}
 	for _, f := range []string{configFile, keyFile, pendingFile} {
 		if err := os.Remove(filepath.Join(dir, f)); err != nil && !errors.Is(err, os.ErrNotExist) {
 			errs = append(errs, err)

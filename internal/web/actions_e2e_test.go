@@ -89,7 +89,7 @@ func TestRemoteActions(t *testing.T) {
 	if run := admin.get(r.loc); !strings.Contains(run.body, "cmd says hi") || !strings.Contains(run.body, "exit code 0") {
 		t.Fatal("cmd script")
 	}
-	if r := admin.get(base + "/scripts"); !strings.Contains(r.body, "Recent runs") || strings.Count(r.body, base+"/scripts/") < 4 {
+	if r := admin.get(base + "/scripts"); !strings.Contains(r.body, "Recent runs") || strings.Count(r.body, base+"/scripts/") < 2 {
 		t.Fatal("script history")
 	}
 	if r := admin.post(base+"/scripts", "shell", "zsh", "timeout", "30", "script", "ls"); r.code != http.StatusSeeOther || r.loc != base+"/scripts" {

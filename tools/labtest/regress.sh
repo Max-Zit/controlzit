@@ -86,9 +86,9 @@ script() { # shell, script → body of the result page
 check "services page lists Spooler" '$C "$S/devices/$DEV/services?q=spooler" | grep -q "<code class=\"small muted\">Spooler</code>"'
 check "processes page lists explorer.exe" '$C "$S/devices/$DEV/processes?q=explorer" | grep -qi "explorer.exe"'
 $C -o /dev/null -d name=W32Time -d action=stop $S/devices/$DEV/services
-check "service stopped from the console" 'script powershell "(Get-Service W32Time).Status" | grep -q "output\">Stopped"'
+check "service stopped from the console" 'script powershell "(Get-Service W32Time).Status" | grep -q "id=\"run-output\">Stopped"'
 $C -o /dev/null -d name=W32Time -d action=start $S/devices/$DEV/services
-check "service started from the console" 'script powershell "(Get-Service W32Time).Status" | grep -q "output\">Running"'
+check "service started from the console" 'script powershell "(Get-Service W32Time).Status" | grep -q "id=\"run-output\">Running"'
 $C -o /dev/null -d name=ControlZitAgent -d action=stop $S/devices/$DEV/services
 check "agent refuses to stop its own service" 'script cmd "sc query ControlZitAgent" | grep -q "RUNNING"'
 check "PowerShell script output, UTF-8 and exit code" 'script powershell "Write-Output \"lab čćž \$env:USERNAME\"; exit 5" | grep -q "lab čćž SYSTEM\|lab čćž DESKTOP" && $C "$S/audit?q=script.run" | grep -q "exit code 5"'
@@ -147,7 +147,11 @@ if [ -n "$LDEV" ]; then
   check "Linux bash script as root" '$C "$LLOC" | grep -q "linux-ok root"'
   check "Linux updates searched" '$C $S/devices/$LDEV/updates | grep -q "Searched"'
   check "Linux agent runs $VER (self-update)" '$C $S/devices/$LDEV | grep -q "$VER"'
-  check "no remote desktop tab for Linux" '! $C $S/devices/$LDEV | grep -q "/devices/$LDEV/rd"'
+  check "Linux device offers the terminal" '$C $S/devices/$LDEV | grep -q "/devices/$LDEV/terminal"'
+  GOTMPDIR=C:/Users/Mili/Ai/rmm/.gotmp go run ./tools/rdclient -console $S -device $LDEV -cookie "$CK" -term 'echo term-$((40+2)) $(id -un)' -wait 5s > .gotmp/r-term.log 2>&1
+  check "Linux terminal runs a root shell" 'grep -q "term-42 root" .gotmp/r-term.log'
+  GOTMPDIR=C:/Users/Mili/Ai/rmm/.gotmp go run ./tools/rdclient -console $S -device $LDEV -cookie "$CK" -out .gotmp/r-lrd.png -wait 6s > .gotmp/r-lrd.log 2>&1
+  check "Linux remote desktop streams the X11 screen" 'grep -q "^screen 1600x900" .gotmp/r-lrd.log'
 fi
 
 $C -o /dev/null -d lang=sr $S/lang

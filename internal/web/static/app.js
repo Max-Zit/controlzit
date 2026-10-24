@@ -119,3 +119,24 @@ document.addEventListener("click", function (ev) {
   "use strict";
   if (ev.target.closest && ev.target.closest("[data-print]")) window.print();
 });
+
+// Remote desktop in its own window (only the remote screen, like a desktop
+// app); if the browser blocks the window, the link opens in this page.
+document.addEventListener("click", function (ev) {
+  "use strict";
+  var a = ev.target.closest && ev.target.closest("a[data-rdwin]");
+  if (a) {
+    var w = Math.min(screen.availWidth, 1600), h = Math.min(screen.availHeight, 960);
+    var url = a.getAttribute("href").split("?")[0] + "?w=1";
+    var name = (a.getAttribute("data-winname") || "czrd") + a.getAttribute("data-rdwin");
+    var win = window.open(url, name, "popup=yes,width=" + w + ",height=" + h);
+    if (win) {
+      ev.preventDefault();
+      win.focus();
+      // A viewer in this page would be a second session: go back to the device.
+      if (document.getElementById("rd") || document.getElementById("term")) window.location.href = url.replace(/\/(rd|terminal)\?w=1$/, "");
+    }
+    return;
+  }
+  if (ev.target.closest && ev.target.closest("[data-closewin]")) window.close();
+});

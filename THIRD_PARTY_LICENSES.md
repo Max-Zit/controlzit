@@ -14,6 +14,7 @@ Its programs contain the following components under their own licenses, all comp
 | github.com/jackc/puddle/v2 | v2.2.2 | MIT |
 | github.com/jchv/go-webview2 | v0.0.0-20260205173254-56598839c808 | MIT |
 | github.com/jchv/go-winloader | v0.0.0-20250406163304-c1995be93bd1 | ISC |
+| github.com/jezek/xgb | v1.3.1 | BSD-3-Clause |
 | github.com/lib/pq | v1.10.9 | MIT |
 | github.com/xi2/xz | v0.0.0-20171230120015-48954b6210f8 | Public domain |
 | golang.org/x/crypto | v0.58.0 | BSD-3-Clause |
@@ -248,6 +249,53 @@ Copyright © 2021, John Chadwick <john@jchw.io>
 Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.
 
 THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+```
+
+## github.com/jezek/xgb v1.3.1 (BSD-3-Clause)
+
+```
+// Copyright (c) 2009 The XGB Authors. All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//    * Redistributions of source code must retain the above copyright
+// notice, this list of conditions and the following disclaimer.
+//    * Redistributions in binary form must reproduce the above
+// copyright notice, this list of conditions and the following disclaimer
+// in the documentation and/or other materials provided with the
+// distribution.
+//    * Neither the name of Google Inc. nor the names of its
+// contributors may be used to endorse or promote products derived from
+// this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+// Subject to the terms and conditions of this License, Google hereby
+// grants to You a perpetual, worldwide, non-exclusive, no-charge,
+// royalty-free, irrevocable (except as stated in this section) patent
+// license to make, have made, use, offer to sell, sell, import, and
+// otherwise transfer this implementation of XGB, where such license
+// applies only to those patent claims licensable by Google that are
+// necessarily infringed by use of this implementation of XGB. If You
+// institute patent litigation against any entity (including a
+// cross-claim or counterclaim in a lawsuit) alleging that this
+// implementation of XGB or a Contribution incorporated within this
+// implementation of XGB constitutes direct or contributory patent
+// infringement, then any patent licenses granted to You under this
+// License for this implementation of XGB shall terminate as of the date
+// such litigation is filed.
 ```
 
 ## github.com/lib/pq v1.10.9 (MIT)

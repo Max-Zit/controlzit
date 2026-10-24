@@ -7,6 +7,7 @@
 <section class="panel">
   <h2>{{template "icon" "refresh"}}{{.T "Windows updates"}}</h2>
   <p class="muted">{{.T "Agents search for missing Windows updates twice a day. Here you choose what the server installs automatically and when. Feature upgrades of Windows are never installed automatically."}}</p>
+  <p class="muted small">{{.T "The agent switches off the automatic installation of Windows Update on the computer (by policy, like Group Policy), so updates arrive only from ControlZit. When the agent is removed, the earlier Windows Update settings come back."}}{{if eq .Data.P.Mode "off"}} <b>{{.T "Automatic installation is off: devices get updates only when you install them from the console."}}</b>{{end}}</p>
   <form method="post" action="/settings/updates" class="stack">
     <fieldset class="box">
       <legend>{{.T "Install automatically"}}</legend>

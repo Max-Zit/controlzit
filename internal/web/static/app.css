@@ -293,11 +293,11 @@ table.files td.fname { min-width: 180px; }
 .rd-tools { margin-left: auto; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .rd-q { display: inline-flex; flex-direction: row; align-items: center; gap: 6px; font-weight: 500; }
 .rd-q select { width: auto; padding: 4px 26px 4px 8px; font-size: 13px; }
-.rd-screen { background: #000; display: grid; place-items: center; }
-.rd-screen canvas { display: block; max-width: 100%; height: auto; outline: none; cursor: default; }
-.rd:fullscreen { border-radius: 0; display: flex; flex-direction: column; height: 100vh; }
-.rd:fullscreen .rd-screen { flex: 1; min-height: 0; }
-.rd:fullscreen .rd-screen canvas { max-height: 100%; width: auto; max-width: 100%; }
+.rd-screen { background: #000; display: grid; place-items: center; overflow: hidden; }
+.rd-screen canvas { display: block; outline: none; cursor: default; } /* size set by rd.js to fit */
+.rd:fullscreen, body.rdwin .rd { border-radius: 0; border: 0; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+.rd:fullscreen .rd-screen, body.rdwin .rd-screen { flex: 1; min-height: 0; }
+body.rdwin { margin: 0; overflow: hidden; background: #000; }
 .rd.closed .rd-screen canvas { opacity: .4; }
 .side nav a .navcount { margin-left: auto; min-width: 20px; padding: 1px 7px; border-radius: 10px; background: #f87171; color: #1f0606; font-size: 12px; font-weight: 700; text-align: center; }
 table.alerts td b { font-weight: 600; }
@@ -378,3 +378,36 @@ body.report { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; backgr
 .report-head .brand span { color: var(--text); }
 table.events details summary { cursor: pointer; overflow-wrap: anywhere; }
 table.events details pre { margin-top: 6px; max-height: 320px; }
+
+/* ---- script run */
+.run-head { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; justify-content: space-between; border-left: 4px solid var(--line-2); }
+.run-head.is-ok { border-left-color: var(--ok); }
+.run-head.is-warn { border-left-color: var(--warn); }
+.run-head.is-bad { border-left-color: var(--bad); }
+.run-state { display: flex; gap: 12px; align-items: center; }
+.run-state > .ic { width: 30px; height: 30px; }
+.is-ok .run-state > .ic { color: var(--ok); }
+.is-warn .run-state > .ic { color: var(--warn); }
+.is-bad .run-state > .ic { color: var(--bad); }
+.run-state b { display: block; font-size: 18px; }
+.run-state span { color: var(--muted); }
+.run-facts { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 0; }
+.run-facts div { display: grid; }
+.run-facts dt { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.run-facts dd { margin: 0; font-weight: 600; }
+pre.console { background: #0b1020; color: #d1d5db; border-color: #1f2a4a; max-height: 640px; overflow: auto; white-space: pre-wrap; }
+pre.script { max-height: 360px; overflow: auto; }
+table.runs code.clip { max-width: 52ch; }
+
+/* Terminal */
+.term-screen { position: relative; flex: 1; min-height: 360px; height: 70vh; overflow-y: auto; overflow-x: hidden; background: #111; color: #d0d0d0; padding: 6px 8px; border-radius: 0 0 8px 8px; font: 14px/1.25 ui-monospace, "Cascadia Mono", Consolas, "DejaVu Sans Mono", monospace; cursor: text; }
+.rd.term:fullscreen .term-screen, body.rdwin .term-screen { height: auto; border-radius: 0; }
+.term-screen .trow, .term-screen .trow-probe { white-space: pre; height: 1.25em; }
+.term-screen .trow-probe { position: absolute; visibility: hidden; }
+.term.alt .term-sb { display: none; }
+.term-sep { border-top: 1px dashed #555; height: 0; margin: 4px 0; }
+.term-input { position: absolute; left: 0; bottom: 0; width: 1px; height: 1px; opacity: 0; border: 0; padding: 0; resize: none; }
+.rd.term { position: relative; }
+.tb { font-weight: 700; } .td { opacity: .6; } .ti { font-style: italic; } .tu { text-decoration: underline; } .ts { text-decoration: line-through; } .th { visibility: hidden; }
+.tinvfg { color: #111; } .tinvbg { background: #d0d0d0; }
+.tcur { background: #d0d0d0; color: #111; } .tcur-off { outline: 1px solid #d0d0d0; outline-offset: -1px; }

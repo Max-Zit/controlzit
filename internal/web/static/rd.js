@@ -40,7 +40,7 @@
     if (kind === 1) { // screen info
       var info = JSON.parse(new TextDecoder().decode(new Uint8Array(ev.data, 1)));
       open = true;
-      if (canvas.width !== info.w || canvas.height !== info.h) { canvas.width = info.w; canvas.height = info.h; }
+      if (canvas.width !== info.w || canvas.height !== info.h) { canvas.width = info.w; canvas.height = info.h; fit(); }
       setStatus(t("connected") + " · " + info.w + "×" + info.h + (info.desktop && info.desktop !== "Default" ? " · " + t("signin") : ""), "ok");
       showMonitors(info.monitors || [], info.monitor);
     } else if (kind === 4) { // the remote clipboard changed
@@ -165,4 +165,22 @@
     if (document.fullscreenElement) document.exitFullscreen(); else if (el.requestFullscreen) el.requestFullscreen();
     canvas.focus();
   });
+
+  // ---- fit the remote screen into the space there is (page, own window or
+  // full screen), keeping its aspect ratio; mouse positions scale with it.
+  var screenBox = document.getElementById("rd-screen");
+  var own = document.body.classList.contains("rdwin");
+  function fit() {
+    var full = document.fullscreenElement === root;
+    var w = screenBox.clientWidth;
+    var h = full || own ? screenBox.clientHeight : window.innerHeight - screenBox.getBoundingClientRect().top - 24;
+    if (w < 50 || h < 50 || !canvas.width) return;
+    var s = Math.min(w / canvas.width, h / canvas.height);
+    if (!full && !own) s = Math.min(s, 1); // on the page never larger than real size
+    canvas.style.width = Math.floor(canvas.width * s) + "px";
+    canvas.style.height = Math.floor(canvas.height * s) + "px";
+  }
+  window.addEventListener("resize", fit);
+  document.addEventListener("fullscreenchange", function () { setTimeout(fit, 50); });
+  fit();
 })();

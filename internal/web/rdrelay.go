@@ -69,6 +69,7 @@ type rdData struct {
 	Online    bool
 	Notice    bool
 	Clipboard bool
+	Window    bool // in its own browser window
 }
 
 // handleRD is the viewer page.
@@ -77,7 +78,12 @@ func (s *Server) handleRD(w http.ResponseWriter, r *http.Request) {
 	if d == nil {
 		return
 	}
-	s.render(w, r, http.StatusOK, "rd", &Page{Title: d.Hostname, Nav: "devices", Data: &rdData{D: d, Online: s.Connected(d.ID), Notice: s.Remote(r.Context()).ShowNotice, Clipboard: s.Remote(r.Context()).Clipboard}})
+	data := &rdData{D: d, Online: s.Connected(d.ID), Notice: s.Remote(r.Context()).ShowNotice, Clipboard: s.Remote(r.Context()).Clipboard, Window: r.FormValue("w") == "1"}
+	page := "rd"
+	if data.Window {
+		page = "rdwin"
+	}
+	s.render(w, r, http.StatusOK, page, &Page{Title: d.Hostname, Nav: "devices", Data: data})
 }
 
 // handleRDSocket is the browser side of a session.

@@ -203,7 +203,13 @@ func (s *Server) handleScripts(w http.ResponseWriter, r *http.Request) {
 			s.serverError(w, r, err)
 			return
 		}
-		sd.Run, sd.Shell, sd.Script = run, run.Shell, run.Script
+		sd.Run = run
+	}
+	// "Edit and run again" fills the editor with an earlier run.
+	if from, err := strconv.ParseInt(r.FormValue("from"), 10, 64); err == nil && from > 0 {
+		if run, err := s.store.ScriptRun(r.Context(), d.ID, from); err == nil {
+			sd.Shell, sd.Script = run.Shell, run.Script
+		}
 	}
 	if lid, err := strconv.ParseInt(r.FormValue("lib"), 10, 64); err == nil && lid > 0 {
 		if x, err := s.store.LibScript(r.Context(), lid); err == nil {

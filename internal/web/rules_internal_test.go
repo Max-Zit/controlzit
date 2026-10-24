@@ -245,3 +245,34 @@ func TestSafeNext(t *testing.T) {
 		}
 	}
 }
+
+func TestDevicePaths(t *testing.T) {
+	for _, c := range []struct{ in, parent, base string }{
+		{`C:\Users\ana`, `C:\Users`, "ana"},
+		{`C:\Users`, `C:\`, "Users"},
+		{`C:\`, "", "C:"},
+		{"/etc/ssh", "/etc", "ssh"},
+		{"/etc", "/", "etc"},
+		{"/", "", ""},
+	} {
+		if p := winParent(c.in); p != c.parent {
+			t.Errorf("parent(%q) = %q, want %q", c.in, p, c.parent)
+		}
+		if b := winBase(c.in); b != c.base {
+			t.Errorf("base(%q) = %q, want %q", c.in, b, c.base)
+		}
+	}
+	if j := winJoin("/", "etc"); j != "/etc" {
+		t.Errorf("join / etc = %q", j)
+	}
+	if j := winJoin("/etc", "ssh"); j != "/etc/ssh" {
+		t.Errorf("join /etc ssh = %q", j)
+	}
+	if j := winJoin(`C:\`, "Users"); j != `C:\Users` {
+		t.Errorf("join C: = %q", j)
+	}
+	cr := crumbs("/etc/ssh")
+	if len(cr) != 3 || cr[0].Path != "/" || cr[1].Path != "/etc" || cr[2].Path != "/etc/ssh" {
+		t.Errorf("crumbs: %+v", cr)
+	}
+}

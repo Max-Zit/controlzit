@@ -3,7 +3,6 @@
 package agent
 
 import (
-	"errors"
 	"os"
 	"strings"
 
@@ -23,10 +22,6 @@ func systemFolders() []string {
 }
 
 func drives() ([]proto.FSDrive, error) { return []proto.FSDrive{{Path: "/", Type: "fixed"}}, nil }
-
-func startHelper(string, proto.RDStart) error {
-	return errors.New("remote desktop is not available on this system")
-}
 
 func isLink(fi os.FileInfo) bool { return fi.Mode()&os.ModeSymlink != 0 }
 

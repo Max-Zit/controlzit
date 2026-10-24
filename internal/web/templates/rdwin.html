@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="{{.Lang}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>{{.Data.D.Hostname}} · {{.T "Remote desktop"}} · ControlZit</title>
+<link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/static/app.css?v={{.Asset}}">
+<script src="/static/app.js?v={{.Asset}}" defer></script>
+</head>
+<body class="rdwin">
+{{template "rdviewer" .}}
+<script src="/static/rd.js?v={{.Asset}}" defer></script>
+</body>
+</html>

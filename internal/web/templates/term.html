@@ -1,0 +1,8 @@
+{{template "app" .}}
+{{define "content"}}
+{{$d := .Data.D}}
+<p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a> / <a href="/devices/{{$d.ID}}">{{$d.Hostname}}</a></p>
+{{template "termviewer" .}}
+<p class="small muted">{{.T "A root shell on the device. Click the terminal to type; copy by selecting text, paste with Ctrl+Shift+V or Send text. The start and the end of the session are written to the audit log."}}</p>
+<script src="/static/term.js?v={{.Asset}}" defer></script>
+{{end}}

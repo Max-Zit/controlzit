@@ -8,7 +8,8 @@
   </div>
   {{if .User.CanWrite}}
   <div class="devhead-actions">
-    {{if $d.IsWindows}}<a class="tile-btn primary" href="/devices/{{$d.ID}}/rd"{{if not .Data.Online}} aria-disabled="true"{{end}}><span class="tb-ic">{{template "icon" "screen"}}</span><span><b>{{.T "Remote desktop"}}</b><small>{{.T "See and control the screen"}}</small></span></a>{{end}}
+    <a class="tile-btn primary" href="/devices/{{$d.ID}}/rd" data-rdwin="{{$d.ID}}"{{if not .Data.Online}} aria-disabled="true"{{end}}><span class="tb-ic">{{template "icon" "screen"}}</span><span><b>{{.T "Remote desktop"}}</b><small>{{.T "See and control the screen"}}</small></span></a>
+    {{if not $d.IsWindows}}<a class="tile-btn" href="/devices/{{$d.ID}}/terminal" data-rdwin="{{$d.ID}}" data-winname="czterm"{{if not .Data.Online}} aria-disabled="true"{{end}}><span class="tb-ic">{{template "icon" "terminal"}}</span><span><b>{{.T "Terminal"}}</b><small>{{.T "Root shell in the browser"}}</small></span></a>{{end}}
     <a class="tile-btn" href="/devices/{{$d.ID}}/files"{{if not .Data.Online}} aria-disabled="true"{{end}}><span class="tb-ic">{{template "icon" "folder"}}</span><span><b>{{.T "Files"}}</b><small>{{.T "Without connecting to the screen"}}</small></span></a>
     <form method="post" action="/devices/{{$d.ID}}/refresh"><button class="iconbtn bordered" title="{{.T "Refresh inventory"}}" aria-label="{{.T "Refresh inventory"}}" {{if not .Data.Online}}disabled{{end}}>{{template "icon" "refresh"}}</button></form>
     <details class="pop right power">
@@ -127,7 +128,7 @@
   <h2>{{.T "Remove device"}}</h2>
   <p class="small muted">{{.T "Removing the device stops its agent from connecting. Uninstall the agent on the computer afterwards."}}</p>
   <div class="actionbar">
-    <form method="post" action="/devices/{{$d.ID}}/delete" data-confirm="{{.T "Remove this device? Its agent can no longer connect until it is enrolled again."}}"><button class="danger">{{template "icon" "trash"}}{{.T "Remove device"}}</button></form>
+    <form method="post" action="/devices/{{$d.ID}}/delete" data-confirm="{{.T "Remove this device? If it is online, the agent uninstalls itself from the computer (Windows Update gets its own settings back)."}}"><button class="danger">{{template "icon" "trash"}}{{.T "Remove device"}}</button></form>
   </div>
 </section>
 {{end}}

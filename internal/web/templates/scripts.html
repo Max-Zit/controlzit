@@ -6,22 +6,42 @@
 {{template "devtabs" (devtabs . $d "scripts")}}
 
 {{with .Data.Run}}
-<section class="panel">
-  <h2>{{$.T "Run #%d" .ID}}
-    {{if .Error}}<span class="badge bad"><i></i>{{$.T "failed"}}</span>{{else if .TimedOut}}<span class="badge bad"><i></i>{{$.T "time limit reached"}}</span>{{else if eq (deref .ExitCode) 0}}<span class="badge ok"><i></i>{{$.T "exit code %d" 0}}</span>{{else}}<span class="badge warn"><i></i>{{$.T "exit code %d" (deref .ExitCode)}}</span>{{end}}
-  </h2>
-  <p class="muted small">{{$.Time .StartedAt}} · {{.Username}} · {{shellName .Shell}} · {{.Duration}}</p>
-  {{if .Error}}<div class="flash err" role="alert">{{template "icon" "alert"}}<span>{{$.T .Error}}</span></div>{{end}}
-  {{if not .Error}}
-  <h3>{{$.T "Output"}}</h3>
-  {{if .Output}}<pre class="output">{{.Output}}</pre>{{else}}<p class="muted">{{$.T "The script wrote nothing."}}</p>{{end}}
-  {{if .Truncated}}<p class="small muted">{{$.T "Only the first 1 MB of the output was kept."}}</p>{{end}}
-  {{end}}
+{{/* One run: what ran, how it ended, what it wrote. */}}
+<p><a class="btn ghost sm" href="/devices/{{$d.ID}}/scripts">← {{$.T "All scripts of this device"}}</a></p>
+<section class="panel run-head {{if .Error}}is-bad{{else if .TimedOut}}is-bad{{else if eq (deref .ExitCode) 0}}is-ok{{else}}is-warn{{end}}">
+  <div class="run-state">
+    {{if .Error}}{{template "icon" "alert"}}<div><b>{{$.T "Could not run"}}</b><span>{{$.T .Error}}</span></div>
+    {{else if .TimedOut}}{{template "icon" "clock"}}<div><b>{{$.T "Stopped after the time limit"}}</b><span>{{$.T "The script ran longer than allowed and was ended."}}</span></div>
+    {{else if eq (deref .ExitCode) 0}}{{template "icon" "check"}}<div><b>{{$.T "Succeeded"}}</b><span>{{$.T "exit code %d" 0}}</span></div>
+    {{else}}{{template "icon" "alert"}}<div><b>{{$.T "Ended with an error code"}}</b><span>{{$.T "exit code %d" (deref .ExitCode)}}</span></div>{{end}}
+  </div>
+  <dl class="run-facts">
+    <div><dt>{{$.T "Run"}}</dt><dd>#{{.ID}}</dd></div>
+    <div><dt>{{$.T "Started"}}</dt><dd>{{$.Time .StartedAt}}</dd></div>
+    <div><dt>{{$.T "Duration"}}</dt><dd>{{.Duration}}</dd></div>
+    <div><dt>{{$.T "By"}}</dt><dd>{{.Username}}</dd></div>
+    <div><dt>{{$.T "Shell"}}</dt><dd>{{shellName .Shell}}</dd></div>
+  </dl>
 </section>
-{{end}}
 
 <section class="panel">
-  <h2>{{.T "Run a script"}}</h2>
+  <div class="pagehead"><h2>{{template "icon" "terminal"}}{{$.T "Output"}}</h2>
+    {{if .Output}}<button type="button" class="ghost sm" data-copy="#run-output">{{template "icon" "copy"}}{{$.T "Copy"}}</button>{{end}}</div>
+  {{if .Error}}<p class="muted">{{$.T "The script did not run, so there is no output."}}</p>
+  {{else if .Output}}<pre class="output console" id="run-output">{{.Output}}</pre>
+  {{if .Truncated}}<p class="small muted">{{$.T "Only the first 1 MB of the output was kept."}}</p>{{end}}
+  {{else}}<p class="muted">{{$.T "The script wrote nothing."}}</p>{{end}}
+</section>
+
+<section class="panel">
+  <div class="pagehead"><h2>{{template "icon" "file"}}{{$.T "Script that ran"}}</h2>
+    <a class="btn secondary sm" href="/devices/{{$d.ID}}/scripts?from={{.ID}}">{{template "icon" "terminal"}}{{$.T "Edit and run again"}}</a></div>
+  <pre class="output script">{{.Script}}</pre>
+</section>
+
+{{else}}
+<section class="panel">
+  <h2>{{.T "New script"}}</h2>
   {{if not .Data.Online}}<div class="flash warn" role="status">{{template "icon" "alert"}}<span>{{.T "The device is offline."}}</span></div>{{end}}
   {{if .Data.Library}}
   <form method="get" action="/devices/{{$d.ID}}/scripts" class="row filter">
@@ -41,8 +61,8 @@
       </select></label>
       <label>{{.T "Time limit (seconds)"}}<input type="number" name="timeout" value="{{.Data.Timeout}}" min="5" max="1500" required></label>
     </div>
-    <label>{{.T "Script"}}<textarea name="script" rows="10" required spellcheck="false" class="mono" placeholder="Get-Service | Where-Object Status -eq 'Running'">{{.Data.Script}}</textarea>
-      <small>{{.T "Runs as SYSTEM, without a window, on the remote computer. The script and the start of its output are written to the audit log."}}</small></label>
+    <label>{{.T "Script"}}<textarea name="script" rows="10" required spellcheck="false" class="mono" placeholder="{{if $d.IsWindows}}Get-Service | Where-Object Status -eq 'Running'{{else}}df -h; systemctl --failed{{end}}">{{.Data.Script}}</textarea>
+      <small>{{if $d.IsWindows}}{{.T "Runs as SYSTEM, without a window, on the remote computer. The script and the start of its output are written to the audit log."}}{{else}}{{.T "Runs as root on the remote computer. The script and the start of its output are written to the audit log."}}{{end}}</small></label>
     <div><button class="primary" {{if not .Data.Online}}disabled{{end}}>{{template "icon" "terminal"}}{{.T "Run"}}</button></div>
   </form>
 </section>
@@ -50,16 +70,18 @@
 <section class="panel">
   <h2>{{.T "Recent runs"}}</h2>
   {{if .Data.Runs}}
-  <div class="table-wrap"><table>
-    <thead><tr><th>#</th><th>{{.T "Started"}}</th><th class="hide-sm">{{.T "User"}}</th><th>{{.T "Script"}}</th><th>{{.T "Result"}}</th></tr></thead>
+  <div class="table-wrap"><table class="runs">
+    <thead><tr><th>{{.T "Result"}}</th><th>{{.T "Script"}}</th><th class="hide-sm">{{.T "Started"}}</th><th class="hide-sm">{{.T "By"}}</th><th class="hide-sm num">{{.T "Duration"}}</th><th></th></tr></thead>
     <tbody>{{range .Data.Runs}}<tr>
-      <td><a href="/devices/{{$d.ID}}/scripts/{{.ID}}">{{.ID}}</a></td>
-      <td class="nowrap">{{$.Time .StartedAt}}</td>
-      <td class="hide-sm">{{.Username}}</td>
-      <td><a href="/devices/{{$d.ID}}/scripts/{{.ID}}"><code class="clip">{{firstLine .Script}}</code></a></td>
-      <td class="nowrap">{{if .Error}}<span class="badge bad"><i></i>{{$.T "failed"}}</span>{{else if .TimedOut}}<span class="badge bad"><i></i>{{$.T "time limit reached"}}</span>{{else if eq (deref .ExitCode) 0}}<span class="badge ok"><i></i>0</span>{{else}}<span class="badge warn"><i></i>{{deref .ExitCode}}</span>{{end}}</td>
+      <td class="nowrap">{{if .Error}}<span class="badge bad"><i></i>{{$.T "could not run"}}</span>{{else if .TimedOut}}<span class="badge bad"><i></i>{{$.T "time limit reached"}}</span>{{else if eq (deref .ExitCode) 0}}<span class="badge ok"><i></i>{{$.T "succeeded"}}</span>{{else}}<span class="badge warn"><i></i>{{$.T "exit code %d" (deref .ExitCode)}}</span>{{end}}</td>
+      <td><code class="clip">{{firstLine .Script}}</code><br><span class="small muted">{{shellName .Shell}}</span></td>
+      <td class="hide-sm nowrap small">{{$.Time .StartedAt}}</td>
+      <td class="hide-sm small">{{.Username}}</td>
+      <td class="hide-sm num small">{{.Duration}}</td>
+      <td class="nowrap actions"><a class="btn secondary sm" href="/devices/{{$d.ID}}/scripts/{{.ID}}">{{$.T "Result"}}</a></td>
     </tr>{{end}}</tbody>
   </table></div>
   {{else}}<p class="muted">{{.T "No scripts were run on this device yet."}}</p>{{end}}
 </section>
+{{end}}
 {{end}}

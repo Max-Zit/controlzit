@@ -172,6 +172,9 @@ func (a *Agent) Run(ctx context.Context) error {
 	self = a
 	a.runCtx = ctx
 	a.initPatches()
+	if err := ApplyWUPolicy(a.Dir); err != nil {
+		a.Log.Warn("cannot switch off the automatic Windows Update installation", "err", err)
+	}
 	if a.Collect == nil {
 		a.Collect = CollectInventory
 	}

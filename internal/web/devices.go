@@ -118,13 +118,22 @@ func (s *Server) handleDeviceDelete(w http.ResponseWriter, r *http.Request) {
 		s.forbidden(w, r)
 		return
 	}
+	// An online agent uninstalls itself first (and gives Windows Update its
+	// own settings back); an offline one is removed by hand.
+	removing := s.call(r.Context(), d.ID, s.issuer(r), proto.KindAgentRemove, nil, nil, 15*time.Second) == nil
 	if err := s.store.DeleteDevice(r.Context(), d.ID); err != nil {
 		s.serverError(w, r, err)
 		return
 	}
 	s.disconnect(d.ID)
-	s.audit(r, "device.delete", "device:"+strconv.FormatInt(d.ID, 10), "removed device %q from site %q of %q; its agent can no longer connect", d.Hostname, d.Site, d.Customer)
-	s.redirect(w, r, "/sites/"+strconv.FormatInt(d.SiteID, 10), "Device removed. Uninstall the agent on the machine.")
+	what := "its agent can no longer connect"
+	msg := "Device removed. It was offline or did not answer: uninstall the agent on the machine."
+	if removing {
+		what = "its agent is uninstalling itself"
+		msg = "Device removed. The agent uninstalls itself from the computer in a few seconds."
+	}
+	s.audit(r, "device.delete", "device:"+strconv.FormatInt(d.ID, 10), "removed device %q from site %q of %q; %s", d.Hostname, d.Site, d.Customer, what)
+	s.redirect(w, r, "/sites/"+strconv.FormatInt(d.SiteID, 10), msg)
 }
 
 // ---- template helpers

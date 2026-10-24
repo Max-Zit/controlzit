@@ -3,6 +3,7 @@
 // send clicks, keys and text (lab tests of agents without a browser).
 //
 //	go run ./tools/rdclient -console https://rmm:8443 -device 4 -cookie VALUE -out screen.png -wait 8s [-click 100,200] [-keys MetaLeft] [-text hello]
+//	go run ./tools/rdclient -console https://rmm:8443 -device 6 -cookie VALUE -term "uname -a" -wait 5s
 package main
 
 import (
@@ -39,7 +40,11 @@ func main() {
 	cad := flag.Bool("cad", false, "send Ctrl+Alt+Del after the first frame")
 	clip := flag.String("clip", "", "text to put on the remote clipboard after the first frame")
 	monitor := flag.Int("monitor", -2, "monitor to show after the first frame (-1: all)")
+	term := flag.String("term", "", "terminal mode (Linux): run this command line and print what the shell shows")
 	flag.Parse()
+	if *term != "" {
+		os.Exit(runTerm(*console, *device, *cookie, *term, *wait))
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), *wait+40*time.Second)
 	defer cancel()
@@ -146,4 +151,42 @@ func main() {
 	defer f.Close()
 	_ = png.Encode(f, canvas)
 	_ = ws.Close(websocket.StatusNormalClosure, "")
+}
+
+// runTerm opens a terminal session, types line and prints the output.
+func runTerm(console string, device int, cookie, line string, wait time.Duration) int {
+	ctx, cancel := context.WithTimeout(context.Background(), wait+40*time.Second)
+	defer cancel()
+	u := strings.Replace(console, "https://", "wss://", 1) + "/devices/" + strconv.Itoa(device) + "/terminal/ws?cols=120&rows=30"
+	hc := &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}} // #nosec G402 -- lab test tool
+	ws, _, err := websocket.Dial(ctx, u, &websocket.DialOptions{HTTPClient: hc, HTTPHeader: http.Header{
+		"Origin": {console}, "Cookie": {"__Host-czsession=" + cookie}}})
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "dial:", err)
+		return 1
+	}
+	defer ws.CloseNow()
+	var out bytes.Buffer
+	sent := false
+	deadline := time.Now().Add(wait)
+	for time.Now().Before(deadline) {
+		rctx, rcancel := context.WithDeadline(ctx, deadline)
+		typ, data, err := ws.Read(rctx)
+		rcancel()
+		if err != nil {
+			break
+		}
+		if typ == websocket.MessageText {
+			fmt.Println("text:", string(data))
+			continue
+		}
+		out.Write(data)
+		if !sent {
+			sent = true
+			b, _ := json.Marshal(proto.TermInput{T: "i", D: line + "\r"})
+			_ = ws.Write(ctx, websocket.MessageText, b)
+		}
+	}
+	fmt.Print(out.String())
+	return 0
 }

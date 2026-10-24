@@ -160,3 +160,46 @@
   </tr>{{end}}</tbody>
 </table></div>
 {{else}}<p class="muted">{{.T "No schedules."}}</p>{{end}}{{end}}
+
+{{define "rdviewer"}}{{$d := .Data.D}}
+<div class="rd" id="rd" data-ws="/devices/{{$d.ID}}/rd/ws"
+     data-t-connecting="{{.T "Connecting…"}}" data-t-connected="{{.T "Connected"}}" data-t-closed="{{.T "Disconnected"}}"
+     data-t-signin="{{.T "sign-in or UAC screen"}}" data-t-paste="{{.T "Text to type on the remote computer:"}}"
+     data-clip="{{if .Data.Clipboard}}1{{else}}0{{end}}" data-t-monitor="{{.T "Monitor"}}" data-t-primary="{{.T "primary"}}" data-t-allmonitors="{{.T "All monitors"}}" data-t-copied="{{.T "Copied from the remote computer"}}">
+  <div class="rd-bar">
+    <b>{{template "icon" "screen"}}{{$d.Hostname}}</b>
+    <span class="rd-status" id="rd-status">{{if .Data.Online}}{{.T "Connecting…"}}{{else}}{{.T "The device is offline."}}{{end}}</span>
+    <span class="rd-tools">
+      <select id="rd-monitor" class="rd-mon" aria-label="{{.T "Monitor"}}" hidden></select>
+      <button type="button" class="secondary sm" id="rd-clip" hidden title="{{.T "Text copied on the remote computer"}}">{{template "icon" "copy"}}{{.T "Copy remote text"}}</button>
+      <label class="rd-q">{{.T "Quality"}} <select id="rd-quality" aria-label="{{.T "Quality"}}"><option value="40">{{.T "Fast"}}</option><option value="65" selected>{{.T "Balanced"}}</option><option value="88">{{.T "Sharp"}}</option></select></label>
+      <button type="button" class="secondary sm" id="rd-cad"{{if not $d.IsWindows}} hidden{{end}} title="{{.T "Send Ctrl+Alt+Del"}}">Ctrl+Alt+Del</button>
+      <button type="button" class="secondary sm" id="rd-paste" title="{{.T "Type text on the remote computer"}}">{{template "icon" "copy"}}{{.T "Send text"}}</button>
+      <button type="button" class="secondary sm" id="rd-full" title="{{.T "Full screen"}}">{{template "icon" "expand"}}</button>
+      {{if .Data.Window}}<button type="button" class="danger sm" data-closewin>{{.T "Disconnect"}}</button>{{else}}<a class="btn secondary sm" href="/devices/{{$d.ID}}/rd?w=1" data-rdwin="{{$d.ID}}" title="{{.T "Open in its own window"}}">{{template "icon" "expand"}}{{.T "Own window"}}</a>
+      <a class="btn danger sm" href="/devices/{{$d.ID}}">{{.T "Disconnect"}}</a>{{end}}
+    </span>
+  </div>
+  <div class="rd-screen" id="rd-screen">
+    <canvas id="rd-canvas" tabindex="0" width="1280" height="720" aria-label="{{.T "Remote screen"}}"></canvas>
+  </div>
+</div>
+{{end}}
+
+{{define "termviewer"}}{{$d := .Data.D}}
+<div class="rd term" id="term" data-ws="/devices/{{$d.ID}}/terminal/ws"
+     data-t-connecting="{{.T "Connecting…"}}" data-t-connected="{{.T "Connected"}}" data-t-closed="{{.T "Disconnected"}}" data-t-exit="{{.T "The shell ended (exit code %d)."}}" data-t-paste="{{.T "Text to type in the terminal:"}}">
+  <div class="rd-bar">
+    <b>{{template "icon" "terminal"}}{{$d.Hostname}}</b>
+    <span class="rd-status" id="term-status">{{if .Data.Online}}{{.T "Connecting…"}}{{else}}{{.T "The device is offline."}}{{end}}</span>
+    <span class="rd-tools">
+      <button type="button" class="secondary sm" id="term-reconnect" hidden>{{template "icon" "refresh"}}{{.T "Connect again"}}</button>
+      <button type="button" class="secondary sm" id="term-paste" title="{{.T "Type text in the terminal"}}">{{template "icon" "copy"}}{{.T "Send text"}}</button>
+      <button type="button" class="secondary sm" id="term-full" title="{{.T "Full screen"}}">{{template "icon" "expand"}}</button>
+      {{if .Data.Window}}<button type="button" class="danger sm" data-closewin>{{.T "Disconnect"}}</button>{{else}}<a class="btn secondary sm" href="/devices/{{$d.ID}}/terminal?w=1" data-rdwin="{{$d.ID}}" data-winname="czterm" title="{{.T "Open in its own window"}}">{{template "icon" "expand"}}{{.T "Own window"}}</a>
+      <a class="btn danger sm" href="/devices/{{$d.ID}}">{{.T "Disconnect"}}</a>{{end}}
+    </span>
+  </div>
+  <div class="term-screen" id="term-screen" tabindex="0" aria-label="{{.T "Terminal"}}"></div>
+</div>
+{{end}}

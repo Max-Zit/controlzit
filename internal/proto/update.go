@@ -11,6 +11,8 @@ import (
 // checks the hash against the signed command and runs it.
 const (
 	KindAgentUpdate = "agent.update"
+	// KindAgentRemove uninstalls the agent (the device was deleted in the console).
+	KindAgentRemove = "agent.remove"
 	PathPackage     = "/agent/v1/package"
 	// MaxPackageSize limits the installer an agent downloads.
 	MaxPackageSize = 200 << 20

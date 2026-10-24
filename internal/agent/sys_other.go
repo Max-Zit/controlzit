@@ -4,6 +4,7 @@ package agent
 
 import (
 	"context"
+	"errors"
 	"os"
 	"runtime"
 	"time"
@@ -21,3 +22,7 @@ func CollectInventory(ctx context.Context) *proto.Inventory {
 
 // CollectMetrics is not implemented on this system.
 func CollectMetrics(ctx context.Context) *proto.Metrics { return &proto.Metrics{} }
+
+func startHelper(string, proto.RDStart) error {
+	return errors.New("remote desktop is not available on this system")
+}

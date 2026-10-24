@@ -25,9 +25,23 @@ const (
 	maxUpload = 4 << 30
 )
 
-// Paths of managed machines are Windows paths (the server may run on Linux,
-// so path/filepath cannot be used for them).
+// Paths of managed machines are Windows paths (C:\…) or, on Linux agents,
+// POSIX paths (/…); the server may run on another system, so path/filepath
+// cannot be used for them.
+func isPosix(p string) bool { return strings.HasPrefix(p, "/") }
+
 func winParent(p string) string {
+	if isPosix(p) {
+		p = strings.TrimRight(p, "/")
+		i := strings.LastIndex(p, "/")
+		switch {
+		case p == "":
+			return "" // the root has no parent
+		case i == 0:
+			return "/"
+		}
+		return p[:i]
+	}
 	p = strings.TrimRight(p, `\`)
 	i := strings.LastIndex(p, `\`)
 	if i < 0 {
@@ -39,11 +53,16 @@ func winParent(p string) string {
 	return p[:i]
 }
 
-func winJoin(dir, name string) string { return strings.TrimRight(dir, `\`) + `\` + name }
+func winJoin(dir, name string) string {
+	if isPosix(dir) {
+		return strings.TrimRight(dir, "/") + "/" + name
+	}
+	return strings.TrimRight(dir, `\`) + `\` + name
+}
 
 func winBase(p string) string {
-	p = strings.TrimRight(p, `\`)
-	if i := strings.LastIndex(p, `\`); i >= 0 {
+	p = strings.TrimRight(p, `\/`)
+	if i := strings.LastIndexAny(p, `\/`); i >= 0 {
 		return p[i+1:]
 	}
 	return p
@@ -62,7 +81,19 @@ type crumb struct{ Name, Path string }
 
 func crumbs(p string) []crumb {
 	var out []crumb
-	parts := strings.Split(strings.TrimRight(p, `\`), `\`)
+	if isPosix(p) {
+		out = append(out, crumb{Name: "/", Path: "/"})
+		acc := ""
+		for _, part := range strings.Split(strings.Trim(p, "/"), "/") {
+			if part == "" {
+				continue
+			}
+			acc += "/" + part
+			out = append(out, crumb{Name: part, Path: acc})
+		}
+		return out
+	}
+	parts :=strings.Split(strings.TrimRight(p, `\`), `\`)
 	acc := ""
 	for i, part := range parts {
 		if part == "" {
