@@ -54,7 +54,12 @@ func agentServer(t *testing.T, e *env) (url, fingerprint string) {
 
 func waitFor(t *testing.T, what string, cond func() bool) {
 	t.Helper()
-	for i := 0; i < 100; i++ {
+	waitForUpTo(t, what, 10*time.Second, cond)
+}
+
+func waitForUpTo(t *testing.T, what string, limit time.Duration, cond func() bool) {
+	t.Helper()
+	for end := time.Now().Add(limit); time.Now().Before(end); {
 		if cond() {
 			return
 		}
@@ -380,7 +385,8 @@ func TestAlertsEndToEnd(t *testing.T) {
 	})
 	defer stop()
 	ctx := context.Background()
-	waitFor(t, "first heartbeat with metrics", func() bool {
+	// The agent sends the first heartbeat with metrics 10 s after connecting.
+	waitForUpTo(t, "first heartbeat with metrics", 25*time.Second, func() bool {
 		m, _, _, _ := e.st.DeviceMetrics(ctx, d.ID)
 		return m != nil
 	})
