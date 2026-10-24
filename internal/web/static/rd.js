@@ -240,7 +240,9 @@
       x.send(fd);
     });
   }
-  function sendFiles(files, paste) {
+  function sendFiles(list, paste) {
+    // Copy the list now: Firefox empties it when the paste or drop event ends.
+    var files = Array.prototype.slice.call(list);
     if (busy) return;
     busy = true;
     var restore = status.textContent, restoreCls = status.className;
