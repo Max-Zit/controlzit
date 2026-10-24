@@ -121,7 +121,12 @@ func StartTray() error {
 	var pi windows.ProcessInformation
 	cl, _ := windows.UTF16PtrFromString(windows.ComposeCommandLine([]string{tray}))
 	app, _ := windows.UTF16PtrFromString(tray)
-	if err := windows.CreateProcessAsUser(tok, app, cl, nil, nil, false, windows.CREATE_UNICODE_ENVIRONMENT, nil, nil, &si, &pi); err != nil {
+	// The user's own environment (LOCALAPPDATA, TEMP …), not the service's.
+	var env *uint16
+	if err := windows.CreateEnvironmentBlock(&env, tok, false); err == nil {
+		defer func() { _ = windows.DestroyEnvironmentBlock(env) }()
+	}
+	if err := windows.CreateProcessAsUser(tok, app, cl, nil, nil, false, windows.CREATE_UNICODE_ENVIRONMENT, env, nil, &si, &pi); err != nil {
 		return err
 	}
 	_ = windows.CloseHandle(pi.Thread)

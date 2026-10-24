@@ -20,6 +20,21 @@ type Status struct {
 	Since       time.Time `json:"since"`
 	LastContact time.Time `json:"last_contact"`
 	Updated     time.Time `json:"updated"`
+	// For the agent window.
+	Hostname string         `json:"hostname"`
+	OS       string         `json:"os"`
+	DeviceID int64          `json:"device_id"`
+	BootTime time.Time      `json:"boot_time,omitzero"`
+	Updates  *UpdateSummary `json:"updates,omitempty"`
+}
+
+// UpdateSummary is the Windows Update / package state for the window.
+type UpdateSummary struct {
+	ScannedAt      time.Time `json:"scanned_at,omitzero"`
+	Missing        int       `json:"missing"`
+	Security       int       `json:"security"`
+	RebootRequired bool      `json:"reboot_required"`
+	State          string    `json:"state"`
 }
 
 const statusFile = "agent-status.json"
@@ -53,6 +68,24 @@ func (a *Agent) publishStatus(connected bool) {
 		a.status.Server = u.Hostname()
 	}
 	a.status.Customer, a.status.Site, a.status.Updated = a.Cfg.Customer, a.Cfg.Site, now
+	a.status.DeviceID = a.Cfg.DeviceID
+	if a.Info != nil {
+		si := a.Info()
+		a.status.OS, a.status.BootTime = si.OS, si.BootTime
+	}
+	a.status.Hostname, _ = os.Hostname()
+	if a.patch != nil {
+		a.patch.mu.Lock()
+		r := a.patch.report
+		a.patch.mu.Unlock()
+		u := &UpdateSummary{ScannedAt: r.ScannedAt, Missing: len(r.Updates), RebootRequired: r.RebootRequired, State: r.State}
+		for i := range r.Updates {
+			if r.Updates[i].Security() {
+				u.Security++
+			}
+		}
+		a.status.Updates = u
+	}
 	b, _ := json.MarshalIndent(a.status, "", "  ")
 	p := StatusPath(a.Dir)
 	tmp := p + ".tmp"

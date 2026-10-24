@@ -15,8 +15,9 @@ import (
 func main() {
 	def := filepath.Join(os.Getenv("ProgramData"), "ControlZit", "agent-status.json")
 	status := flag.String("status", def, "status file written by the agent service")
+	open := flag.Bool("open", false, "open the agent window (also when the icon is already running)")
 	flag.Parse()
-	if err := tray.Run(*status); err != nil {
+	if err := tray.Run(*status, *open); err != nil {
 		os.Exit(1)
 	}
 }

@@ -66,9 +66,7 @@ func waitFor(t *testing.T, what string, cond func() bool) {
 func TestAgentEnrollConnectInventory(t *testing.T) {
 	agent.ProtectDir = func(string) error { return nil }
 	e := newEnv(t)
-	e.now = time.Now()
-	e.srv.SetClock(time.Now)
-	e.st.SetClock(time.Now)
+	e.useRealClock()
 	ctx := context.Background()
 	cust, _ := e.st.CreateCustomer(ctx, "Acme", "")
 	site, _ := e.st.CreateSite(ctx, cust, "HQ", "", "")
@@ -231,9 +229,7 @@ func TestFileManager(t *testing.T) {
 		t.Skip("the console builds Windows paths")
 	}
 	e := newEnv(t)
-	e.now = time.Now()
-	e.srv.SetClock(time.Now)
-	e.st.SetClock(time.Now)
+	e.useRealClock()
 	_, key, _ := ed25519.GenerateKey(rand.Reader)
 	e.srv.CommandKey = key
 	d, stop := startAgent(t, e)
@@ -352,9 +348,7 @@ func TestFileManager(t *testing.T) {
 
 func TestCommandsNeedTheRightKey(t *testing.T) {
 	e := newEnv(t)
-	e.now = time.Now()
-	e.srv.SetClock(time.Now)
-	e.st.SetClock(time.Now)
+	e.useRealClock()
 	_, key, _ := ed25519.GenerateKey(rand.Reader)
 	e.srv.CommandKey = key
 	d, stop := startAgent(t, e)
@@ -375,9 +369,7 @@ func TestCommandsNeedTheRightKey(t *testing.T) {
 
 func TestAlertsEndToEnd(t *testing.T) {
 	e := newEnv(t)
-	e.now = time.Now()
-	e.srv.SetClock(time.Now)
-	e.st.SetClock(time.Now)
+	e.useRealClock()
 	_, key, _ := ed25519.GenerateKey(rand.Reader)
 	e.srv.CommandKey = key
 	var free atomic.Uint64
@@ -504,9 +496,7 @@ func TestFolderZip(t *testing.T) {
 		t.Skip("the console builds Windows paths")
 	}
 	e := newEnv(t)
-	e.now = time.Now()
-	e.srv.SetClock(time.Now)
-	e.st.SetClock(time.Now)
+	e.useRealClock()
 	_, key, _ := ed25519.GenerateKey(rand.Reader)
 	e.srv.CommandKey = key
 	d, stop := startAgent(t, e)

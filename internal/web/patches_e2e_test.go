@@ -23,9 +23,7 @@ const (
 
 func TestWindowsUpdates(t *testing.T) {
 	e := newEnv(t)
-	e.now = time.Now()
-	e.srv.SetClock(time.Now)
-	e.st.SetClock(time.Now)
+	e.useRealClock()
 	_, key, _ := ed25519.GenerateKey(rand.Reader)
 	e.srv.CommandKey = key
 

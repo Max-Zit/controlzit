@@ -20,9 +20,7 @@ func TestRemoteActions(t *testing.T) {
 		t.Skip("the agent actions are Windows only")
 	}
 	e := newEnv(t)
-	e.now = time.Now()
-	e.srv.SetClock(time.Now)
-	e.st.SetClock(time.Now)
+	e.useRealClock()
 	_, key, _ := ed25519.GenerateKey(rand.Reader)
 	e.srv.CommandKey = key
 	d, stop := startAgent(t, e)
@@ -152,9 +150,7 @@ func TestEventLogs(t *testing.T) {
 		t.Skip("Windows event logs")
 	}
 	e := newEnv(t)
-	e.now = time.Now()
-	e.srv.SetClock(time.Now)
-	e.st.SetClock(time.Now)
+	e.useRealClock()
 	_, key, _ := ed25519.GenerateKey(rand.Reader)
 	e.srv.CommandKey = key
 	d, stop := startAgent(t, e)

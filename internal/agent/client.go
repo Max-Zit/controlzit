@@ -383,6 +383,7 @@ func BasicOS() string { return runtime.GOOS + "/" + runtime.GOARCH }
 
 func (a *Agent) heartbeat(ctx context.Context, ws *websocket.Conn) error {
 	si := a.Info()
+	m := a.Metrics(ctx)
 	a.publishStatus(true)
-	return sendMsg(ctx, ws, proto.TypeHeartbeat, proto.Heartbeat{BootTime: si.BootTime, LoggedOnUser: si.LoggedOnUser, Metrics: a.Metrics(ctx)})
+	return sendMsg(ctx, ws, proto.TypeHeartbeat, proto.Heartbeat{BootTime: si.BootTime, LoggedOnUser: si.LoggedOnUser, Metrics: m})
 }

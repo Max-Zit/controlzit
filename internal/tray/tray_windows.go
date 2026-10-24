@@ -39,6 +39,9 @@ var (
 	pSetForeground     = user32.NewProc("SetForegroundWindow")
 	pRegisterWindowMsg = user32.NewProc("RegisterWindowMessageW")
 	pLoadIcon          = user32.NewProc("LoadIconW")
+	pSetMenuDefault    = user32.NewProc("SetMenuDefaultItem")
+	pFindWindow        = user32.NewProc("FindWindowW")
+	pPostMessage       = user32.NewProc("PostMessageW")
 	pShellNotifyIcon   = shell32.NewProc("Shell_NotifyIconW")
 	pExtractIconEx     = shell32.NewProc("ExtractIconExW")
 	pGetModuleHandle   = kernel.NewProc("GetModuleHandleW")
@@ -51,6 +54,7 @@ const (
 	wmApp      = 0x8000
 	wmRButtonU = 0x0205
 	wmLButtonU = 0x0202
+	wmLButtonD = 0x0203 // double click
 
 	nimAdd    = 0
 	nimModify = 1
@@ -66,6 +70,7 @@ const (
 	tpmRight    = 0x0008
 
 	cmdHide = 100
+	cmdOpen = 101
 )
 
 type wndClassEx struct {
@@ -115,11 +120,17 @@ type msg struct {
 
 const callbackMsg = wmApp + 1
 
+// openMsg asks a running tray to open its window (controlzit-tray --open).
+const openMsg = wmApp + 2
+
 type trayState struct {
 	statusPath     string
 	hwnd           uintptr
 	icon           uintptr
 	taskbarCreated uint32
+	iconOn         uintptr
+	iconOff        uintptr
+	shownOn        bool
 }
 
 var st trayState
@@ -157,9 +168,27 @@ func statusLines() (title, state, place string) {
 	return title, state, place
 }
 
+// connectedNow reports whether the agent is connected (fresh status).
+func connectedNow() bool {
+	s, err := agent.ReadStatus(st.statusPath)
+	return err == nil && s.Connected && time.Since(s.Updated) <= 3*time.Minute
+}
+
+// stateIcon is the icon for the current state (green dot: connected).
+func stateIcon() uintptr {
+	st.shownOn = connectedNow()
+	if st.shownOn && st.iconOn != 0 {
+		return st.iconOn
+	}
+	if !st.shownOn && st.iconOff != 0 {
+		return st.iconOff
+	}
+	return st.icon
+}
+
 func setTip() {
 	title, state, _ := statusLines()
-	nid := notifyIconData{Wnd: st.hwnd, ID: 1, Flags: nifTip}
+	nid := notifyIconData{Wnd: st.hwnd, ID: 1, Flags: nifTip | nifIcon, Icon: stateIcon()}
 	nid.Size = uint32(unsafe.Sizeof(nid))
 	copy(nid.Tip[:127], windows.StringToUTF16(title+"\n"+state))
 	_, _, _ = pShellNotifyIcon.Call(nimModify, uintptr(unsafe.Pointer(&nid))) // #nosec G103 -- Win32 struct
@@ -167,7 +196,8 @@ func setTip() {
 
 func addIcon() error {
 	title, state, _ := statusLines()
-	nid := notifyIconData{Wnd: st.hwnd, ID: 1, Flags: nifMsg | nifIcon | nifTip, CallbackMessage: callbackMsg, Icon: st.icon}
+	nid := notifyIconData{Wnd: st.hwnd, ID: 1, Flags: nifMsg | nifIcon | nifTip, CallbackMessage: callbackMsg, Icon: stateIcon()}
+
 	nid.Size = uint32(unsafe.Sizeof(nid))
 	copy(nid.Tip[:127], windows.StringToUTF16(title+"\n"+state))
 	if r, _, err := pShellNotifyIcon.Call(nimAdd, uintptr(unsafe.Pointer(&nid))); r == 0 { // #nosec G103 -- Win32 struct
@@ -192,6 +222,9 @@ func showMenu() {
 	add := func(flags uintptr, id uintptr, text string) {
 		_, _, _ = pAppendMenu.Call(m, flags, id, uintptr(unsafe.Pointer(utf16(text)))) // #nosec G103 -- Win32 string
 	}
+	add(mfString, cmdOpen, "Open ControlZit Agent")
+	_, _, _ = pSetMenuDefault.Call(m, cmdOpen, 0)
+	_, _, _ = pAppendMenu.Call(m, mfSeparator, 0, 0)
 	add(mfString|mfGrayed, 1, title)
 	add(mfString|mfGrayed, 2, state)
 	if place != "" {
@@ -203,6 +236,9 @@ func showMenu() {
 	_, _, _ = pGetCursorPos.Call(uintptr(unsafe.Pointer(&p))) // #nosec G103 -- Win32 out-parameter
 	_, _, _ = pSetForeground.Call(st.hwnd)
 	cmd, _, _ := pTrackPopupMenu.Call(m, tpmReturn|tpmRight, uintptr(p.X), uintptr(p.Y), 0, st.hwnd, 0) // #nosec G115 -- screen coordinates as Win32 arguments
+	if cmd == cmdOpen {
+		win.open()
+	}
 	if cmd == cmdHide {
 		removeIcon()
 		_, _, _ = pPostQuitMessage.Call(0)
@@ -212,9 +248,15 @@ func showMenu() {
 func wndProc(hwnd uintptr, m uint32, wp, lp uintptr) uintptr {
 	switch {
 	case m == callbackMsg:
-		if lp == wmRButtonU || lp == wmLButtonU {
+		switch lp {
+		case wmLButtonU, wmLButtonD:
+			win.open()
+		case wmRButtonU:
 			showMenu()
 		}
+		return 0
+	case m == openMsg:
+		win.open()
 		return 0
 	case m == wmTimer:
 		setTip()
@@ -232,12 +274,18 @@ func wndProc(hwnd uintptr, m uint32, wp, lp uintptr) uintptr {
 
 // Run shows the icon until the user hides it or the session ends. Only one
 // icon runs per session.
-func Run(statusPath string) error {
+func Run(statusPath string, open bool) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	mu, err := windows.CreateMutex(nil, false, utf16(`Local\ControlZitTray`))
 	if errors.Is(err, windows.ERROR_ALREADY_EXISTS) {
-		return nil // already running in this session
+		// Already running in this session: ask it to open the window.
+		if open {
+			if h, _, _ := pFindWindow.Call(uintptr(unsafe.Pointer(utf16("ControlZitTray"))), 0); h != 0 { // #nosec G103 -- Win32 string
+				_, _, _ = pPostMessage.Call(h, openMsg, 0, 0)
+			}
+		}
+		return nil
 	}
 	if err != nil {
 		return err
@@ -252,6 +300,8 @@ func Run(statusPath string) error {
 		small, _, _ = pLoadIcon.Call(0, 32512) // IDI_APPLICATION
 	}
 	st.icon = small
+	st.iconOn = loadIcon("connected.ico", icoConnected, smallIconSize())
+	st.iconOff = loadIcon("offline.ico", icoOffline, smallIconSize())
 	cls := utf16("ControlZitTray")
 	wc := wndClassEx{WndProc: syscall.NewCallback(wndProc), Instance: windows.Handle(inst), ClassName: cls}
 	wc.Size = uint32(unsafe.Sizeof(wc))
@@ -276,6 +326,9 @@ func Run(statusPath string) error {
 	}
 	defer removeIcon()
 	_, _, _ = pSetTimer.Call(st.hwnd, 1, 10000, 0)
+	if open {
+		win.open()
+	}
 	var m msg
 	for {
 		r, _, _ := pGetMessage.Call(uintptr(unsafe.Pointer(&m)), 0, 0, 0) // #nosec G103 -- Win32 struct

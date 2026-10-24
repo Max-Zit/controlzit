@@ -29,6 +29,9 @@ type env struct {
 	h     http.Handler
 	now   time.Time
 	setup string
+	// real: the server runs on the real clock (agent tests); codes then
+	// follow the real time too.
+	real bool
 }
 
 func newEnv(t *testing.T) *env {
@@ -114,8 +117,20 @@ func (c *client) post(path string, kv ...string) resp {
 var secretRE = regexp.MustCompile(`<code class="secret"[^>]*>([A-Z2-7]+)</code>`)
 
 func (e *env) code(secret string) string {
-	c, _ := auth.TOTPCode(secret, e.now.Unix()/30)
+	t := e.now
+	if e.real {
+		t = time.Now()
+	}
+	c, _ := auth.TOTPCode(secret, t.Unix()/30)
 	return c
+}
+
+// useRealClock runs the server on the real clock (tests with an agent).
+func (e *env) useRealClock() {
+	e.real = true
+	e.now = time.Now()
+	e.srv.SetClock(time.Now)
+	e.st.SetClock(time.Now)
 }
 
 // setupAdmin runs the first-run setup and the 2FA enrollment; it returns
