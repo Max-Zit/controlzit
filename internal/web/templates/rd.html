@@ -3,6 +3,6 @@
 {{$d := .Data.D}}
 <p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a> / <a href="/devices/{{$d.ID}}">{{$d.Hostname}}</a></p>
 {{template "rdviewer" .}}
-<p class="small muted">{{if .Data.Notice}}{{.T "The person at the computer sees a notice that you are connected."}}{{else}}{{.T "The notice on the remote screen is switched off in the settings."}}{{end}} {{.T "Click the screen to type; keys go to the remote computer with its own keyboard layout. The session is written to the audit log."}}</p>
+<p class="small muted">{{if .Data.Notice}}{{.T "The person at the computer sees a notice that you are connected."}}{{else}}{{.T "The notice on the remote screen is switched off in the settings."}}{{end}} {{.T "Click the screen to type; keys go to the remote computer with its own keyboard layout. Copy and paste work as usual (Ctrl+C, Ctrl+V) in both directions. In full screen, shortcuts such as Ctrl+W or the Windows key also go to the remote computer (hold Esc to leave). The session is written to the audit log."}}</p>
 <script src="/static/rd.js?v={{.Asset}}" defer></script>
 {{end}}

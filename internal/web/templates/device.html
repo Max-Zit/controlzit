@@ -4,26 +4,20 @@
 <div class="devhead">
   <div class="devhead-title">
     <p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a></p>
-    <h1>{{$d.Hostname}} {{if .Data.Online}}<span class="badge ok"><i></i>{{.T "Online"}}</span>{{else}}<span class="badge bad"><i></i>{{.T "Offline"}}</span>{{end}}</h1>
+    <div class="devhead-name">
+      <h1>{{$d.Hostname}} {{if .Data.Online}}<span class="badge ok"><i></i>{{.T "Online"}}</span>{{else}}<span class="badge bad"><i></i>{{.T "Offline"}}</span>{{end}}</h1>
+      {{if .User.CanWrite}}<form method="post" action="/devices/{{$d.ID}}/refresh"><button class="iconbtn" title="{{.T "Refresh inventory"}}" aria-label="{{.T "Refresh inventory"}}" {{if not .Data.Online}}disabled{{end}}>{{template "icon" "refresh"}}</button></form>{{end}}
+    </div>
   </div>
   {{if .User.CanWrite}}
   <div class="devhead-actions">
     <a class="tile-btn primary" href="/devices/{{$d.ID}}/rd" data-rdwin="{{$d.ID}}"{{if not .Data.Online}} aria-disabled="true"{{end}}><span class="tb-ic">{{template "icon" "screen"}}</span><span><b>{{.T "Remote desktop"}}</b><small>{{.T "See and control the screen"}}</small></span></a>
     {{if not $d.IsWindows}}<a class="tile-btn" href="/devices/{{$d.ID}}/terminal" data-rdwin="{{$d.ID}}" data-winname="czterm"{{if not .Data.Online}} aria-disabled="true"{{end}}><span class="tb-ic">{{template "icon" "terminal"}}</span><span><b>{{.T "Terminal"}}</b><small>{{.T "Root shell in the browser"}}</small></span></a>{{end}}
     <a class="tile-btn" href="/devices/{{$d.ID}}/files"{{if not .Data.Online}} aria-disabled="true"{{end}}><span class="tb-ic">{{template "icon" "folder"}}</span><span><b>{{.T "Files"}}</b><small>{{.T "Without connecting to the screen"}}</small></span></a>
-    <form method="post" action="/devices/{{$d.ID}}/refresh"><button class="iconbtn bordered" title="{{.T "Refresh inventory"}}" aria-label="{{.T "Refresh inventory"}}" {{if not .Data.Online}}disabled{{end}}>{{template "icon" "refresh"}}</button></form>
-    <details class="pop right power">
-      <summary class="iconbtn bordered" title="{{.T "Restart or shut down"}}" aria-label="{{.T "Restart or shut down"}}">{{template "icon" "power"}}</summary>
-      <div class="pop-body">
-        <form method="post" action="/devices/{{$d.ID}}/power" class="stack" data-confirm="{{.T "Restart or shut down %s? Users signed in there lose unsaved work." $d.Hostname}}">
-          <b>{{.T "Restart or shut down"}}</b>
-          <label>{{.T "In (seconds)"}}<input type="number" name="delay" value="60" min="0" max="3600" required></label>
-          <label>{{.T "Message for the signed-in user"}} <small>{{.T "optional"}}</small><input name="message" maxlength="500" placeholder="{{.T "The computer restarts for maintenance."}}"></label>
-          <div class="row"><button class="primary sm" name="action" value="restart" {{if not .Data.Online}}disabled{{end}}>{{.T "Restart"}}</button><button class="danger sm" name="action" value="shutdown" {{if not .Data.Online}}disabled{{end}}>{{.T "Shut down"}}</button></div>
-        </form>
-        <form method="post" action="/devices/{{$d.ID}}/power" class="mt"><button class="ghost sm" name="action" value="cancel" {{if not .Data.Online}}disabled{{end}}>{{.T "Cancel a scheduled restart or shutdown"}}</button></form>
-      </div>
-    </details>
+    <div class="power-btns">
+      {{template "powerpop" (powerPop . "restart")}}
+      {{template "powerpop" (powerPop . "shutdown")}}
+    </div>
   </div>
   {{end}}
 </div>
@@ -133,3 +127,16 @@
 </section>
 {{end}}
 {{end}}
+
+{{define "powerpop"}}{{$p := .P}}{{$d := $p.Data.D}}<details class="pop right power {{.Action}}">
+  <summary class="iconbtn bordered" title="{{if eq .Action "restart"}}{{$p.T "Restart"}}{{else}}{{$p.T "Shut down"}}{{end}}" aria-label="{{if eq .Action "restart"}}{{$p.T "Restart"}}{{else}}{{$p.T "Shut down"}}{{end}}">{{if eq .Action "restart"}}{{template "icon" "restart"}}{{else}}{{template "icon" "power"}}{{end}}</summary>
+  <div class="pop-body">
+    <form method="post" action="/devices/{{$d.ID}}/power" class="stack" data-confirm="{{if eq .Action "restart"}}{{$p.T "Restart %s? Users signed in there lose unsaved work." $d.Hostname}}{{else}}{{$p.T "Shut down %s? Users signed in there lose unsaved work, and the computer stays off until someone turns it on." $d.Hostname}}{{end}}">
+      <b>{{if eq .Action "restart"}}{{$p.T "Restart the computer"}}{{else}}{{$p.T "Shut down the computer"}}{{end}}</b>
+      <label>{{$p.T "In (seconds)"}}<input type="number" name="delay" value="60" min="0" max="3600" required></label>
+      <label>{{$p.T "Message for the signed-in user"}} <small>{{$p.T "optional"}}</small><input name="message" maxlength="500" placeholder="{{if eq .Action "restart"}}{{$p.T "The computer restarts for maintenance."}}{{else}}{{$p.T "The computer shuts down for maintenance."}}{{end}}"></label>
+      <div><button class="{{if eq .Action "restart"}}primary{{else}}danger{{end}} sm" name="action" value="{{.Action}}" {{if not $p.Data.Online}}disabled{{end}}>{{if eq .Action "restart"}}{{$p.T "Restart"}}{{else}}{{$p.T "Shut down"}}{{end}}</button></div>
+    </form>
+    <form method="post" action="/devices/{{$d.ID}}/power"><button class="ghost sm" name="action" value="cancel" {{if not $p.Data.Online}}disabled{{end}}>{{$p.T "Cancel a scheduled restart or shutdown"}}</button></form>
+  </div>
+</details>{{end}}

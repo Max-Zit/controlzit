@@ -230,3 +230,9 @@ func (p *Page) Clock() ClockInfo {
 	_, off := now.Zone()
 	return ClockInfo{Text: now.Format("2006-01-02 15:04:05"), MS: now.UnixMilli(), Off: off}
 }
+
+// powerPop is the argument of the powerpop template (restart or shutdown).
+type powerPop struct {
+	P      *Page
+	Action string
+}

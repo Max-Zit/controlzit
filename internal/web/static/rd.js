@@ -71,7 +71,7 @@
   function mouse(wheel) { send({ t: "m", x: mx, y: my, b: buttons, w: wheel || 0 }); }
   var bit = { 0: 1, 1: 4, 2: 2 };
   canvas.addEventListener("mousemove", function (e) { pos(e); moved = true; });
-  canvas.addEventListener("mousedown", function (e) { e.preventDefault(); canvas.focus(); pos(e); buttons |= bit[e.button] || 0; mouse(); });
+  canvas.addEventListener("mousedown", function (e) { e.preventDefault(); focusKbd(); pos(e); buttons |= bit[e.button] || 0; mouse(); });
   canvas.addEventListener("mouseup", function (e) { e.preventDefault(); pos(e); buttons &= ~(bit[e.button] || 0); mouse(); });
   canvas.addEventListener("contextmenu", function (e) { e.preventDefault(); });
   canvas.addEventListener("wheel", function (e) { e.preventDefault(); pos(e); mouse(e.deltaY > 0 ? -120 : 120); }, { passive: false });
@@ -81,27 +81,58 @@
   })();
 
   // ---- keyboard (physical keys; the remote layout applies)
+  // Keys go to a hidden text field: that way the browser hands over the
+  // local clipboard in its paste event (Ctrl+V, Shift+Insert) without asking
+  // for a permission. The paste key reaches the remote computer only after
+  // the text is on its clipboard.
+  var kbd = document.createElement("textarea");
+  kbd.className = "rd-kbd";
+  kbd.setAttribute("aria-label", canvas.getAttribute("aria-label") || "Remote screen");
+  kbd.setAttribute("autocomplete", "off"); kbd.setAttribute("autocapitalize", "off"); kbd.setAttribute("spellcheck", "false");
+  root.appendChild(kbd);
+  function focusKbd() { kbd.focus({ preventScroll: true }); }
+  canvas.addEventListener("focus", focusKbd);
   var down = {};
-  // Keys go out in order; Ctrl+V first waits for the local clipboard.
-  var keys = Promise.resolve();
-  function key(code, isDown) { keys = keys.then(function () { send({ t: "k", code: code, down: isDown }); }); }
-  canvas.addEventListener("keydown", function (e) {
-    e.preventDefault();
+  var held = null; // the paste key, waiting for the paste event
+  function key(code, isDown) { send({ t: "k", code: code, down: isDown }); }
+  function isPaste(e) {
+    return (e.code === "KeyV" && (e.ctrlKey || e.metaKey) && !e.altKey) || (e.code === "Insert" && e.shiftKey && !e.ctrlKey);
+  }
+  function releaseHeld() {
+    if (!held) return;
+    var c = held; held = null;
+    key(c.code, true);
+    if (c.up) key(c.code, false);
+  }
+  kbd.addEventListener("keydown", function (e) {
+    if (e.isComposing) return;
     down[e.code] = true;
-    // Ctrl+V: put the local clipboard on the remote computer first.
-    if (clipOn && e.code === "KeyV" && (e.ctrlKey || e.metaKey) && navigator.clipboard && navigator.clipboard.readText) {
-      keys = keys.then(function () { return navigator.clipboard.readText(); }).then(function (s) {
-        if (s && s !== lastClip) { lastClip = s; send({ t: "clip", text: s.slice(0, 65536) }); }
-      }, function () { /* no permission: paste what the remote computer has */ });
+    if (clipOn && isPaste(e) && !e.repeat) {
+      // Let the browser fire the paste event; send the key after it.
+      releaseHeld();
+      held = { code: e.code, up: false };
+      setTimeout(releaseHeld, 400); // nothing (or no text) on the local clipboard
+      return;
     }
+    e.preventDefault();
     key(e.code, true);
   });
-  canvas.addEventListener("keyup", function (e) {
+  kbd.addEventListener("keyup", function (e) {
     e.preventDefault();
     delete down[e.code];
+    if (held && held.code === e.code) { held.up = true; return; }
     key(e.code, false);
   });
-  canvas.addEventListener("blur", function () {
+  kbd.addEventListener("paste", function (e) {
+    e.preventDefault();
+    var s = e.clipboardData ? e.clipboardData.getData("text/plain") : "";
+    if (clipOn && s && s !== lastClip) { lastClip = s; send({ t: "clip", text: s.slice(0, 65536) }); }
+    // The agent sets the clipboard before it replays the next input.
+    releaseHeld();
+  });
+  kbd.addEventListener("input", function () { kbd.value = ""; });
+  kbd.addEventListener("blur", function () {
+    releaseHeld();
     Object.keys(down).forEach(function (c) { key(c, false); });
     down = {};
     if (buttons) { buttons = 0; mouse(); }
@@ -112,9 +143,9 @@
     send({ t: "q", quality: Number(e.target.value) });
     send({ t: "full" });
   });
-  document.getElementById("rd-cad").addEventListener("click", function () { send({ t: "cad" }); canvas.focus(); });
+  document.getElementById("rd-cad").addEventListener("click", function () { send({ t: "cad" }); focusKbd(); });
   document.getElementById("rd-paste").addEventListener("click", function () {
-    var typeIt = function (s) { if (s) send({ t: "text", text: s.slice(0, 4096) }); canvas.focus(); };
+    var typeIt = function (s) { if (s) send({ t: "text", text: s.slice(0, 4096) }); focusKbd(); };
     if (navigator.clipboard && navigator.clipboard.readText) {
       navigator.clipboard.readText().then(typeIt, function () { typeIt(window.prompt(t("paste"))); });
     } else {
@@ -134,23 +165,36 @@
     monSel.value = String(shown);
     monSel.hidden = false;
   }
-  if (monSel) monSel.addEventListener("change", function () { send({ t: "mon", monitor: Number(monSel.value) }); canvas.focus(); });
+  if (monSel) monSel.addEventListener("change", function () { send({ t: "mon", monitor: Number(monSel.value) }); focusKbd(); });
 
   // ---- clipboard from the remote computer
   var remoteText = "";
+  // Copied on the remote computer (Ctrl+C there): put it on the local
+  // clipboard right away; the key press still counts as the user's action.
   function remoteCopied(s) {
     remoteText = s;
     lastClip = s;
     var done = function () { flash(t("copied")); };
+    var fallback = function () {
+      // Older way, inside the same user action: copy from the hidden field.
+      var ok = false;
+      try {
+        kbd.value = s; kbd.select();
+        ok = document.execCommand("copy");
+      } catch (e) { ok = false; }
+      kbd.value = "";
+      focusKbd();
+      if (ok) done(); else if (clipBtn) clipBtn.hidden = false;
+    };
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(s).then(done, function () { if (clipBtn) clipBtn.hidden = false; });
-    } else if (clipBtn) {
-      clipBtn.hidden = false;
+      navigator.clipboard.writeText(s).then(done, fallback);
+    } else {
+      fallback();
     }
   }
   if (clipBtn) clipBtn.addEventListener("click", function () {
     if (navigator.clipboard) navigator.clipboard.writeText(remoteText).then(function () { clipBtn.hidden = true; flash(t("copied")); });
-    canvas.focus();
+    focusKbd();
   });
   var flashTimer = 0;
   function flash(s) {
@@ -163,7 +207,7 @@
   document.getElementById("rd-full").addEventListener("click", function () {
     var el = document.getElementById("rd");
     if (document.fullscreenElement) document.exitFullscreen(); else if (el.requestFullscreen) el.requestFullscreen();
-    canvas.focus();
+    focusKbd();
   });
 
   // ---- fit the remote screen into the space there is (page, own window or
@@ -181,6 +225,15 @@
     canvas.style.height = Math.floor(canvas.height * s) + "px";
   }
   window.addEventListener("resize", fit);
-  document.addEventListener("fullscreenchange", function () { setTimeout(fit, 50); });
+  document.addEventListener("fullscreenchange", function () {
+    setTimeout(fit, 50);
+    // Full screen: shortcuts the browser would take (Ctrl+W, Ctrl+T, the
+    // Windows key, Esc) go to the remote computer; hold Esc to leave.
+    if (navigator.keyboard && navigator.keyboard.lock) {
+      if (document.fullscreenElement === root) navigator.keyboard.lock().catch(function () { /* not supported */ });
+      else navigator.keyboard.unlock();
+    }
+    focusKbd();
+  });
   fit();
 })();

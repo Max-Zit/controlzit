@@ -478,7 +478,7 @@
   "The notice is a bar at the top of the screen with the technician's name; the technician does not see it in the picture. Switching it off applies to new sessions. Every session is written to the audit log either way.": "Obaveštenje je traka na vrhu ekrana sa imenom tehničara; tehničar je ne vidi na slici. Isključivanje važi za nove sesije. Svaka sesija se u svakom slučaju upisuje u dnevnik aktivnosti.",
   "The person at the computer sees a notice that you are connected.": "Osoba za računarom vidi obaveštenje da ste povezani.",
   "The notice on the remote screen is switched off in the settings.": "Obaveštenje na udaljenom ekranu je isključeno u podešavanjima.",
-  "Click the screen to type; keys go to the remote computer with its own keyboard layout. The session is written to the audit log.": "Kliknite na ekran da biste kucali; tasteri idu udaljenom računaru, sa njegovim rasporedom tastature. Sesija se upisuje u dnevnik aktivnosti.",
+  "Click the screen to type; keys go to the remote computer with its own keyboard layout. Copy and paste work as usual (Ctrl+C, Ctrl+V) in both directions. In full screen, shortcuts such as Ctrl+W or the Windows key also go to the remote computer (hold Esc to leave). The session is written to the audit log.": "Kliknite na ekran da biste kucali; tasteri idu udaljenom računaru, sa njegovim rasporedom tastature. Kopiranje i lepljenje rade kao i obično (Ctrl+C, Ctrl+V), u oba smera. Na celom ekranu i prečice kao Ctrl+W ili Windows taster idu udaljenom računaru (za izlaz držite Esc). Sesija se upisuje u dnevnik aktivnosti.",
   "Ports, allowed networks, agent address": "Portovi, dozvoljene mreže, adresa za agente",
   "Session length, blocked addresses": "Trajanje sesije, blokirane adrese",
   "Rules and alert emails": "Pravila i e-poruke o upozorenjima",
@@ -920,5 +920,10 @@
   "Every file operation is done by the agent as root and written to the audit log with your name.": "Svaku radnju sa fajlovima agent izvršava kao root i upisuje je u dnevnik aktivnosti sa vašim imenom.",
   "Open settings": "Otvori podešavanja",
   "Run no.": "Broj",
-  "terminal sessions": "sesija terminala"
+  "terminal sessions": "sesija terminala",
+  "Restart %s? Users signed in there lose unsaved work.": "Ponovo pokrenuti %s? Prijavljeni korisnici gube nesačuvan rad.",
+  "Restart the computer": "Ponovo pokreni računar",
+  "Shut down %s? Users signed in there lose unsaved work, and the computer stays off until someone turns it on.": "Ugasiti %s? Prijavljeni korisnici gube nesačuvan rad, a računar ostaje ugašen dok ga neko ne uključi.",
+  "Shut down the computer": "Ugasi računar",
+  "The computer shuts down for maintenance.": "Računar se gasi zbog održavanja."
 }
