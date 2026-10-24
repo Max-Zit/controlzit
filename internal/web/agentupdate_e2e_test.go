@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"runtime"
 	"strings"
 	"sync"
 	"testing"
@@ -36,6 +37,9 @@ func uploadPackage(t *testing.T, e *env, c *client, name string, body []byte) re
 }
 
 func TestAgentSelfUpdate(t *testing.T) {
+	if runtime.GOOS != "windows" {
+		t.Skip("the test device is a Windows machine: its agent asks for the Windows installer")
+	}
 	e := newEnv(t)
 	e.useRealClock()
 	_, key, _ := ed25519.GenerateKey(rand.Reader)
