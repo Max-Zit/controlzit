@@ -31,7 +31,10 @@
     if (typeof ev.data === "string") {
       try {
         var m = JSON.parse(ev.data);
-        if (m.t === "error") setStatus(m.text, "err");
+        if (m.t === "error" && m.for && waiting[m.for]) { waiting[m.for].fail(m.text); delete waiting[m.for]; }
+        else if (m.t === "error") setStatus(m.text, "err");
+        else if (waiting[m.t]) { waiting[m.t].ok(m); delete waiting[m.t]; }
+        else if (m.t === "copied") remoteFiles(m.items || []);
       } catch (e) { /* ignore */ }
       return;
     }
@@ -125,6 +128,13 @@
   });
   kbd.addEventListener("paste", function (e) {
     e.preventDefault();
+    var files = e.clipboardData ? e.clipboardData.files : null;
+    if (clipOn && files && files.length) {
+      // Files copied in Explorer: the paste key goes out after the upload.
+      var wasHeld = held; held = null;
+      sendFiles(files, !!wasHeld);
+      return;
+    }
     var s = e.clipboardData ? e.clipboardData.getData("text/plain") : "";
     if (clipOn && s && s !== lastClip) { lastClip = s; send({ t: "clip", text: s.slice(0, 65536) }); }
     // The agent sets the clipboard before it replays the next input.
@@ -196,6 +206,97 @@
     if (navigator.clipboard) navigator.clipboard.writeText(remoteText).then(function () { clipBtn.hidden = true; flash(t("copied")); });
     focusKbd();
   });
+  // ---- files through the clipboard (Windows)
+  // Pasted or dropped files: the helper makes a staging folder in the
+  // signed-in user's Temp, the console uploads the files there (audited like
+  // any upload), the helper puts them on the remote clipboard as copied
+  // files, and Ctrl+V pastes them where the user is.
+  var waiting = {};
+  var devBase = root.getAttribute("data-ws").replace(/\/rd\/ws$/, "");
+  var busy = false;
+  function ask(msg, answer) {
+    return new Promise(function (ok, fail) {
+      waiting[answer] = { ok: ok, fail: function (s) { fail(new Error(s)); } };
+      setTimeout(function () { if (waiting[answer]) { delete waiting[answer]; fail(new Error(t("noanswer"))); } }, 20000);
+      send(msg);
+    });
+  }
+  function upload(dir, files) {
+    return new Promise(function (ok, fail) {
+      var fd = new FormData();
+      fd.append("dir", dir);
+      for (var i = 0; i < files.length; i++) fd.append("file", files[i], files[i].name);
+      var x = new XMLHttpRequest();
+      x.open("POST", devBase + "/rd/upload");
+      x.upload.onprogress = function (e) {
+        if (e.lengthComputable) setStatus(t("sending") + " " + Math.floor(e.loaded * 100 / e.total) + " %", "ok");
+      };
+      x.onload = function () {
+        var res = {};
+        try { res = JSON.parse(x.responseText); } catch (e) { res = { error: x.statusText }; }
+        if (x.status === 200 && res.paths) ok(res.paths); else fail(new Error(res.error || x.statusText));
+      };
+      x.onerror = function () { fail(new Error(t("closed"))); };
+      x.send(fd);
+    });
+  }
+  function sendFiles(files, paste) {
+    if (busy) return;
+    busy = true;
+    var restore = status.textContent, restoreCls = status.className;
+    setStatus(t("sending") + " 0 %", "ok");
+    ask({ t: "stage" }, "stage").then(function (m) {
+      return upload(m.path, files);
+    }).then(function (paths) {
+      return ask({ t: "files", paths: paths }, "files");
+    }).then(function () {
+      status.textContent = restore; status.className = restoreCls;
+      if (paste) {
+        // Ctrl+V on the remote computer (Ctrl may still be held here).
+        var ctrlHeld = down.ControlLeft || down.ControlRight;
+        if (!ctrlHeld) key("ControlLeft", true);
+        key("KeyV", true); key("KeyV", false);
+        if (!ctrlHeld) key("ControlLeft", false);
+        flash(t("pasted").replace("%d", files.length));
+      } else {
+        flash(t("dropped").replace("%d", files.length));
+      }
+    }).catch(function (err) {
+      setStatus(err.message, "err");
+      setTimeout(function () { if (status.textContent === err.message) { status.textContent = restore; status.className = restoreCls; } }, 6000);
+    }).then(function () { busy = false; focusKbd(); });
+  }
+  if (clipOn) {
+    var screenEl = document.getElementById("rd-screen");
+    screenEl.addEventListener("dragover", function (e) { e.preventDefault(); e.dataTransfer.dropEffect = "copy"; root.classList.add("dropping"); });
+    screenEl.addEventListener("dragleave", function () { root.classList.remove("dropping"); });
+    screenEl.addEventListener("drop", function (e) {
+      e.preventDefault();
+      root.classList.remove("dropping");
+      if (e.dataTransfer && e.dataTransfer.files.length) sendFiles(e.dataTransfer.files, false);
+    });
+  }
+  // Copied files on the remote computer: offer them for download.
+  var filesBtn = document.getElementById("rd-files");
+  var copiedItems = [];
+  function remoteFiles(items) {
+    copiedItems = items.slice(0, 200);
+    if (!filesBtn || !copiedItems.length) return;
+    filesBtn.querySelector("span").textContent = t("download").replace("%d", copiedItems.length);
+    filesBtn.hidden = false;
+  }
+  if (filesBtn) filesBtn.addEventListener("click", function () {
+    if (!copiedItems.length) return;
+    var q = copiedItems.map(function (it) { return "path=" + encodeURIComponent(it.path); }).join("&");
+    var url = copiedItems.length === 1 && !copiedItems[0].dir ? devBase + "/files/download?" + q : devBase + "/files/zip?" + q;
+    var a = document.createElement("a");
+    a.href = url; a.download = "";
+    document.body.appendChild(a); a.click(); a.remove();
+    filesBtn.hidden = true;
+    flash(t("downloading"));
+    focusKbd();
+  });
+
   var flashTimer = 0;
   function flash(s) {
     var old = status.textContent, cls = status.className;

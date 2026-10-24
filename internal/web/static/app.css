@@ -420,3 +420,4 @@ table.runs code.clip { max-width: 52ch; }
 .tb { font-weight: 700; } .td { opacity: .6; } .ti { font-style: italic; } .tu { text-decoration: underline; } .ts { text-decoration: line-through; } .th { visibility: hidden; }
 .tinvfg { color: #111; } .tinvbg { background: #d0d0d0; }
 .tcur { background: #d0d0d0; color: #111; } .tcur-off { outline: 1px solid #d0d0d0; outline-offset: -1px; }
+.rd.dropping .rd-screen { outline: 3px dashed var(--accent); outline-offset: -3px; }

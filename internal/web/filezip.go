@@ -6,6 +6,7 @@ import (
 	"mime"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/max-zit/controlzit/internal/proto"
@@ -32,6 +33,11 @@ type zipJob struct {
 func (s *Server) handleFolderZip(w http.ResponseWriter, r *http.Request) {
 	d := s.deviceForFiles(w, r)
 	if d == nil {
+		return
+	}
+	_ = r.ParseForm()
+	if paths := r.Form["path"]; len(paths) > 1 {
+		s.zipSelection(w, r, d, paths)
 		return
 	}
 	dir := r.FormValue("path")
@@ -84,7 +90,7 @@ func (j *zipJob) folder(ctx context.Context, l proto.FSListing, prefix string, d
 				j.failed = append(j.failed, full+" ("+err.Error()+")")
 				continue
 			}
-			_, _ = j.zw.Create(rel + "/")
+			_, _ = j.zw.CreateHeader(&zip.FileHeader{Name: rel + "/", Modified: e.Modified})
 			j.folder(ctx, sub, rel+"/", depth+1)
 			continue
 		}
@@ -127,4 +133,55 @@ func (j *zipJob) file(ctx context.Context, full, rel string, e proto.FSEntry) {
 			return
 		}
 	}
+}
+
+// zipSelection sends several files and folders (copied together on the
+// remote computer) as one ZIP: each parent folder is listed once and the
+// chosen entries are taken from it.
+func (s *Server) zipSelection(w http.ResponseWriter, r *http.Request, d *store.Device, paths []string) {
+	if len(paths) > proto.MaxClipFiles {
+		paths = paths[:proto.MaxClipFiles]
+	}
+	want := map[string]map[string]bool{} // parent → names
+	var parents []string
+	for _, p := range paths {
+		parent, name := winParent(p), winBase(p)
+		if parent == "" || name == "" {
+			continue
+		}
+		if want[parent] == nil {
+			want[parent] = map[string]bool{}
+			parents = append(parents, parent)
+		}
+		want[parent][strings.ToLower(name)] = true
+	}
+	_ = http.NewResponseController(w).SetWriteDeadline(time.Time{})
+	w.Header().Set("Content-Type", "application/zip")
+	w.Header().Set("Content-Disposition", mime.FormatMediaType("attachment", map[string]string{"filename": d.Hostname + "-files.zip"}))
+	w.Header().Set("Cache-Control", "no-store")
+	j := &zipJob{s: s, r: r, d: d, zw: zip.NewWriter(w)}
+	for _, parent := range parents {
+		var l proto.FSListing
+		if err := s.call(r.Context(), d.ID, s.issuer(r), proto.KindFSList, proto.FSPath{Path: parent}, &l, fsTimeout); err != nil {
+			j.failed = append(j.failed, parent+" ("+err.Error()+")")
+			continue
+		}
+		sel := proto.FSListing{Path: l.Path}
+		for _, e := range l.Entries {
+			if want[parent][strings.ToLower(e.Name)] {
+				sel.Entries = append(sel.Entries, e)
+			}
+		}
+		j.folder(r.Context(), sel, "", 0)
+	}
+	if len(j.failed) > 0 {
+		if f, err := j.zw.Create("_controlzit-skipped.txt"); err == nil {
+			for _, p := range j.failed {
+				_, _ = f.Write([]byte(p + "\r\n"))
+			}
+		}
+	}
+	_ = j.zw.Close()
+	s.audit(r, "file.download.folder", "device:"+strconv.FormatInt(d.ID, 10), "downloaded %d copied items as ZIP from %q: %d files, %d bytes, %d skipped",
+		len(paths), d.Hostname, j.files, j.bytes, len(j.failed))
 }

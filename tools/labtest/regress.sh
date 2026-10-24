@@ -138,6 +138,9 @@ RLINK=$($C "$JLOC" | grep -o "/devices/$DEV/scripts/[0-9]*" | head -1)
 check "library job output stored" '$C "$S$RLINK" | grep -q "lib-ok DESKTOP-NBB66OQ"'
 $C -o /dev/null -d x=1 $S/scripts/$SID/delete
 
+printf x > .gotmp/r-up.txt
+check "remote desktop paste upload only into a staging folder" '[ "$($C -o /dev/null -w %{http_code} -F "dir=C:\cztest" -F "file=@.gotmp/r-up.txt;filename=x.txt" $S/devices/$DEV/rd/upload)" = 400 ]'
+
 # --- Linux agent (LDEV: device ID of deb-vm)
 if [ -n "$LDEV" ]; then
   check "Linux device online with its OS" '$C $S/devices/$LDEV | grep -q "Debian GNU/Linux"'

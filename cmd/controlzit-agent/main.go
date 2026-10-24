@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"github.com/max-zit/controlzit/internal/agent"
+	"github.com/max-zit/controlzit/internal/rd"
 )
 
 var version = "dev"
@@ -159,6 +160,9 @@ func run(args []string) error {
 		line, _ := bufio.NewReader(os.Stdin).ReadString('\n')
 		log := slog.New(slog.NewTextHandler(agent.OpenLog(*dir), nil)).With("helper", *session)
 		return agent.RunHelper(ctx, *dir, *session, *technician, line, !*noNotice, !*noClipboard, log)
+	case "clipwatch":
+		// Started by a remote desktop helper as the signed-in user.
+		return rd.WatchFiles(ctx, os.Stdout)
 	case "install":
 		return installService(*code)
 	case "uninstall":

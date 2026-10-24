@@ -925,5 +925,17 @@
   "Restart the computer": "Ponovo pokreni računar",
   "Shut down %s? Users signed in there lose unsaved work, and the computer stays off until someone turns it on.": "Ugasiti %s? Prijavljeni korisnici gube nesačuvan rad, a računar ostaje ugašen dok ga neko ne uključi.",
   "Shut down the computer": "Ugasi računar",
-  "The computer shuts down for maintenance.": "Računar se gasi zbog održavanja."
+  "The computer shuts down for maintenance.": "Računar se gasi zbog održavanja.",
+  "%d files are on the remote clipboard: press Ctrl+V where you want them.": "Fajlova u clipboard-u udaljenog računara: %d. Pritisnite Ctrl+V tamo gde ih želite.",
+  "Download copied files (%d)": "Preuzmi kopirane fajlove (%d)",
+  "Download started.": "Preuzimanje je počelo.",
+  "Files copied on the remote computer": "Fajlovi kopirani na udaljenom računaru",
+  "Pasted %d files on the remote computer.": "Nalepljeno fajlova na udaljenom računaru: %d.",
+  "Sending files…": "Šaljem fajlove…",
+  "The remote computer did not answer.": "Udaljeni računar nije odgovorio.",
+  "Copying files through the clipboard is switched off or not available for this device.": "Kopiranje fajlova preko clipboard-a je isključeno ili nije dostupno za ovaj uređaj.",
+  "nobody is signed in to the remote computer": "na udaljenom računaru niko nije prijavljen",
+  "the clipboard exchange is switched off in the settings": "razmena clipboard-a je isključena u podešavanjima",
+  "these files cannot be put on the clipboard": "ovi fajlovi ne mogu da se stave u clipboard",
+  "copying files through the clipboard works with Windows computers": "kopiranje fajlova preko clipboard-a radi sa Windows računarima"
 }

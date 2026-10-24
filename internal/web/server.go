@@ -297,6 +297,7 @@ func (s *Server) Handler() http.Handler {
 	app("GET /devices/{id}", s.handleDevice)
 	app("GET /devices/{id}/rd", s.handleRD)
 	app("GET /devices/{id}/rd/ws", s.handleRDSocket)
+	app("POST /devices/{id}/rd/upload", s.handleRDUpload)
 	app("GET /devices/{id}/terminal", s.handleTerm)
 	app("GET /devices/{id}/terminal/ws", s.handleTermSocket)
 	app("GET /devices/{id}/files", s.handleFiles)

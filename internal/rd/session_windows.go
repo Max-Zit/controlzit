@@ -44,14 +44,36 @@ func Serve(ctx context.Context, ws *websocket.Conn, technician string, notice, c
 	defer cancel()
 	// Clipboard: text copied on the remote computer goes to the browser;
 	// the browser sets the remote clipboard before the technician pastes.
+	// Copied files are offered to the browser for download, and files the
+	// technician pastes are put on the clipboard as copied files.
+	reply := func(r proto.RDReply) {
+		b, _ := json.Marshal(r)
+		wctx, wcancel := context.WithTimeout(ctx, 30*time.Second)
+		defer wcancel()
+		_ = ws.Write(wctx, websocket.MessageText, b)
+	}
 	var clip *Clipboard
 	if clipboard {
-		var err error
+		copied := func(paths []string) {
+			if InStage(paths) {
+				return // the files the technician just pasted
+			}
+			reply(proto.RDReply{T: "copied", Items: FileItems(paths)})
+		}
+		// Copied files are only visible to the user's own processes.
+		watching, err := startFileWatcher(ctx, copied)
+		if err != nil {
+			log.Warn("copied files cannot be watched", "err", err)
+		}
+		inProcess := copied
+		if watching {
+			inProcess = nil
+		}
 		clip, err = StartClipboard(ctx, func(text string) {
 			wctx, wcancel := context.WithTimeout(ctx, 30*time.Second)
 			defer wcancel()
 			_ = ws.Write(wctx, websocket.MessageBinary, append([]byte{proto.RDClip}, text...))
-		})
+		}, inProcess)
 		if err != nil {
 			log.Warn("clipboard not available", "err", err)
 		}
@@ -91,6 +113,28 @@ func Serve(ctx context.Context, ws *websocket.Conn, technician string, notice, c
 						log.Warn("cannot set the remote clipboard", "err", err)
 					}
 				}
+			case "stage":
+				if clip == nil {
+					reply(proto.RDReply{T: "error", For: "stage", Text: "the clipboard exchange is switched off in the settings"})
+					break
+				}
+				dir, err := StageDir()
+				if err != nil {
+					reply(proto.RDReply{T: "error", For: "stage", Text: err.Error()})
+					break
+				}
+				reply(proto.RDReply{T: "stage", Path: dir})
+			case "files":
+				if clip == nil || !InStage(in.Paths) {
+					reply(proto.RDReply{T: "error", For: "files", Text: "these files cannot be put on the clipboard"})
+					break
+				}
+				if err := clip.SetFiles(in.Paths); err != nil {
+					reply(proto.RDReply{T: "error", For: "files", Text: err.Error()})
+					break
+				}
+				log.Info("files put on the remote clipboard", "count", len(in.Paths))
+				reply(proto.RDReply{T: "files"})
 			case "full":
 				select {
 				case inputs <- in:

@@ -59,8 +59,9 @@ type Clipboard struct {
 
 // StartClipboard runs the clipboard thread until ctx ends; onChange gets
 // the text whenever another program copies text (not the text that was
-// already there, nor the text set through Set).
-func StartClipboard(ctx context.Context, onChange func(string)) (*Clipboard, error) {
+// already there, nor the text set through Set), onFiles the files when
+// files are copied (in Explorer, for example).
+func StartClipboard(ctx context.Context, onChange func(string), onFiles func([]string)) (*Clipboard, error) {
 	c := &Clipboard{req: make(chan func())}
 	ready := make(chan error, 1)
 	go func() {
@@ -100,7 +101,11 @@ func StartClipboard(ctx context.Context, onChange func(string)) (*Clipboard, err
 				poll = time.Now()
 				if seq, _, _ := pGetClipboardSequenceNumber.Call(); seq != c.lastSeq {
 					c.lastSeq = seq
-					if s, err := c.read(); err == nil && s != "" {
+					if files, err := c.readFiles(); err == nil && len(files) > 0 {
+						if onFiles != nil {
+							onFiles(files)
+						}
+					} else if s, err := c.read(); err == nil && s != "" && onChange != nil {
 						onChange(s)
 					}
 				}

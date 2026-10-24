@@ -68,6 +68,11 @@ func Serve(ctx context.Context, ws *websocket.Conn, technician string, notice, _
 				if in.Quality >= 10 && in.Quality <= 95 {
 					quality.Store(int32(in.Quality)) // #nosec G115 -- 10..95
 				}
+			case "stage", "files":
+				b, _ := json.Marshal(proto.RDReply{T: "error", For: in.T, Text: "copying files through the clipboard works with Windows computers"})
+				wctx, wcancel := context.WithTimeout(ctx, 10*time.Second)
+				_ = ws.Write(wctx, websocket.MessageText, b)
+				wcancel()
 			default:
 				select {
 				case inputs <- in:

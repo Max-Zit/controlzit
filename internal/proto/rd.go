@@ -52,7 +52,7 @@ type RDScreenInfo struct {
 
 // RDInput is a text message from the browser.
 type RDInput struct {
-	T string `json:"t"` // m mouse, k key, ack, q quality, cad, text, clip (set the remote clipboard), mon (monitor)
+	T string `json:"t"` // m mouse, k key, ack, q quality, cad, text, clip (set the remote clipboard), mon (monitor), stage, files
 	// mouse: position in screen pixels, buttons bit mask (1 left, 2 right,
 	// 4 middle), wheel delta (120 per notch)
 	X       int `json:"x,omitempty"`
@@ -68,6 +68,8 @@ type RDInput struct {
 	Text string `json:"text,omitempty"`
 	// monitor to show (-1: all monitors)
 	Monitor int `json:"monitor,omitempty"`
+	// files: put these files (in the staging folder) on the remote clipboard
+	Paths []string `json:"paths,omitempty"`
 }
 
 // Tile is one changed rectangle, JPEG or PNG encoded.
@@ -135,3 +137,31 @@ type RDMonitor struct {
 
 // MaxClipboard limits clipboard text exchanged in either direction.
 const MaxClipboard = 64 << 10
+
+// Files through the clipboard (Windows). The browser asks for a staging
+// folder ({"t":"stage"}); the helper answers {"t":"stage","path":…} (a
+// fresh folder in the signed-in user's Temp). The browser uploads the files
+// there through the console, then sends {"t":"files","paths":[…]}: the
+// helper puts them on the clipboard as copied files and answers
+// {"t":"files"}; the next Ctrl+V pastes them. When the user copies files on
+// the remote computer, the helper sends {"t":"copied","items":[…]} and the
+// browser offers them for download. Errors come as {"t":"error","text":…}
+// with the same "for" as the request.
+
+// RDReply is a text message from the helper.
+type RDReply struct {
+	T     string       `json:"t"`
+	Path  string       `json:"path,omitempty"`
+	Items []RDFileItem `json:"items,omitempty"`
+	Text  string       `json:"text,omitempty"`
+	For   string       `json:"for,omitempty"` // the request an error answers
+}
+
+// RDFileItem is a file or folder copied on the remote computer.
+type RDFileItem struct {
+	Path string `json:"path"`
+	Dir  bool   `json:"dir,omitempty"`
+}
+
+// MaxClipFiles limits the files exchanged through the clipboard at once.
+const MaxClipFiles = 200

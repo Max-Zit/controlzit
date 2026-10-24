@@ -118,6 +118,7 @@ func (s *Server) handleRDSocket(w http.ResponseWriter, r *http.Request) {
 	if name == "" {
 		name = u.Username
 	}
+	lang := s.lang(r, u)
 	settings := s.Remote(ctx)
 	if !d.IsWindows() {
 		settings.Clipboard = false // not on Linux yet
@@ -150,6 +151,9 @@ func (s *Server) handleRDSocket(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			bytesDown.Add(int64(len(data)))
+			if typ == websocket.MessageText && bytes.Contains(data, []byte(`"t":"error"`)) {
+				data = translateReply(data, lang) // the helper writes English
+			}
 			if typ == websocket.MessageBinary && len(data) > 0 && data[0] == proto.RDClip {
 				if !settings.Clipboard {
 					continue
@@ -248,4 +252,18 @@ func isClip(data []byte) bool {
 		T string `json:"t"`
 	}
 	return json.Unmarshal(data, &m) == nil && m.T == "clip"
+}
+
+// translateReply translates the text of an error message from the helper.
+func translateReply(data []byte, lang string) []byte {
+	var m proto.RDReply
+	if json.Unmarshal(data, &m) != nil || m.Text == "" {
+		return data
+	}
+	m.Text = translate(lang, m.Text)
+	b, err := json.Marshal(m)
+	if err != nil {
+		return data
+	}
+	return b
 }
