@@ -1,0 +1,51 @@
+<h1>Solución de problemas y preguntas frecuentes</h1>
+<p class="lead">Las preguntas más comunes y qué comprobar primero. Para una solicitud de soporte, descargue el diagnóstico en <a href="/settings/diagnostics">Configuración → Diagnóstico</a>.</p>
+
+<h2 id="console">No puedo acceder a la consola</h2>
+<ul>
+  <li>Puede que su dirección no esté en las redes permitidas: la conexión se cierra antes de TLS, así que el navegador muestra un error de conexión. Ejecute <code>controlzit-server --reset-allowlist</code> en el servidor (appliance: menú de configuración, opción 5) para volver a permitir todas las redes privadas.</li>
+  <li>Tras cambiar el puerto, abra la consola en el puerto nuevo.</li>
+  <li>Compruebe el servicio en el servidor: <code>systemctl status controlzit-server</code> y <code>journalctl -u controlzit-server</code>.</li>
+</ul>
+
+<h2 id="signin">Problemas de inicio de sesión</h2>
+<ul>
+  <li><b>El código es incorrecto</b>: la hora del teléfono debe ser correcta (hora automática).</li>
+  <li><b>Teléfono perdido</b>: inicie sesión con un código de recuperación; otro administrador puede restablecer el inicio de sesión en dos pasos.</li>
+  <li><b>Demasiados intentos fallidos</b>: la dirección queda bloqueada un tiempo; un administrador puede <b>desbloquearla</b> en <a href="/settings/security">Configuración → Inicio de sesión y seguridad</a>. Los inicios de sesión desde el propio servidor nunca se bloquean.</li>
+  <li><b>LDAP / inicio de sesión único</b>: use <b>Probar</b> en la página de LDAP; compruebe los grupos que envía el proveedor. El registro del servidor tiene los detalles.</li>
+</ul>
+
+<h2 id="agent">Un agente no se conecta</h2>
+<ul>
+  <li>¿Llega el equipo al puerto de agentes? En Windows: <code>Test-NetConnection rmm.example.com -Port 8444</code>.</li>
+  <li>¿Es correcta la dirección pública de agentes? Los códigos creados con la consola abierta en localhost envían el agente al servidor equivocado; defina la dirección y cree un código nuevo.</li>
+  <li>¿Sigue siendo válido el código y no se ha agotado?</li>
+  <li>Registros del agente: Windows <code>C:\ProgramData\ControlZit Agent\agent.log</code>, Linux <code>/var/lib/controlzit-agent/agent.log</code> y <code>journalctl -u controlzit-agent</code>; con el dispositivo conectado, ábralos desde la consola en <b>Archivos</b>. En Windows, el icono junto al reloj muestra el estado de la conexión.</li>
+</ul>
+
+<h2 id="rd">El escritorio remoto no muestra nada</h2>
+<ul>
+  <li>Linux con Wayland no se puede mostrar: inicie una sesión X11 (Xorg) o use el terminal.</li>
+  <li>Linux sin escritorio: use el terminal.</li>
+  <li>Copiar archivos por el portapapeles necesita un usuario con sesión iniciada en el equipo Windows.</li>
+</ul>
+
+<h2 id="updates">Las actualizaciones de Windows no se instalan</h2>
+<ul>
+  <li>Compruebe la instalación automática en <a href="/settings/updates">Configuración → Actualizaciones de Windows</a>: los días, la hora y el modo. Los dispositivos deben estar en línea durante esa hora.</li>
+  <li>La pestaña <b>Actualizaciones</b> del dispositivo muestra la última búsqueda y su error, si lo hay.</li>
+</ul>
+
+<h2 id="email">No llegan los correos de alerta</h2>
+<p>Use <b>Enviar un correo de prueba</b> en <a href="/settings/monitoring">Configuración → Supervisión y alertas</a>; el mensaje muestra la respuesta del servidor. Una contraseña solo se envía por STARTTLS o TLS.</p>
+
+<h2 id="faq">Preguntas frecuentes</h2>
+<h3 id="faq-cloud">¿Necesita ControlZit un servicio en la nube?</h3>
+<p>No. Todo se ejecuta en su servidor; no se envía nada a MaxZit. El servidor solo consulta GitHub para ver si hay versiones nuevas.</p>
+<h3 id="faq-backup">¿Cómo hago copia de ControlZit?</h3>
+<p>Haga copia de la base de datos PostgreSQL (<code>pg_dump</code>) y de la carpeta <code>/var/lib/controlzit</code>. Sin la clave secreta y los certificados de ahí, las contraseñas guardadas no se pueden descifrar y los agentes no confiarían en un servidor nuevo.</p>
+<h3 id="faq-move">¿Puedo mover el servidor a otra máquina?</h3>
+<p>Sí: instale ControlZit en la nueva máquina, restaure la base de datos y <code>/var/lib/controlzit</code> y mantenga la misma dirección (o cambie la dirección pública de agentes y haga que el nombre antiguo apunte a la nueva máquina).</p>
+<h3 id="faq-mac">¿Hay un agente para macOS?</h3>
+<p>Todavía no. Se admiten Windows y Linux (x86-64, ARM64).</p>

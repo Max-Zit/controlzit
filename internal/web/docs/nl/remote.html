@@ -1,0 +1,29 @@
+<h1>Extern bureaublad, terminal en bestanden</h1>
+<p class="lead">Help gebruikers en repareer computers vanuit de browser: geen software aan uw kant, geen open poorten aan hun kant. Alles loopt via de versleutelde verbinding van de agent en wordt in het auditlogboek gezet.</p>
+
+<h2 id="rd">Extern bureaublad</h2>
+<p>Open een apparaat en klik op <b>Extern bureaublad</b> (of open het in een eigen venster). U ziet het scherm en bedient het met muis en toetsenbord.</p>
+<ul>
+  <li><b>Toetsenbord:</b> klik op het scherm om te typen; toetsen gaan naar de externe computer met diens eigen toetsenbordindeling. <b>Ctrl+Alt+Del verzenden</b> en <b>Tekst verzenden</b> (typt een tekst, bijvoorbeeld een lang wachtwoord) staan in de werkbalk. In volledig scherm gaan ook sneltoetsen zoals <kbd>Ctrl</kbd>+<kbd>W</kbd> of de Windows-toets naar de externe computer; houd <kbd>Esc</kbd> ingedrukt om volledig scherm te verlaten.</li>
+  <li><b>Kwaliteit:</b> Snel, Gebalanceerd of Scherp, afhankelijk van de verbinding.</li>
+  <li><b>Monitoren:</b> kies één monitor of allemaal.</li>
+  <li><b>Aanmeld- en UAC-schermen</b> worden getoond en zijn bruikbaar, zodat u zich kunt aanmelden en beheerdersvragen kunt bevestigen.</li>
+</ul>
+
+<h3 id="clipboard">Klembord en bestanden</h3>
+<p>Op Windows-computers gaat gekopieerde tekst in beide richtingen met <kbd>Ctrl</kbd>+<kbd>C</kbd> en <kbd>Ctrl</kbd>+<kbd>V</kbd>. In uw Verkenner gekopieerde <b>bestanden</b> worden met <kbd>Ctrl</kbd>+<kbd>V</kbd> op de externe computer geplakt. Op de externe computer gekopieerde bestanden worden als download aangeboden (<b>Gekopieerde bestanden downloaden</b>), omdat een browser geen bestanden op uw klembord kan zetten. De klemborduitwisseling kan worden uitgeschakeld onder <a href="/settings/remote">Instellingen → Extern bureaublad</a>.</p>
+
+<h3 id="notice">Melding op het externe scherm</h3>
+<p>Standaard ziet de persoon achter de computer bovenaan het scherm een balk met uw naam zolang u verbonden bent. U ziet de balk zelf niet in het beeld. Hij kan worden uitgeschakeld onder <a href="/settings/remote">Instellingen → Extern bureaublad</a>; elke sessie wordt hoe dan ook in het auditlogboek gezet.</p>
+
+<h3 id="linux-rd">Linux</h3>
+<p>Extern bureaublad werkt op Linux-bureaubladen met X11 (Xorg). Wayland staat een achtergrondservice niet toe het scherm te zien of te bedienen: meld u daar aan met een X11-sessie of gebruik de terminal. Zonder grafisch bureaublad gebruikt u de terminal.</p>
+
+<h2 id="terminal">Terminal (Linux)</h2>
+<p><b>Terminal</b> opent een root-shell van het apparaat in de browser. Klik erin om te typen; kopieer door tekst te selecteren, plak met <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> of <b>Tekst verzenden</b>. Begin en einde van de sessie worden in het auditlogboek gezet. Gebruik op Windows <a href="/docs/scripts">Scripts</a>.</p>
+
+<h2 id="files">Bestanden</h2>
+<p><b>Bestanden</b> bladert door de stations van de computer zonder verbinding met het scherm. Upload bestanden (tot 4 GB), download bestanden, download een map of selectie als ZIP, maak mappen, wijzig namen en verwijder. De agent voert elke bestandsbewerking uit als SYSTEM (Windows) of root (Linux); elke bewerking wordt met uw naam in het auditlogboek gezet.</p>
+
+<h2 id="processes">Processen en services</h2>
+<p><b>Processen</b> toont actieve programma's met hun geheugen, threads en sessie en beëindigt een proces. <b>Services</b> toont services (Windows-services of systemd-units) en start, stopt of herstart ze. De ControlZit-agent beschermt zichzelf: hij kan niet vanuit de console worden gestopt of beëindigd.</p>

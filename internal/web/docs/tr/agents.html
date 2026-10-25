@@ -1,0 +1,34 @@
+<h1>Ajanları kurma</h1>
+<p class="lead">Ajan, her yönetilen bilgisayardaki küçük bir hizmettir. Sunucunun ajan portuna giden bağlantı kurar, envanter ve ölçümleri bildirir ve konsolun imzalı komutlarını çalıştırır.</p>
+
+<h2 id="before">Başlamadan önce</h2>
+<ul>
+  <li>Ajanlar sunucuya <b>ajan portunda</b> (varsayılan TCP 8444) ulaşmalıdır. Ağınız dışındaki bilgisayarlar için bu portu güvenlik duvarında açın ve <a href="/settings/network">Ayarlar → Ağ ve erişim</a> altında <b>genel ajan adresini</b> ayarlayın (örneğin <code>https://rmm.example.com:8444</code>). Konsol portu kapalı kalır.</li>
+  <li>Konsolu sunucunun kendisinde (localhost) açtıysanız ve genel ajan adresi ayarlı değilse konum sayfası uyarır: ajanlar sunucunun geri döngü adresine bağlanmaya çalışırdı.</li>
+</ul>
+
+<h2 id="codes">Kayıt kodları</h2>
+<p>Ajanlar bir müşterinin <b>konumuna</b> bir kayıt koduyla katılır. Konumu <a href="/customers">Müşteriler</a> altında açın ve <b>Kayıt kodu oluştur</b>'a tıklayın. Ne kadar süre geçerli olacağını (1–365 gün) ve kaç bilgisayarın kullanabileceğini seçersiniz. Kod (<code>CZ1-…</code>) sunucu adresini ve sertifika parmak izini içerir, bu yüzden yükleyicinin başka bir şeye ihtiyacı yoktur. Yalnızca bir kez gösterilir; artık gerekmediğinde iptal edin.</p>
+
+<h2 id="windows">Windows</h2>
+<p>MSI'yı konum sayfasından indirin (<b>Ajanı indir (MSI, 64 bit)</b>) ve çift tıklayıp kodu yapıştırın ya da örneğin Grup İlkesi, Intune veya bir betikle sessiz kurun:</p>
+<pre>msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="CZ1-…"</pre>
+<p>Ajan <i>ControlZit Agent</i> Windows hizmeti olarak çalışır. Saatin yanındaki küçük bir simge bağlı olup olmadığını (yeşil) gösterir ve sunucuyu ve bilgisayarı kimin yönettiğini gösteren bir pencere açar.</p>
+<p>MSI olmadan (yönetici olarak PowerShell):</p>
+<pre>.\controlzit-agent.exe enroll --code "CZ1-…"
+.\controlzit-agent.exe install</pre>
+
+<h2 id="linux">Linux</h2>
+<p>Linux ajanını konum sayfasından indirin (x86-64 veya Raspberry Pi ve ARM sunucular için ARM64), makineye kopyalayın ve root olarak çalıştırın:</p>
+<pre>chmod +x controlzit-agent-linux-amd64
+sudo ./controlzit-agent-linux-amd64 install --code "CZ1-…"</pre>
+<p>Kendini <code>/usr/local/bin/controlzit-agent</code> konumuna kopyalar, kaydolur ve <code>controlzit-agent</code> systemd hizmetini başlatır.</p>
+
+<h2 id="updates">Ajan güncellemeleri</h2>
+<p>Sunucu kendi sürümünün ajan yükleyicilerini taşır. <a href="/settings/agents">Ayarlar → Ajan güncellemeleri</a> altında hangi ajanların eski olduğunu görür, hepsini tek seferde günceller veya eski ajanların bağlandıklarında kendilerini güncellemesine izin verirsiniz. Tek bir ajan cihaz sayfasında güncellenir. Ajan yükleyiciyi kendi şifreli bağlantısı üzerinden indirir ve yalnızca imzalı güncelleme komutundaki SHA-256 ile eşleşirse kurar. Orada başka bir yükleyici de yükleyebilirsiniz (bir MSI veya bir Linux ajanı).</p>
+
+<h2 id="windows-update">Yönetilen bilgisayarlarda Windows Update</h2>
+<p>Ajan, Windows Update'in otomatik kurulumunu ilkeyle kapatır; böylece güncellemeler yalnızca ControlZit'ten, elle veya sizin zamanlamanızla gelir (bkz. <a href="/docs/updates">Windows güncellemeleri</a>). Önceki ayarlar saklanır ve ajan kaldırıldığında geri gelir.</p>
+
+<h2 id="remove">Bir ajanı kaldırma</h2>
+<p>Cihazı kendi sayfasında silin (<b>Cihazı kaldır</b>). Çevrimiçiyse ajan saniyeler içinde kendini kaldırır ve Windows Update kendi ayarlarını geri alır. Çevrimdışı bir bilgisayar artık bağlanamaz; ajanı orada elle kaldırın (Windows: <i>Uygulamalar → ControlZit Agent → Kaldır</i>; Linux: <code>sudo controlzit-agent uninstall</code>).</p>

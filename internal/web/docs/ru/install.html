@@ -1,0 +1,58 @@
+<h1>Установка сервера</h1>
+<p class="lead">Выберите один из четырёх способов. Готовый образ VM — самый быстрый; скрипт установки подходит для существующего сервера с Linux.</p>
+
+<table>
+  <tr><th>Способ</th><th>Лучше всего для</th><th>Нужно</th></tr>
+  <tr><td><b>1. Образ VM</b> (OVA, qcow2, VHDX)</td><td>импортировать, запустить и войти за несколько минут</td><td>VMware, Proxmox / KVM или Hyper-V</td></tr>
+  <tr><td><b>2. ISO устройства</b></td><td>новая VM или физический сервер, без участия</td><td>доступ в интернет во время установки</td></tr>
+  <tr><td><b>3. Скрипт установки</b></td><td>существующий сервер Debian, Ubuntu, AlmaLinux или Rocky Linux</td><td>root и доступ в интернет</td></tr>
+  <tr><td><b>4. Пакеты вручную</b></td><td>свой PostgreSQL, управление конфигурацией, серверы без интернета</td><td>пакет deb или rpm выпуска</td></tr>
+</table>
+<p>Все файлы есть на <a href="https://github.com/Max-Zit/controlzit/releases/latest" target="_blank" rel="noopener">странице выпусков</a>. Дайте серверу 2 vCPU, 2–4 ГБ ОЗУ и диск от 16 ГБ.</p>
+
+<h2 id="image">1. Образ VM</h2>
+<ol>
+  <li>Импортируйте образ:
+    <ul>
+      <li><b>VMware ESXi / Workstation, VirtualBox:</b> разверните <code>controlzit-appliance.ova</code> (<i>Create / Register VM → Deploy a virtual machine from an OVF or OVA file</i>).</li>
+      <li><b>Proxmox VE:</b> создайте VM без диска (2 vCPU, 2–4 ГБ ОЗУ, сеть VirtIO), скопируйте <code>controlzit-appliance.qcow2</code> на узел и выполните <code>qm importdisk &lt;vmid&gt; controlzit-appliance.qcow2 local-lvm</code>; подключите диск как SCSI и сделайте его загрузочным.</li>
+      <li><b>Hyper-V:</b> распакуйте <code>controlzit-appliance-vhdx.zip</code> и создайте VM <b>поколения 1</b> с этим VHDX в качестве диска.</li>
+    </ul>
+  </li>
+  <li>Запустите VM. Диск сам увеличится до размера виртуального диска. На экране VM показаны <b>адрес консоли и токен настройки</b>.</li>
+  <li>Откройте <code>https://&lt;адрес&gt;:8443</code>. Браузер один раз предупредит о самоподписанном сертификате (позже замените его в разделе <a href="/settings/certificate">Настройки → Сертификат</a>). Введите токен и создайте первого администратора.</li>
+</ol>
+<p>Устройство получает адрес по DHCP. Чтобы задать постоянный адрес, имя сервера или часовой пояс, войдите на экране VM как <code>czadmin</code> (первый пароль <code>controlzit</code>, его нужно сменить): откроется меню настройки. Часовой пояс и сеть можно позже изменить и в консоли.</p>
+
+<h2 id="iso">2. ISO устройства</h2>
+<ol>
+  <li>Загрузите VM или сервер с <code>controlzit-appliance.iso</code>. Через 5 секунд установка начнётся сама: она <b>стирает первый диск</b>, устанавливает Debian, PostgreSQL и ControlZit и требует доступа в интернет (10–20 минут).</li>
+  <li>После перезагрузки на экране показаны адрес консоли и токен настройки, как в образе VM.</li>
+</ol>
+
+<h2 id="script">3. Скрипт установки</h2>
+<p>На существующем сервере с Linux от имени root:</p>
+<pre>curl -fsSL https://github.com/Max-Zit/controlzit/releases/latest/download/install.sh | sudo sh</pre>
+<p>Скрипт устанавливает PostgreSQL, скачивает последний выпуск, <b>проверяет его подпись</b>, создаёт базу данных со случайным паролем и запускает службу. Параметры (после <code>sh -s --</code>): <code>--version X</code>, <code>--db postgres://…</code> для существующей базы, <code>--no-auto-updates</code>, чтобы автоматические обновления безопасности ОС остались выключенными. Повторный запуск обновляет ControlZit и сохраняет данные.</p>
+
+<h2 id="packages">4. Пакеты вручную</h2>
+<pre>sudo apt install ./controlzit-server_X_amd64.deb      # Debian, Ubuntu
+sudo dnf install ./controlzit-server-X-1.x86_64.rpm     # AlmaLinux, Rocky Linux</pre>
+<p>Затем впишите адрес базы данных в <code>/etc/controlzit/server.env</code> (<code>CONTROLZIT_DB=postgres://…</code>) и запустите службу командой <code>systemctl enable --now controlzit-server</code>.</p>
+
+<h2 id="first-sign-in">Первый вход</h2>
+<ul>
+  <li>Токен настройки находится в <code>/var/lib/controlzit/setup-token.txt</code> и в журнале сервера (<code>journalctl -u controlzit-server</code>). Он действует один раз.</li>
+  <li>Каждой учётной записи нужно <b>приложение-аутентификатор</b> (TOTP); она получает 10 резервных кодов. Храните их в надёжном месте.</li>
+  <li>По умолчанию консоль принимает соединения только из <b>частных сетей</b>. Если вы заблокировали себе доступ, выполните на сервере <code>controlzit-server --reset-allowlist</code> (устройство: меню настройки, пункт 5).</li>
+</ul>
+
+<h2 id="files">Где что находится</h2>
+<table>
+  <tr><th>Путь</th><th>Что</th></tr>
+  <tr><td><code>/etc/controlzit/server.env</code></td><td>конфигурация: база данных, порты, источник обновлений (читают только root и служба)</td></tr>
+  <tr><td><code>/var/lib/controlzit</code></td><td>каталог данных: сертификаты, секретный ключ, установщики агентов (<code>downloads</code>), журналы</td></tr>
+  <tr><td><code>/var/lib/controlzit/logs/server.log</code></td><td>журнал сервера; также в <code>journalctl -u controlzit-server</code></td></tr>
+  <tr><td><code>/var/log/controlzit-helper</code></td><td>журнал помощника root (обновления, часовой пояс, сеть)</td></tr>
+</table>
+<div class="callout warn"><p>Делайте резервную копию базы данных вместе с <code>/var/lib/controlzit</code>: секретный ключ оттуда расшифровывает сохранённые пароли, а сертификаты удостоверяют сервер перед его агентами.</p></div>

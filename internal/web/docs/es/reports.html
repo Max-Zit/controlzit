@@ -1,0 +1,21 @@
+<h1>Informes</h1>
+<p class="lead">Un informe muestra los dispositivos de un cliente durante un periodo: sistemas operativos, actualizaciones, alertas y el trabajo de sus técnicos. Imprímalo, guárdelo como PDF o envíelo al cliente cada semana o cada mes.</p>
+
+<h2 id="create">Crear un informe</h2>
+<p>En <a href="/reports">Informes</a> elija un cliente (o todos) y el periodo (últimos 7, 30 o 90 días) y haga clic en <b>Mostrar informe</b>. Contiene:</p>
+<ul>
+  <li><b>Dispositivos</b>: cuántos, en línea ahora, no vistos desde hace más de 7 días, y los sistemas operativos.</li>
+  <li><b>Actualizaciones</b>: actualizaciones que faltan y actualizaciones de seguridad que faltan por dispositivo, dispositivos que esperan un reinicio, instalaciones de actualizaciones en el periodo.</li>
+  <li><b>Alertas</b>: alertas abiertas en el periodo, cuántas se resolvieron y con qué rapidez, y qué sigue abierto.</li>
+  <li><b>Trabajo de los técnicos</b>: sesiones de escritorio remoto y terminal, scripts ejecutados y operaciones de archivos, del registro de auditoría.</li>
+</ul>
+<p><b>Imprimir o guardar como PDF</b> usa el diálogo de impresión del navegador; el menú y los botones no se imprimen.</p>
+
+<h2 id="email">Informes por correo</h2>
+<p>En <a href="/settings/reports">Configuración → Informes</a> cada cliente puede recibir su informe por correo:</p>
+<ol>
+  <li>Elija <b>cada semana</b> (últimos 7 días, un día de la semana) o <b>cada mes</b> (últimos 30 días, un día del mes), la hora (hora del servidor) y el idioma del informe.</li>
+  <li>Introduzca los destinatarios de cada cliente (direcciones separadas por comas, como máximo 20). <b>Enviar siempre una copia a</b> añade su propia dirección al informe de cada cliente.</li>
+  <li><b>Enviar</b> junto a un cliente envía su informe ahora, para probarlo.</li>
+</ol>
+<p>Los informes por correo necesitan el servidor de correo de <a href="/settings/monitoring">Configuración → Supervisión y alertas</a>. El informe está en la parte HTML del correo.</p>

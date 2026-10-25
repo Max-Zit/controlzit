@@ -1,0 +1,51 @@
+<h1>Risoluzione dei problemi e FAQ</h1>
+<p class="lead">Le domande più comuni e cosa controllare per primo. Per una richiesta di assistenza, scarica la diagnostica in <a href="/settings/diagnostics">Impostazioni → Diagnostica</a>.</p>
+
+<h2 id="console">Non riesco a raggiungere la console</h2>
+<ul>
+  <li>Il tuo indirizzo potrebbe non essere nelle reti consentite: la connessione viene chiusa prima di TLS, quindi il browser mostra un errore di connessione. Esegui <code>controlzit-server --reset-allowlist</code> sul server (appliance: menu di configurazione, voce 5) per consentire di nuovo tutte le reti private.</li>
+  <li>Dopo aver cambiato la porta, apri la console sulla nuova porta.</li>
+  <li>Controlla il servizio sul server: <code>systemctl status controlzit-server</code> e <code>journalctl -u controlzit-server</code>.</li>
+</ul>
+
+<h2 id="signin">Problemi di accesso</h2>
+<ul>
+  <li><b>Il codice è errato</b> — l'ora del telefono deve essere corretta (ora automatica).</li>
+  <li><b>Telefono perso</b> — accedi con un codice di recupero; un altro amministratore può reimpostare l'accesso a due fattori.</li>
+  <li><b>Troppi tentativi falliti</b> — l'indirizzo è bloccato per un po'; un amministratore può <b>sbloccarlo</b> in <a href="/settings/security">Impostazioni → Accesso e sicurezza</a>. Gli accessi dal server stesso non vengono mai bloccati.</li>
+  <li><b>LDAP / Single Sign-On</b> — usa <b>Prova</b> nella pagina LDAP; controlla i gruppi che il provider invia. Il log del server contiene i dettagli.</li>
+</ul>
+
+<h2 id="agent">Un agent non si connette</h2>
+<ul>
+  <li>Il computer raggiunge la porta degli agent? Su Windows: <code>Test-NetConnection rmm.example.com -Port 8444</code>.</li>
+  <li>L'indirizzo pubblico degli agent è corretto? I codici creati con la console aperta su localhost mandano l'agent al server sbagliato; imposta l'indirizzo e crea un nuovo codice.</li>
+  <li>Il codice è ancora valido e non esaurito?</li>
+  <li>Log dell'agent: Windows <code>C:\ProgramData\ControlZit Agent\agent.log</code>, Linux <code>/var/lib/controlzit-agent/agent.log</code> e <code>journalctl -u controlzit-agent</code>; per un dispositivo connesso aprili dalla console in <b>File</b>. Su Windows l'icona accanto all'orologio mostra lo stato della connessione.</li>
+</ul>
+
+<h2 id="rd">Il desktop remoto non mostra nulla</h2>
+<ul>
+  <li>Linux con Wayland non può essere mostrato: accedi con una sessione X11 (Xorg) o usa il terminale.</li>
+  <li>Linux senza desktop: usa il terminale.</li>
+  <li>Copiare file tramite gli appunti richiede un utente connesso sul computer Windows.</li>
+</ul>
+
+<h2 id="updates">Gli aggiornamenti di Windows non vengono installati</h2>
+<ul>
+  <li>Controlla l'installazione automatica in <a href="/settings/updates">Impostazioni → Aggiornamenti di Windows</a>: giorni, ora e modalità. I dispositivi devono essere online in quell'ora.</li>
+  <li>La scheda <b>Aggiornamenti</b> del dispositivo mostra l'ultima ricerca ed eventualmente il suo errore.</li>
+</ul>
+
+<h2 id="email">Le email di avviso non arrivano</h2>
+<p>Usa <b>Invia un'email di prova</b> in <a href="/settings/monitoring">Impostazioni → Monitoraggio e avvisi</a>; il messaggio mostra la risposta del server. Una password viene inviata solo tramite STARTTLS o TLS.</p>
+
+<h2 id="faq">FAQ</h2>
+<h3 id="faq-cloud">ControlZit ha bisogno di un servizio cloud?</h3>
+<p>No. Tutto gira sul tuo server; nulla viene inviato a MaxZit. Il server controlla soltanto GitHub per le nuove release.</p>
+<h3 id="faq-backup">Come faccio il backup di ControlZit?</h3>
+<p>Esegui il backup del database PostgreSQL (<code>pg_dump</code>) e della cartella <code>/var/lib/controlzit</code>. Senza la chiave segreta e i certificati lì contenuti, le password salvate non possono essere decifrate e gli agent non si fiderebbero di un nuovo server.</p>
+<h3 id="faq-move">Posso spostare il server su una nuova macchina?</h3>
+<p>Sì: installa ControlZit sulla nuova macchina, ripristina il database e <code>/var/lib/controlzit</code> e mantieni lo stesso indirizzo (oppure cambia l'indirizzo pubblico degli agent e fai puntare il vecchio nome alla nuova macchina).</p>
+<h3 id="faq-mac">Esiste un agent per macOS?</h3>
+<p>Non ancora. Sono supportati Windows e Linux (x86-64, ARM64).</p>

@@ -1,0 +1,34 @@
+<h1>Instalace agentů</h1>
+<p class="lead">Agent je malá služba na každém spravovaném počítači. Připojuje se odchozím spojením k portu agentů serveru, posílá inventář a měření a provádí podepsané příkazy konzole.</p>
+
+<h2 id="before">Než začnete</h2>
+<ul>
+  <li>Agenti musí dosáhnout na server na <b>portu agentů</b> (výchozí TCP 8444). Pro počítače mimo vaši síť otevřete tento port na firewallu a nastavte <b>veřejnou adresu pro agenty</b> v <a href="/settings/network">Nastavení → Síť a přístup</a> (například <code>https://rmm.example.com:8444</code>). Port konzole zůstává zavřený.</li>
+  <li>Pokud jste konzoli otevřeli přímo na serveru (localhost) a veřejná adresa pro agenty není nastavena, stránka pobočky upozorní: agenti by se pokoušeli připojit na loopback adresu serveru.</li>
+</ul>
+
+<h2 id="codes">Registrační kódy</h2>
+<p>Agenti se připojí k <b>pobočce</b> zákazníka pomocí registračního kódu. Otevřete pobočku v <a href="/customers">Zákazníci</a> a klikněte na <b>Vytvořit registrační kód</b>. Zvolíte, jak dlouho platí (1–365 dní) a kolik počítačů jej smí použít. Kód (<code>CZ1-…</code>) obsahuje adresu serveru a otisk jeho certifikátu, takže instalátor nepotřebuje nic dalšího. Zobrazí se jen jednou; zrušte jej, když už není potřeba.</p>
+
+<h2 id="windows">Windows</h2>
+<p>Stáhněte MSI na stránce pobočky (<b>Stáhnout agenta (MSI, 64bitový)</b>) a buď na něj poklepejte a vložte kód, nebo jej nainstalujte tiše, například pomocí zásad skupiny, Intune nebo skriptu:</p>
+<pre>msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="CZ1-…"</pre>
+<p>Agent běží jako služba Windows <i>ControlZit Agent</i>. Malá ikona vedle hodin ukazuje, zda je připojen (zelená), a otevírá okno se serverem a informací, kdo počítač spravuje.</p>
+<p>Bez MSI (PowerShell jako správce):</p>
+<pre>.\controlzit-agent.exe enroll --code "CZ1-…"
+.\controlzit-agent.exe install</pre>
+
+<h2 id="linux">Linux</h2>
+<p>Stáhněte agenta pro Linux na stránce pobočky (x86-64, nebo ARM64 pro Raspberry Pi a ARM servery), zkopírujte jej na počítač a spusťte jako root:</p>
+<pre>chmod +x controlzit-agent-linux-amd64
+sudo ./controlzit-agent-linux-amd64 install --code "CZ1-…"</pre>
+<p>Zkopíruje se do <code>/usr/local/bin/controlzit-agent</code>, zaregistruje se a spustí službu systemd <code>controlzit-agent</code>.</p>
+
+<h2 id="updates">Aktualizace agentů</h2>
+<p>Server obsahuje instalátory agenta své vlastní verze. V <a href="/settings/agents">Nastavení → Aktualizace agentů</a> vidíte, kteří agenti jsou zastaralí, aktualizujete je všechny najednou, nebo necháte zastaralé agenty aktualizovat se samy při připojení. Jednotlivého agenta aktualizujete na stránce zařízení. Agent stáhne instalátor přes vlastní šifrované spojení a nainstaluje jej, jen pokud odpovídá SHA-256 v podepsaném příkazu k aktualizaci. Můžete tam také nahrát jiný instalátor (MSI nebo agenta pro Linux).</p>
+
+<h2 id="windows-update">Windows Update na spravovaných počítačích</h2>
+<p>Agent zásadou vypne automatickou instalaci Windows Update, aby aktualizace přicházely jen z ControlZit, ručně nebo podle vašeho plánu (viz <a href="/docs/updates">Aktualizace Windows</a>). Předchozí nastavení se uloží a vrátí se po odebrání agenta.</p>
+
+<h2 id="remove">Odebrání agenta</h2>
+<p>Smažte zařízení na jeho stránce (<b>Odebrat zařízení</b>). Je-li online, agent se během několika sekund odinstaluje a Windows Update dostane zpět vlastní nastavení. Offline počítač se už nemůže připojit; agenta tam odinstalujte ručně (Windows: <i>Aplikace → ControlZit Agent → Odinstalovat</i>; Linux: <code>sudo controlzit-agent uninstall</code>).</p>

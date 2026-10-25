@@ -1,0 +1,51 @@
+<h1>故障排除与常见问题</h1>
+<p class="lead">最常见的问题以及首先要检查的内容。如需提交支持请求，请在<a href="/settings/diagnostics">设置 → 诊断</a>中下载诊断信息。</p>
+
+<h2 id="console">无法访问控制台</h2>
+<ul>
+  <li>您的地址可能不在允许的网络中：连接在 TLS 之前即被关闭，因此浏览器显示连接错误。在服务器上运行 <code>controlzit-server --reset-allowlist</code>（设备：设置菜单第 5 项）可重新允许所有私有网络。</li>
+  <li>更改端口后，请在新端口上打开控制台。</li>
+  <li>检查服务器上的服务：<code>systemctl status controlzit-server</code> 和 <code>journalctl -u controlzit-server</code>。</li>
+</ul>
+
+<h2 id="signin">登录问题</h2>
+<ul>
+  <li><b>验证码错误</b>——手机时间必须正确（自动时间）。</li>
+  <li><b>手机丢失</b>——使用恢复码登录；其他管理员可以重置双重验证登录。</li>
+  <li><b>失败次数过多</b>——该地址会被封锁一段时间；管理员可以在<a href="/settings/security">设置 → 登录与安全</a>中<b>解除封锁</b>。来自服务器本身的登录永远不会被封锁。</li>
+  <li><b>LDAP / 单点登录</b>——在 LDAP 页面使用<b>测试</b>；检查提供商发送的组。服务器日志中有详细信息。</li>
+</ul>
+
+<h2 id="agent">代理无法连接</h2>
+<ul>
+  <li>计算机能否访问代理端口？在 Windows 上：<code>Test-NetConnection rmm.example.com -Port 8444</code>。</li>
+  <li>代理公网地址是否正确？在通过 localhost 打开控制台时创建的注册码会把代理指向错误的服务器；请设置地址并创建新的注册码。</li>
+  <li>注册码是否仍然有效且未用完？</li>
+  <li>代理日志：Windows <code>C:\ProgramData\ControlZit Agent\agent.log</code>，Linux <code>/var/lib/controlzit-agent/agent.log</code> 和 <code>journalctl -u controlzit-agent</code>；对于已连接的设备，可在控制台的<b>文件</b>中打开。在 Windows 上，时钟旁的图标显示连接状态。</li>
+</ul>
+
+<h2 id="rd">远程桌面什么都不显示</h2>
+<ul>
+  <li>无法显示使用 Wayland 的 Linux：请使用 X11（Xorg）会话登录或使用终端。</li>
+  <li>没有桌面的 Linux：请使用终端。</li>
+  <li>通过剪贴板复制文件需要 Windows 计算机上有已登录的用户。</li>
+</ul>
+
+<h2 id="updates">Windows 更新未安装</h2>
+<ul>
+  <li>在<a href="/settings/updates">设置 → Windows 更新</a>中检查自动安装：日期、小时和模式。设备必须在该小时内在线。</li>
+  <li>设备的<b>更新</b>选项卡显示上次搜索及其错误（如果有）。</li>
+</ul>
+
+<h2 id="email">收不到警报邮件</h2>
+<p>在<a href="/settings/monitoring">设置 → 监控与警报</a>中使用<b>发送测试邮件</b>；消息会显示服务器的响应。密码只通过 STARTTLS 或 TLS 发送。</p>
+
+<h2 id="faq">常见问题</h2>
+<h3 id="faq-cloud">ControlZit 需要云服务吗？</h3>
+<p>不需要。一切都在您的服务器上运行；不会向 MaxZit 发送任何内容。服务器只会检查 GitHub 上是否有新版本。</p>
+<h3 id="faq-backup">如何备份 ControlZit？</h3>
+<p>备份 PostgreSQL 数据库（<code>pg_dump</code>）和 <code>/var/lib/controlzit</code> 文件夹。如果没有其中的密钥和证书，已保存的密码将无法解密，代理也不会信任新服务器。</p>
+<h3 id="faq-move">可以把服务器迁移到新机器吗？</h3>
+<p>可以：在新机器上安装 ControlZit，恢复数据库和 <code>/var/lib/controlzit</code>，并保持相同的地址（或更改代理公网地址，并将旧名称指向新机器）。</p>
+<h3 id="faq-mac">有 macOS 代理吗？</h3>
+<p>暂时没有。支持 Windows 和 Linux（x86-64、ARM64）。</p>

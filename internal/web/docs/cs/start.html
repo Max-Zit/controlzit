@@ -1,0 +1,43 @@
+<h1>Začínáme</h1>
+<p class="lead">ControlZit je nástroj pro vzdálené monitorování a správu (RMM), který běží na vašem vlastním serveru. Z jedné webové konzole sledujete a spravujete počítače s Windows a Linuxem svých zákazníků: inventář, monitorování a upozornění, vzdálenou plochu, terminál, soubory, skripty, aktualizace Windows, software a zprávy.</p>
+
+<h2 id="what">Co ControlZit umí</h2>
+<table>
+  <tr><th>Oblast</th><th>Co získáte</th></tr>
+  <tr><td>Inventář</td><td>Hardware, operační systém, disky, síť, stav zabezpečení (antivirus, firewall, BitLocker) a nainstalovaný software každého zařízení. <a href="/docs/devices">Zařízení</a></td></tr>
+  <tr><td>Monitorování a upozornění</td><td>CPU, paměť, místo na disku, zařízení offline, zastavené služby, Defender a firewall; upozornění e-mailem, do Slacku, Microsoft Teams nebo přes webhook. <a href="/docs/monitoring">Monitorování</a></td></tr>
+  <tr><td>Vzdálený přístup</td><td>Vzdálená plocha v prohlížeči (Windows, Linux s X11) se schránkou a kopírováním souborů, root terminál na Linuxu, správce souborů, procesy, služby, restart a vypnutí. <a href="/docs/remote">Vzdálený přístup</a></td></tr>
+  <tr><td>Skripty</td><td>PowerShell, cmd, bash nebo sh na jednom zařízení, na mnoha najednou nebo podle plánu, z knihovny skriptů. <a href="/docs/scripts">Skripty</a></td></tr>
+  <tr><td>Aktualizace a software</td><td>Chybějící aktualizace Windows a balíčky Linuxu, instalace ručně nebo podle plánu, programy přes winget. <a href="/docs/updates">Aktualizace</a></td></tr>
+  <tr><td>Zprávy</td><td>Zpráva pro každého zákazníka (zařízení, aktualizace, upozornění, práce techniků), k tisku nebo e-mailem každý týden či měsíc. <a href="/docs/reports">Zprávy</a></td></tr>
+</table>
+
+<h2 id="how">Jak to funguje</h2>
+<ul>
+  <li><b>Server</b> běží na linuxovém stroji (obvykle malé VM) s PostgreSQL. Má dva porty: <b>konzoli</b> (webové rozhraní a API, TCP 8443) a <b>koncový bod agentů</b> (TCP 8444).</li>
+  <li><b>Agenti</b> běží jako služba na každém spravovaném počítači. Připojují se <i>odchozím spojením</i> k portu agentů; počítače nepotřebují žádné otevřené porty. Agent důvěřuje serveru podle otisku jeho certifikátu, který si připne při registraci.</li>
+  <li>Každý příkaz agentovi server <b>podepíše</b> a agent jej ověří a každá akce se zapíše do <a href="/audit">auditního protokolu</a> chráněného proti úpravám.</li>
+</ul>
+<div class="callout tip"><p>Konzole ovládá každý spravovaný počítač. Ať je dostupná jen z vašich vlastních sítí (výchozí stav) a otevřete jen port agentů tam, kde jej agenti potřebují. Viz <a href="/docs/security">Bezpečnost</a>.</p></div>
+
+<h2 id="first-steps">První kroky</h2>
+<ol>
+  <li><b>Nainstalujte server</b> — importujte hotový obraz VM, spusťte ISO appliance nebo spusťte instalační skript na linuxovém serveru. Viz <a href="/docs/install">Instalace serveru</a>.</li>
+  <li><b>Vytvořte prvního správce</b> pomocí instalačního tokenu, který server zobrazí, a nastavte dvoufázové přihlášení s ověřovací aplikací.</li>
+  <li><b>Zkontrolujte adresu pro agenty</b> v <a href="/settings/network">Nastavení → Síť a přístup</a>: agenti musí dosáhnout na server přes veřejnou adresu pro agenty nebo název konzole.</li>
+  <li><b>Přidejte zákazníka a pobočku</b> v <a href="/customers">Zákazníci</a> a na pobočce vytvořte <b>registrační kód</b>.</li>
+  <li><b>Nainstalujte agenta</b> na počítače té pobočky pomocí kódu. Viz <a href="/docs/agents">Instalace agentů</a>.</li>
+  <li><b>Nastavte upozornění</b> v <a href="/settings/monitoring">Nastavení → Monitorování a upozornění</a> a případně <a href="/settings/updates">automatickou instalaci aktualizací Windows</a>.</li>
+  <li><b>Přidejte techniky</b> v <a href="/users">Uživatelé</a> nebo připojte Active Directory / LDAP či jednotné přihlášení. Viz <a href="/docs/users">Uživatelé, role a přihlášení</a>.</li>
+</ol>
+
+<h2 id="requirements">Požadavky</h2>
+<ul>
+  <li><b>Server:</b> 2 vCPU, 2–4 GB RAM, disk 16 GB; Debian 12+, Ubuntu 22.04+, AlmaLinux nebo Rocky Linux 9+ (nebo hotová appliance).</li>
+  <li><b>Agenti pro Windows:</b> Windows 10 / 11, Windows Server 2016 a novější, 64bitové.</li>
+  <li><b>Agenti pro Linux:</b> distribuce se systemd, x86-64 nebo ARM64 (Raspberry Pi a ARM servery). Aktualizace přes apt nebo dnf.</li>
+  <li><b>Prohlížeč:</b> aktuální Chrome, Edge, Firefox nebo Safari.</li>
+</ul>
+
+<h2 id="license">Licence a podpora</h2>
+<p>ControlZit je svobodný software pod licencí GNU AGPLv3; zdrojový kód je na <a href="https://github.com/Max-Zit/controlzit" target="_blank" rel="noopener">github.com/Max-Zit/controlzit</a>. Chyby hlaste tlačítkem <b>Nahlásit chybu</b> dole v nabídce. MaxZit nabízí placenou podporu.</p>

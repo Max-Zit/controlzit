@@ -1,0 +1,51 @@
+<h1>Probleemoplossing en veelgestelde vragen</h1>
+<p class="lead">De meest gestelde vragen en wat u eerst controleert. Download voor een ondersteuningsverzoek de diagnose onder <a href="/settings/diagnostics">Instellingen → Diagnose</a>.</p>
+
+<h2 id="console">Ik kan de console niet bereiken</h2>
+<ul>
+  <li>Uw adres staat mogelijk niet in de toegestane netwerken: de verbinding wordt vóór TLS gesloten, dus de browser toont een verbindingsfout. Voer <code>controlzit-server --reset-allowlist</code> uit op de server (appliance: installatiemenu, item 5) om alle privénetwerken weer toe te staan.</li>
+  <li>Open na een poortwijziging de console op de nieuwe poort.</li>
+  <li>Controleer de service op de server: <code>systemctl status controlzit-server</code> en <code>journalctl -u controlzit-server</code>.</li>
+</ul>
+
+<h2 id="signin">Problemen met aanmelden</h2>
+<ul>
+  <li><b>De code is onjuist</b> — de tijd van de telefoon moet kloppen (automatische tijd).</li>
+  <li><b>Telefoon kwijt</b> — meld u aan met een herstelcode; een andere beheerder kan aanmelden in twee stappen resetten.</li>
+  <li><b>Te veel mislukte pogingen</b> — het adres is een tijdje geblokkeerd; een beheerder kan het <b>deblokkeren</b> onder <a href="/settings/security">Instellingen → Aanmelden en beveiliging</a>. Aanmeldingen vanaf de server zelf worden nooit geblokkeerd.</li>
+  <li><b>LDAP / eenmalige aanmelding</b> — gebruik <b>Testen</b> op de LDAP-pagina; controleer de groepen die de provider stuurt. Het serverlogboek bevat de details.</li>
+</ul>
+
+<h2 id="agent">Een agent maakt geen verbinding</h2>
+<ul>
+  <li>Bereikt de computer de agentpoort? Op Windows: <code>Test-NetConnection rmm.example.com -Port 8444</code>.</li>
+  <li>Klopt het openbare agentadres? Codes die zijn gemaakt terwijl de console via localhost open stond, sturen de agent naar de verkeerde server; stel het adres in en maak een nieuwe code.</li>
+  <li>Is de code nog geldig en niet opgebruikt?</li>
+  <li>Agentlogboeken: Windows <code>C:\ProgramData\ControlZit Agent\agent.log</code>, Linux <code>/var/lib/controlzit-agent/agent.log</code> en <code>journalctl -u controlzit-agent</code>; open ze voor een verbonden apparaat in de console onder <b>Bestanden</b>. Op Windows toont het pictogram naast de klok de verbindingsstatus.</li>
+</ul>
+
+<h2 id="rd">Extern bureaublad toont niets</h2>
+<ul>
+  <li>Linux met Wayland kan niet worden getoond: meld u aan met een X11-sessie (Xorg) of gebruik de terminal.</li>
+  <li>Linux zonder bureaublad: gebruik de terminal.</li>
+  <li>Bestanden kopiëren via het klembord vereist een aangemelde gebruiker op de Windows-computer.</li>
+</ul>
+
+<h2 id="updates">Windows-updates worden niet geïnstalleerd</h2>
+<ul>
+  <li>Controleer de automatische installatie onder <a href="/settings/updates">Instellingen → Windows-updates</a>: de dagen, het uur en de modus. Apparaten moeten in dat uur online zijn.</li>
+  <li>Het tabblad <b>Updates</b> van het apparaat toont de laatste zoekopdracht en eventueel de fout.</li>
+</ul>
+
+<h2 id="email">Waarschuwingsmails komen niet aan</h2>
+<p>Gebruik <b>Testmail verzenden</b> onder <a href="/settings/monitoring">Instellingen → Bewaking en waarschuwingen</a>; het bericht toont het antwoord van de server. Een wachtwoord wordt alleen via STARTTLS of TLS verzonden.</p>
+
+<h2 id="faq">Veelgestelde vragen</h2>
+<h3 id="faq-cloud">Heeft ControlZit een clouddienst nodig?</h3>
+<p>Nee. Alles draait op uw server; er wordt niets naar MaxZit gestuurd. De server controleert alleen GitHub op nieuwe releases.</p>
+<h3 id="faq-backup">Hoe maak ik een back-up van ControlZit?</h3>
+<p>Maak een back-up van de PostgreSQL-database (<code>pg_dump</code>) en de map <code>/var/lib/controlzit</code>. Zonder de geheime sleutel en de certificaten daarin kunnen opgeslagen wachtwoorden niet worden ontsleuteld en zouden agents een nieuwe server niet vertrouwen.</p>
+<h3 id="faq-move">Kan ik de server naar een nieuwe machine verhuizen?</h3>
+<p>Ja: installeer ControlZit op de nieuwe machine, zet de database en <code>/var/lib/controlzit</code> terug en houd hetzelfde adres (of wijzig het openbare agentadres en laat de oude naam naar de nieuwe machine wijzen).</p>
+<h3 id="faq-mac">Is er een macOS-agent?</h3>
+<p>Nog niet. Windows en Linux (x86-64, ARM64) worden ondersteund.</p>

@@ -1,0 +1,34 @@
+<h1>Clientes, locais e dispositivos</h1>
+<p class="lead">Os dispositivos estão organizados por cliente e local. Técnicos e utilizadores só de leitura podem ser limitados a alguns clientes, para que cada relatório e cada lista mostrem apenas o que podem ver.</p>
+
+<h2 id="customers">Clientes e locais</h2>
+<ul>
+  <li><b>Os clientes</b> são as empresas de que trata (ou os departamentos da sua própria empresa). Adicione-os em <a href="/customers">Clientes</a>.</li>
+  <li><b>Os locais</b> são os seus escritórios ou filiais. Cada dispositivo pertence a um local; os códigos de registo são criados por local.</li>
+  <li>Um cliente ou local só pode ser eliminado quando já não contém locais nem dispositivos.</li>
+</ul>
+
+<h2 id="list">A lista de dispositivos</h2>
+<p><a href="/devices">Dispositivos</a> lista todos os dispositivos que pode ver com o cliente e local, sistema operativo, utilizador com sessão iniciada, se estão online e quando foram vistos pela última vez. Pesquise por nome, utilizador, sistema ou cliente, ou filtre por cliente e estado.</p>
+
+<h2 id="page">A página do dispositivo</h2>
+<p>A página de um dispositivo tem separadores para tudo o que pode fazer com ele:</p>
+<table>
+  <tr><th>Separador</th><th>O que mostra ou faz</th></tr>
+  <tr><td>Visão geral</td><td>Alertas abertos, carga atual, memória e discos, serviços automáticos parados, reinícios pendentes; por baixo, o inventário completo.</td></tr>
+  <tr><td>Ambiente de trabalho remoto, Terminal, Ficheiros</td><td>Acesso remoto, veja <a href="/docs/remote">Ambiente de trabalho remoto, terminal e ficheiros</a>.</td></tr>
+  <tr><td>Processos, Serviços</td><td>Processos em execução (terminá-los) e serviços (iniciar, parar, reiniciar).</td></tr>
+  <tr><td>Scripts</td><td>Executar um script e ver execuções anteriores com a sua saída, veja <a href="/docs/scripts">Scripts</a>.</td></tr>
+  <tr><td>Atualizações</td><td>Atualizações do Windows ou pacotes Linux em falta e recentemente instalados, veja <a href="/docs/updates">Atualizações</a>.</td></tr>
+  <tr><td>Programas</td><td>Instalar, atualizar e desinstalar programas com winget (Windows).</td></tr>
+  <tr><td>Eventos</td><td>Os registos de eventos do Windows (System, Application, Security, Setup), filtrados por nível, período e texto.</td></tr>
+</table>
+
+<h2 id="inventory">Inventário</h2>
+<p>O agente envia o inventário alguns segundos depois de se ligar e depois regularmente: sistema operativo e compilação, domínio ou grupo de trabalho, modelo e número de série, processador, memória, discos com espaço livre e estado do BitLocker, adaptadores de rede com endereços e gateways, Microsoft Defender e as suas assinaturas, os perfis da Firewall do Windows, um reinício pendente e o software instalado (programas no Windows, pacotes no Linux). <b>Atualizar inventário</b> pede um novo de imediato.</p>
+
+<h2 id="power">Reinício e encerramento</h2>
+<p>Os botões de energia da página do dispositivo reiniciam ou encerram o computador, já ou após um atraso, com uma mensagem opcional para o utilizador com sessão iniciada; um reinício agendado pode ser cancelado. Os utilizadores com sessão iniciada perdem o trabalho não guardado.</p>
+
+<h2 id="remove">Remover um dispositivo</h2>
+<p><b>Remover dispositivo</b> elimina-o da consola. Um agente online desinstala-se sozinho; veja <a href="/docs/agents#remove">Remover um agente</a>.</p>

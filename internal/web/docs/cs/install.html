@@ -1,0 +1,58 @@
+<h1>Instalace serveru</h1>
+<p class="lead">Vyberte jeden ze čtyř způsobů. Hotový obraz VM je nejrychlejší; instalační skript se hodí pro existující linuxový server.</p>
+
+<table>
+  <tr><th>Způsob</th><th>Nejlepší pro</th><th>Potřebuje</th></tr>
+  <tr><td><b>1. Obraz VM</b> (OVA, qcow2, VHDX)</td><td>import, spuštění, přihlášení za pár minut</td><td>VMware, Proxmox / KVM nebo Hyper-V</td></tr>
+  <tr><td><b>2. ISO appliance</b></td><td>novou VM nebo fyzický server, bez obsluhy</td><td>přístup k internetu během instalace</td></tr>
+  <tr><td><b>3. Instalační skript</b></td><td>existující server Debian, Ubuntu, AlmaLinux nebo Rocky Linux</td><td>root a přístup k internetu</td></tr>
+  <tr><td><b>4. Balíčky ručně</b></td><td>vlastní PostgreSQL, správu konfigurace, servery bez internetu</td><td>balíček deb nebo rpm daného vydání</td></tr>
+</table>
+<p>Všechny soubory jsou na <a href="https://github.com/Max-Zit/controlzit/releases/latest" target="_blank" rel="noopener">stránce vydání</a>. Dejte serveru 2 vCPU, 2–4 GB RAM a disk alespoň 16 GB.</p>
+
+<h2 id="image">1. Obraz VM</h2>
+<ol>
+  <li>Importujte obraz:
+    <ul>
+      <li><b>VMware ESXi / Workstation, VirtualBox:</b> nasaďte <code>controlzit-appliance.ova</code> (<i>Create / Register VM → Deploy a virtual machine from an OVF or OVA file</i>).</li>
+      <li><b>Proxmox VE:</b> vytvořte VM bez disku (2 vCPU, 2–4 GB RAM, síť VirtIO), zkopírujte <code>controlzit-appliance.qcow2</code> na uzel a spusťte <code>qm importdisk &lt;vmid&gt; controlzit-appliance.qcow2 local-lvm</code>; připojte disk jako SCSI a nastavte jej jako spouštěcí.</li>
+      <li><b>Hyper-V:</b> rozbalte <code>controlzit-appliance-vhdx.zip</code> a vytvořte VM <b>1. generace</b> s VHDX jako diskem.</li>
+    </ul>
+  </li>
+  <li>Spusťte VM. Disk se sám zvětší na velikost virtuálního disku. Obrazovka VM ukazuje <b>adresu konzole a instalační token</b>.</li>
+  <li>Otevřete <code>https://&lt;adresa&gt;:8443</code>. Prohlížeč jednou varuje před certifikátem podepsaným sám sebou (později jej nahraďte v <a href="/settings/certificate">Nastavení → Certifikát</a>). Zadejte token a vytvořte prvního správce.</li>
+</ol>
+<p>Appliance získá adresu přes DHCP. Pro pevnou adresu, název serveru nebo časové pásmo se přihlaste na obrazovce VM jako <code>czadmin</code> (první heslo <code>controlzit</code>, je nutné jej změnit): otevře se nabídka nastavení. Časové pásmo a síť lze později změnit i v konzoli.</p>
+
+<h2 id="iso">2. ISO appliance</h2>
+<ol>
+  <li>Spusťte VM nebo server z <code>controlzit-appliance.iso</code>. Po 5 sekundách začne instalace sama: <b>smaže první disk</b>, nainstaluje Debian, PostgreSQL a ControlZit a potřebuje přístup k internetu (10–20 minut).</li>
+  <li>Po restartu obrazovka ukazuje adresu konzole a instalační token, stejně jako u obrazu VM.</li>
+</ol>
+
+<h2 id="script">3. Instalační skript</h2>
+<p>Na existujícím linuxovém serveru jako root:</p>
+<pre>curl -fsSL https://github.com/Max-Zit/controlzit/releases/latest/download/install.sh | sudo sh</pre>
+<p>Skript nainstaluje PostgreSQL, stáhne nejnovější vydání, <b>ověří jeho podpis</b>, vytvoří databázi s náhodným heslem a spustí službu. Volby (za <code>sh -s --</code>): <code>--version X</code>, <code>--db postgres://…</code> pro existující databázi, <code>--no-auto-updates</code>, aby automatické bezpečnostní aktualizace systému zůstaly vypnuté. Opětovné spuštění aktualizuje ControlZit a zachová data.</p>
+
+<h2 id="packages">4. Balíčky ručně</h2>
+<pre>sudo apt install ./controlzit-server_X_amd64.deb      # Debian, Ubuntu
+sudo dnf install ./controlzit-server-X-1.x86_64.rpm     # AlmaLinux, Rocky Linux</pre>
+<p>Pak zapište adresu databáze do <code>/etc/controlzit/server.env</code> (<code>CONTROLZIT_DB=postgres://…</code>) a spusťte službu příkazem <code>systemctl enable --now controlzit-server</code>.</p>
+
+<h2 id="first-sign-in">První přihlášení</h2>
+<ul>
+  <li>Instalační token je v <code>/var/lib/controlzit/setup-token.txt</code> a v protokolu serveru (<code>journalctl -u controlzit-server</code>). Platí jednou.</li>
+  <li>Každý účet potřebuje <b>ověřovací aplikaci</b> (TOTP) a dostane 10 záložních kódů. Uschovejte je bezpečně.</li>
+  <li>Konzole ve výchozím stavu přijímá spojení jen z <b>privátních sítí</b>. Pokud se zablokujete, spusťte na serveru <code>controlzit-server --reset-allowlist</code> (appliance: nabídka nastavení, položka 5).</li>
+</ul>
+
+<h2 id="files">Kde co je</h2>
+<table>
+  <tr><th>Cesta</th><th>Co</th></tr>
+  <tr><td><code>/etc/controlzit/server.env</code></td><td>konfigurace: databáze, porty, zdroj aktualizací (čitelné jen pro root a službu)</td></tr>
+  <tr><td><code>/var/lib/controlzit</code></td><td>datový adresář: certifikáty, tajný klíč, instalátory agentů (<code>downloads</code>), protokoly</td></tr>
+  <tr><td><code>/var/lib/controlzit/logs/server.log</code></td><td>protokol serveru; také v <code>journalctl -u controlzit-server</code></td></tr>
+  <tr><td><code>/var/log/controlzit-helper</code></td><td>protokol root pomocníka (aktualizace, časové pásmo, síť)</td></tr>
+</table>
+<div class="callout warn"><p>Zálohujte databázi spolu s <code>/var/lib/controlzit</code>: tajný klíč odtud dešifruje uložená hesla a certifikáty identifikují server vůči jeho agentům.</p></div>

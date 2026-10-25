@@ -1,0 +1,36 @@
+<h1>监控、警报与通知</h1>
+<p class="lead">服务器每分钟检查每台设备一次。只要条件持续，警报就保持打开，条件消失后自动关闭；您会通过电子邮件、聊天频道或 Webhook 收到通知。</p>
+
+<h2 id="rules">警报规则</h2>
+<p>在<a href="/settings/monitoring">设置 → 监控与警报</a>中设置规则。规则适用于所有设备。</p>
+<table>
+  <tr><th>规则</th><th>何时产生</th></tr>
+  <tr><td>CPU 负载</td><td>负载在所选分钟数内持续高于限值</td></tr>
+  <tr><td>内存使用率</td><td>内存使用率在所选分钟数内持续高于限值</td></tr>
+  <tr><td>磁盘空间</td><td>磁盘使用率超过百分比，或（对于大于其两倍的磁盘）可用空间少于指定的 GB</td></tr>
+  <tr><td>设备离线</td><td>代理超过指定分钟数未连接</td></tr>
+  <tr><td>等待重启</td><td>有待处理的重启且计算机运行超过指定天数</td></tr>
+  <tr><td>Microsoft Defender 已关闭</td><td>防病毒或实时保护已关闭（可选）</td></tr>
+  <tr><td>防火墙已关闭</td><td>某个 Windows 防火墙配置文件已关闭（可选）</td></tr>
+  <tr><td>服务已停止</td><td>您列表中的服务（服务名称，而不是显示名称）设为自动启动但未运行</td></tr>
+</table>
+<p>警报分为<b>警告</b>和<b>严重</b>（严重：离线设备、已停止的服务、Defender 已关闭，以及可用空间少于 1 GB 或使用率达 98 % 的磁盘）。<a href="/alerts">警报</a>列出未处理的警报（也可显示已解决的）；技术员可以<b>确认</b>警报，让其他人看到已有人在处理。未处理警报的数量会显示在菜单中。</p>
+
+<h2 id="email">警报邮件</h2>
+<ol>
+  <li>输入<b>邮件服务器（SMTP）</b>：主机、端口、连接安全（STARTTLS 或 TLS；密码永远不会通过未加密的连接发送）、用户、密码和发件人。密码以加密方式存储。</li>
+  <li>添加<b>收件人</b>，每行一个地址，并选择警报解决时是否也发送邮件。</li>
+  <li>点击<b>发送测试邮件</b>。</li>
+</ol>
+
+<h2 id="channels">Slack、Microsoft Teams 和 Webhook</h2>
+<p>在<b>聊天和 Webhook</b>下最多添加 20 个频道：</p>
+<ul>
+  <li><b>Slack</b>——频道的传入 Webhook URL。</li>
+  <li><b>Microsoft Teams</b>——频道工作流“收到 Teams Webhook 请求时”及其 URL。</li>
+  <li><b>Webhook</b>——任何接受 JSON POST 的 HTTPS URL（工单系统、自动化）。设置密钥后，每个请求都带有 <code>X-ControlZit-Signature: sha256=&lt;请求体的 HMAC&gt;</code>，接收方可以据此验证请求来自您的服务器。</li>
+</ul>
+<p>为每个频道选择所有警报或仅严重警报，以及是否也发送已解决的警报。<b>发送测试</b>会发送一条测试消息。频道地址以加密方式存储。</p>
+
+<h2 id="metrics">实时数值</h2>
+<p>设备页面显示当前的 CPU 负载、内存和磁盘，以及未运行的自动服务。</p>

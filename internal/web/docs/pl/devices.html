@@ -1,0 +1,34 @@
+<h1>Klienci, lokalizacje i urządzenia</h1>
+<p class="lead">Urządzenia są uporządkowane według klientów i lokalizacji. Technicy i użytkownicy tylko do odczytu mogą być ograniczeni do niektórych klientów, więc każdy raport i każda lista pokazują tylko to, co mogą widzieć.</p>
+
+<h2 id="customers">Klienci i lokalizacje</h2>
+<ul>
+  <li><b>Klienci</b> to firmy, którymi się opiekujesz (lub działy Twojej firmy). Dodaj ich w <a href="/customers">Klienci</a>.</li>
+  <li><b>Lokalizacje</b> to ich biura lub oddziały. Każde urządzenie należy do jednej lokalizacji; kody rejestracji tworzy się dla lokalizacji.</li>
+  <li>Klienta lub lokalizację można usunąć dopiero, gdy nie zawiera już lokalizacji ani urządzeń.</li>
+</ul>
+
+<h2 id="list">Lista urządzeń</h2>
+<p><a href="/devices">Urządzenia</a> pokazuje wszystkie urządzenia, które możesz widzieć, z klientem i lokalizacją, systemem operacyjnym, zalogowanym użytkownikiem, informacją, czy są online i kiedy widziano je ostatnio. Szukaj po nazwie, użytkowniku, systemie lub kliencie albo filtruj według klienta i stanu.</p>
+
+<h2 id="page">Strona urządzenia</h2>
+<p>Strona urządzenia ma karty dla wszystkiego, co możesz z nim zrobić:</p>
+<table>
+  <tr><th>Karta</th><th>Co pokazuje lub robi</th></tr>
+  <tr><td>Przegląd</td><td>Otwarte alerty, bieżące obciążenie, pamięć i dyski, niedziałające usługi automatyczne, oczekujące restarty; poniżej pełna inwentaryzacja.</td></tr>
+  <tr><td>Pulpit zdalny, Terminal, Pliki</td><td>Dostęp zdalny, zobacz <a href="/docs/remote">Pulpit zdalny, terminal i pliki</a>.</td></tr>
+  <tr><td>Procesy, Usługi</td><td>Działające procesy (kończenie) i usługi (uruchamianie, zatrzymywanie, restart).</td></tr>
+  <tr><td>Skrypty</td><td>Uruchamianie skryptu i wcześniejsze uruchomienia z wynikiem, zobacz <a href="/docs/scripts">Skrypty</a>.</td></tr>
+  <tr><td>Aktualizacje</td><td>Brakujące i niedawno zainstalowane aktualizacje Windows lub pakiety Linuksa, zobacz <a href="/docs/updates">Aktualizacje</a>.</td></tr>
+  <tr><td>Programy</td><td>Instalowanie, aktualizowanie i odinstalowywanie programów przez winget (Windows).</td></tr>
+  <tr><td>Zdarzenia</td><td>Dzienniki zdarzeń Windows (System, Application, Security, Setup), filtrowane według poziomu, okresu i tekstu.</td></tr>
+</table>
+
+<h2 id="inventory">Inwentaryzacja</h2>
+<p>Agent wysyła inwentaryzację kilka sekund po połączeniu, a potem regularnie: system operacyjny i kompilacja, domena lub grupa robocza, model i numer seryjny, procesor, pamięć, dyski z wolnym miejscem i stanem BitLockera, karty sieciowe z adresami i bramami, Microsoft Defender i jego sygnatury, profile Zapory systemu Windows, oczekujący restart i zainstalowane oprogramowanie (programy w Windows, pakiety w Linuksie). <b>Odśwież inwentaryzację</b> natychmiast prosi o nową.</p>
+
+<h2 id="power">Restart i wyłączanie</h2>
+<p>Przyciski zasilania na stronie urządzenia uruchamiają ponownie lub wyłączają komputer, od razu lub z opóźnieniem, z opcjonalną wiadomością dla zalogowanego użytkownika; zaplanowany restart można anulować. Zalogowani użytkownicy tracą niezapisaną pracę.</p>
+
+<h2 id="remove">Usuwanie urządzenia</h2>
+<p><b>Usuń urządzenie</b> usuwa je z konsoli. Agent online odinstalowuje się sam; zobacz <a href="/docs/agents#remove">Usuwanie agenta</a>.</p>

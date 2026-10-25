@@ -1,0 +1,40 @@
+<h1>Ustawienia i aktualizacje serwera</h1>
+<p class="lead">Administratorzy znajdą ustawienia serwera w <a href="/settings">Ustawienia</a>: sieć i porty, certyfikat, strefa czasowa, aktualizacje serwera i agentów oraz diagnostyka dla wsparcia.</p>
+
+<h2 id="network">Sieć i dostęp</h2>
+<p>W <a href="/settings/network">Ustawienia → Sieć i dostęp</a>:</p>
+<ul>
+  <li><b>Konsola</b> — adres i port nasłuchu (domyślnie <code>:8443</code>) oraz <b>dozwolone sieci</b>: jeden adres IP lub sieć w wierszu (CIDR). Połączenia z innych adresów są zamykane przed TLS; sam serwer (127.0.0.1) jest zawsze dozwolony. Zapis odrzuca listę, która zablokowałaby Twój adres.</li>
+  <li><b>Punkt końcowy agentów</b> — adres i port nasłuchu (domyślnie <code>:8444</code>, inny niż konsoli), sieci, z których mogą łączyć się agenci (puste = wszystkie), oraz <b>publiczny adres agentów</b> wpisywany do instalatorów i kodów rejestracji.</li>
+  <li>Nowe porty działają po <b>Uruchom ponownie teraz</b> (restartuje usługę ControlZit; agenci łączą się ponownie sami).</li>
+</ul>
+<p>Jeśli się zablokujesz, uruchom <code>controlzit-server --reset-allowlist</code> na serwerze (urządzenie: menu konfiguracji, pozycja 5).</p>
+
+<h3 id="server-network">Sieć serwera (urządzenie)</h3>
+<p>Na urządzeniu ControlZit ustawiasz tu też sieć samego serwera: DHCP lub stały adres z rozmiarem sieci (np. <code>192.168.1.20/24</code>), bramę, od jednego do trzech serwerów DNS i nazwę serwera. Jeśli brama nie odpowie przy nowych ustawieniach, poprzednie wrócą same po 30 sekundach. W innych instalacjach siecią zarządza system operacyjny.</p>
+
+<h3 id="timezone">Strefa czasowa</h3>
+<p>Harmonogramy (aktualizacje, skrypty, raporty) i czasy w konsoli używają strefy czasowej serwera. Wybierz ją z listy i kliknij <b>Ustaw</b>; konsola uruchamia się ponownie i wraca po kilku sekundach. Bez pomocnika root (patrz niżej) ustaw ją na serwerze: <code>timedatectl set-timezone Europe/Warsaw</code>.</p>
+
+<h2 id="certificate">Certyfikat (HTTPS)</h2>
+<p>W <a href="/settings/certificate">Ustawienia → Certyfikat</a> wybierz certyfikat, który widzą przeglądarki po otwarciu konsoli. Agenci używają własnego portu i certyfikatu, więc zmiana nigdy ich nie rozłącza.</p>
+<ul>
+  <li><b>Własny certyfikat konsoli</b> (z podpisem własnym) — działa od razu; przeglądarki ostrzegają.</li>
+  <li><b>Let's Encrypt</b> — bezpłatny certyfikat, odnawiany automatycznie 30 dni przed wygaśnięciem. Wpisz publiczną nazwę DNS konsoli i adres e-mail i wybierz sprawdzenie:
+    <ul>
+      <li><b>port 80</b> — nazwa wskazuje na ten serwer, a port 80 jest dostępny z Internetu; serwer odpowiada na porcie 80 i przekierowuje przeglądarki na HTTPS;</li>
+      <li><b>DNS Cloudflare</b> — dla serwerów niedostępnych z Internetu; wymaga tokenu API Cloudflare z uprawnieniem <code>Zone:DNS:Edit</code> dla strefy.</li>
+    </ul>
+  </li>
+  <li><b>Prześlij certyfikat</b> od urzędu certyfikacji lub firmowego CA: certyfikat (PEM, z certyfikatami pośrednimi) i klucz prywatny. Klucz jest przechowywany tylko na tym serwerze.</li>
+</ul>
+
+<h2 id="server-updates">Aktualizacje serwera</h2>
+<p><a href="/settings/version">Ustawienia → Aktualizacje ControlZit</a> pokazuje działającą wersję i najnowsze wydanie. <b>Zainstaluj</b> aktualizuje serwer: instalowane są tylko wydania podpisane kluczem wydań ControlZit; przed instalacją serwer tworzy kopię bazy danych i programu, a jeśli nowa wersja się nie uruchomi, sam wraca do starej. Konsola jest niedostępna przez minutę lub dwie. Opcjonalnie nowe wersje instalują się automatycznie w wybranej godzinie.</p>
+<div class="callout"><p>Aktualizacje, strefa czasowa i sieć wymagają <b>pomocnika root</b> dostarczanego z pakietami dla Linuksa i urządzeniem. Bez niego (np. sam program) aktualizuj przez <code>install.sh</code> lub pakiet wydania.</p></div>
+
+<h2 id="agent-updates">Aktualizacje agentów</h2>
+<p>Zobacz <a href="/docs/agents#updates">Instalacja agentów → Aktualizacje agentów</a>.</p>
+
+<h2 id="diagnostics">Diagnostyka</h2>
+<p><a href="/settings/diagnostics">Ustawienia → Diagnostyka</a> pokazuje, gdzie ControlZit zapisuje dzienniki, najnowsze wiersze dziennika serwera (filtr według poziomu lub tekstu), dziennik pomocnika root i wersje. <b>Pobierz diagnostykę (ZIP)</b> tworzy plik dla wsparcia z dziennikami, wersjami i podsumowaniem ustawień, urządzeniami, alertami i dziennikiem audytu. Hasła, tokeny, kody rejestracji i klucze są usuwane ze wszystkiego, co jest pokazywane, i z pliku; skrypty i ich wyniki nie są dołączane.</p>

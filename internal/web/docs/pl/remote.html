@@ -1,0 +1,29 @@
+<h1>Pulpit zdalny, terminal i pliki</h1>
+<p class="lead">Pomagaj użytkownikom i naprawiaj komputery z przeglądarki: bez oprogramowania po Twojej stronie i bez otwartych portów po ich stronie. Wszystko przechodzi przez szyfrowane połączenie agenta i trafia do dziennika audytu.</p>
+
+<h2 id="rd">Pulpit zdalny</h2>
+<p>Otwórz urządzenie i kliknij <b>Pulpit zdalny</b> (lub otwórz go w osobnym oknie). Widzisz ekran i sterujesz nim myszą i klawiaturą.</p>
+<ul>
+  <li><b>Klawiatura:</b> kliknij ekran, aby pisać; klawisze trafiają do zdalnego komputera z jego własnym układem klawiatury. <b>Wyślij Ctrl+Alt+Del</b> i <b>Wyślij tekst</b> (wpisuje tekst, na przykład długie hasło) są na pasku narzędzi. W trybie pełnoekranowym skróty takie jak <kbd>Ctrl</kbd>+<kbd>W</kbd> lub klawisz Windows też trafiają do zdalnego komputera; przytrzymaj <kbd>Esc</kbd>, aby wyjść z pełnego ekranu.</li>
+  <li><b>Jakość:</b> Szybka, Zrównoważona lub Ostra, zależnie od połączenia.</li>
+  <li><b>Monitory:</b> wybierz jeden monitor lub wszystkie.</li>
+  <li><b>Ekrany logowania i UAC</b> są widoczne i można z nich korzystać, więc możesz się zalogować i potwierdzać monity administratora.</li>
+</ul>
+
+<h3 id="clipboard">Schowek i pliki</h3>
+<p>Na komputerach z Windows skopiowany tekst przechodzi w obie strony przez <kbd>Ctrl</kbd>+<kbd>C</kbd> i <kbd>Ctrl</kbd>+<kbd>V</kbd>. <b>Pliki</b> skopiowane w Twoim Eksploratorze wkleja się na zdalnym komputerze przez <kbd>Ctrl</kbd>+<kbd>V</kbd>. Pliki skopiowane na zdalnym komputerze są oferowane do pobrania (<b>Pobierz skopiowane pliki</b>), bo przeglądarka nie może umieścić plików w Twoim schowku. Wymianę przez schowek można wyłączyć w <a href="/settings/remote">Ustawienia → Pulpit zdalny</a>.</p>
+
+<h3 id="notice">Powiadomienie na zdalnym ekranie</h3>
+<p>Domyślnie osoba przy komputerze widzi u góry ekranu pasek z Twoim nazwiskiem, gdy jesteś połączony. Ty nie widzisz paska na obrazie. Można go wyłączyć w <a href="/settings/remote">Ustawienia → Pulpit zdalny</a>; każda sesja i tak trafia do dziennika audytu.</p>
+
+<h3 id="linux-rd">Linux</h3>
+<p>Pulpit zdalny działa na pulpitach Linuksa z X11 (Xorg). Wayland nie pozwala usłudze w tle widzieć ekranu ani nim sterować: zaloguj się tam w sesji X11 lub użyj terminala. Bez pulpitu graficznego użyj terminala.</p>
+
+<h2 id="terminal">Terminal (Linux)</h2>
+<p><b>Terminal</b> otwiera powłokę root urządzenia w przeglądarce. Kliknij w nią, aby pisać; kopiuj, zaznaczając tekst, wklejaj przez <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> lub <b>Wyślij tekst</b>. Początek i koniec sesji trafiają do dziennika audytu. W Windows użyj <a href="/docs/scripts">Skryptów</a>.</p>
+
+<h2 id="files">Pliki</h2>
+<p><b>Pliki</b> przegląda dyski komputera bez łączenia się z ekranem. Przesyłaj pliki (do 4 GB), pobieraj pliki, pobierz folder lub zaznaczenie jako ZIP, twórz foldery, zmieniaj nazwy i usuwaj. Agent wykonuje każdą operację na plikach jako SYSTEM (Windows) lub root (Linux); każda trafia do dziennika audytu z Twoim nazwiskiem.</p>
+
+<h2 id="processes">Procesy i usługi</h2>
+<p><b>Procesy</b> pokazuje działające programy z pamięcią, wątkami i sesją oraz kończy proces. <b>Usługi</b> pokazuje usługi (usługi Windows lub jednostki systemd) i je uruchamia, zatrzymuje lub uruchamia ponownie. Agent ControlZit chroni sam siebie: nie można go zatrzymać ani zakończyć z konsoli.</p>

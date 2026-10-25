@@ -1,0 +1,58 @@
+<h1>Sunucuyu kurma</h1>
+<p class="lead">Dört yoldan birini seçin. Hazır VM görüntüsü en hızlısıdır; kurulum betiği mevcut bir Linux sunucusu için uygundur.</p>
+
+<table>
+  <tr><th>Yol</th><th>En uygun</th><th>Gereken</th></tr>
+  <tr><td><b>1. VM görüntüsü</b> (OVA, qcow2, VHDX)</td><td>birkaç dakikada içe aktar, başlat, giriş yap</td><td>VMware, Proxmox / KVM veya Hyper-V</td></tr>
+  <tr><td><b>2. Cihaz ISO'su</b></td><td>yeni bir VM veya fiziksel sunucu, gözetimsiz</td><td>kurulum sırasında internet erişimi</td></tr>
+  <tr><td><b>3. Kurulum betiği</b></td><td>mevcut bir Debian, Ubuntu, AlmaLinux veya Rocky Linux sunucusu</td><td>root ve internet erişimi</td></tr>
+  <tr><td><b>4. Paketleri elle</b></td><td>kendi PostgreSQL'iniz, yapılandırma yönetimi, çevrimdışı sunucular</td><td>bir sürümün deb veya rpm paketi</td></tr>
+</table>
+<p>Tüm dosyalar <a href="https://github.com/Max-Zit/controlzit/releases/latest" target="_blank" rel="noopener">sürüm sayfasındadır</a>. Sunucuya 2 vCPU, 2–4 GB RAM ve en az 16 GB disk verin.</p>
+
+<h2 id="image">1. VM görüntüsü</h2>
+<ol>
+  <li>Görüntüyü içe aktarın:
+    <ul>
+      <li><b>VMware ESXi / Workstation, VirtualBox:</b> <code>controlzit-appliance.ova</code> dosyasını dağıtın (<i>Create / Register VM → Deploy a virtual machine from an OVF or OVA file</i>).</li>
+      <li><b>Proxmox VE:</b> disksiz bir VM oluşturun (2 vCPU, 2–4 GB RAM, VirtIO ağ), <code>controlzit-appliance.qcow2</code> dosyasını düğüme kopyalayın ve <code>qm importdisk &lt;vmid&gt; controlzit-appliance.qcow2 local-lvm</code> komutunu çalıştırın; diski SCSI olarak takın ve önyükleme diski yapın.</li>
+      <li><b>Hyper-V:</b> <code>controlzit-appliance-vhdx.zip</code> dosyasını açın ve VHDX'i disk olarak kullanan <b>1. nesil</b> bir VM oluşturun.</li>
+    </ul>
+  </li>
+  <li>VM'yi başlatın. Disk kendiliğinden sanal diskin boyutuna büyür. VM ekranı <b>konsol adresini ve kurulum belirtecini</b> gösterir.</li>
+  <li><code>https://&lt;adres&gt;:8443</code> adresini açın. Tarayıcı kendinden imzalı sertifika için bir kez uyarır (daha sonra <a href="/settings/certificate">Ayarlar → Sertifika</a> altında değiştirin). Belirteci girin ve ilk yöneticiyi oluşturun.</li>
+</ol>
+<p>Cihaz adresini DHCP ile alır. Sabit adres, sunucu adı veya saat dilimi için VM ekranında <code>czadmin</code> olarak giriş yapın (ilk parola <code>controlzit</code>, değiştirilmelidir): bir kurulum menüsü açılır. Saat dilimi ve ağ daha sonra konsoldan da değiştirilebilir.</p>
+
+<h2 id="iso">2. Cihaz ISO'su</h2>
+<ol>
+  <li>Bir VM'yi veya sunucuyu <code>controlzit-appliance.iso</code> ile başlatın. 5 saniye sonra kurulum kendiliğinden başlar: <b>ilk diski siler</b>, Debian, PostgreSQL ve ControlZit'i kurar ve internet erişimi gerektirir (10–20 dakika).</li>
+  <li>Yeniden başlatmadan sonra ekran, VM görüntüsünde olduğu gibi konsol adresini ve kurulum belirtecini gösterir.</li>
+</ol>
+
+<h2 id="script">3. Kurulum betiği</h2>
+<p>Mevcut bir Linux sunucusunda root olarak:</p>
+<pre>curl -fsSL https://github.com/Max-Zit/controlzit/releases/latest/download/install.sh | sudo sh</pre>
+<p>Betik PostgreSQL'i kurar, en yeni sürümü indirir, <b>imzasını doğrular</b>, rastgele parolalı bir veritabanı oluşturur ve hizmeti başlatır. Seçenekler (<code>sh -s --</code> sonrasında): <code>--version X</code>, mevcut bir veritabanı için <code>--db postgres://…</code>, işletim sisteminin otomatik güvenlik güncellemelerini kapalı bırakmak için <code>--no-auto-updates</code>. Yeniden çalıştırmak ControlZit'i günceller ve verileri korur.</p>
+
+<h2 id="packages">4. Paketleri elle</h2>
+<pre>sudo apt install ./controlzit-server_X_amd64.deb      # Debian, Ubuntu
+sudo dnf install ./controlzit-server-X-1.x86_64.rpm     # AlmaLinux, Rocky Linux</pre>
+<p>Ardından veritabanı adresini <code>/etc/controlzit/server.env</code> dosyasına yazın (<code>CONTROLZIT_DB=postgres://…</code>) ve hizmeti <code>systemctl enable --now controlzit-server</code> ile başlatın.</p>
+
+<h2 id="first-sign-in">İlk giriş</h2>
+<ul>
+  <li>Kurulum belirteci <code>/var/lib/controlzit/setup-token.txt</code> dosyasında ve sunucu günlüğündedir (<code>journalctl -u controlzit-server</code>). Bir kez geçerlidir.</li>
+  <li>Her hesap bir <b>kimlik doğrulama uygulaması</b> (TOTP) gerektirir ve 10 kurtarma kodu alır. Bunları güvenli bir yerde saklayın.</li>
+  <li>Konsol varsayılan olarak yalnızca <b>özel ağlardan</b> gelen bağlantıları kabul eder. Kendinizi dışarıda bırakırsanız sunucuda <code>controlzit-server --reset-allowlist</code> çalıştırın (cihaz: kurulum menüsü, madde 5).</li>
+</ul>
+
+<h2 id="files">Neyin nerede olduğu</h2>
+<table>
+  <tr><th>Yol</th><th>Ne</th></tr>
+  <tr><td><code>/etc/controlzit/server.env</code></td><td>yapılandırma: veritabanı, portlar, güncelleme kaynağı (yalnızca root ve hizmet okuyabilir)</td></tr>
+  <tr><td><code>/var/lib/controlzit</code></td><td>veri dizini: sertifikalar, gizli anahtar, ajan yükleyicileri (<code>downloads</code>), günlükler</td></tr>
+  <tr><td><code>/var/lib/controlzit/logs/server.log</code></td><td>sunucu günlüğü; ayrıca <code>journalctl -u controlzit-server</code></td></tr>
+  <tr><td><code>/var/log/controlzit-helper</code></td><td>root yardımcısının günlüğü (güncellemeler, saat dilimi, ağ)</td></tr>
+</table>
+<div class="callout warn"><p>Veritabanını <code>/var/lib/controlzit</code> ile birlikte yedekleyin: oradaki gizli anahtar kayıtlı parolaları çözer ve sertifikalar sunucuyu ajanlarına tanıtır.</p></div>

@@ -1,0 +1,30 @@
+<h1>Sicurezza</h1>
+<p class="lead">Un server RMM può controllare ogni computer che gestisce. ControlZit è costruito in modo che un attaccante che raggiunge la console, la rete o persino il server ottenga il meno possibile.</p>
+
+<h2 id="design">Come ti protegge ControlZit</h2>
+<ul>
+  <li><b>Due porte.</b> La console e l'endpoint degli agent ascoltano su porte separate. La console accetta connessioni solo dalle reti consentite, verificate prima di TLS; la porta degli agent può essere pubblica senza esporre la console.</li>
+  <li><b>Agent in uscita.</b> Gli agent si connettono al server; i computer gestiti non hanno bisogno di porte aperte. Gli agent fissano il certificato del server tramite la sua impronta, quindi un server falso non può prenderne il controllo.</li>
+  <li><b>Comandi firmati.</b> Ogni comando a un agent è firmato con la chiave dei comandi del server e verificato dall'agent; gli aggiornamenti degli agent devono corrispondere allo SHA-256 di un comando firmato.</li>
+  <li><b>Accesso robusto.</b> Due fattori per ogni account locale e di directory, password argon2id, sessioni brevi, disconnessione dopo inattività, blocco progressivo degli accessi falliti.</li>
+  <li><b>Protezioni del browser.</b> Controlli CSRF a ogni modifica, una Content Security Policy rigorosa senza script inline, cookie di sessione <code>__Host-</code>.</li>
+  <li><b>Privilegio minimo.</b> Ruoli e accesso per cliente; la console gira come utente non privilegiato, e le poche azioni root (aggiornamenti, rete, fuso orario) passano da un helper root separato che accetta solo richieste fisse e convalidate.</li>
+  <li><b>Audit.</b> Un log di audit concatenato con hash di ogni modifica e ogni azione remota.</li>
+  <li><b>Release firmate.</b> Server, agent e <code>install.sh</code> installano solo release firmate con la chiave di release di ControlZit.</li>
+  <li><b>Segreti.</b> Le password salvate (email, LDAP, canali, Cloudflare) sono cifrate con la chiave segreta del server; la diagnostica rimuove i segreti.</li>
+</ul>
+
+<h2 id="practice">Buone pratiche</h2>
+<ol>
+  <li>Rendi la console raggiungibile solo dalle tue reti di amministrazione; per l'accesso dall'esterno usa una VPN (ad esempio WireGuard) invece di aprire la porta della console.</li>
+  <li>Apri la porta degli agent solo dove ci sono agent e imposta le reti degli agent se tutti provengono da indirizzi noti.</li>
+  <li>Usa un certificato di cui i browser si fidano (Let's Encrypt o la tua CA), così gli utenti non si abituano a ignorare gli avvisi.</li>
+  <li>Dai a ogni persona il proprio account con il ruolo minimo e solo i clienti necessari; disattiva gli account di chi se ne va.</li>
+  <li>Tieni un amministratore locale per le emergenze, con i codici di recupero conservati offline.</li>
+  <li>Installa presto gli aggiornamenti di ControlZit (o attiva quelli automatici) e mantieni aggiornato il sistema operativo del server; l'appliance installa da sola gli aggiornamenti di sicurezza di Debian.</li>
+  <li>Esegui regolarmente il backup del database e di <code>/var/lib/controlzit</code> e conservalo lontano dal server.</li>
+  <li>Controlla di tanto in tanto il log di audit e lascia attivo l'avviso sullo schermo remoto, così gli utenti sanno quando qualcuno è connesso.</li>
+</ol>
+
+<h2 id="report">Segnalare una vulnerabilità</h2>
+<p>Segnala i problemi di sicurezza in privato tramite <a href="https://github.com/Max-Zit/controlzit/security/advisories/new" target="_blank" rel="noopener">GitHub → Security → Report a vulnerability</a>, non in una issue pubblica.</p>

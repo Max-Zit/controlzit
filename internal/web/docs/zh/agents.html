@@ -1,0 +1,34 @@
+<h1>安装代理</h1>
+<p class="lead">代理是每台受管计算机上的一个小型服务。它以出站方式连接到服务器的代理端口，报告清单和指标，并执行控制台发出的已签名命令。</p>
+
+<h2 id="before">开始之前</h2>
+<ul>
+  <li>代理必须能通过<b>代理端口</b>（默认 TCP 8444）访问服务器。对于您网络之外的计算机，请在防火墙上开放此端口，并在<a href="/settings/network">设置 → 网络与访问</a>中设置<b>代理公网地址</b>（例如 <code>https://rmm.example.com:8444</code>）。控制台端口保持关闭。</li>
+  <li>如果您是在服务器本身（localhost）上打开的控制台，且没有设置代理公网地址，站点页面会发出警告：代理会尝试连接服务器的回环地址。</li>
+</ul>
+
+<h2 id="codes">注册码</h2>
+<p>代理通过注册码加入客户的某个<b>站点</b>。在<a href="/customers">客户</a>中打开站点，然后点击<b>创建注册码</b>。您可以选择有效期（1–365 天）以及可以使用它的计算机数量。代码（<code>CZ1-…</code>）包含服务器地址及其证书指纹，因此安装程序不需要其他任何信息。它只显示一次；不再需要时请撤销。</p>
+
+<h2 id="windows">Windows</h2>
+<p>在站点页面下载 MSI（<b>下载代理（MSI，64 位）</b>），双击并粘贴代码，或者通过组策略、Intune 或脚本静默安装：</p>
+<pre>msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="CZ1-…"</pre>
+<p>代理作为 Windows 服务 <i>ControlZit Agent</i> 运行。时钟旁的小图标显示它是否已连接（绿色），并可打开一个窗口，显示服务器以及由谁管理这台计算机。</p>
+<p>不使用 MSI（以管理员身份运行 PowerShell）：</p>
+<pre>.\controlzit-agent.exe enroll --code "CZ1-…"
+.\controlzit-agent.exe install</pre>
+
+<h2 id="linux">Linux</h2>
+<p>在站点页面下载 Linux 代理（x86-64，或用于 Raspberry Pi 和 ARM 服务器的 ARM64），复制到计算机并以 root 身份运行：</p>
+<pre>chmod +x controlzit-agent-linux-amd64
+sudo ./controlzit-agent-linux-amd64 install --code "CZ1-…"</pre>
+<p>它会将自身复制到 <code>/usr/local/bin/controlzit-agent</code>，完成注册并启动 systemd 服务 <code>controlzit-agent</code>。</p>
+
+<h2 id="updates">代理更新</h2>
+<p>服务器自带与其版本相同的代理安装程序。在<a href="/settings/agents">设置 → 代理更新</a>中，您可以查看哪些代理已过时、一次性全部更新，或让过时的代理在连接时自动更新。单个代理可在其设备页面上更新。代理通过自己的加密连接下载安装程序，并且只有在与已签名更新命令中的 SHA-256 一致时才会安装。您也可以在那里上传其他安装程序（MSI 或 Linux 代理）。</p>
+
+<h2 id="windows-update">受管计算机上的 Windows 更新</h2>
+<p>代理通过策略关闭 Windows 更新的自动安装，使更新只来自 ControlZit，可以手动安装或按您的计划安装（请参阅<a href="/docs/updates">Windows 更新</a>）。之前的设置会被保存，并在移除代理时恢复。</p>
+
+<h2 id="remove">移除代理</h2>
+<p>在设备页面上删除设备（<b>移除设备</b>）。如果设备在线，代理会在几秒内自行卸载，Windows 更新会恢复其自身的设置。离线计算机将无法再连接；请在其上手动卸载代理（Windows：<i>应用 → ControlZit Agent → 卸载</i>；Linux：<code>sudo controlzit-agent uninstall</code>）。</p>

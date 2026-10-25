@@ -1,0 +1,29 @@
+<h1>Uzak masaüstü, terminal ve dosyalar</h1>
+<p class="lead">Kullanıcılara yardım edin ve bilgisayarları tarayıcıdan onarın: sizin tarafınızda yazılım, onların tarafında açık port yok. Her şey ajanın şifreli bağlantısından geçer ve denetim günlüğüne yazılır.</p>
+
+<h2 id="rd">Uzak masaüstü</h2>
+<p>Bir cihazı açın ve <b>Uzak masaüstü</b>'ne tıklayın (veya kendi penceresinde açın). Ekranı görür ve fare ile klavyeyle kontrol edersiniz.</p>
+<ul>
+  <li><b>Klavye:</b> yazmak için ekrana tıklayın; tuşlar uzak bilgisayara kendi klavye düzeniyle gider. <b>Ctrl+Alt+Del gönder</b> ve <b>Metin gönder</b> (örneğin uzun bir parola gibi bir metni yazar) araç çubuğundadır. Tam ekranda <kbd>Ctrl</kbd>+<kbd>W</kbd> veya Windows tuşu gibi kısayollar da uzak bilgisayara gider; tam ekrandan çıkmak için <kbd>Esc</kbd>'yi basılı tutun.</li>
+  <li><b>Kalite:</b> bağlantıya göre Hızlı, Dengeli veya Keskin.</li>
+  <li><b>Monitörler:</b> bir monitör veya hepsini seçin.</li>
+  <li><b>Giriş ve UAC ekranları</b> gösterilir ve kullanılabilir; böylece oturum açabilir ve yönetici isteklerini onaylayabilirsiniz.</li>
+</ul>
+
+<h3 id="clipboard">Pano ve dosyalar</h3>
+<p>Windows bilgisayarlarda kopyalanan metin <kbd>Ctrl</kbd>+<kbd>C</kbd> ve <kbd>Ctrl</kbd>+<kbd>V</kbd> ile iki yönde gider. Gezgininizde kopyalanan <b>dosyalar</b> uzak bilgisayarda <kbd>Ctrl</kbd>+<kbd>V</kbd> ile yapıştırılır. Uzak bilgisayarda kopyalanan dosyalar indirme olarak sunulur (<b>Kopyalanan dosyaları indir</b>), çünkü bir tarayıcı panonuza dosya koyamaz. Pano paylaşımı <a href="/settings/remote">Ayarlar → Uzak masaüstü</a> altında kapatılabilir.</p>
+
+<h3 id="notice">Uzak ekranda bildirim</h3>
+<p>Varsayılan olarak bilgisayarın başındaki kişi, siz bağlıyken ekranın üstünde adınızı gösteren bir çubuk görür. Siz çubuğu görüntüde görmezsiniz. <a href="/settings/remote">Ayarlar → Uzak masaüstü</a> altında kapatılabilir; her oturum her durumda denetim günlüğüne yazılır.</p>
+
+<h3 id="linux-rd">Linux</h3>
+<p>Uzak masaüstü X11 (Xorg) kullanan Linux masaüstlerinde çalışır. Wayland bir arka plan hizmetinin ekranı görmesine veya denetlemesine izin vermez: orada bir X11 oturumuyla giriş yapın veya terminali kullanın. Grafik masaüstü yoksa terminali kullanın.</p>
+
+<h2 id="terminal">Terminal (Linux)</h2>
+<p><b>Terminal</b>, cihazın root kabuğunu tarayıcıda açar. Yazmak için içine tıklayın; metni seçerek kopyalayın, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> veya <b>Metin gönder</b> ile yapıştırın. Oturumun başlangıcı ve sonu denetim günlüğüne yazılır. Windows'ta <a href="/docs/scripts">Betikler</a>'i kullanın.</p>
+
+<h2 id="files">Dosyalar</h2>
+<p><b>Dosyalar</b>, ekrana bağlanmadan bilgisayarın sürücülerinde gezinir. Dosya yükleyin (4 GB'a kadar), dosya indirin, bir klasörü veya seçimi ZIP olarak indirin, klasör oluşturun, yeniden adlandırın ve silin. Ajan her dosya işlemini SYSTEM (Windows) veya root (Linux) olarak yapar; her biri adınızla denetim günlüğüne yazılır.</p>
+
+<h2 id="processes">İşlemler ve hizmetler</h2>
+<p><b>İşlemler</b>, çalışan programları bellek, iş parçacıkları ve oturumlarıyla listeler ve bir işlemi sonlandırır. <b>Hizmetler</b>, hizmetleri (Windows hizmetleri veya systemd birimleri) listeler ve başlatır, durdurur veya yeniden başlatır. ControlZit ajanı kendini korur: konsoldan durdurulamaz veya sonlandırılamaz.</p>

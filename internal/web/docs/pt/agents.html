@@ -1,0 +1,34 @@
+<h1>Instalar agentes</h1>
+<p class="lead">O agente é um pequeno serviço em cada computador gerido. Liga-se de saída à porta dos agentes do servidor, comunica inventário e métricas e executa os comandos assinados da consola.</p>
+
+<h2 id="before">Antes de começar</h2>
+<ul>
+  <li>Os agentes têm de chegar ao servidor na <b>porta dos agentes</b> (TCP 8444 por predefinição). Para computadores fora da sua rede, abra esta porta na firewall e defina o <b>endereço público dos agentes</b> em <a href="/settings/network">Definições → Rede e acesso</a> (por exemplo <code>https://rmm.example.com:8444</code>). A porta da consola continua fechada.</li>
+  <li>Se abriu a consola no próprio servidor (localhost) e não há endereço público dos agentes, a página do local avisa: os agentes tentariam ligar-se ao endereço de loopback do servidor.</li>
+</ul>
+
+<h2 id="codes">Códigos de registo</h2>
+<p>Os agentes juntam-se a um <b>local</b> de um cliente com um código de registo. Abra o local em <a href="/customers">Clientes</a> e clique em <b>Criar código de registo</b>. Escolhe durante quanto tempo é válido (1–365 dias) e quantos computadores o podem usar. O código (<code>CZ1-…</code>) contém o endereço do servidor e a impressão digital do seu certificado, pelo que o instalador não precisa de mais nada. Só é mostrado uma vez; revogue-o quando já não for necessário.</p>
+
+<h2 id="windows">Windows</h2>
+<p>Transfira o MSI na página do local (<b>Transferir o agente (MSI, 64 bits)</b>) e faça duplo clique e cole o código, ou instale-o em modo silencioso, por exemplo com Política de Grupo, Intune ou um script:</p>
+<pre>msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="CZ1-…"</pre>
+<p>O agente corre como serviço Windows <i>ControlZit Agent</i>. Um pequeno ícone junto ao relógio mostra se está ligado (verde) e abre uma janela com o servidor e quem gere o computador.</p>
+<p>Sem o MSI (PowerShell como administrador):</p>
+<pre>.\controlzit-agent.exe enroll --code "CZ1-…"
+.\controlzit-agent.exe install</pre>
+
+<h2 id="linux">Linux</h2>
+<p>Transfira o agente Linux na página do local (x86-64, ou ARM64 para Raspberry Pi e servidores ARM), copie-o para a máquina e execute-o como root:</p>
+<pre>chmod +x controlzit-agent-linux-amd64
+sudo ./controlzit-agent-linux-amd64 install --code "CZ1-…"</pre>
+<p>Copia-se para <code>/usr/local/bin/controlzit-agent</code>, regista-se e inicia o serviço systemd <code>controlzit-agent</code>.</p>
+
+<h2 id="updates">Atualizações dos agentes</h2>
+<p>O servidor traz os instaladores do agente da sua própria versão. Em <a href="/settings/agents">Definições → Atualizações dos agentes</a> vê quais os agentes desatualizados, atualiza-os todos de uma vez ou deixa que os desatualizados se atualizem sozinhos ao ligar-se. Um agente individual atualiza-se na página do seu dispositivo. O agente transfere o instalador pela sua própria ligação encriptada e só o instala se corresponder ao SHA-256 do comando de atualização assinado. Também pode carregar aí outro instalador (um MSI ou um agente Linux).</p>
+
+<h2 id="windows-update">Windows Update nos computadores geridos</h2>
+<p>O agente desliga por política a instalação automática do Windows Update, para que as atualizações cheguem apenas do ControlZit, manualmente ou segundo o seu agendamento (veja <a href="/docs/updates">Atualizações do Windows</a>). As definições anteriores são guardadas e voltam quando o agente é removido.</p>
+
+<h2 id="remove">Remover um agente</h2>
+<p>Elimine o dispositivo na sua página (<b>Remover dispositivo</b>). Se estiver online, o agente desinstala-se em segundos e o Windows Update recupera as suas próprias definições. Um computador offline já não consegue ligar-se; desinstale lá o agente manualmente (Windows: <i>Aplicações → ControlZit Agent → Desinstalar</i>; Linux: <code>sudo controlzit-agent uninstall</code>).</p>

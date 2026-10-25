@@ -1,0 +1,29 @@
+<h1>Desktop remoto, terminale e file</h1>
+<p class="lead">Aiuta gli utenti e ripara i computer dal browser: nessun software dalla tua parte, nessuna porta aperta dalla loro. Tutto passa per la connessione cifrata dell'agent e viene scritto nel log di audit.</p>
+
+<h2 id="rd">Desktop remoto</h2>
+<p>Apri un dispositivo e fai clic su <b>Desktop remoto</b> (o aprilo in una finestra separata). Vedi lo schermo e lo controlli con mouse e tastiera.</p>
+<ul>
+  <li><b>Tastiera:</b> fai clic sullo schermo per digitare; i tasti vanno al computer remoto con il suo layout di tastiera. <b>Invia Ctrl+Alt+Canc</b> e <b>Invia testo</b> (digita un testo, ad esempio una password lunga) sono nella barra degli strumenti. A schermo intero anche scorciatoie come <kbd>Ctrl</kbd>+<kbd>W</kbd> o il tasto Windows vanno al computer remoto; tieni premuto <kbd>Esc</kbd> per uscire dallo schermo intero.</li>
+  <li><b>Qualità:</b> Veloce, Bilanciata o Nitida, a seconda della connessione.</li>
+  <li><b>Monitor:</b> scegli un monitor o tutti.</li>
+  <li><b>Le schermate di accesso e UAC</b> sono visibili e utilizzabili, quindi puoi accedere e confermare le richieste di amministratore.</li>
+</ul>
+
+<h3 id="clipboard">Appunti e file</h3>
+<p>Sui computer Windows il testo copiato va in entrambe le direzioni con <kbd>Ctrl</kbd>+<kbd>C</kbd> e <kbd>Ctrl</kbd>+<kbd>V</kbd>. I <b>file</b> copiati nel tuo Esplora file si incollano sul computer remoto con <kbd>Ctrl</kbd>+<kbd>V</kbd>. I file copiati sul computer remoto vengono offerti come download (<b>Scarica i file copiati</b>), perché un browser non può mettere file nei tuoi appunti. Lo scambio degli appunti si può disattivare in <a href="/settings/remote">Impostazioni → Desktop remoto</a>.</p>
+
+<h3 id="notice">Avviso sullo schermo remoto</h3>
+<p>Per impostazione predefinita la persona al computer vede in cima allo schermo una barra con il tuo nome mentre sei connesso. Tu non vedi la barra nell'immagine. Si può disattivare in <a href="/settings/remote">Impostazioni → Desktop remoto</a>; ogni sessione viene comunque scritta nel log di audit.</p>
+
+<h3 id="linux-rd">Linux</h3>
+<p>Il desktop remoto funziona sui desktop Linux con X11 (Xorg). Wayland non consente a un servizio in background di vedere o controllare lo schermo: accedi lì con una sessione X11 o usa il terminale. Senza desktop grafico, usa il terminale.</p>
+
+<h2 id="terminal">Terminale (Linux)</h2>
+<p><b>Terminale</b> apre una shell root del dispositivo nel browser. Fai clic all'interno per digitare; copia selezionando il testo, incolla con <kbd>Ctrl</kbd>+<kbd>Maiusc</kbd>+<kbd>V</kbd> o <b>Invia testo</b>. L'inizio e la fine della sessione vengono scritti nel log di audit. Su Windows usa gli <a href="/docs/scripts">Script</a>.</p>
+
+<h2 id="files">File</h2>
+<p><b>File</b> esplora le unità del computer senza collegarsi allo schermo. Carica file (fino a 4 GB), scarica file, scarica una cartella o una selezione come ZIP, crea cartelle, rinomina ed elimina. L'agent esegue ogni operazione sui file come SYSTEM (Windows) o root (Linux); ognuna viene scritta nel log di audit con il tuo nome.</p>
+
+<h2 id="processes">Processi e servizi</h2>
+<p><b>Processi</b> elenca i programmi in esecuzione con memoria, thread e sessione e termina un processo. <b>Servizi</b> elenca i servizi (servizi Windows o unità systemd) e li avvia, arresta o riavvia. L'agent ControlZit si protegge da solo: non può essere arrestato o terminato dalla console.</p>

@@ -1,0 +1,24 @@
+<h1>Aggiornamenti di Windows e software</h1>
+<p class="lead">ControlZit mostra quali aggiornamenti mancano su ogni computer e li installa a mano o secondo la tua pianificazione. I programmi si installano e aggiornano con winget.</p>
+
+<h2 id="overview">La panoramica</h2>
+<p><a href="/updates">Aggiornamenti</a> elenca i dispositivi con aggiornamenti mancanti (quelli di sicurezza contati a parte), i dispositivi in attesa di riavvio, l'ultima installazione e l'ultima ricerca. Gli agent cercano gli aggiornamenti mancanti pochi minuti dopo l'avvio e poi due volte al giorno; <b>Cerca ora</b> avvia subito una ricerca.</p>
+
+<h2 id="device">Su un dispositivo</h2>
+<p>La scheda <b>Aggiornamenti</b> di un dispositivo elenca gli aggiornamenti mancanti con categoria e gravità e quelli installati di recente. Seleziona gli aggiornamenti e fai clic su <b>Installa selezionati</b>; la pagina mostra il risultato al termine. Se serve un riavvio, il dispositivo lo indica e puoi riavviarlo dalla sua pagina.</p>
+
+<h2 id="automatic">Installazione automatica</h2>
+<p>In <a href="/settings/updates">Impostazioni → Aggiornamenti di Windows</a> scegli cosa installa da solo il server:</p>
+<ul>
+  <li><b>Disattivata</b> — gli aggiornamenti si installano solo dalla console.</li>
+  <li><b>Aggiornamenti di sicurezza e critici, definizioni di Defender</b>.</li>
+  <li><b>Tutti gli aggiornamenti tranne quelli delle funzionalità</b> — le nuove versioni di Windows non vengono mai installate automaticamente.</li>
+</ul>
+<p>Scegli i giorni e l'ora (ora del server). I dispositivi online in quell'ora installano una volta quel giorno; i dispositivi offline attendono il giorno pianificato successivo. Facoltativamente il computer si riavvia da solo quando un aggiornamento lo richiede, 5 minuti dopo un avviso all'utente connesso.</p>
+<div class="callout"><p>Perché gli aggiornamenti non arrivino in momenti casuali, l'agent disattiva tramite criterio l'installazione automatica di Windows Update. Quando l'agent viene rimosso, tornano le impostazioni precedenti.</p></div>
+
+<h2 id="linux">Linux</h2>
+<p>Su Linux l'agent legge gli aggiornamenti dei pacchetti disponibili tramite <b>apt</b> (Debian, Ubuntu; aggiornamenti di sicurezza dalle sorgenti <code>-security</code>) o <b>dnf</b> (famiglia RHEL; aggiornamenti di sicurezza dalle informazioni di aggiornamento) e installa i pacchetti selezionati. L'installazione automatica vale anche per i dispositivi Linux; lì gli «aggiornamenti di sicurezza» sono i pacchetti delle sorgenti di sicurezza.</p>
+
+<h2 id="programs">Programmi (winget)</h2>
+<p>La scheda <b>Programmi</b> di un dispositivo Windows elenca i programmi installati noti a winget e gli aggiornamenti disponibili. <b>Aggiorna tutto</b> li aggiorna; i singoli programmi si possono aggiornare o disinstallare. <b>Installa un programma</b> cerca nel repository della community di winget (ad esempio <i>7-Zip</i> o <i>Chrome</i>) e lo installa in modo silenzioso per tutti gli utenti. Il dispositivo ha bisogno di winget (Programma di installazione app), incluso nelle versioni recenti di Windows 10 e 11.</p>

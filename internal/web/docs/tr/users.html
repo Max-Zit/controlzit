@@ -1,0 +1,40 @@
+<h1>Kullanıcılar, roller ve giriş</h1>
+<p class="lead">Herkes kendi hesabıyla giriş yapar. Roller neyi yapabileceğini, müşteri erişimi neyi görebileceğini belirler ve her işlem adıyla denetim günlüğüne yazılır.</p>
+
+<h2 id="roles">Roller</h2>
+<table>
+  <tr><th>Rol</th><th>Yapabilir</th></tr>
+  <tr><td><b>Yönetici</b></td><td>kullanıcılar ve ayarlar dahil her şey; her zaman tüm müşterileri görür</td></tr>
+  <tr><td><b>Teknisyen</b></td><td>izin verilen müşterilerin cihazlarını yönetir: uzaktan erişim, betikler, güncellemeler, programlar, uyarılar</td></tr>
+  <tr><td><b>Salt okunur</b></td><td>yalnızca izin verilen müşterileri görüntüler: cihazlar, uyarılar, güncellemeler, raporlar</td></tr>
+</table>
+<p>Teknisyenler ve salt okunur kullanıcılar <b>tüm müşterilere</b> (gelecektekiler dahil) veya <b>yalnızca bazı müşterilere</b> erişim alır.</p>
+
+<h2 id="local">Yerel hesaplar</h2>
+<p><a href="/users">Kullanıcılar</a> altında bir yönetici, ilk parolasıyla bir kullanıcı ekler; kullanıcı ilk girişte parolayı değiştirmeli ve iki adımlı girişi ayarlamalıdır. Bir yönetici bir kullanıcıyı devre dışı bırakabilir (açık oturumlar sona erer), yeni parola belirleyebilir veya telefonunu ve kurtarma kodlarını kaybeden bir kullanıcının iki adımlı girişini sıfırlayabilir. Her zaman en az bir etkin yönetici kalır.</p>
+
+<h2 id="2fa">İki adımlı giriş</h2>
+<p>ControlZit her yönetilen bilgisayara yönetici erişimine sahiptir; bu yüzden her yerel ve dizin hesabı bir <b>kimlik doğrulama uygulaması</b> gerektirir (Microsoft Authenticator, Google Authenticator, Authy, 1Password, Bitwarden …). Her hesap ayrıca 10 tek kullanımlık <b>kurtarma kodu</b> alır; yenileri <a href="/account">Hesap</a> altında oluşturulur. Başarısız girişler adresi bir süre engeller (her tekrarlanan engellemeden sonra daha uzun); sınırlar oturum süresi ve hareketsizlikten sonra oturumu kapatma ile birlikte <a href="/settings/security">Ayarlar → Giriş ve güvenlik</a> altındadır.</p>
+
+<h2 id="ldap">Active Directory / LDAP</h2>
+<p><a href="/settings/ldap">Ayarlar → Active Directory / LDAP</a> altında kullanıcılar dizin hesaplarıyla giriş yapar. Parolayı dizin denetler; ControlZit yine de kendi ikinci faktörünü ister.</p>
+<ul>
+  <li><b>Sunucu:</b> <code>ldaps://dc1.example.local</code> (port 636) veya StartTLS ile <code>ldap://</code> (389) — parolalar ağdan asla şifresiz geçmez. Dizinin sertifikası bir şirket CA'sından geliyorsa CA sertifikasını ekleyin.</li>
+  <li><b>Hizmet hesabı</b> (DN veya <code>kullanici@alan</code>) ve parolası, <b>temel DN</b> ve <b>kullanıcı filtresi</b>, ör. Active Directory için <code>(&amp;(objectClass=user)(sAMAccountName={username}))</code>.</li>
+  <li><b>Gruplar ve roller:</b> dizin gruplarını Yönetici, Teknisyen ve Salt okunur rollerine eşleyin; en yüksek rol kazanır. Active Directory'nin iç içe grupları dahil edilebilir.</li>
+  <li><b>Müşteri grupları:</b> <code>grup = müşteri</code> satırları teknisyenleri ve salt okunur kullanıcıları o müşterilerle sınırlar.</li>
+</ul>
+<p><b>Test</b>, kaydedilen ayarlarla bir dizin hesabını giriş yapmadan denetler ve ControlZit'in ondan ne yapacağını gösterir. Dizin hesapları parolalarını ControlZit'te değil, dizinde değiştirir.</p>
+
+<h2 id="sso">Çoklu oturum açma (OpenID Connect, SAML)</h2>
+<p><a href="/settings/sso">Ayarlar → Çoklu oturum açma</a> altında kullanıcılar bir kimlik sağlayıcıdaki hesaplarıyla giriş yapar: <b>OpenID Connect</b> (Microsoft Entra ID, Google, Okta, Keycloak …) veya <b>SAML 2.0</b> (ADFS, Entra ID, Okta …). Giriş sayfası bu durumda bir düğme gösterir.</p>
+<ul>
+  <li><b>OpenID Connect:</b> sağlayıcıda sayfada gösterilen yönlendirme URI'siyle bir uygulama kaydedin, ardından vereni (ör. <code>https://login.microsoftonline.com/&lt;tenant&gt;/v2.0</code>), istemci kimliğini ve istemci gizli anahtarını girin.</li>
+  <li><b>SAML:</b> sağlayıcıya konsolun meta verilerini (sayfadaki bağlantı) veya entity ID'sini ve yanıt (ACS) adresini verin, ardından sağlayıcının meta veri URL'sini girin veya XML'ini yapıştırın.</li>
+  <li><b>Grup talebi</b> grupları taşır (adlar veya kimlikler; Entra ID grup kimlikleri gönderir) ve LDAP'taki gibi rollere ve müşterilere eşlenir.</li>
+  <li>Kimlik sağlayıcının çok faktörlü ilkesi geçerlidir; isteğe bağlı olarak ControlZit kendi ikinci faktörünü de ister.</li>
+</ul>
+<div class="callout tip"><p>LDAP veya çoklu oturum açma açıkken yerel hesaplar çalışmaya devam eder; böylece bir yönetici her zaman giriş yapabilir. Acil durumlar için bir yerel yönetici tutun.</p></div>
+
+<h2 id="audit">Denetim günlüğü</h2>
+<p><a href="/audit">Denetim günlüğü</a>, her değişikliği ve her uzak işlemi kullanıcı, hedef (müşteri, konum, cihaz veya kullanıcı, bağlantıyla) ve adresle listeler. Kayıtlar karma zinciriyle bağlıdır; konsol zinciri her görüntülemede denetler ve bir kayıt değiştirilmiş veya silinmişse bildirir.</p>

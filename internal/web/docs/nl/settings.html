@@ -1,0 +1,40 @@
+<h1>Serverinstellingen en updates</h1>
+<p class="lead">Beheerders vinden de instellingen van de server onder <a href="/settings">Instellingen</a>: netwerk en poorten, het certificaat, de tijdzone, updates van server en agents, en de diagnose voor ondersteuning.</p>
+
+<h2 id="network">Netwerk en toegang</h2>
+<p>Onder <a href="/settings/network">Instellingen → Netwerk en toegang</a>:</p>
+<ul>
+  <li><b>Console</b> — luisteradres en poort (standaard <code>:8443</code>) en de <b>toegestane netwerken</b>: één IP-adres of netwerk per regel (CIDR). Verbindingen van andere adressen worden vóór TLS gesloten; de server zelf (127.0.0.1) is altijd toegestaan. Opslaan weigert een lijst die uw eigen adres zou buitensluiten.</li>
+  <li><b>Agent-eindpunt</b> — luisteradres en poort (standaard <code>:8444</code>, anders dan de console), de netwerken waaruit agents mogen komen (leeg = alle) en het <b>openbare agentadres</b> dat in installatieprogramma's en registratiecodes komt.</li>
+  <li>Nieuwe poorten gelden na <b>Nu herstarten</b> (herstart de ControlZit-service; agents maken vanzelf opnieuw verbinding).</li>
+</ul>
+<p>Als u uzelf buitensluit, voer dan <code>controlzit-server --reset-allowlist</code> uit op de server (appliance: installatiemenu, item 5).</p>
+
+<h3 id="server-network">Netwerk van de server (appliance)</h3>
+<p>Op de ControlZit-appliance stelt u hier ook het netwerk van de server zelf in: DHCP of een vast adres met netwerkgrootte (bijv. <code>192.168.1.20/24</code>), gateway, één tot drie DNS-servers en de servernaam. Antwoordt de gateway niet met de nieuwe instellingen, dan komen de vorige na 30 seconden vanzelf terug. Bij andere installaties beheert het besturingssysteem het netwerk.</p>
+
+<h3 id="timezone">Tijdzone</h3>
+<p>Schema's (updates, scripts, rapporten) en de tijden in de console gebruiken de tijdzone van de server. Kies hem uit de lijst en klik op <b>Instellen</b>; de console herstart en is binnen enkele seconden terug. Zonder de root-helper (zie hieronder) stelt u hem in op de server: <code>timedatectl set-timezone Europe/Amsterdam</code>.</p>
+
+<h2 id="certificate">Certificaat (HTTPS)</h2>
+<p>Kies onder <a href="/settings/certificate">Instellingen → Certificaat</a> het certificaat dat browsers zien als ze de console openen. Agents gebruiken hun eigen poort en certificaat, dus een wijziging verbreekt hun verbinding nooit.</p>
+<ul>
+  <li><b>Het eigen certificaat van de console</b> (zelfondertekend) — werkt meteen; browsers waarschuwen ervoor.</li>
+  <li><b>Let's Encrypt</b> — een gratis certificaat, automatisch vernieuwd 30 dagen voor het verloopt. Voer de openbare DNS-naam van de console en een e-mailadres in en kies de controle:
+    <ul>
+      <li><b>poort 80</b> — de naam wijst naar deze server en poort 80 is bereikbaar vanaf internet; de server antwoordt op poort 80 en stuurt browsers door naar HTTPS;</li>
+      <li><b>Cloudflare-DNS</b> — voor servers die niet bereikbaar zijn vanaf internet; vereist een Cloudflare-API-token met <code>Zone:DNS:Edit</code> voor de zone.</li>
+    </ul>
+  </li>
+  <li><b>Een certificaat uploaden</b> van uw certificeringsinstantie of bedrijfs-CA: het certificaat (PEM, met de tussencertificaten) en de privésleutel. De sleutel wordt alleen op deze server opgeslagen.</li>
+</ul>
+
+<h2 id="server-updates">Updates van de server</h2>
+<p><a href="/settings/version">Instellingen → ControlZit-updates</a> toont de actieve versie en de nieuwste release. <b>Installeren</b> werkt de server bij: alleen releases die zijn ondertekend met de ControlZit-releasesleutel worden geïnstalleerd; vóór de installatie maakt de server een back-up van database en programma, en start de nieuwe versie niet, dan gaat hij vanzelf terug naar de oude. De console is een of twee minuten weg. Optioneel worden nieuwe versies automatisch geïnstalleerd in een gekozen uur.</p>
+<div class="callout"><p>Updates, tijdzone en netwerk hebben de <b>root-helper</b> nodig die met de Linux-pakketten en de appliance meekomt. Zonder (bijv. het losse programma) werkt u bij met <code>install.sh</code> of het pakket van de release.</p></div>
+
+<h2 id="agent-updates">Agent-updates</h2>
+<p>Zie <a href="/docs/agents#updates">Agents installeren → Agent-updates</a>.</p>
+
+<h2 id="diagnostics">Diagnose</h2>
+<p><a href="/settings/diagnostics">Instellingen → Diagnose</a> toont waar ControlZit zijn logboeken schrijft, de nieuwste regels van het serverlogboek (filter op niveau of tekst), het logboek van de root-helper en de versies. <b>Diagnose downloaden (ZIP)</b> maakt een bestand voor ondersteuning met de logboeken, de versies en een samenvatting van de instellingen, de apparaten, de waarschuwingen en het auditlogboek. Wachtwoorden, tokens, registratiecodes en sleutels worden verwijderd uit alles wat wordt getoond en uit het bestand; scripts en hun uitvoer zijn niet inbegrepen.</p>

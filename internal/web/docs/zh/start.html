@@ -1,0 +1,43 @@
+<h1>快速入门</h1>
+<p class="lead">ControlZit 是一款自托管的远程监控与管理（RMM）工具。您可以通过自己服务器上的一个 Web 控制台，监控和管理客户的 Windows 和 Linux 计算机：清单、监控与警报、远程桌面、终端、文件、脚本、Windows 更新、软件和报告。</p>
+
+<h2 id="what">ControlZit 能做什么</h2>
+<table>
+  <tr><th>领域</th><th>您将获得</th></tr>
+  <tr><td>清单</td><td>每台设备的硬件、操作系统、磁盘、网络、安全状态（防病毒、防火墙、BitLocker）和已安装的软件。<a href="/docs/devices">设备</a></td></tr>
+  <tr><td>监控与警报</td><td>CPU、内存、磁盘空间、离线设备、已停止的服务、Defender 和防火墙；通过电子邮件、Slack、Microsoft Teams 或 Webhook 发送警报。<a href="/docs/monitoring">监控</a></td></tr>
+  <tr><td>远程访问</td><td>浏览器中的远程桌面（Windows、带 X11 的 Linux），支持剪贴板和文件复制；Linux 上的 root 终端、文件管理器、进程、服务、重启和关机。<a href="/docs/remote">远程访问</a></td></tr>
+  <tr><td>脚本</td><td>从脚本库在一台设备、多台设备或按计划运行 PowerShell、cmd、bash 或 sh。<a href="/docs/scripts">脚本</a></td></tr>
+  <tr><td>更新与软件</td><td>缺少的 Windows 更新和 Linux 软件包，手动或按计划安装，通过 winget 安装程序。<a href="/docs/updates">更新</a></td></tr>
+  <tr><td>报告</td><td>每个客户一份报告（设备、更新、警报、技术员的工作），可打印，也可每周或每月通过邮件发送。<a href="/docs/reports">报告</a></td></tr>
+</table>
+
+<h2 id="how">工作原理</h2>
+<ul>
+  <li><b>服务器</b>运行在一台带 PostgreSQL 的 Linux 机器上（通常是一台小型虚拟机）。它有两个端口：<b>控制台</b>（Web 界面和 API，TCP 8443）和<b>代理端点</b>（TCP 8444）。</li>
+  <li><b>代理</b>作为服务运行在每台受管计算机上。它们以<i>出站</i>方式连接到代理端口；计算机无需开放任何端口。代理通过服务器证书的指纹信任服务器，该指纹在注册时固定。</li>
+  <li>发给代理的每条命令都由服务器<b>签名</b>并由代理验证，每个操作都会写入防篡改的<a href="/audit">审计日志</a>。</li>
+</ul>
+<div class="callout tip"><p>控制台控制每台受管计算机。请仅允许从您自己的网络访问它（默认设置），并且只在代理需要的地方开放代理端口。请参阅<a href="/docs/security">安全</a>。</p></div>
+
+<h2 id="first-steps">第一步</h2>
+<ol>
+  <li><b>安装服务器</b>——导入现成的虚拟机镜像、启动设备 ISO，或在 Linux 服务器上运行安装脚本。请参阅<a href="/docs/install">安装服务器</a>。</li>
+  <li><b>创建第一个管理员</b>：使用服务器显示的设置令牌，并用身份验证器应用设置双重验证登录。</li>
+  <li><b>检查代理地址</b>：在<a href="/settings/network">设置 → 网络与访问</a>中，代理必须能通过代理公网地址或控制台主机名访问服务器。</li>
+  <li><b>添加客户和站点</b>：在<a href="/customers">客户</a>中添加，然后在站点上创建<b>注册码</b>。</li>
+  <li><b>安装代理</b>：使用该代码在该站点的计算机上安装。请参阅<a href="/docs/agents">安装代理</a>。</li>
+  <li><b>设置警报</b>：在<a href="/settings/monitoring">设置 → 监控与警报</a>中设置，如有需要，也可设置<a href="/settings/updates">Windows 更新的自动安装</a>。</li>
+  <li><b>添加技术员</b>：在<a href="/users">用户</a>中添加，或连接 Active Directory / LDAP 或单点登录。请参阅<a href="/docs/users">用户、角色与登录</a>。</li>
+</ol>
+
+<h2 id="requirements">系统要求</h2>
+<ul>
+  <li><b>服务器：</b>2 个 vCPU、2–4 GB 内存、16 GB 磁盘；Debian 12+、Ubuntu 22.04+、AlmaLinux 或 Rocky Linux 9+（或现成的设备）。</li>
+  <li><b>Windows 代理：</b>Windows 10 / 11、Windows Server 2016 及更高版本，64 位。</li>
+  <li><b>Linux 代理：</b>带 systemd 的发行版，x86-64 或 ARM64（Raspberry Pi 和 ARM 服务器）。通过 apt 或 dnf 更新。</li>
+  <li><b>浏览器：</b>最新版 Chrome、Edge、Firefox 或 Safari。</li>
+</ul>
+
+<h2 id="license">许可与支持</h2>
+<p>ControlZit 是基于 GNU AGPLv3 的自由软件；源代码位于 <a href="https://github.com/Max-Zit/controlzit" target="_blank" rel="noopener">github.com/Max-Zit/controlzit</a>。请使用菜单底部的<b>报告错误</b>报告错误。MaxZit 提供付费支持。</p>

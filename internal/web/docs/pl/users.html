@@ -1,0 +1,40 @@
+<h1>Użytkownicy, role i logowanie</h1>
+<p class="lead">Każda osoba loguje się własnym kontem. Role decydują, co może robić, dostęp do klientów, co może widzieć, a każda akcja trafia do dziennika audytu z jej nazwiskiem.</p>
+
+<h2 id="roles">Role</h2>
+<table>
+  <tr><th>Rola</th><th>Może</th></tr>
+  <tr><td><b>Administrator</b></td><td>wszystko, także użytkowników i ustawienia; zawsze widzi wszystkich klientów</td></tr>
+  <tr><td><b>Technik</b></td><td>zarządza urządzeniami dozwolonych klientów: dostęp zdalny, skrypty, aktualizacje, programy, alerty</td></tr>
+  <tr><td><b>Tylko odczyt</b></td><td>tylko przegląda dozwolonych klientów: urządzenia, alerty, aktualizacje, raporty</td></tr>
+</table>
+<p>Technicy i użytkownicy tylko do odczytu mają dostęp do <b>wszystkich klientów</b> (także przyszłych) lub <b>tylko niektórych</b>.</p>
+
+<h2 id="local">Konta lokalne</h2>
+<p>W <a href="/users">Użytkownicy</a> administrator dodaje użytkownika z hasłem początkowym; użytkownik musi je zmienić i skonfigurować logowanie dwuskładnikowe przy pierwszym logowaniu. Administrator może wyłączyć użytkownika (otwarte sesje kończą się), ustawić nowe hasło lub zresetować logowanie dwuskładnikowe użytkownikowi, który zgubił telefon i kody odzyskiwania. Zawsze pozostaje co najmniej jeden aktywny administrator.</p>
+
+<h2 id="2fa">Logowanie dwuskładnikowe</h2>
+<p>ControlZit ma dostęp administratora do każdego zarządzanego komputera, więc każde konto lokalne i katalogowe potrzebuje <b>aplikacji uwierzytelniającej</b> (Microsoft Authenticator, Google Authenticator, Authy, 1Password, Bitwarden …). Każde konto dostaje też 10 jednorazowych <b>kodów odzyskiwania</b>; nowe tworzy się w <a href="/account">Konto</a>. Nieudane logowania blokują adres na pewien czas (dłużej po każdej kolejnej blokadzie); limity są w <a href="/settings/security">Ustawienia → Logowanie i bezpieczeństwo</a>, razem z długością sesji i wylogowaniem po bezczynności.</p>
+
+<h2 id="ldap">Active Directory / LDAP</h2>
+<p>W <a href="/settings/ldap">Ustawienia → Active Directory / LDAP</a> użytkownicy logują się kontem katalogowym. Katalog sprawdza hasło; ControlZit i tak pyta o własny drugi składnik.</p>
+<ul>
+  <li><b>Serwer:</b> <code>ldaps://dc1.example.local</code> (port 636) lub <code>ldap://</code> (389) ze StartTLS — hasła nigdy nie przechodzą przez sieć bez szyfrowania. Dodaj certyfikat CA, jeśli certyfikat katalogu pochodzi z firmowego CA.</li>
+  <li><b>Konto usługi</b> (DN lub <code>użytkownik@domena</code>) i jego hasło, <b>bazowy DN</b> oraz <b>filtr użytkowników</b>, np. <code>(&amp;(objectClass=user)(sAMAccountName={username}))</code> dla Active Directory.</li>
+  <li><b>Grupy i role:</b> przypisz grupy katalogu do ról Administrator, Technik i Tylko odczyt; wygrywa najwyższa rola. Można uwzględnić zagnieżdżone grupy Active Directory.</li>
+  <li><b>Grupy klientów:</b> wiersze <code>grupa = klient</code> ograniczają techników i użytkowników tylko do odczytu do tych klientów.</li>
+</ul>
+<p><b>Test</b> sprawdza konto katalogowe z zapisanymi ustawieniami, bez logowania, i pokazuje, co zrobiłby z nim ControlZit. Konta katalogowe zmieniają hasło w katalogu, nie w ControlZit.</p>
+
+<h2 id="sso">Logowanie jednokrotne (OpenID Connect, SAML)</h2>
+<p>W <a href="/settings/sso">Ustawienia → Logowanie jednokrotne</a> użytkownicy logują się kontem u dostawcy tożsamości: <b>OpenID Connect</b> (Microsoft Entra ID, Google, Okta, Keycloak …) lub <b>SAML 2.0</b> (ADFS, Entra ID, Okta …). Strona logowania pokazuje wtedy przycisk.</p>
+<ul>
+  <li><b>OpenID Connect:</b> zarejestruj aplikację u dostawcy z identyfikatorem URI przekierowania ze strony, a następnie wpisz wystawcę (np. <code>https://login.microsoftonline.com/&lt;tenant&gt;/v2.0</code>), identyfikator klienta i klucz tajny klienta.</li>
+  <li><b>SAML:</b> przekaż dostawcy metadane konsoli (link na stronie) lub jej entity ID i adres odpowiedzi (ACS), a następnie wpisz URL metadanych dostawcy lub wklej jego XML.</li>
+  <li><b>Claim grup</b> przenosi grupy (nazwy lub identyfikatory; Entra ID wysyła identyfikatory grup), przypisywane do ról i klientów jak w LDAP.</li>
+  <li>Obowiązują zasady MFA dostawcy tożsamości; opcjonalnie ControlZit pyta też o własny drugi składnik.</li>
+</ul>
+<div class="callout tip"><p>Konta lokalne nadal działają, gdy LDAP lub logowanie jednokrotne jest włączone, więc administrator zawsze może się zalogować. Zachowaj jednego lokalnego administratora na wypadek awarii.</p></div>
+
+<h2 id="audit">Dziennik audytu</h2>
+<p><a href="/audit">Dziennik audytu</a> pokazuje każdą zmianę i każdą akcję zdalną z użytkownikiem, celem (klient, lokalizacja, urządzenie lub użytkownik, z linkiem) i adresem. Wpisy są połączone łańcuchem skrótów; konsola sprawdza łańcuch przy każdym wyświetleniu i zgłasza, jeśli wpis zmieniono lub usunięto.</p>

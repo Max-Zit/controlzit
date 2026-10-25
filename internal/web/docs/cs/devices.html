@@ -1,0 +1,34 @@
+<h1>Zákazníci, pobočky a zařízení</h1>
+<p class="lead">Zařízení jsou uspořádána podle zákazníků a poboček. Technici a uživatelé jen pro čtení mohou být omezeni na některé zákazníky, takže každá zpráva a každý seznam ukazuje jen to, co smějí vidět.</p>
+
+<h2 id="customers">Zákazníci a pobočky</h2>
+<ul>
+  <li><b>Zákazníci</b> jsou firmy, o které se staráte (nebo oddělení vaší firmy). Přidejte je v <a href="/customers">Zákazníci</a>.</li>
+  <li><b>Pobočky</b> jsou jejich kanceláře nebo provozovny. Každé zařízení patří k jedné pobočce; registrační kódy se vytvářejí pro pobočku.</li>
+  <li>Zákazníka nebo pobočku lze smazat až tehdy, když už neobsahuje pobočky ani zařízení.</li>
+</ul>
+
+<h2 id="list">Seznam zařízení</h2>
+<p><a href="/devices">Zařízení</a> ukazuje všechna zařízení, která smíte vidět, se zákazníkem a pobočkou, operačním systémem, přihlášeným uživatelem, zda jsou online a kdy byla naposledy viděna. Hledejte podle názvu, uživatele, systému nebo zákazníka, nebo filtrujte podle zákazníka a stavu.</p>
+
+<h2 id="page">Stránka zařízení</h2>
+<p>Stránka zařízení má karty pro vše, co s ním můžete dělat:</p>
+<table>
+  <tr><th>Karta</th><th>Co ukazuje nebo dělá</th></tr>
+  <tr><td>Přehled</td><td>Otevřená upozornění, aktuální zatížení, paměť a disky, automatické služby, které neběží, čekající restarty; pod tím úplný inventář.</td></tr>
+  <tr><td>Vzdálená plocha, Terminál, Soubory</td><td>Vzdálený přístup, viz <a href="/docs/remote">Vzdálená plocha, terminál a soubory</a>.</td></tr>
+  <tr><td>Procesy, Služby</td><td>Běžící procesy (ukončit) a služby (spustit, zastavit, restartovat).</td></tr>
+  <tr><td>Skripty</td><td>Spustit skript a zobrazit dřívější spuštění s výstupem, viz <a href="/docs/scripts">Skripty</a>.</td></tr>
+  <tr><td>Aktualizace</td><td>Chybějící a nedávno nainstalované aktualizace Windows nebo balíčky Linuxu, viz <a href="/docs/updates">Aktualizace</a>.</td></tr>
+  <tr><td>Programy</td><td>Instalace, aktualizace a odinstalace programů pomocí winget (Windows).</td></tr>
+  <tr><td>Události</td><td>Protokoly událostí Windows (System, Application, Security, Setup), filtrované podle úrovně, období a textu.</td></tr>
+</table>
+
+<h2 id="inventory">Inventář</h2>
+<p>Agent posílá inventář několik sekund po připojení a pak pravidelně: operační systém a sestavení, doména nebo pracovní skupina, model a sériové číslo, procesor, paměť, disky s volným místem a stavem BitLockeru, síťové adaptéry s adresami a branami, Microsoft Defender a jeho signatury, profily brány Windows Firewall, čekající restart a nainstalovaný software (programy ve Windows, balíčky v Linuxu). <b>Obnovit inventář</b> si okamžitě vyžádá nový.</p>
+
+<h2 id="power">Restart a vypnutí</h2>
+<p>Tlačítka napájení na stránce zařízení restartují nebo vypnou počítač, hned nebo se zpožděním, s volitelnou zprávou přihlášenému uživateli; naplánovaný restart lze zrušit. Přihlášení uživatelé přijdou o neuloženou práci.</p>
+
+<h2 id="remove">Odebrání zařízení</h2>
+<p><b>Odebrat zařízení</b> jej smaže z konzole. Agent online se sám odinstaluje; viz <a href="/docs/agents#remove">Odebrání agenta</a>.</p>

@@ -1,0 +1,36 @@
+<h1>Monitorowanie, alerty i powiadomienia</h1>
+<p class="lead">Serwer sprawdza każde urządzenie raz na minutę. Alert pozostaje otwarty, dopóki trwa jego warunek, i zamyka się sam, gdy ustąpi; dowiadujesz się o tym e-mailem, na kanale czatu lub przez webhook.</p>
+
+<h2 id="rules">Reguły alertów</h2>
+<p>Ustaw reguły w <a href="/settings/monitoring">Ustawienia → Monitorowanie i alerty</a>. Dotyczą wszystkich urządzeń.</p>
+<table>
+  <tr><th>Reguła</th><th>Otwiera się, gdy</th></tr>
+  <tr><td>Obciążenie CPU</td><td>obciążenie pozostaje powyżej limitu przez wybraną liczbę minut</td></tr>
+  <tr><td>Użycie pamięci</td><td>użycie pamięci pozostaje powyżej limitu przez wybraną liczbę minut</td></tr>
+  <tr><td>Miejsce na dysku</td><td>dysk jest zapełniony bardziej niż procent lub (na dyskach większych niż dwukrotność) ma mniej wolnego miejsca niż podane GB</td></tr>
+  <tr><td>Urządzenie offline</td><td>agent nie połączył się dłużej niż podana liczba minut</td></tr>
+  <tr><td>Oczekujący restart</td><td>restart oczekuje, a komputer działa dłużej niż podana liczba dni</td></tr>
+  <tr><td>Microsoft Defender wyłączony</td><td>antywirus lub ochrona w czasie rzeczywistym jest wyłączona (opcjonalnie)</td></tr>
+  <tr><td>Zapora wyłączona</td><td>profil Zapory systemu Windows jest wyłączony (opcjonalnie)</td></tr>
+  <tr><td>Usługa zatrzymana</td><td>usługa z Twojej listy (nazwy usług, nie nazwy wyświetlane) ma uruchamiać się automatycznie, ale nie działa</td></tr>
+</table>
+<p>Alerty to <b>Ostrzeżenie</b> lub <b>Krytyczny</b> (krytyczne: urządzenia offline, zatrzymane usługi, wyłączony Defender i dyski z mniej niż 1 GB wolnego miejsca lub zajęte w 98 %). <a href="/alerts">Alerty</a> pokazuje otwarte (i opcjonalnie rozwiązane); technik może <b>potwierdzić</b> alert, aby inni widzieli, że ktoś się nim zajmuje. Liczba otwartych alertów widnieje w menu.</p>
+
+<h2 id="email">E-maile z alertami</h2>
+<ol>
+  <li>Wpisz <b>serwer poczty (SMTP)</b>: host, port, zabezpieczenie połączenia (STARTTLS lub TLS; hasło nigdy nie jest wysyłane nieszyfrowanym połączeniem), użytkownika, hasło i nadawcę. Hasło jest przechowywane w postaci zaszyfrowanej.</li>
+  <li>Dodaj <b>odbiorców</b>, jeden adres w wierszu, i wybierz, czy e-mail ma iść także po rozwiązaniu alertu.</li>
+  <li>Kliknij <b>Wyślij testowy e-mail</b>.</li>
+</ol>
+
+<h2 id="channels">Slack, Microsoft Teams i webhooki</h2>
+<p>W sekcji <b>Czat i webhooki</b> dodaj do 20 kanałów:</p>
+<ul>
+  <li><b>Slack</b> — adres URL przychodzącego webhooka kanału.</li>
+  <li><b>Microsoft Teams</b> — przepływ pracy kanału <i>Po odebraniu żądania elementu webhook usługi Teams</i> i jego URL.</li>
+  <li><b>Webhook</b> — dowolny URL HTTPS przyjmujący JSON POST (system zgłoszeń, automatyzacja). Z sekretem każde żądanie zawiera <code>X-ControlZit-Signature: sha256=&lt;HMAC treści&gt;</code>, więc odbiorca może sprawdzić, że pochodzi z Twojego serwera.</li>
+</ul>
+<p>Dla każdego kanału wybierz wszystkie alerty lub tylko krytyczne oraz czy wysyłać też rozwiązane. <b>Wyślij test</b> wysyła wiadomość testową. Adresy kanałów są przechowywane w postaci zaszyfrowanej.</p>
+
+<h2 id="metrics">Bieżące wartości</h2>
+<p>Strona urządzenia pokazuje bieżące obciążenie CPU, pamięć i dyski oraz niedziałające usługi automatyczne.</p>

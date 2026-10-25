@@ -1,0 +1,34 @@
+<h1>エージェントのインストール</h1>
+<p class="lead">エージェントは管理対象の各コンピューターで動く小さなサービスです。サーバーのエージェントポートへ送信接続し、インベントリと計測値を報告し、コンソールからの署名付きコマンドを実行します。</p>
+
+<h2 id="before">始める前に</h2>
+<ul>
+  <li>エージェントは<b>エージェントポート</b>（既定は TCP 8444）でサーバーに到達できる必要があります。社外のコンピューター向けには、ファイアウォールでこのポートを開き、<a href="/settings/network">設定 → ネットワークとアクセス</a>で<b>エージェント用の公開アドレス</b>（例: <code>https://rmm.example.com:8444</code>）を設定します。コンソールのポートは閉じたままです。</li>
+  <li>サーバー上（localhost）でコンソールを開いていて公開アドレスが未設定の場合、拠点ページに警告が表示されます。エージェントがサーバーのループバックアドレスに接続しようとしてしまうためです。</li>
+</ul>
+
+<h2 id="codes">登録コード</h2>
+<p>エージェントは登録コードで顧客の<b>拠点</b>に参加します。<a href="/customers">顧客</a>で拠点を開き、<b>登録コードを作成</b>をクリックします。有効期間（1～365 日）と使用できるコンピューターの台数を選びます。コード（<code>CZ1-…</code>）にはサーバーのアドレスと証明書のフィンガープリントが含まれるため、インストーラーには他の情報は不要です。表示は一度だけです。不要になったら取り消してください。</p>
+
+<h2 id="windows">Windows</h2>
+<p>拠点ページで MSI をダウンロード（<b>エージェントをダウンロード（MSI、64 ビット）</b>）し、ダブルクリックしてコードを貼り付けるか、グループポリシー、Intune、スクリプトなどでサイレントインストールします:</p>
+<pre>msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="CZ1-…"</pre>
+<p>エージェントは Windows サービス <i>ControlZit Agent</i> として動作します。時計の横の小さなアイコンが接続状態（緑）を示し、サーバーとコンピューターの管理者を表示するウィンドウを開きます。</p>
+<p>MSI を使わない場合（管理者として PowerShell）:</p>
+<pre>.\controlzit-agent.exe enroll --code "CZ1-…"
+.\controlzit-agent.exe install</pre>
+
+<h2 id="linux">Linux</h2>
+<p>拠点ページで Linux エージェント（x86-64、または Raspberry Pi と ARM サーバー向けの ARM64）をダウンロードし、マシンにコピーして root として実行します:</p>
+<pre>chmod +x controlzit-agent-linux-amd64
+sudo ./controlzit-agent-linux-amd64 install --code "CZ1-…"</pre>
+<p>自身を <code>/usr/local/bin/controlzit-agent</code> にコピーし、登録して systemd サービス <code>controlzit-agent</code> を開始します。</p>
+
+<h2 id="updates">エージェントの更新</h2>
+<p>サーバーは自身と同じバージョンのエージェントインストーラーを保持しています。<a href="/settings/agents">設定 → エージェントの更新</a>で古いエージェントを確認し、すべてを一度に更新するか、古いエージェントが接続時に自動更新されるようにできます。個別のエージェントはデバイスページで更新します。エージェントは自身の暗号化接続でインストーラーをダウンロードし、署名付き更新コマンドの SHA-256 と一致する場合にのみインストールします。ここで別のインストーラー（MSI または Linux エージェント）をアップロードすることもできます。</p>
+
+<h2 id="windows-update">管理対象コンピューターの Windows Update</h2>
+<p>エージェントはポリシーで Windows Update の自動インストールをオフにし、更新が ControlZit からのみ（手動またはスケジュールで）届くようにします（<a href="/docs/updates">Windows 更新</a>を参照）。以前の設定は保存され、エージェントを削除すると元に戻ります。</p>
+
+<h2 id="remove">エージェントの削除</h2>
+<p>デバイスのページで削除します（<b>デバイスを削除</b>）。オンラインの場合、エージェントは数秒で自身をアンインストールし、Windows Update は元の設定に戻ります。オフラインのコンピューターは今後接続できないため、そこで手動でアンインストールしてください（Windows: <i>アプリ → ControlZit Agent → アンインストール</i>、Linux: <code>sudo controlzit-agent uninstall</code>）。</p>

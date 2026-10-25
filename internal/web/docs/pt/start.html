@@ -1,0 +1,43 @@
+<h1>Primeiros passos</h1>
+<p class="lead">O ControlZit é uma ferramenta de monitorização e gestão remota (RMM) alojada por si. A partir de uma consola web no seu próprio servidor, acompanha e gere os computadores Windows e Linux dos seus clientes: inventário, monitorização e alertas, ambiente de trabalho remoto, terminal, ficheiros, scripts, atualizações do Windows, software e relatórios.</p>
+
+<h2 id="what">O que o ControlZit faz</h2>
+<table>
+  <tr><th>Área</th><th>O que obtém</th></tr>
+  <tr><td>Inventário</td><td>Hardware, sistema operativo, discos, rede, estado de segurança (antivírus, firewall, BitLocker) e software instalado de cada dispositivo. <a href="/docs/devices">Dispositivos</a></td></tr>
+  <tr><td>Monitorização e alertas</td><td>CPU, memória, espaço em disco, dispositivos offline, serviços parados, Defender e firewall; alertas por e-mail, Slack, Microsoft Teams ou webhook. <a href="/docs/monitoring">Monitorização</a></td></tr>
+  <tr><td>Acesso remoto</td><td>Ambiente de trabalho remoto no navegador (Windows, Linux com X11) com área de transferência e cópia de ficheiros, terminal root no Linux, gestor de ficheiros, processos, serviços, reinício e encerramento. <a href="/docs/remote">Acesso remoto</a></td></tr>
+  <tr><td>Scripts</td><td>PowerShell, cmd, bash ou sh num dispositivo, em muitos de uma vez ou segundo um agendamento, a partir de uma biblioteca de scripts. <a href="/docs/scripts">Scripts</a></td></tr>
+  <tr><td>Atualizações e software</td><td>Atualizações do Windows e pacotes Linux em falta, instalação manual ou agendada, programas via winget. <a href="/docs/updates">Atualizações</a></td></tr>
+  <tr><td>Relatórios</td><td>Um relatório por cliente (dispositivos, atualizações, alertas, trabalho dos técnicos), para imprimir ou enviado por e-mail todas as semanas ou meses. <a href="/docs/reports">Relatórios</a></td></tr>
+</table>
+
+<h2 id="how">Como funciona</h2>
+<ul>
+  <li><b>O servidor</b> corre numa máquina Linux (normalmente uma pequena VM) com PostgreSQL. Tem duas portas: a <b>consola</b> (interface web e API, TCP 8443) e o <b>ponto de ligação dos agentes</b> (TCP 8444).</li>
+  <li><b>Os agentes</b> correm como serviço em cada computador gerido. Ligam-se <i>de saída</i> à porta dos agentes; os computadores não precisam de portas abertas. Um agente confia no servidor pela impressão digital do seu certificado, que fixa no registo.</li>
+  <li>Cada comando para um agente é <b>assinado</b> pelo servidor e verificado pelo agente, e cada ação é registada no <a href="/audit">registo de auditoria</a> à prova de adulteração.</li>
+</ul>
+<div class="callout tip"><p>A consola controla cada computador gerido. Torne-a acessível apenas a partir das suas próprias redes (predefinição) e abra apenas a porta dos agentes onde estes precisam dela. Veja <a href="/docs/security">Segurança</a>.</p></div>
+
+<h2 id="first-steps">Primeiros passos</h2>
+<ol>
+  <li><b>Instale o servidor</b> — importe a imagem de VM pronta, arranque a ISO do appliance ou execute o script de instalação num servidor Linux. Veja <a href="/docs/install">Instalar o servidor</a>.</li>
+  <li><b>Crie o primeiro administrador</b> com o token de configuração mostrado pelo servidor e configure o início de sessão em dois passos com uma aplicação de autenticação.</li>
+  <li><b>Verifique o endereço dos agentes</b> em <a href="/settings/network">Definições → Rede e acesso</a>: os agentes têm de chegar ao servidor pelo endereço público dos agentes ou pelo nome da consola.</li>
+  <li><b>Adicione um cliente e um local</b> em <a href="/customers">Clientes</a> e crie um <b>código de registo</b> no local.</li>
+  <li><b>Instale o agente</b> nos computadores desse local com o código. Veja <a href="/docs/agents">Instalar agentes</a>.</li>
+  <li><b>Configure os alertas</b> em <a href="/settings/monitoring">Definições → Monitorização e alertas</a> e, se quiser, a <a href="/settings/updates">instalação automática das atualizações do Windows</a>.</li>
+  <li><b>Adicione os seus técnicos</b> em <a href="/users">Utilizadores</a>, ou ligue o Active Directory / LDAP ou o início de sessão único. Veja <a href="/docs/users">Utilizadores, funções e início de sessão</a>.</li>
+</ol>
+
+<h2 id="requirements">Requisitos</h2>
+<ul>
+  <li><b>Servidor:</b> 2 vCPU, 2–4 GB de RAM, disco de 16 GB; Debian 12+, Ubuntu 22.04+, AlmaLinux ou Rocky Linux 9+ (ou o appliance pronto).</li>
+  <li><b>Agentes Windows:</b> Windows 10 / 11, Windows Server 2016 e mais recentes, 64 bits.</li>
+  <li><b>Agentes Linux:</b> distribuições com systemd, x86-64 ou ARM64 (Raspberry Pi e servidores ARM). Atualizações via apt ou dnf.</li>
+  <li><b>Navegador:</b> Chrome, Edge, Firefox ou Safari atuais.</li>
+</ul>
+
+<h2 id="license">Licença e suporte</h2>
+<p>O ControlZit é software livre sob a GNU AGPLv3; o código-fonte está em <a href="https://github.com/Max-Zit/controlzit" target="_blank" rel="noopener">github.com/Max-Zit/controlzit</a>. Comunique erros com <b>Comunicar um erro</b> no fundo do menu. A MaxZit oferece suporte pago.</p>

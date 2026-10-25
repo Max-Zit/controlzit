@@ -1,0 +1,24 @@
+<h1>Windows güncellemeleri ve yazılımlar</h1>
+<p class="lead">ControlZit her bilgisayarda hangi güncellemelerin eksik olduğunu gösterir ve bunları elle veya zamanlamanıza göre kurar. Programlar winget ile kurulur ve güncellenir.</p>
+
+<h2 id="overview">Genel bakış</h2>
+<p><a href="/updates">Güncellemeler</a>, eksik güncellemesi olan cihazları (güvenlik güncellemeleri ayrı sayılır), yeniden başlatma bekleyen cihazları, son kurulumu ve son aramayı listeler. Ajanlar başladıktan birkaç dakika sonra ve ardından günde iki kez eksik güncellemeleri arar; <b>Şimdi ara</b> hemen bir arama başlatır.</p>
+
+<h2 id="device">Bir cihazda</h2>
+<p>Bir cihazın <b>Güncellemeler</b> sekmesi eksik güncellemeleri kategori ve önem derecesiyle ve yakın zamanda kurulanları listeler. Güncellemeleri seçin ve <b>Seçilenleri kur</b>'a tıklayın; bittiğinde sayfa sonucu gösterir. Yeniden başlatma gerekiyorsa cihaz bunu gösterir ve sayfasından yeniden başlatabilirsiniz.</p>
+
+<h2 id="automatic">Otomatik kurulum</h2>
+<p><a href="/settings/updates">Ayarlar → Windows güncellemeleri</a> altında sunucunun kendiliğinden neyi kuracağını seçin:</p>
+<ul>
+  <li><b>Kapalı</b> — güncellemeler yalnızca konsoldan kurulur.</li>
+  <li><b>Güvenlik ve kritik güncellemeler, Defender tanımları</b>.</li>
+  <li><b>Özellik yükseltmeleri dışındaki tüm güncellemeler</b> — yeni Windows sürümleri asla otomatik kurulmaz.</li>
+</ul>
+<p>Günleri ve saati seçin (sunucu saati). O saatte çevrimiçi olan cihazlar o gün bir kez kurar; çevrimdışı cihazlar bir sonraki planlanan günü bekler. İsteğe bağlı olarak bir güncelleme gerektirdiğinde bilgisayar, oturum açmış kullanıcıya bildirimden 5 dakika sonra kendiliğinden yeniden başlar.</p>
+<div class="callout"><p>Güncellemelerin rastgele zamanlarda gelmemesi için ajan, Windows Update'in otomatik kurulumunu ilkeyle kapatır. Ajan kaldırıldığında önceki ayarlar geri gelir.</p></div>
+
+<h2 id="linux">Linux</h2>
+<p>Linux'ta ajan mevcut paket güncellemelerini <b>apt</b> (Debian, Ubuntu; güvenlik güncellemeleri <code>-security</code> kaynaklarından) veya <b>dnf</b> (RHEL ailesi; güvenlik güncellemeleri güncelleme bilgilerinden) ile okur ve seçilen paketleri kurar. Otomatik kurulum Linux cihazlar için de geçerlidir; orada "güvenlik güncellemeleri" güvenlik kaynaklarından gelen paketlerdir.</p>
+
+<h2 id="programs">Programlar (winget)</h2>
+<p>Bir Windows cihazının <b>Programlar</b> sekmesi, winget'in tanıdığı kurulu programları ve mevcut güncellemeleri listeler. <b>Tümünü güncelle</b> hepsini günceller; tek tek programlar güncellenebilir veya kaldırılabilir. <b>Program kur</b>, winget topluluk deposunda arama yapar (örneğin <i>7-Zip</i> veya <i>Chrome</i>) ve programı tüm kullanıcılar için sessizce kurar. Cihazda güncel Windows 10 ve 11 ile gelen winget (Uygulama Yükleyicisi) bulunmalıdır.</p>

@@ -1,0 +1,40 @@
+<h1>Gebruikers, rollen en aanmelden</h1>
+<p class="lead">Iedereen meldt zich aan met een eigen account. Rollen bepalen wat iemand mag doen, klanttoegang wat iemand mag zien, en elke actie wordt met de naam in het auditlogboek gezet.</p>
+
+<h2 id="roles">Rollen</h2>
+<table>
+  <tr><th>Rol</th><th>Mag</th></tr>
+  <tr><td><b>Beheerder</b></td><td>alles, ook gebruikers en instellingen; ziet altijd alle klanten</td></tr>
+  <tr><td><b>Technicus</b></td><td>beheert de apparaten van de toegestane klanten: toegang op afstand, scripts, updates, programma's, waarschuwingen</td></tr>
+  <tr><td><b>Alleen lezen</b></td><td>bekijkt alleen de toegestane klanten: apparaten, waarschuwingen, updates, rapporten</td></tr>
+</table>
+<p>Technici en alleen-lezengebruikers krijgen toegang tot <b>alle klanten</b> (ook toekomstige) of <b>alleen enkele klanten</b>.</p>
+
+<h2 id="local">Lokale accounts</h2>
+<p>Onder <a href="/users">Gebruikers</a> voegt een beheerder een gebruiker toe met een beginwachtwoord; de gebruiker moet het bij de eerste aanmelding wijzigen en aanmelden in twee stappen instellen. Een beheerder kan een gebruiker uitschakelen (open sessies eindigen), een nieuw wachtwoord instellen of aanmelden in twee stappen resetten voor een gebruiker die telefoon en herstelcodes kwijt is. Er blijft altijd minstens één actieve beheerder.</p>
+
+<h2 id="2fa">Aanmelden in twee stappen</h2>
+<p>ControlZit heeft beheerderstoegang tot elke beheerde computer, dus elk lokaal en directoryaccount heeft een <b>authenticator-app</b> nodig (Microsoft Authenticator, Google Authenticator, Authy, 1Password, Bitwarden …). Elk account krijgt ook 10 eenmalige <b>herstelcodes</b>; nieuwe maakt u onder <a href="/account">Account</a>. Mislukte aanmeldingen blokkeren het adres een tijdje (langer na elke herhaalde blokkering); de grenzen staan onder <a href="/settings/security">Instellingen → Aanmelden en beveiliging</a>, samen met de sessieduur en het afmelden na inactiviteit.</p>
+
+<h2 id="ldap">Active Directory / LDAP</h2>
+<p>Onder <a href="/settings/ldap">Instellingen → Active Directory / LDAP</a> melden gebruikers zich aan met hun directoryaccount. De directory controleert het wachtwoord; ControlZit vraagt toch om zijn eigen tweede factor.</p>
+<ul>
+  <li><b>Server:</b> <code>ldaps://dc1.example.local</code> (poort 636), of <code>ldap://</code> (389) met StartTLS — wachtwoorden gaan nooit onversleuteld over het netwerk. Voeg het CA-certificaat toe als het certificaat van de directory van een bedrijfs-CA komt.</li>
+  <li><b>Serviceaccount</b> (DN of <code>gebruiker@domein</code>) en het wachtwoord, de <b>basis-DN</b> en het <b>gebruikersfilter</b>, bijv. <code>(&amp;(objectClass=user)(sAMAccountName={username}))</code> voor Active Directory.</li>
+  <li><b>Groepen en rollen:</b> koppel directorygroepen aan Beheerder, Technicus en Alleen lezen; de hoogste rol wint. Geneste groepen van Active Directory kunnen worden meegenomen.</li>
+  <li><b>Klantgroepen:</b> regels <code>groep = klant</code> beperken technici en alleen-lezengebruikers tot die klanten.</li>
+</ul>
+<p><b>Testen</b> controleert een directoryaccount met de opgeslagen instellingen, zonder aan te melden, en toont wat ControlZit ervan zou maken. Directoryaccounts wijzigen hun wachtwoord in de directory, niet in ControlZit.</p>
+
+<h2 id="sso">Eenmalige aanmelding (OpenID Connect, SAML)</h2>
+<p>Onder <a href="/settings/sso">Instellingen → Eenmalige aanmelding</a> melden gebruikers zich aan met hun account bij een identiteitsprovider: <b>OpenID Connect</b> (Microsoft Entra ID, Google, Okta, Keycloak …) of <b>SAML 2.0</b> (ADFS, Entra ID, Okta …). De aanmeldpagina toont dan een knop.</p>
+<ul>
+  <li><b>OpenID Connect:</b> registreer bij de provider een toepassing met de omleidings-URI van de pagina en voer daarna de uitgever (bijv. <code>https://login.microsoftonline.com/&lt;tenant&gt;/v2.0</code>), de client-ID en het clientgeheim in.</li>
+  <li><b>SAML:</b> geef de provider de metadata van de console (link op de pagina) of de entity-ID en het antwoordadres (ACS), en voer de metadata-URL van de provider in of plak de metadata-XML.</li>
+  <li>De <b>groepsclaim</b> bevat de groepen (namen of ID's; Entra ID stuurt groeps-ID's), gekoppeld aan rollen en klanten zoals bij LDAP.</li>
+  <li>Het MFA-beleid van de identiteitsprovider geldt; optioneel vraagt ControlZit ook om zijn eigen tweede factor.</li>
+</ul>
+<div class="callout tip"><p>Lokale accounts blijven werken als LDAP of eenmalige aanmelding aan staat, zodat een beheerder zich altijd kan aanmelden. Houd één lokale beheerder voor noodgevallen.</p></div>
+
+<h2 id="audit">Auditlogboek</h2>
+<p><a href="/audit">Auditlogboek</a> toont elke wijziging en elke actie op afstand met de gebruiker, het doel (klant, locatie, apparaat of gebruiker, met link) en het adres. De items zijn met hashes aan elkaar gekoppeld; de console controleert de keten bij elke weergave en meldt als een item is gewijzigd of verwijderd.</p>

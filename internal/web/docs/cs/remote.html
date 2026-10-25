@@ -1,0 +1,29 @@
+<h1>Vzdálená plocha, terminál a soubory</h1>
+<p class="lead">Pomáhejte uživatelům a opravujte počítače z prohlížeče: žádný software na vaší straně, žádné otevřené porty na jejich. Vše jde přes šifrované spojení agenta a zapisuje se do auditního protokolu.</p>
+
+<h2 id="rd">Vzdálená plocha</h2>
+<p>Otevřete zařízení a klikněte na <b>Vzdálená plocha</b> (nebo ji otevřete ve vlastním okně). Vidíte obrazovku a ovládáte ji myší a klávesnicí.</p>
+<ul>
+  <li><b>Klávesnice:</b> klikněte na obrazovku a pište; klávesy jdou do vzdáleného počítače s jeho vlastním rozložením klávesnice. <b>Odeslat Ctrl+Alt+Del</b> a <b>Odeslat text</b> (napíše text, například dlouhé heslo) jsou na panelu nástrojů. Na celé obrazovce jdou do vzdáleného počítače i zkratky jako <kbd>Ctrl</kbd>+<kbd>W</kbd> nebo klávesa Windows; podržením <kbd>Esc</kbd> celou obrazovku opustíte.</li>
+  <li><b>Kvalita:</b> Rychlá, Vyvážená nebo Ostrá, podle spojení.</li>
+  <li><b>Monitory:</b> zvolte jeden monitor nebo všechny.</li>
+  <li><b>Přihlašovací obrazovky a UAC</b> se zobrazují a lze je ovládat, takže se můžete přihlásit a potvrdit dotazy správce.</li>
+</ul>
+
+<h3 id="clipboard">Schránka a soubory</h3>
+<p>Na počítačích s Windows jde zkopírovaný text oběma směry pomocí <kbd>Ctrl</kbd>+<kbd>C</kbd> a <kbd>Ctrl</kbd>+<kbd>V</kbd>. <b>Soubory</b> zkopírované ve vašem Průzkumníku vložíte na vzdáleném počítači pomocí <kbd>Ctrl</kbd>+<kbd>V</kbd>. Soubory zkopírované na vzdáleném počítači se nabídnou ke stažení (<b>Stáhnout zkopírované soubory</b>), protože prohlížeč nemůže vložit soubory do vaší schránky. Výměnu přes schránku lze vypnout v <a href="/settings/remote">Nastavení → Vzdálená plocha</a>.</p>
+
+<h3 id="notice">Upozornění na vzdálené obrazovce</h3>
+<p>Ve výchozím stavu vidí osoba u počítače nahoře na obrazovce lištu s vaším jménem, dokud jste připojeni. Vy lištu v obraze nevidíte. Lze ji vypnout v <a href="/settings/remote">Nastavení → Vzdálená plocha</a>; každá relace se v každém případě zapisuje do auditního protokolu.</p>
+
+<h3 id="linux-rd">Linux</h3>
+<p>Vzdálená plocha funguje na linuxových plochách s X11 (Xorg). Wayland nedovolí službě na pozadí vidět obrazovku ani ji ovládat: přihlaste se tam do relace X11 nebo použijte terminál. Bez grafické plochy použijte terminál.</p>
+
+<h2 id="terminal">Terminál (Linux)</h2>
+<p><b>Terminál</b> otevře root shell zařízení v prohlížeči. Klikněte do něj a pište; kopírujte výběrem textu, vkládejte pomocí <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> nebo <b>Odeslat text</b>. Začátek a konec relace se zapisují do auditního protokolu. Ve Windows použijte <a href="/docs/scripts">Skripty</a>.</p>
+
+<h2 id="files">Soubory</h2>
+<p><b>Soubory</b> procházejí jednotky počítače bez připojení k obrazovce. Nahrávejte soubory (až 4 GB), stahujte soubory, stáhněte složku nebo výběr jako ZIP, vytvářejte složky, přejmenovávejte a mažte. Agent provádí každou operaci se soubory jako SYSTEM (Windows) nebo root (Linux); každá se zapisuje do auditního protokolu s vaším jménem.</p>
+
+<h2 id="processes">Procesy a služby</h2>
+<p><b>Procesy</b> ukazují běžící programy s pamětí, vlákny a relací a ukončí proces. <b>Služby</b> ukazují služby (služby Windows nebo jednotky systemd) a spouštějí, zastavují nebo restartují je. Agent ControlZit chrání sám sebe: z konzole jej nelze zastavit ani ukončit.</p>

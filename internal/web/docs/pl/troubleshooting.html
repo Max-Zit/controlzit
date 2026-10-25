@@ -1,0 +1,51 @@
+<h1>Rozwiązywanie problemów i FAQ</h1>
+<p class="lead">Najczęstsze pytania i co sprawdzić najpierw. Do zgłoszenia do wsparcia pobierz diagnostykę w <a href="/settings/diagnostics">Ustawienia → Diagnostyka</a>.</p>
+
+<h2 id="console">Nie mogę otworzyć konsoli</h2>
+<ul>
+  <li>Twojego adresu może nie być w dozwolonych sieciach: połączenie jest zamykane przed TLS, więc przeglądarka pokazuje błąd połączenia. Uruchom <code>controlzit-server --reset-allowlist</code> na serwerze (urządzenie: menu konfiguracji, pozycja 5), aby znowu zezwolić na wszystkie sieci prywatne.</li>
+  <li>Po zmianie portu otwórz konsolę na nowym porcie.</li>
+  <li>Sprawdź usługę na serwerze: <code>systemctl status controlzit-server</code> i <code>journalctl -u controlzit-server</code>.</li>
+</ul>
+
+<h2 id="signin">Problemy z logowaniem</h2>
+<ul>
+  <li><b>Kod jest błędny</b> — czas w telefonie musi być poprawny (czas automatyczny).</li>
+  <li><b>Zgubiony telefon</b> — zaloguj się kodem odzyskiwania; inny administrator może zresetować logowanie dwuskładnikowe.</li>
+  <li><b>Zbyt wiele nieudanych prób</b> — adres jest przez jakiś czas zablokowany; administrator może go <b>odblokować</b> w <a href="/settings/security">Ustawienia → Logowanie i bezpieczeństwo</a>. Logowania z samego serwera nigdy nie są blokowane.</li>
+  <li><b>LDAP / logowanie jednokrotne</b> — użyj <b>Test</b> na stronie LDAP; sprawdź grupy wysyłane przez dostawcę. Dziennik serwera zawiera szczegóły.</li>
+</ul>
+
+<h2 id="agent">Agent się nie łączy</h2>
+<ul>
+  <li>Czy komputer dociera do portu agentów? W Windows: <code>Test-NetConnection rmm.example.com -Port 8444</code>.</li>
+  <li>Czy publiczny adres agentów jest poprawny? Kody utworzone, gdy konsola była otwarta na localhost, kierują agenta do złego serwera; ustaw adres i utwórz nowy kod.</li>
+  <li>Czy kod jest nadal ważny i niewykorzystany?</li>
+  <li>Dzienniki agenta: Windows <code>C:\ProgramData\ControlZit Agent\agent.log</code>, Linux <code>/var/lib/controlzit-agent/agent.log</code> i <code>journalctl -u controlzit-agent</code>; dla połączonego urządzenia otwórz je w konsoli w <b>Pliki</b>. W Windows ikona obok zegara pokazuje stan połączenia.</li>
+</ul>
+
+<h2 id="rd">Pulpit zdalny nic nie pokazuje</h2>
+<ul>
+  <li>Linuksa z Waylandem nie da się pokazać: zaloguj się w sesji X11 (Xorg) lub użyj terminala.</li>
+  <li>Linux bez pulpitu: użyj terminala.</li>
+  <li>Kopiowanie plików przez schowek wymaga zalogowanego użytkownika na komputerze z Windows.</li>
+</ul>
+
+<h2 id="updates">Aktualizacje Windows się nie instalują</h2>
+<ul>
+  <li>Sprawdź automatyczną instalację w <a href="/settings/updates">Ustawienia → Aktualizacje Windows</a>: dni, godzinę i tryb. Urządzenia muszą być online w tej godzinie.</li>
+  <li>Karta <b>Aktualizacje</b> urządzenia pokazuje ostatnie wyszukiwanie i ewentualny błąd.</li>
+</ul>
+
+<h2 id="email">E-maile z alertami nie docierają</h2>
+<p>Użyj <b>Wyślij testowy e-mail</b> w <a href="/settings/monitoring">Ustawienia → Monitorowanie i alerty</a>; komunikat pokazuje odpowiedź serwera. Hasło jest wysyłane tylko przez STARTTLS lub TLS.</p>
+
+<h2 id="faq">FAQ</h2>
+<h3 id="faq-cloud">Czy ControlZit potrzebuje usługi w chmurze?</h3>
+<p>Nie. Wszystko działa na Twoim serwerze; nic nie jest wysyłane do MaxZit. Serwer sprawdza jedynie GitHub w poszukiwaniu nowych wydań.</p>
+<h3 id="faq-backup">Jak wykonać kopię zapasową ControlZit?</h3>
+<p>Zrób kopię bazy PostgreSQL (<code>pg_dump</code>) i folderu <code>/var/lib/controlzit</code>. Bez klucza tajnego i certyfikatów z tego folderu zapisanych haseł nie da się odszyfrować, a agenci nie zaufaliby nowemu serwerowi.</p>
+<h3 id="faq-move">Czy mogę przenieść serwer na nową maszynę?</h3>
+<p>Tak: zainstaluj ControlZit na nowej maszynie, przywróć bazę danych i <code>/var/lib/controlzit</code> i zachowaj ten sam adres (albo zmień publiczny adres agentów i skieruj starą nazwę na nową maszynę).</p>
+<h3 id="faq-mac">Czy jest agent dla macOS?</h3>
+<p>Jeszcze nie. Obsługiwane są Windows i Linux (x86-64, ARM64).</p>

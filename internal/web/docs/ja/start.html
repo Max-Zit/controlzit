@@ -1,0 +1,43 @@
+<h1>はじめに</h1>
+<p class="lead">ControlZit は自社サーバーで運用するリモート監視・管理（RMM）ツールです。自分のサーバー上の 1 つの Web コンソールから、顧客の Windows / Linux コンピューターを監視・管理できます。インベントリ、監視とアラート、リモートデスクトップ、ターミナル、ファイル、スクリプト、Windows 更新、ソフトウェア、レポートに対応します。</p>
+
+<h2 id="what">ControlZit でできること</h2>
+<table>
+  <tr><th>分野</th><th>内容</th></tr>
+  <tr><td>インベントリ</td><td>各デバイスのハードウェア、OS、ディスク、ネットワーク、セキュリティ状態（ウイルス対策、ファイアウォール、BitLocker）、インストール済みソフトウェア。<a href="/docs/devices">デバイス</a></td></tr>
+  <tr><td>監視とアラート</td><td>CPU、メモリ、ディスク容量、オフラインのデバイス、停止したサービス、Defender とファイアウォール。メール、Slack、Microsoft Teams、Webhook でアラートを通知。<a href="/docs/monitoring">監視</a></td></tr>
+  <tr><td>リモートアクセス</td><td>ブラウザーでのリモートデスクトップ（Windows、X11 の Linux）とクリップボード・ファイルコピー、Linux の root ターミナル、ファイルマネージャー、プロセス、サービス、再起動とシャットダウン。<a href="/docs/remote">リモートアクセス</a></td></tr>
+  <tr><td>スクリプト</td><td>スクリプトライブラリから PowerShell、cmd、bash、sh を 1 台、複数台同時、またはスケジュールで実行。<a href="/docs/scripts">スクリプト</a></td></tr>
+  <tr><td>更新とソフトウェア</td><td>不足している Windows 更新と Linux パッケージを手動またはスケジュールでインストール、winget によるプログラム管理。<a href="/docs/updates">更新</a></td></tr>
+  <tr><td>レポート</td><td>顧客ごとのレポート（デバイス、更新、アラート、技術者の作業）。印刷するか、毎週・毎月メールで送信。<a href="/docs/reports">レポート</a></td></tr>
+</table>
+
+<h2 id="how">しくみ</h2>
+<ul>
+  <li><b>サーバー</b>は PostgreSQL を備えた Linux マシン（通常は小さな VM）で動作します。ポートは 2 つあります。<b>コンソール</b>（Web 画面と API、TCP 8443）と<b>エージェントのエンドポイント</b>（TCP 8444）です。</li>
+  <li><b>エージェント</b>は管理対象の各コンピューターでサービスとして動作し、エージェントポートへ<i>送信接続</i>します。コンピューター側で開くポートは不要です。エージェントは登録時に固定したサーバー証明書のフィンガープリントでサーバーを信頼します。</li>
+  <li>エージェントへの各コマンドはサーバーが<b>署名</b>し、エージェントが検証します。すべての操作は改ざん防止の<a href="/audit">監査ログ</a>に記録されます。</li>
+</ul>
+<div class="callout tip"><p>コンソールはすべての管理対象コンピューターを制御します。自社ネットワークからのみアクセスできるようにし（既定）、エージェントのポートは必要な場所だけで開いてください。<a href="/docs/security">セキュリティ</a>を参照してください。</p></div>
+
+<h2 id="first-steps">最初の手順</h2>
+<ol>
+  <li><b>サーバーをインストール</b> — 既製の VM イメージをインポートするか、アプライアンス ISO を起動するか、Linux サーバーでインストールスクリプトを実行します。<a href="/docs/install">サーバーのインストール</a>を参照してください。</li>
+  <li><b>最初の管理者を作成</b> — サーバーに表示されるセットアップトークンを使い、認証アプリで 2 段階サインインを設定します。</li>
+  <li><b>エージェント用アドレスを確認</b> — <a href="/settings/network">設定 → ネットワークとアクセス</a>で確認します。エージェントは公開アドレスまたはコンソールのホスト名でサーバーに到達できる必要があります。</li>
+  <li><b>顧客と拠点を追加</b> — <a href="/customers">顧客</a>で追加し、拠点で<b>登録コード</b>を作成します。</li>
+  <li><b>エージェントをインストール</b> — そのコードで拠点のコンピューターにインストールします。<a href="/docs/agents">エージェントのインストール</a>を参照してください。</li>
+  <li><b>アラートを設定</b> — <a href="/settings/monitoring">設定 → 監視とアラート</a>で設定し、必要なら <a href="/settings/updates">Windows 更新の自動インストール</a>も設定します。</li>
+  <li><b>技術者を追加</b> — <a href="/users">ユーザー</a>で追加するか、Active Directory / LDAP やシングルサインオンを接続します。<a href="/docs/users">ユーザー、ロール、サインイン</a>を参照してください。</li>
+</ol>
+
+<h2 id="requirements">要件</h2>
+<ul>
+  <li><b>サーバー:</b> 2 vCPU、2～4 GB RAM、16 GB ディスク。Debian 12 以降、Ubuntu 22.04 以降、AlmaLinux または Rocky Linux 9 以降（または既製のアプライアンス）。</li>
+  <li><b>Windows エージェント:</b> Windows 10 / 11、Windows Server 2016 以降（64 ビット）。</li>
+  <li><b>Linux エージェント:</b> systemd を使うディストリビューション、x86-64 または ARM64（Raspberry Pi と ARM サーバー）。更新は apt または dnf。</li>
+  <li><b>ブラウザー:</b> 最新の Chrome、Edge、Firefox、Safari。</li>
+</ul>
+
+<h2 id="license">ライセンスとサポート</h2>
+<p>ControlZit は GNU AGPLv3 のフリーソフトウェアです。ソースコードは <a href="https://github.com/Max-Zit/controlzit" target="_blank" rel="noopener">github.com/Max-Zit/controlzit</a> にあります。不具合はメニュー下部の<b>不具合を報告</b>から報告してください。MaxZit は有償サポートを提供しています。</p>

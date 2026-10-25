@@ -1,0 +1,36 @@
+<h1>Bewaking, waarschuwingen en meldingen</h1>
+<p class="lead">De server controleert elk apparaat eenmaal per minuut. Een waarschuwing blijft open zolang de voorwaarde geldt en sluit vanzelf als die verdwenen is; u krijgt bericht per e-mail, in een chatkanaal of via een webhook.</p>
+
+<h2 id="rules">Waarschuwingsregels</h2>
+<p>Stel de regels in onder <a href="/settings/monitoring">Instellingen → Bewaking en waarschuwingen</a>. Ze gelden voor alle apparaten.</p>
+<table>
+  <tr><th>Regel</th><th>Opent wanneer</th></tr>
+  <tr><td>CPU-belasting</td><td>de belasting de gekozen minuten boven de grens blijft</td></tr>
+  <tr><td>Geheugengebruik</td><td>het geheugengebruik de gekozen minuten boven de grens blijft</td></tr>
+  <tr><td>Schijfruimte</td><td>een schijf voller is dan het percentage, of (bij schijven groter dan het dubbele) minder vrij heeft dan de opgegeven GB</td></tr>
+  <tr><td>Apparaat offline</td><td>de agent langer dan de opgegeven minuten geen verbinding heeft gemaakt</td></tr>
+  <tr><td>Herstart gepland</td><td>een herstart gepland staat en de computer langer aan staat dan de opgegeven dagen</td></tr>
+  <tr><td>Microsoft Defender uit</td><td>het antivirus of de realtimebeveiliging uit staat (optioneel)</td></tr>
+  <tr><td>Firewall uit</td><td>een Windows Firewall-profiel uit staat (optioneel)</td></tr>
+  <tr><td>Service gestopt</td><td>een service uit uw lijst (servicenamen, geen weergavenamen) automatisch moet starten maar niet draait</td></tr>
+</table>
+<p>Waarschuwingen zijn <b>Waarschuwing</b> of <b>Kritiek</b> (kritiek: offline apparaten, gestopte services, Defender uit, en schijven met minder dan 1 GB vrij of 98 % gebruikt). <a href="/alerts">Waarschuwingen</a> toont de open (en desgewenst de opgeloste); een technicus kan een waarschuwing <b>bevestigen</b> zodat anderen zien dat iemand ermee bezig is. Het aantal open waarschuwingen staat in het menu.</p>
+
+<h2 id="email">Waarschuwingsmails</h2>
+<ol>
+  <li>Voer de <b>e-mailserver (SMTP)</b> in: host, poort, verbindingsbeveiliging (STARTTLS of TLS; een wachtwoord wordt nooit over een onversleutelde verbinding verzonden), gebruiker, wachtwoord en afzender. Het wachtwoord wordt versleuteld opgeslagen.</li>
+  <li>Voeg de <b>ontvangers</b> toe, één adres per regel, en kies of er ook een e-mail gaat als een waarschuwing is opgelost.</li>
+  <li>Klik op <b>Testmail verzenden</b>.</li>
+</ol>
+
+<h2 id="channels">Slack, Microsoft Teams en webhooks</h2>
+<p>Voeg onder <b>Chat en webhooks</b> tot 20 kanalen toe:</p>
+<ul>
+  <li><b>Slack</b> — de URL van een inkomende webhook van het kanaal.</li>
+  <li><b>Microsoft Teams</b> — een kanaalwerkstroom <i>Wanneer een Teams-webhookaanvraag wordt ontvangen</i> en de URL daarvan.</li>
+  <li><b>Webhook</b> — elke HTTPS-URL die een JSON-POST accepteert (ticketsysteem, automatisering). Met een geheim bevat elk verzoek <code>X-ControlZit-Signature: sha256=&lt;HMAC van de inhoud&gt;</code>, zodat de ontvanger kan controleren dat het van uw server komt.</li>
+</ul>
+<p>Kies per kanaal alle waarschuwingen of alleen kritieke, en of opgeloste waarschuwingen ook worden verzonden. <b>Test verzenden</b> verstuurt een testbericht. Kanaaladressen worden versleuteld opgeslagen.</p>
+
+<h2 id="metrics">Actuele waarden</h2>
+<p>De apparaatpagina toont de huidige CPU-belasting, het geheugen en de schijven, en de automatische services die niet draaien.</p>

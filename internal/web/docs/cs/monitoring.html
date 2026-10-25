@@ -1,0 +1,36 @@
+<h1>Monitorování, upozornění a oznámení</h1>
+<p class="lead">Server kontroluje každé zařízení jednou za minutu. Upozornění zůstává otevřené, dokud trvá jeho podmínka, a samo se zavře, když pomine; dozvíte se o něm e-mailem, v kanálu chatu nebo přes webhook.</p>
+
+<h2 id="rules">Pravidla upozornění</h2>
+<p>Pravidla nastavíte v <a href="/settings/monitoring">Nastavení → Monitorování a upozornění</a>. Platí pro všechna zařízení.</p>
+<table>
+  <tr><th>Pravidlo</th><th>Otevře se, když</th></tr>
+  <tr><td>Zatížení CPU</td><td>zatížení zůstane nad limitem po zvolený počet minut</td></tr>
+  <tr><td>Využití paměti</td><td>využití paměti zůstane nad limitem po zvolený počet minut</td></tr>
+  <tr><td>Místo na disku</td><td>je disk plnější než zadané procento, nebo (u disků větších než dvojnásobek) má méně volného místa než zadané GB</td></tr>
+  <tr><td>Zařízení offline</td><td>se agent nepřipojil déle než zadaný počet minut</td></tr>
+  <tr><td>Čekající restart</td><td>čeká restart a počítač běží déle než zadaný počet dní</td></tr>
+  <tr><td>Microsoft Defender vypnutý</td><td>je antivirus nebo jeho ochrana v reálném čase vypnutá (volitelné)</td></tr>
+  <tr><td>Firewall vypnutý</td><td>je některý profil brány Windows Firewall vypnutý (volitelné)</td></tr>
+  <tr><td>Služba zastavena</td><td>služba z vašeho seznamu (názvy služeb, ne zobrazované názvy) má nastaveno automatické spuštění, ale neběží</td></tr>
+</table>
+<p>Upozornění jsou <b>Varování</b> nebo <b>Kritické</b> (kritické: zařízení offline, zastavené služby, vypnutý Defender a disky s méně než 1 GB volného místa nebo zaplněné na 98 %). <a href="/alerts">Upozornění</a> ukazují otevřená (a případně vyřešená); technik může upozornění <b>potvrdit</b>, aby ostatní viděli, že se jím někdo zabývá. Počet otevřených upozornění je vidět v nabídce.</p>
+
+<h2 id="email">E-maily s upozorněními</h2>
+<ol>
+  <li>Zadejte <b>e-mailový server (SMTP)</b>: hostitele, port, zabezpečení spojení (STARTTLS nebo TLS; heslo se nikdy neposílá nešifrovaným spojením), uživatele, heslo a odesílatele. Heslo se ukládá šifrovaně.</li>
+  <li>Přidejte <b>příjemce</b>, jednu adresu na řádek, a zvolte, zda se má e-mail poslat i při vyřešení upozornění.</li>
+  <li>Klikněte na <b>Odeslat testovací e-mail</b>.</li>
+</ol>
+
+<h2 id="channels">Slack, Microsoft Teams a webhooky</h2>
+<p>V části <b>Chat a webhooky</b> přidejte až 20 kanálů:</p>
+<ul>
+  <li><b>Slack</b> — URL příchozího webhooku kanálu.</li>
+  <li><b>Microsoft Teams</b> — pracovní postup kanálu <i>Při přijetí požadavku webhooku Teams</i> a jeho URL.</li>
+  <li><b>Webhook</b> — libovolná HTTPS URL, která přijímá JSON POST (ticketovací systém, automatizace). S tajemstvím nese každý požadavek <code>X-ControlZit-Signature: sha256=&lt;HMAC těla&gt;</code>, takže příjemce může ověřit, že přišel z vašeho serveru.</li>
+</ul>
+<p>Pro každý kanál zvolte všechna upozornění nebo jen kritická a zda se posílají i vyřešená. <b>Odeslat test</b> pošle testovací zprávu. Adresy kanálů se ukládají šifrovaně.</p>
+
+<h2 id="metrics">Aktuální hodnoty</h2>
+<p>Stránka zařízení ukazuje aktuální zatížení CPU, paměť a disky a automatické služby, které neběží.</p>

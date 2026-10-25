@@ -1,0 +1,51 @@
+<h1>Sorun giderme ve SSS</h1>
+<p class="lead">En sık sorulan sorular ve önce neyin kontrol edileceği. Bir destek talebi için tanılamayı <a href="/settings/diagnostics">Ayarlar → Tanılama</a> altından indirin.</p>
+
+<h2 id="console">Konsola ulaşamıyorum</h2>
+<ul>
+  <li>Adresiniz izin verilen ağlarda olmayabilir: bağlantı TLS'den önce kapatılır, bu yüzden tarayıcı bir bağlantı hatası gösterir. Tüm özel ağlara yeniden izin vermek için sunucuda <code>controlzit-server --reset-allowlist</code> çalıştırın (cihaz: kurulum menüsü, madde 5).</li>
+  <li>Portu değiştirdikten sonra konsolu yeni portta açın.</li>
+  <li>Sunucudaki hizmeti kontrol edin: <code>systemctl status controlzit-server</code> ve <code>journalctl -u controlzit-server</code>.</li>
+</ul>
+
+<h2 id="signin">Giriş sorunları</h2>
+<ul>
+  <li><b>Kod yanlış</b> — telefonun saati doğru olmalıdır (otomatik saat).</li>
+  <li><b>Telefon kayıp</b> — bir kurtarma koduyla giriş yapın; başka bir yönetici iki adımlı girişi sıfırlayabilir.</li>
+  <li><b>Çok fazla başarısız deneme</b> — adres bir süre engellenir; bir yönetici <a href="/settings/security">Ayarlar → Giriş ve güvenlik</a> altında <b>engeli kaldırabilir</b>. Sunucunun kendisinden yapılan girişler asla engellenmez.</li>
+  <li><b>LDAP / çoklu oturum açma</b> — LDAP sayfasında <b>Test</b>'i kullanın; sağlayıcının gönderdiği grupları kontrol edin. Ayrıntılar sunucu günlüğündedir.</li>
+</ul>
+
+<h2 id="agent">Bir ajan bağlanmıyor</h2>
+<ul>
+  <li>Bilgisayar ajan portuna ulaşabiliyor mu? Windows'ta: <code>Test-NetConnection rmm.example.com -Port 8444</code>.</li>
+  <li>Genel ajan adresi doğru mu? Konsol localhost üzerinden açıkken oluşturulan kodlar ajanı yanlış sunucuya gönderir; adresi ayarlayın ve yeni bir kod oluşturun.</li>
+  <li>Kod hâlâ geçerli ve tükenmemiş mi?</li>
+  <li>Ajan günlükleri: Windows <code>C:\ProgramData\ControlZit Agent\agent.log</code>, Linux <code>/var/lib/controlzit-agent/agent.log</code> ve <code>journalctl -u controlzit-agent</code>; bağlı bir cihaz için bunları konsolda <b>Dosyalar</b> altından açın. Windows'ta saatin yanındaki simge bağlantı durumunu gösterir.</li>
+</ul>
+
+<h2 id="rd">Uzak masaüstü hiçbir şey göstermiyor</h2>
+<ul>
+  <li>Wayland kullanan Linux gösterilemez: bir X11 (Xorg) oturumuyla giriş yapın veya terminali kullanın.</li>
+  <li>Masaüstü olmayan Linux: terminali kullanın.</li>
+  <li>Pano üzerinden dosya kopyalamak, Windows bilgisayarda oturum açmış bir kullanıcı gerektirir.</li>
+</ul>
+
+<h2 id="updates">Windows güncellemeleri kurulmuyor</h2>
+<ul>
+  <li><a href="/settings/updates">Ayarlar → Windows güncellemeleri</a> altında otomatik kurulumu kontrol edin: günler, saat ve mod. Cihazlar o saatte çevrimiçi olmalıdır.</li>
+  <li>Cihazın <b>Güncellemeler</b> sekmesi son aramayı ve varsa hatasını gösterir.</li>
+</ul>
+
+<h2 id="email">Uyarı e-postaları gelmiyor</h2>
+<p><a href="/settings/monitoring">Ayarlar → İzleme ve uyarılar</a> altında <b>Test e-postası gönder</b>'i kullanın; ileti sunucunun yanıtını gösterir. Parola yalnızca STARTTLS veya TLS üzerinden gönderilir.</p>
+
+<h2 id="faq">SSS</h2>
+<h3 id="faq-cloud">ControlZit bir bulut hizmetine ihtiyaç duyar mı?</h3>
+<p>Hayır. Her şey sizin sunucunuzda çalışır; MaxZit'e hiçbir şey gönderilmez. Sunucu yalnızca yeni sürümler için GitHub'ı kontrol eder.</p>
+<h3 id="faq-backup">ControlZit'i nasıl yedeklerim?</h3>
+<p>PostgreSQL veritabanını (<code>pg_dump</code>) ve <code>/var/lib/controlzit</code> klasörünü yedekleyin. Oradaki gizli anahtar ve sertifikalar olmadan kayıtlı parolalar çözülemez ve ajanlar yeni bir sunucuya güvenmez.</p>
+<h3 id="faq-move">Sunucuyu yeni bir makineye taşıyabilir miyim?</h3>
+<p>Evet: ControlZit'i yeni makineye kurun, veritabanını ve <code>/var/lib/controlzit</code> dizinini geri yükleyin ve aynı adresi koruyun (veya genel ajan adresini değiştirin ve eski adı yeni makineye yönlendirin).</p>
+<h3 id="faq-mac">macOS ajanı var mı?</h3>
+<p>Henüz yok. Windows ve Linux (x86-64, ARM64) desteklenir.</p>

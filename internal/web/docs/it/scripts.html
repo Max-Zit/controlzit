@@ -1,0 +1,18 @@
+<h1>Script e processi pianificati</h1>
+<p class="lead">Esegui PowerShell, cmd, bash o sh su un dispositivo, su molti insieme o secondo una pianificazione. Gli script girano come SYSTEM (Windows) o root (Linux), senza finestra.</p>
+
+<h2 id="single">Su un dispositivo</h2>
+<p>Nella pagina di un dispositivo apri <b>Script</b>, scegli la shell, scrivi lo script (o caricane uno dalla libreria) e imposta un limite di tempo (5–1500 secondi). La pagina attende il risultato e mostra il codice di uscita e l'output (il primo MB). Le esecuzioni precedenti restano nell'elenco; <b>Modifica ed esegui di nuovo</b> apre un'esecuzione come nuovo script.</p>
+
+<h2 id="library">Libreria di script</h2>
+<p>Salva gli script che usi spesso in <a href="/scripts">Script → Libreria di script</a>, con nome e descrizione. Da lì esegui uno script sui dispositivi scelti, su tutti i dispositivi di alcuni clienti o su tutti i dispositivi.</p>
+
+<h2 id="jobs">Processi</h2>
+<p>Eseguire uno script della libreria su più dispositivi crea un <b>processo</b>. La pagina del processo mostra ogni dispositivo con il suo stato (in attesa, in esecuzione, riuscito, non riuscito, scaduto) e l'output. Il codice di uscita 0 conta come successo. I dispositivi offline eseguono lo script quando si connettono, entro 24 ore; dopo vengono considerati scaduti.</p>
+
+<h2 id="schedules">Pianificazioni</h2>
+<p>Uno script della libreria può essere eseguito secondo una pianificazione: nei giorni della settimana scelti a un'ora (ora del server), su singoli dispositivi, su tutti i dispositivi di alcuni clienti o su tutti i dispositivi (anche nuovi). Una pianificazione si può sospendere e riprendere. I dispositivi offline in quel momento eseguono lo script quando si connettono, entro 24 ore.</p>
+
+<h2 id="audit">Cosa viene registrato</h2>
+<p>Lo script e l'inizio del suo output vengono scritti nel log di audit con il tuo nome. Gli utenti in sola lettura non possono eseguire script.</p>
+<div class="callout warn"><p>Gli script hanno pieni diritti sui computer. Tieni in ordine la libreria, dai ai tecnici solo i clienti di cui hanno bisogno e prova uno script su un dispositivo prima di eseguirlo su molti.</p></div>

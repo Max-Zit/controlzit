@@ -1,0 +1,34 @@
+<h1>Klanten, locaties en apparaten</h1>
+<p class="lead">Apparaten zijn geordend per klant en locatie. Technici en alleen-lezengebruikers kunnen tot enkele klanten worden beperkt, zodat elk rapport en elke lijst alleen toont wat ze mogen zien.</p>
+
+<h2 id="customers">Klanten en locaties</h2>
+<ul>
+  <li><b>Klanten</b> zijn de bedrijven die u verzorgt (of de afdelingen van uw eigen bedrijf). Voeg ze toe onder <a href="/customers">Klanten</a>.</li>
+  <li><b>Locaties</b> zijn hun kantoren of vestigingen. Elk apparaat hoort bij één locatie; registratiecodes worden per locatie aangemaakt.</li>
+  <li>Een klant of locatie kan pas worden verwijderd als er geen locaties of apparaten meer in staan.</li>
+</ul>
+
+<h2 id="list">De apparatenlijst</h2>
+<p><a href="/devices">Apparaten</a> toont alle apparaten die u mag zien met klant en locatie, besturingssysteem, aangemelde gebruiker, of ze online zijn en wanneer ze voor het laatst zijn gezien. Zoek op naam, gebruiker, systeem of klant, of filter op klant en status.</p>
+
+<h2 id="page">De apparaatpagina</h2>
+<p>De pagina van een apparaat heeft tabbladen voor alles wat u ermee kunt doen:</p>
+<table>
+  <tr><th>Tabblad</th><th>Wat het toont of doet</th></tr>
+  <tr><td>Overzicht</td><td>Open waarschuwingen, huidige belasting, geheugen en schijven, automatische services die niet draaien, geplande herstarts; daaronder de volledige inventaris.</td></tr>
+  <tr><td>Extern bureaublad, Terminal, Bestanden</td><td>Toegang op afstand, zie <a href="/docs/remote">Extern bureaublad, terminal en bestanden</a>.</td></tr>
+  <tr><td>Processen, Services</td><td>Actieve processen (beëindigen) en services (starten, stoppen, herstarten).</td></tr>
+  <tr><td>Scripts</td><td>Een script uitvoeren en eerdere uitvoeringen met uitvoer bekijken, zie <a href="/docs/scripts">Scripts</a>.</td></tr>
+  <tr><td>Updates</td><td>Ontbrekende en onlangs geïnstalleerde Windows-updates of Linux-pakketten, zie <a href="/docs/updates">Updates</a>.</td></tr>
+  <tr><td>Programma's</td><td>Programma's installeren, bijwerken en verwijderen met winget (Windows).</td></tr>
+  <tr><td>Gebeurtenissen</td><td>De Windows-gebeurtenislogboeken (System, Application, Security, Setup), gefilterd op niveau, periode en tekst.</td></tr>
+</table>
+
+<h2 id="inventory">Inventaris</h2>
+<p>De agent stuurt zijn inventaris enkele seconden na het verbinden en daarna regelmatig: besturingssysteem en build, domein of werkgroep, model en serienummer, processor, geheugen, schijven met vrije ruimte en BitLocker-status, netwerkadapters met adressen en gateways, Microsoft Defender en zijn handtekeningen, de Windows Firewall-profielen, een geplande herstart en de geïnstalleerde software (programma's op Windows, pakketten op Linux). <b>Inventaris vernieuwen</b> vraagt direct een nieuwe aan.</p>
+
+<h2 id="power">Herstarten en afsluiten</h2>
+<p>De aan/uit-knoppen op de apparaatpagina herstarten of sluiten de computer af, direct of na een vertraging, met een optioneel bericht aan de aangemelde gebruiker; een geplande herstart kan worden geannuleerd. Aangemelde gebruikers verliezen niet-opgeslagen werk.</p>
+
+<h2 id="remove">Een apparaat verwijderen</h2>
+<p><b>Apparaat verwijderen</b> haalt het uit de console. Een online agent verwijdert zichzelf; zie <a href="/docs/agents#remove">Een agent verwijderen</a>.</p>

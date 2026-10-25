@@ -1,0 +1,24 @@
+<h1>Windows-updates en software</h1>
+<p class="lead">ControlZit toont welke updates op elke computer ontbreken en installeert ze met de hand of volgens uw schema. Programma's worden met winget geïnstalleerd en bijgewerkt.</p>
+
+<h2 id="overview">Het overzicht</h2>
+<p><a href="/updates">Updates</a> toont de apparaten met ontbrekende updates (beveiligingsupdates apart geteld), apparaten die op een herstart wachten, de laatste installatie en de laatste zoekopdracht. Agents zoeken enkele minuten na het starten naar ontbrekende updates en daarna twee keer per dag; <b>Nu zoeken</b> start direct een zoekopdracht.</p>
+
+<h2 id="device">Op een apparaat</h2>
+<p>Het tabblad <b>Updates</b> van een apparaat toont de ontbrekende updates met categorie en ernst en de onlangs geïnstalleerde. Selecteer updates en klik op <b>Selectie installeren</b>; de pagina toont het resultaat als het klaar is. Is een herstart nodig, dan toont het apparaat dat en kunt u het vanaf de pagina herstarten.</p>
+
+<h2 id="automatic">Automatische installatie</h2>
+<p>Kies onder <a href="/settings/updates">Instellingen → Windows-updates</a> wat de server zelf installeert:</p>
+<ul>
+  <li><b>Uit</b> — updates worden alleen vanuit de console geïnstalleerd.</li>
+  <li><b>Beveiligings- en kritieke updates, Defender-definities</b>.</li>
+  <li><b>Alle updates behalve functie-upgrades</b> — nieuwe Windows-versies worden nooit automatisch geïnstalleerd.</li>
+</ul>
+<p>Kies de dagen en het uur (servertijd). Apparaten die in dat uur online zijn, installeren eenmaal die dag; offline apparaten wachten op de volgende geplande dag. Optioneel herstart de computer zelf wanneer een update dat vereist, 5 minuten na een melding aan de aangemelde gebruiker.</p>
+<div class="callout"><p>Zodat updates niet op willekeurige momenten komen, schakelt de agent via beleid de automatische installatie van Windows Update uit. Wordt de agent verwijderd, dan komen de vorige instellingen terug.</p></div>
+
+<h2 id="linux">Linux</h2>
+<p>Op Linux leest de agent de beschikbare pakketupdates via <b>apt</b> (Debian, Ubuntu; beveiligingsupdates uit de <code>-security</code>-bronnen) of <b>dnf</b> (RHEL-familie; beveiligingsupdates uit de update-informatie) en installeert geselecteerde pakketten. De automatische installatie geldt ook voor Linux-apparaten; daar zijn "beveiligingsupdates" de pakketten uit de beveiligingsbronnen.</p>
+
+<h2 id="programs">Programma's (winget)</h2>
+<p>Het tabblad <b>Programma's</b> van een Windows-apparaat toont de geïnstalleerde programma's die winget kent en de beschikbare updates. <b>Alles bijwerken</b> werkt ze bij; afzonderlijke programma's kunnen worden bijgewerkt of verwijderd. <b>Een programma installeren</b> zoekt in de winget-communityrepository (bijvoorbeeld <i>7-Zip</i> of <i>Chrome</i>) en installeert het stil voor alle gebruikers. Het apparaat heeft winget (App Installer) nodig, dat met actuele Windows 10 en 11 wordt meegeleverd.</p>

@@ -1,0 +1,40 @@
+<h1>Uživatelé, role a přihlášení</h1>
+<p class="lead">Každá osoba se přihlašuje vlastním účtem. Role určují, co smí dělat, přístup k zákazníkům, co smí vidět, a každá akce se zapisuje do auditního protokolu s jejím jménem.</p>
+
+<h2 id="roles">Role</h2>
+<table>
+  <tr><th>Role</th><th>Smí</th></tr>
+  <tr><td><b>Správce</b></td><td>vše, včetně uživatelů a nastavení; vždy vidí všechny zákazníky</td></tr>
+  <tr><td><b>Technik</b></td><td>spravuje zařízení povolených zákazníků: vzdálený přístup, skripty, aktualizace, programy, upozornění</td></tr>
+  <tr><td><b>Jen pro čtení</b></td><td>jen prohlíží povolené zákazníky: zařízení, upozornění, aktualizace, zprávy</td></tr>
+</table>
+<p>Technici a uživatelé jen pro čtení mají přístup ke <b>všem zákazníkům</b> (i budoucím) nebo <b>jen k některým</b>.</p>
+
+<h2 id="local">Místní účty</h2>
+<p>V <a href="/users">Uživatelé</a> správce přidá uživatele s počátečním heslem; uživatel jej musí při prvním přihlášení změnit a nastavit dvoufázové přihlášení. Správce může uživatele vypnout (otevřené relace končí), nastavit nové heslo nebo resetovat dvoufázové přihlášení uživateli, který ztratil telefon i záložní kódy. Vždy zůstává alespoň jeden aktivní správce.</p>
+
+<h2 id="2fa">Dvoufázové přihlášení</h2>
+<p>ControlZit má správcovský přístup ke každému spravovanému počítači, proto každý místní i adresářový účet potřebuje <b>ověřovací aplikaci</b> (Microsoft Authenticator, Google Authenticator, Authy, 1Password, Bitwarden …). Každý účet dostane také 10 jednorázových <b>záložních kódů</b>; nové vytvoříte v <a href="/account">Účet</a>. Neúspěšná přihlášení na čas zablokují adresu (po každé opakované blokaci déle); limity jsou v <a href="/settings/security">Nastavení → Přihlášení a zabezpečení</a> spolu s délkou relace a odhlášením po nečinnosti.</p>
+
+<h2 id="ldap">Active Directory / LDAP</h2>
+<p>V <a href="/settings/ldap">Nastavení → Active Directory / LDAP</a> se uživatelé přihlašují adresářovým účtem. Heslo ověří adresář; ControlZit přesto vyžaduje svůj druhý faktor.</p>
+<ul>
+  <li><b>Server:</b> <code>ldaps://dc1.example.local</code> (port 636), nebo <code>ldap://</code> (389) se StartTLS — hesla nikdy nejdou sítí nešifrovaně. Přidejte certifikát CA, pokud certifikát adresáře pochází z firemní CA.</li>
+  <li><b>Servisní účet</b> (DN nebo <code>uživatel@doména</code>) a jeho heslo, <b>základní DN</b> a <b>filtr uživatelů</b>, např. <code>(&amp;(objectClass=user)(sAMAccountName={username}))</code> pro Active Directory.</li>
+  <li><b>Skupiny a role:</b> přiřaďte skupiny adresáře k rolím Správce, Technik a Jen pro čtení; vyhrává nejvyšší role. Lze zahrnout vnořené skupiny Active Directory.</li>
+  <li><b>Skupiny zákazníků:</b> řádky <code>skupina = zákazník</code> omezí techniky a uživatele jen pro čtení na tyto zákazníky.</li>
+</ul>
+<p><b>Test</b> ověří adresářový účet s uloženým nastavením, bez přihlášení, a ukáže, co by z něj ControlZit udělal. Adresářové účty mění heslo v adresáři, ne v ControlZit.</p>
+
+<h2 id="sso">Jednotné přihlášení (OpenID Connect, SAML)</h2>
+<p>V <a href="/settings/sso">Nastavení → Jednotné přihlášení</a> se uživatelé přihlašují svým účtem u poskytovatele identity: <b>OpenID Connect</b> (Microsoft Entra ID, Google, Okta, Keycloak …) nebo <b>SAML 2.0</b> (ADFS, Entra ID, Okta …). Přihlašovací stránka pak ukáže tlačítko.</p>
+<ul>
+  <li><b>OpenID Connect:</b> zaregistrujte u poskytovatele aplikaci s URI přesměrování ze stránky a pak zadejte vydavatele (např. <code>https://login.microsoftonline.com/&lt;tenant&gt;/v2.0</code>), ID klienta a tajný klíč klienta.</li>
+  <li><b>SAML:</b> předejte poskytovateli metadata konzole (odkaz na stránce) nebo její entity ID a adresu odpovědi (ACS) a zadejte URL metadat poskytovatele nebo vložte jeho XML.</li>
+  <li><b>Claim skupin</b> nese skupiny (názvy nebo ID; Entra ID posílá ID skupin), přiřazené k rolím a zákazníkům jako u LDAP.</li>
+  <li>Platí zásady vícefaktorového ověření poskytovatele identity; volitelně ControlZit vyžaduje i svůj druhý faktor.</li>
+</ul>
+<div class="callout tip"><p>Místní účty fungují i při zapnutém LDAP nebo jednotném přihlášení, takže se správce může vždy přihlásit. Ponechte si jednoho místního správce pro nouzové situace.</p></div>
+
+<h2 id="audit">Auditní protokol</h2>
+<p><a href="/audit">Auditní protokol</a> ukazuje každou změnu a každou vzdálenou akci s uživatelem, cílem (zákazník, pobočka, zařízení nebo uživatel, s odkazem) a adresou. Záznamy jsou zřetězené haši; konzole kontroluje řetězec při každém zobrazení a oznámí, pokud byl záznam změněn nebo smazán.</p>

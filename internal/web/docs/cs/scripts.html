@@ -1,0 +1,18 @@
+<h1>Skripty a naplánované úlohy</h1>
+<p class="lead">Spouštějte PowerShell, cmd, bash nebo sh na jednom zařízení, na mnoha najednou nebo podle plánu. Skripty běží jako SYSTEM (Windows) nebo root (Linux), bez okna.</p>
+
+<h2 id="single">Na jednom zařízení</h2>
+<p>Na stránce zařízení otevřete <b>Skripty</b>, zvolte shell, napište skript (nebo jej načtěte z knihovny) a nastavte časový limit (5–1500 sekund). Stránka čeká na výsledek a ukáže návratový kód a výstup (první 1 MB). Dřívější spuštění zůstávají v seznamu; <b>Upravit a spustit znovu</b> otevře spuštění jako nový skript.</p>
+
+<h2 id="library">Knihovna skriptů</h2>
+<p>Často používané skripty uložte v <a href="/scripts">Skripty → Knihovna skriptů</a> s názvem a popisem. Odtud skript spustíte na vybraných zařízeních, na všech zařízeních některých zákazníků nebo na všech zařízeních.</p>
+
+<h2 id="jobs">Úlohy</h2>
+<p>Spuštění skriptu z knihovny na více zařízeních vytvoří <b>úlohu</b>. Stránka úlohy ukazuje každé zařízení s jeho stavem (čeká, běží, úspěch, selhalo, vypršelo) a výstupem. Návratový kód 0 se počítá jako úspěch. Offline zařízení spustí skript po připojení, do 24 hodin; potom se počítají jako vypršelá.</p>
+
+<h2 id="schedules">Plány</h2>
+<p>Skript z knihovny může běžet podle plánu: ve zvolené dny v týdnu v daný čas (čas serveru), na jednotlivých zařízeních, na všech zařízeních některých zákazníků nebo na všech zařízeních (i nových). Plán lze pozastavit a znovu spustit. Zařízení, která jsou v tu dobu offline, spustí skript po připojení, do 24 hodin.</p>
+
+<h2 id="audit">Co se zaznamenává</h2>
+<p>Skript a začátek jeho výstupu se zapisují do auditního protokolu s vaším jménem. Uživatelé jen pro čtení nemohou spouštět skripty.</p>
+<div class="callout warn"><p>Skripty mají na počítačích plná práva. Udržujte knihovnu v pořádku, technikům dávejte jen zákazníky, které potřebují, a skript vyzkoušejte na jednom zařízení, než jej spustíte na mnoha.</p></div>

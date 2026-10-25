@@ -1,0 +1,18 @@
+<h1>Scripts e tarefas agendadas</h1>
+<p class="lead">Execute PowerShell, cmd, bash ou sh num dispositivo, em muitos de uma vez ou segundo um agendamento. Os scripts correm como SYSTEM (Windows) ou root (Linux), sem janela.</p>
+
+<h2 id="single">Num dispositivo</h2>
+<p>Na página de um dispositivo, abra <b>Scripts</b>, escolha a shell, escreva o script (ou carregue um da biblioteca) e defina um limite de tempo (5–1500 segundos). A página aguarda o resultado e mostra o código de saída e a saída (o primeiro MB). As execuções anteriores ficam na lista; <b>Editar e executar novamente</b> abre uma execução como novo script.</p>
+
+<h2 id="library">Biblioteca de scripts</h2>
+<p>Guarde os scripts que usa com frequência em <a href="/scripts">Scripts → Biblioteca de scripts</a>, com nome e descrição. A partir daí executa um script em dispositivos selecionados, em todos os dispositivos de alguns clientes ou em todos os dispositivos.</p>
+
+<h2 id="jobs">Tarefas</h2>
+<p>Executar um script da biblioteca em vários dispositivos cria uma <b>tarefa</b>. A página da tarefa mostra cada dispositivo com o seu estado (em espera, em execução, concluído, falhado, expirado) e a sua saída. O código de saída 0 conta como sucesso. Os dispositivos offline executam o script quando se ligam, dentro de 24 horas; depois disso contam como expirados.</p>
+
+<h2 id="schedules">Agendamentos</h2>
+<p>Um script da biblioteca pode correr segundo um agendamento: nos dias da semana escolhidos a uma hora (hora do servidor), em dispositivos individuais, em todos os dispositivos de alguns clientes ou em todos os dispositivos (incluindo novos). Um agendamento pode ser pausado e retomado. Os dispositivos offline nessa altura executam o script quando se ligam, dentro de 24 horas.</p>
+
+<h2 id="audit">O que é registado</h2>
+<p>O script e o início da sua saída são registados na auditoria com o seu nome. Os utilizadores só de leitura não podem executar scripts.</p>
+<div class="callout warn"><p>Os scripts têm todos os direitos nos computadores. Mantenha a biblioteca organizada, dê aos técnicos apenas os clientes de que precisam e teste um script num dispositivo antes de o executar em muitos.</p></div>

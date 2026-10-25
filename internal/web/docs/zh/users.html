@@ -1,0 +1,40 @@
+<h1>用户、角色与登录</h1>
+<p class="lead">每个人都使用自己的账户登录。角色决定可以做什么，客户访问权限决定可以看到什么，每个操作都会以其名义写入审计日志。</p>
+
+<h2 id="roles">角色</h2>
+<table>
+  <tr><th>角色</th><th>可以</th></tr>
+  <tr><td><b>管理员</b></td><td>所有操作，包括用户和设置；始终可以看到所有客户</td></tr>
+  <tr><td><b>技术员</b></td><td>管理允许客户的设备：远程访问、脚本、更新、程序、警报</td></tr>
+  <tr><td><b>只读</b></td><td>只能查看允许的客户：设备、警报、更新、报告</td></tr>
+</table>
+<p>技术员和只读用户可以访问<b>所有客户</b>（包括将来的客户）或<b>仅部分客户</b>。</p>
+
+<h2 id="local">本地账户</h2>
+<p>在<a href="/users">用户</a>中，管理员使用初始密码添加用户；用户必须在首次登录时更改密码并设置双重验证登录。管理员可以禁用用户（已打开的会话将结束）、设置新密码，或为丢失手机和恢复码的用户重置双重验证登录。系统始终至少保留一个已启用的管理员。</p>
+
+<h2 id="2fa">双重验证登录</h2>
+<p>ControlZit 对每台受管计算机都有管理员权限，因此每个本地账户和目录账户都需要<b>身份验证器应用</b>（Microsoft Authenticator、Google Authenticator、Authy、1Password、Bitwarden …）。每个账户还会获得 10 个一次性<b>恢复码</b>；可在<a href="/account">账户</a>中生成新的恢复码。登录失败会在一段时间内封锁该地址（每次重复封锁后时间更长）；相关限制以及会话时长和闲置退出位于<a href="/settings/security">设置 → 登录与安全</a>。</p>
+
+<h2 id="ldap">Active Directory / LDAP</h2>
+<p>在<a href="/settings/ldap">设置 → Active Directory / LDAP</a>中，用户使用目录账户登录。目录检查密码；ControlZit 仍会要求自己的第二重验证。</p>
+<ul>
+  <li><b>服务器：</b><code>ldaps://dc1.example.local</code>（端口 636），或使用 StartTLS 的 <code>ldap://</code>（389）——密码永远不会以未加密方式通过网络。如果目录的证书来自公司 CA，请添加 CA 证书。</li>
+  <li><b>服务账户</b>（DN 或 <code>user@domain</code>）及其密码、<b>基准 DN</b> 和<b>用户筛选器</b>，例如 Active Directory 的 <code>(&amp;(objectClass=user)(sAMAccountName={username}))</code>。</li>
+  <li><b>组与角色：</b>将目录组映射到管理员、技术员和只读角色；最高角色优先。可以包含 Active Directory 的嵌套组。</li>
+  <li><b>客户组：</b><code>组 = 客户</code> 形式的行将技术员和只读用户限制为这些客户。</li>
+</ul>
+<p><b>测试</b>使用已保存的设置检查目录账户（不登录），并显示 ControlZit 会如何处理该账户。目录账户在目录中更改密码，而不是在 ControlZit 中。</p>
+
+<h2 id="sso">单点登录（OpenID Connect、SAML）</h2>
+<p>在<a href="/settings/sso">设置 → 单点登录</a>中，用户使用其在身份提供商处的账户登录：<b>OpenID Connect</b>（Microsoft Entra ID、Google、Okta、Keycloak …）或 <b>SAML 2.0</b>（ADFS、Entra ID、Okta …）。登录页面随后会显示一个按钮。</p>
+<ul>
+  <li><b>OpenID Connect：</b>在提供商处使用页面上显示的重定向 URI 注册应用，然后输入颁发者（例如 <code>https://login.microsoftonline.com/&lt;tenant&gt;/v2.0</code>）、客户端 ID 和客户端密钥。</li>
+  <li><b>SAML：</b>向提供商提供控制台的元数据（页面上的链接）或其 entity ID 和回复（ACS）地址，然后输入提供商的元数据 URL 或粘贴其 XML。</li>
+  <li><b>组声明</b>携带组（名称或 ID；Entra ID 发送组 ID），并像 LDAP 一样映射到角色和客户。</li>
+  <li>身份提供商的多重身份验证策略适用；ControlZit 也可以选择额外要求自己的第二重验证。</li>
+</ul>
+<div class="callout tip"><p>启用 LDAP 或单点登录后，本地账户仍然有效，因此管理员始终可以登录。请保留一个本地管理员以备紧急情况。</p></div>
+
+<h2 id="audit">审计日志</h2>
+<p><a href="/audit">审计日志</a>列出每次更改和每个远程操作，以及用户、对象（客户、站点、设备或用户，带链接）和地址。记录通过哈希链相连；控制台每次查看时都会检查链，并在有记录被修改或删除时报告。</p>

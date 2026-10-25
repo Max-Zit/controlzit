@@ -1,0 +1,36 @@
+<h1>Monitoraggio, avvisi e notifiche</h1>
+<p class="lead">Il server controlla ogni dispositivo una volta al minuto. Un avviso resta aperto finché la sua condizione persiste e si chiude da solo quando scompare; vieni informato via email, in un canale di chat o tramite un webhook.</p>
+
+<h2 id="rules">Regole di avviso</h2>
+<p>Imposta le regole in <a href="/settings/monitoring">Impostazioni → Monitoraggio e avvisi</a>. Valgono per tutti i dispositivi.</p>
+<table>
+  <tr><th>Regola</th><th>Si apre quando</th></tr>
+  <tr><td>Carico CPU</td><td>il carico resta sopra il limite per i minuti scelti</td></tr>
+  <tr><td>Uso della memoria</td><td>l'uso della memoria resta sopra il limite per i minuti scelti</td></tr>
+  <tr><td>Spazio su disco</td><td>un disco è più pieno della percentuale, oppure (sui dischi più grandi del doppio) ha meno spazio libero dei GB indicati</td></tr>
+  <tr><td>Dispositivo offline</td><td>l'agent non si è connesso per più dei minuti indicati</td></tr>
+  <tr><td>Riavvio in sospeso</td><td>c'è un riavvio in sospeso e il computer è acceso da più dei giorni indicati</td></tr>
+  <tr><td>Microsoft Defender disattivato</td><td>l'antivirus o la protezione in tempo reale è disattivato (facoltativo)</td></tr>
+  <tr><td>Firewall disattivato</td><td>un profilo di Windows Firewall è disattivato (facoltativo)</td></tr>
+  <tr><td>Servizio arrestato</td><td>un servizio del tuo elenco (nomi dei servizi, non nomi visualizzati) è impostato per l'avvio automatico ma non è in esecuzione</td></tr>
+</table>
+<p>Gli avvisi sono <b>Avvertenza</b> o <b>Critico</b> (critico: dispositivi offline, servizi arrestati, Defender disattivato e dischi con meno di 1 GB libero o il 98 % occupato). <a href="/alerts">Avvisi</a> elenca quelli aperti (e, se vuoi, quelli risolti); un tecnico può <b>confermare</b> un avviso perché gli altri vedano che qualcuno se ne occupa. Il numero di avvisi aperti compare nel menu.</p>
+
+<h2 id="email">Email di avviso</h2>
+<ol>
+  <li>Inserisci il <b>server email (SMTP)</b>: host, porta, sicurezza della connessione (STARTTLS o TLS; una password non viene mai inviata su una connessione non cifrata), utente, password e mittente. La password è salvata cifrata.</li>
+  <li>Aggiungi i <b>destinatari</b>, un indirizzo per riga, e scegli se inviare un'email anche quando un avviso è risolto.</li>
+  <li>Fai clic su <b>Invia un'email di prova</b>.</li>
+</ol>
+
+<h2 id="channels">Slack, Microsoft Teams e webhook</h2>
+<p>In <b>Chat e webhook</b> aggiungi fino a 20 canali:</p>
+<ul>
+  <li><b>Slack</b> — l'URL di un webhook in ingresso del canale.</li>
+  <li><b>Microsoft Teams</b> — un flusso di lavoro del canale <i>Quando viene ricevuta una richiesta webhook di Teams</i> e il suo URL.</li>
+  <li><b>Webhook</b> — qualsiasi URL HTTPS che accetta un POST JSON (sistema di ticket, automazione). Con un segreto, ogni richiesta porta <code>X-ControlZit-Signature: sha256=&lt;HMAC del corpo&gt;</code>, così il destinatario può verificare che arrivi dal tuo server.</li>
+</ul>
+<p>Per ogni canale scegli tutti gli avvisi o solo quelli critici e se inviare anche quelli risolti. <b>Invia prova</b> invia un messaggio di prova. Gli indirizzi dei canali sono salvati cifrati.</p>
+
+<h2 id="metrics">Valori attuali</h2>
+<p>La pagina del dispositivo mostra il carico CPU attuale, la memoria e i dischi e i servizi automatici non in esecuzione.</p>

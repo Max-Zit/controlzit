@@ -1,0 +1,29 @@
+<h1>Escritorio remoto, terminal y archivos</h1>
+<p class="lead">Ayude a los usuarios y repare equipos desde el navegador: sin software en su lado ni puertos abiertos en el de ellos. Todo pasa por la conexión cifrada del agente y se anota en el registro de auditoría.</p>
+
+<h2 id="rd">Escritorio remoto</h2>
+<p>Abra un dispositivo y haga clic en <b>Escritorio remoto</b> (o ábralo en su propia ventana). Ve la pantalla y la controla con el ratón y el teclado.</p>
+<ul>
+  <li><b>Teclado:</b> haga clic en la pantalla para escribir; las teclas van al equipo remoto con su propia distribución de teclado. <b>Enviar Ctrl+Alt+Supr</b> y <b>Enviar texto</b> (escribe un texto, por ejemplo una contraseña larga) están en la barra de herramientas. En pantalla completa, atajos como <kbd>Ctrl</kbd>+<kbd>W</kbd> o la tecla Windows también van al equipo remoto; mantenga <kbd>Esc</kbd> para salir de la pantalla completa.</li>
+  <li><b>Calidad:</b> Rápida, Equilibrada o Nítida, según la conexión.</li>
+  <li><b>Monitores:</b> elija un monitor o todos.</li>
+  <li><b>Las pantallas de inicio de sesión y UAC</b> se muestran y se pueden usar, así que puede iniciar sesión y confirmar solicitudes de administrador.</li>
+</ul>
+
+<h3 id="clipboard">Portapapeles y archivos</h3>
+<p>En equipos Windows, el texto copiado va en ambos sentidos con <kbd>Ctrl</kbd>+<kbd>C</kbd> y <kbd>Ctrl</kbd>+<kbd>V</kbd>. Los <b>archivos</b> copiados en su Explorador se pegan en el equipo remoto con <kbd>Ctrl</kbd>+<kbd>V</kbd>. Los archivos copiados en el equipo remoto se ofrecen para descargar (<b>Descargar archivos copiados</b>), porque un navegador no puede poner archivos en su portapapeles. El intercambio de portapapeles se puede desactivar en <a href="/settings/remote">Configuración → Escritorio remoto</a>.</p>
+
+<h3 id="notice">Aviso en la pantalla remota</h3>
+<p>De forma predeterminada, la persona frente al equipo ve una barra en la parte superior de la pantalla con su nombre mientras está conectado. Usted no ve la barra en la imagen. Se puede desactivar en <a href="/settings/remote">Configuración → Escritorio remoto</a>; cada sesión se registra en la auditoría en cualquier caso.</p>
+
+<h3 id="linux-rd">Linux</h3>
+<p>El escritorio remoto funciona en escritorios Linux con X11 (Xorg). Wayland no permite a un servicio en segundo plano ver ni controlar la pantalla: inicie allí una sesión X11 o use el terminal. Sin escritorio gráfico, use el terminal.</p>
+
+<h2 id="terminal">Terminal (Linux)</h2>
+<p><b>Terminal</b> abre un shell root del dispositivo en el navegador. Haga clic en él para escribir; copie seleccionando texto, pegue con <kbd>Ctrl</kbd>+<kbd>Mayús</kbd>+<kbd>V</kbd> o <b>Enviar texto</b>. El inicio y el final de la sesión se anotan en el registro de auditoría. En Windows, use <a href="/docs/scripts">Scripts</a>.</p>
+
+<h2 id="files">Archivos</h2>
+<p><b>Archivos</b> explora las unidades del equipo sin conectarse a la pantalla. Suba archivos (hasta 4 GB), descargue archivos, descargue una carpeta o una selección como ZIP, cree carpetas, cambie nombres y elimine. El agente realiza cada operación de archivos como SYSTEM (Windows) o root (Linux); cada operación se anota en la auditoría con su nombre.</p>
+
+<h2 id="processes">Procesos y servicios</h2>
+<p><b>Procesos</b> muestra los programas en ejecución con su memoria, hilos y sesión y finaliza un proceso. <b>Servicios</b> muestra los servicios (servicios de Windows o unidades systemd) y los inicia, detiene o reinicia. El agente de ControlZit se protege a sí mismo: no se puede detener ni finalizar desde la consola.</p>

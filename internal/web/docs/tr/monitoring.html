@@ -1,0 +1,36 @@
+<h1>İzleme, uyarılar ve bildirimler</h1>
+<p class="lead">Sunucu her cihazı dakikada bir kontrol eder. Bir uyarı, koşulu sürdükçe açık kalır ve koşul ortadan kalktığında kendiliğinden kapanır; e-postayla, bir sohbet kanalında veya bir webhook üzerinden bilgilendirilirsiniz.</p>
+
+<h2 id="rules">Uyarı kuralları</h2>
+<p>Kuralları <a href="/settings/monitoring">Ayarlar → İzleme ve uyarılar</a> altında belirleyin. Tüm cihazlar için geçerlidir.</p>
+<table>
+  <tr><th>Kural</th><th>Şu durumda açılır</th></tr>
+  <tr><td>CPU yükü</td><td>yük seçilen dakika boyunca sınırın üzerinde kalırsa</td></tr>
+  <tr><td>Bellek kullanımı</td><td>bellek kullanımı seçilen dakika boyunca sınırın üzerinde kalırsa</td></tr>
+  <tr><td>Disk alanı</td><td>bir disk yüzdeden daha doluysa veya (bunun iki katından büyük disklerde) belirtilen GB'tan az boş alanı varsa</td></tr>
+  <tr><td>Cihaz çevrimdışı</td><td>ajan belirtilen dakikadan uzun süredir bağlanmadıysa</td></tr>
+  <tr><td>Yeniden başlatma bekliyor</td><td>bir yeniden başlatma bekliyor ve bilgisayar belirtilen günden uzun süredir açıksa</td></tr>
+  <tr><td>Microsoft Defender kapalı</td><td>virüsten koruma veya gerçek zamanlı koruma kapalıysa (isteğe bağlı)</td></tr>
+  <tr><td>Güvenlik duvarı kapalı</td><td>bir Windows Güvenlik Duvarı profili kapalıysa (isteğe bağlı)</td></tr>
+  <tr><td>Hizmet durdu</td><td>listenizdeki bir hizmet (görünen adlar değil, hizmet adları) otomatik başlamaya ayarlı olduğu halde çalışmıyorsa</td></tr>
+</table>
+<p>Uyarılar <b>Uyarı</b> veya <b>Kritik</b>'tir (kritik: çevrimdışı cihazlar, durmuş hizmetler, kapalı Defender ve 1 GB'tan az boş alanı olan veya %98 dolu diskler). <a href="/alerts">Uyarılar</a> açık olanları (ve isterseniz çözülenleri) listeler; bir teknisyen, başkalarının birinin ilgilendiğini görmesi için bir uyarıyı <b>onaylayabilir</b>. Açık uyarı sayısı menüde gösterilir.</p>
+
+<h2 id="email">Uyarı e-postaları</h2>
+<ol>
+  <li><b>E-posta sunucusunu (SMTP)</b> girin: ana bilgisayar, port, bağlantı güvenliği (STARTTLS veya TLS; parola asla şifresiz bir bağlantıdan gönderilmez), kullanıcı, parola ve gönderen. Parola şifreli olarak saklanır.</li>
+  <li><b>Alıcıları</b> her satıra bir adres olacak şekilde ekleyin ve bir uyarı çözüldüğünde de e-posta gidip gitmeyeceğini seçin.</li>
+  <li><b>Test e-postası gönder</b>'e tıklayın.</li>
+</ol>
+
+<h2 id="channels">Slack, Microsoft Teams ve webhook'lar</h2>
+<p><b>Sohbet ve webhook'lar</b> altında en fazla 20 kanal ekleyin:</p>
+<ul>
+  <li><b>Slack</b> — kanalın gelen webhook URL'si.</li>
+  <li><b>Microsoft Teams</b> — <i>Bir Teams webhook isteği alındığında</i> kanal iş akışı ve URL'si.</li>
+  <li><b>Webhook</b> — JSON POST kabul eden herhangi bir HTTPS URL'si (bilet sistemi, otomasyon). Bir gizli anahtarla her istek <code>X-ControlZit-Signature: sha256=&lt;gövdenin HMAC'i&gt;</code> taşır; böylece alıcı isteğin sunucunuzdan geldiğini doğrulayabilir.</li>
+</ul>
+<p>Her kanal için tüm uyarıları veya yalnızca kritik olanları ve çözülen uyarıların da gönderilip gönderilmeyeceğini seçin. <b>Test gönder</b> bir test iletisi gönderir. Kanal adresleri şifreli olarak saklanır.</p>
+
+<h2 id="metrics">Anlık değerler</h2>
+<p>Cihaz sayfası anlık CPU yükünü, belleği ve diskleri ve çalışmayan otomatik hizmetleri gösterir.</p>

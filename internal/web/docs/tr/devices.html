@@ -1,0 +1,34 @@
+<h1>Müşteriler, konumlar ve cihazlar</h1>
+<p class="lead">Cihazlar müşteriye ve konuma göre düzenlenir. Teknisyenler ve salt okunur kullanıcılar bazı müşterilerle sınırlandırılabilir; böylece her rapor ve her liste yalnızca görebilecekleri şeyleri gösterir.</p>
+
+<h2 id="customers">Müşteriler ve konumlar</h2>
+<ul>
+  <li><b>Müşteriler</b>, ilgilendiğiniz şirketlerdir (veya kendi şirketinizin bölümleri). Bunları <a href="/customers">Müşteriler</a> altında ekleyin.</li>
+  <li><b>Konumlar</b>, onların ofisleri veya şubeleridir. Her cihaz bir konuma aittir; kayıt kodları konum başına oluşturulur.</li>
+  <li>Bir müşteri veya konum ancak artık konum veya cihaz içermediğinde silinebilir.</li>
+</ul>
+
+<h2 id="list">Cihaz listesi</h2>
+<p><a href="/devices">Cihazlar</a>, görebileceğiniz tüm cihazları müşteri ve konum, işletim sistemi, oturum açmış kullanıcı, çevrimiçi olup olmadıkları ve en son ne zaman görüldükleriyle listeler. Ada, kullanıcıya, sisteme veya müşteriye göre arayın ya da müşteriye ve duruma göre filtreleyin.</p>
+
+<h2 id="page">Cihaz sayfası</h2>
+<p>Bir cihazın sayfasında onunla yapabileceğiniz her şey için sekmeler vardır:</p>
+<table>
+  <tr><th>Sekme</th><th>Ne gösterir veya yapar</th></tr>
+  <tr><td>Genel bakış</td><td>Açık uyarılar, anlık yük, bellek ve diskler, çalışmayan otomatik hizmetler, bekleyen yeniden başlatmalar; altında tam envanter.</td></tr>
+  <tr><td>Uzak masaüstü, Terminal, Dosyalar</td><td>Uzaktan erişim, bkz. <a href="/docs/remote">Uzak masaüstü, terminal ve dosyalar</a>.</td></tr>
+  <tr><td>İşlemler, Hizmetler</td><td>Çalışan işlemler (sonlandırma) ve hizmetler (başlatma, durdurma, yeniden başlatma).</td></tr>
+  <tr><td>Betikler</td><td>Bir betik çalıştırma ve önceki çalıştırmaları çıktılarıyla görme, bkz. <a href="/docs/scripts">Betikler</a>.</td></tr>
+  <tr><td>Güncellemeler</td><td>Eksik ve yakın zamanda kurulmuş Windows güncellemeleri veya Linux paketleri, bkz. <a href="/docs/updates">Güncellemeler</a>.</td></tr>
+  <tr><td>Programlar</td><td>winget ile program kurma, güncelleme ve kaldırma (Windows).</td></tr>
+  <tr><td>Olaylar</td><td>Windows olay günlükleri (System, Application, Security, Setup), düzey, dönem ve metne göre filtrelenmiş.</td></tr>
+</table>
+
+<h2 id="inventory">Envanter</h2>
+<p>Ajan, bağlandıktan birkaç saniye sonra ve ardından düzenli olarak envanterini gönderir: işletim sistemi ve derleme, etki alanı veya çalışma grubu, model ve seri numarası, işlemci, bellek, boş alanları ve BitLocker durumlarıyla diskler, adresleri ve ağ geçitleriyle ağ bağdaştırıcıları, Microsoft Defender ve imzaları, Windows Güvenlik Duvarı profilleri, bekleyen bir yeniden başlatma ve kurulu yazılımlar (Windows'ta programlar, Linux'ta paketler). <b>Envanteri yenile</b> hemen yenisini ister.</p>
+
+<h2 id="power">Yeniden başlatma ve kapatma</h2>
+<p>Cihaz sayfasındaki güç düğmeleri bilgisayarı hemen veya bir gecikmeyle, oturum açmış kullanıcıya isteğe bağlı bir iletiyle yeniden başlatır ya da kapatır; zamanlanmış bir yeniden başlatma iptal edilebilir. Orada oturum açmış kullanıcılar kaydedilmemiş çalışmalarını kaybeder.</p>
+
+<h2 id="remove">Bir cihazı kaldırma</h2>
+<p><b>Cihazı kaldır</b> onu konsoldan siler. Çevrimiçi bir ajan kendini kaldırır; bkz. <a href="/docs/agents#remove">Bir ajanı kaldırma</a>.</p>

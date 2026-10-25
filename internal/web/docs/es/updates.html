@@ -1,0 +1,24 @@
+<h1>Actualizaciones de Windows y software</h1>
+<p class="lead">ControlZit muestra qué actualizaciones faltan en cada equipo y las instala a mano o según su programación. Los programas se instalan y actualizan con winget.</p>
+
+<h2 id="overview">El resumen</h2>
+<p><a href="/updates">Actualizaciones</a> muestra los dispositivos con actualizaciones pendientes (las de seguridad contadas aparte), los dispositivos que esperan un reinicio, la última instalación y la última búsqueda. Los agentes buscan actualizaciones unos minutos después de iniciarse y luego dos veces al día; <b>Buscar ahora</b> inicia una búsqueda al instante.</p>
+
+<h2 id="device">En un dispositivo</h2>
+<p>La pestaña <b>Actualizaciones</b> de un dispositivo muestra las actualizaciones que faltan con su categoría y gravedad, y las instaladas recientemente. Seleccione actualizaciones y haga clic en <b>Instalar seleccionadas</b>; la página muestra el resultado al terminar. Si hace falta reiniciar, el dispositivo lo indica y puede reiniciarlo desde su página.</p>
+
+<h2 id="automatic">Instalación automática</h2>
+<p>En <a href="/settings/updates">Configuración → Actualizaciones de Windows</a> elija qué instala el servidor por sí mismo:</p>
+<ul>
+  <li><b>Desactivada</b>: las actualizaciones solo se instalan desde la consola.</li>
+  <li><b>Actualizaciones de seguridad y críticas, definiciones de Defender</b>.</li>
+  <li><b>Todas las actualizaciones excepto las de características</b>: las nuevas versiones de Windows nunca se instalan automáticamente.</li>
+</ul>
+<p>Elija los días y la hora (hora del servidor). Los dispositivos en línea durante esa hora instalan una vez ese día; los dispositivos sin conexión esperan al siguiente día programado. Opcionalmente, el equipo se reinicia solo cuando una actualización lo requiere, 5 minutos después de un aviso al usuario con sesión iniciada.</p>
+<div class="callout"><p>Para que las actualizaciones no lleguen en momentos aleatorios, el agente desactiva mediante directiva la instalación automática de Windows Update. Al quitar el agente, vuelve la configuración anterior.</p></div>
+
+<h2 id="linux">Linux</h2>
+<p>En Linux el agente lee las actualizaciones de paquetes disponibles mediante <b>apt</b> (Debian, Ubuntu; actualizaciones de seguridad de los repositorios <code>-security</code>) o <b>dnf</b> (familia RHEL; actualizaciones de seguridad según la información de actualización) e instala los paquetes seleccionados. La instalación automática también se aplica a los dispositivos Linux; allí, las «actualizaciones de seguridad» son los paquetes de las fuentes de seguridad.</p>
+
+<h2 id="programs">Programas (winget)</h2>
+<p>La pestaña <b>Programas</b> de un dispositivo Windows muestra los programas instalados que conoce winget y las actualizaciones disponibles. <b>Actualizar todo</b> los actualiza; cada programa se puede actualizar o desinstalar. <b>Instalar un programa</b> busca en el repositorio comunitario de winget (por ejemplo <i>7-Zip</i> o <i>Chrome</i>) y lo instala en modo silencioso para todos los usuarios. El dispositivo necesita winget (Instalador de aplicación), que viene con Windows 10 y 11 actuales.</p>

@@ -1,0 +1,40 @@
+<h1>Sunucu ayarları ve güncellemeleri</h1>
+<p class="lead">Yöneticiler sunucunun ayarlarını <a href="/settings">Ayarlar</a> altında bulur: ağ ve portlar, sertifika, saat dilimi, sunucu ve ajan güncellemeleri ve destek için tanılama.</p>
+
+<h2 id="network">Ağ ve erişim</h2>
+<p><a href="/settings/network">Ayarlar → Ağ ve erişim</a> altında:</p>
+<ul>
+  <li><b>Konsol</b> — dinleme adresi ve portu (varsayılan <code>:8443</code>) ve <b>izin verilen ağlar</b>: her satıra bir IP adresi veya ağ (CIDR). Diğer adreslerden gelen bağlantılar TLS'den önce kapatılır; sunucunun kendisine (127.0.0.1) her zaman izin verilir. Kaydetme, kendi adresinizi dışarıda bırakacak bir listeyi reddeder.</li>
+  <li><b>Ajan uç noktası</b> — dinleme adresi ve portu (varsayılan <code>:8444</code>, konsoldan farklı olmalı), ajanların gelebileceği ağlar (boş = tümü) ve yükleyicilere ve kayıt kodlarına yazılan <b>genel ajan adresi</b>.</li>
+  <li>Yeni portlar <b>Şimdi yeniden başlat</b>'tan sonra geçerli olur (ControlZit hizmetini yeniden başlatır; ajanlar kendiliğinden yeniden bağlanır).</li>
+</ul>
+<p>Kendinizi dışarıda bırakırsanız sunucuda <code>controlzit-server --reset-allowlist</code> çalıştırın (cihaz: kurulum menüsü, madde 5).</p>
+
+<h3 id="server-network">Sunucunun ağı (cihaz)</h3>
+<p>ControlZit cihazında sunucunun kendi ağı da burada ayarlanır: DHCP veya ağ boyutuyla sabit bir adres (ör. <code>192.168.1.20/24</code>), ağ geçidi, bir ile üç arası DNS sunucusu ve sunucu adı. Ağ geçidi yeni ayarlarla yanıt vermezse önceki ayarlar 30 saniye sonra kendiliğinden geri gelir. Diğer kurulumlarda ağı işletim sistemi yönetir.</p>
+
+<h3 id="timezone">Saat dilimi</h3>
+<p>Zamanlamalar (güncellemeler, betikler, raporlar) ve konsoldaki saatler sunucunun saat dilimini kullanır. Listeden seçin ve <b>Ayarla</b>'ya tıklayın; konsol yeniden başlar ve birkaç saniye içinde geri gelir. Root yardımcısı yoksa (aşağıya bakın) sunucuda ayarlayın: <code>timedatectl set-timezone Europe/Istanbul</code>.</p>
+
+<h2 id="certificate">Sertifika (HTTPS)</h2>
+<p><a href="/settings/certificate">Ayarlar → Sertifika</a> altında tarayıcıların konsolu açtığında gördüğü sertifikayı seçin. Ajanlar kendi portlarını ve sertifikalarını kullanır; bu yüzden değiştirmek onların bağlantısını asla kesmez.</p>
+<ul>
+  <li><b>Konsolun kendi sertifikası</b> (kendinden imzalı) — hemen çalışır; tarayıcılar uyarır.</li>
+  <li><b>Let's Encrypt</b> — süresi dolmadan 30 gün önce otomatik yenilenen ücretsiz bir sertifika. Konsolun genel DNS adını ve bir e-posta adresini girin ve doğrulamayı seçin:
+    <ul>
+      <li><b>port 80</b> — ad bu sunucuyu gösterir ve 80 numaralı port internetten erişilebilir; sunucu 80 numaralı portta yanıt verir ve tarayıcıları HTTPS'ye yönlendirir;</li>
+      <li><b>Cloudflare DNS</b> — internetten erişilemeyen sunucular için; bölge için <code>Zone:DNS:Edit</code> iznine sahip bir Cloudflare API belirteci gerekir.</li>
+    </ul>
+  </li>
+  <li><b>Sertifika yükle</b>: sertifika yetkilinizden veya şirket CA'sından sertifika (PEM, ara sertifikalarla) ve özel anahtar. Anahtar yalnızca bu sunucuda saklanır.</li>
+</ul>
+
+<h2 id="server-updates">Sunucu güncellemeleri</h2>
+<p><a href="/settings/version">Ayarlar → ControlZit güncellemeleri</a> çalışan sürümü ve en yeni sürümü gösterir. <b>Kur</b> sunucuyu günceller: yalnızca ControlZit sürüm anahtarıyla imzalanmış sürümler kurulur; kurmadan önce sunucu veritabanını ve programını yedekler ve yeni sürüm başlamazsa kendiliğinden eskisine döner. Konsol bir iki dakika erişilemez. İsteğe bağlı olarak yeni sürümler seçilen bir saatte otomatik kurulur.</p>
+<div class="callout"><p>Güncellemeler, saat dilimi ve ağ, Linux paketleri ve cihazla gelen <b>root yardımcısını</b> gerektirir. O yoksa (ör. yalnızca program), <code>install.sh</code> veya sürümün paketiyle güncelleyin.</p></div>
+
+<h2 id="agent-updates">Ajan güncellemeleri</h2>
+<p>Bkz. <a href="/docs/agents#updates">Ajanları kurma → Ajan güncellemeleri</a>.</p>
+
+<h2 id="diagnostics">Tanılama</h2>
+<p><a href="/settings/diagnostics">Ayarlar → Tanılama</a>, ControlZit'in günlüklerini nereye yazdığını, sunucu günlüğünün en yeni satırlarını (düzey veya metne göre filtre), root yardımcısının günlüğünü ve sürümleri gösterir. <b>Tanılamayı indir (ZIP)</b>, günlükler, sürümler ve ayarların özeti, cihazlar, uyarılar ve denetim günlüğüyle destek için bir dosya oluşturur. Parolalar, belirteçler, kayıt kodları ve anahtarlar gösterilen her şeyden ve dosyadan çıkarılır; betikler ve çıktıları dahil edilmez.</p>

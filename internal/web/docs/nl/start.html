@@ -1,0 +1,43 @@
+<h1>Aan de slag</h1>
+<p class="lead">ControlZit is een zelf gehoste tool voor bewaking en beheer op afstand (RMM). Vanuit één webconsole op uw eigen server bewaakt en beheert u de Windows- en Linux-computers van uw klanten: inventaris, bewaking en waarschuwingen, extern bureaublad, terminal, bestanden, scripts, Windows-updates, software en rapporten.</p>
+
+<h2 id="what">Wat ControlZit doet</h2>
+<table>
+  <tr><th>Gebied</th><th>Wat u krijgt</th></tr>
+  <tr><td>Inventaris</td><td>Hardware, besturingssysteem, schijven, netwerk, beveiligingsstatus (antivirus, firewall, BitLocker) en geïnstalleerde software van elk apparaat. <a href="/docs/devices">Apparaten</a></td></tr>
+  <tr><td>Bewaking en waarschuwingen</td><td>CPU, geheugen, schijfruimte, offline apparaten, gestopte services, Defender en firewall; waarschuwingen per e-mail, Slack, Microsoft Teams of webhook. <a href="/docs/monitoring">Bewaking</a></td></tr>
+  <tr><td>Toegang op afstand</td><td>Extern bureaublad in de browser (Windows, Linux met X11) met klembord en bestandskopie, een root-terminal op Linux, bestandsbeheer, processen, services, herstarten en afsluiten. <a href="/docs/remote">Toegang op afstand</a></td></tr>
+  <tr><td>Scripts</td><td>PowerShell, cmd, bash of sh op één apparaat, op veel tegelijk of volgens schema, uit een scriptbibliotheek. <a href="/docs/scripts">Scripts</a></td></tr>
+  <tr><td>Updates en software</td><td>Ontbrekende Windows-updates en Linux-pakketten, installatie met de hand of volgens schema, programma's via winget. <a href="/docs/updates">Updates</a></td></tr>
+  <tr><td>Rapporten</td><td>Een rapport per klant (apparaten, updates, waarschuwingen, werk van technici), af te drukken of elke week of maand per e-mail. <a href="/docs/reports">Rapporten</a></td></tr>
+</table>
+
+<h2 id="how">Hoe het werkt</h2>
+<ul>
+  <li><b>De server</b> draait op een Linux-machine (meestal een kleine VM) met PostgreSQL. Hij heeft twee poorten: de <b>console</b> (webinterface en API, TCP 8443) en het <b>agent-eindpunt</b> (TCP 8444).</li>
+  <li><b>Agents</b> draaien als service op elke beheerde computer. Ze maken een <i>uitgaande</i> verbinding met de agentpoort; de computers hebben geen open poorten nodig. Een agent vertrouwt de server via de vingerafdruk van zijn certificaat, die hij bij registratie vastzet.</li>
+  <li>Elke opdracht aan een agent wordt door de server <b>ondertekend</b> en door de agent gecontroleerd, en elke actie wordt vastgelegd in het fraudebestendige <a href="/audit">auditlogboek</a>.</li>
+</ul>
+<div class="callout tip"><p>De console beheert elke computer. Maak hem alleen bereikbaar vanuit uw eigen netwerken (standaard) en open alleen de agentpoort waar agents die nodig hebben. Zie <a href="/docs/security">Beveiliging</a>.</p></div>
+
+<h2 id="first-steps">Eerste stappen</h2>
+<ol>
+  <li><b>Installeer de server</b> — importeer het kant-en-klare VM-image, start de appliance-ISO of voer het installatiescript uit op een Linux-server. Zie <a href="/docs/install">De server installeren</a>.</li>
+  <li><b>Maak de eerste beheerder aan</b> met het installatietoken dat de server toont, en stel aanmelden in twee stappen in met een authenticator-app.</li>
+  <li><b>Controleer het agentadres</b> onder <a href="/settings/network">Instellingen → Netwerk en toegang</a>: agents moeten de server bereiken via het openbare agentadres of de hostnaam van de console.</li>
+  <li><b>Voeg een klant en een locatie toe</b> onder <a href="/customers">Klanten</a> en maak op de locatie een <b>registratiecode</b> aan.</li>
+  <li><b>Installeer de agent</b> met de code op de computers van die locatie. Zie <a href="/docs/agents">Agents installeren</a>.</li>
+  <li><b>Stel waarschuwingen in</b> onder <a href="/settings/monitoring">Instellingen → Bewaking en waarschuwingen</a> en, als u wilt, de <a href="/settings/updates">automatische installatie van Windows-updates</a>.</li>
+  <li><b>Voeg uw technici toe</b> onder <a href="/users">Gebruikers</a>, of koppel Active Directory / LDAP of eenmalige aanmelding. Zie <a href="/docs/users">Gebruikers, rollen en aanmelden</a>.</li>
+</ol>
+
+<h2 id="requirements">Vereisten</h2>
+<ul>
+  <li><b>Server:</b> 2 vCPU, 2–4 GB RAM, 16 GB schijf; Debian 12+, Ubuntu 22.04+, AlmaLinux of Rocky Linux 9+ (of de kant-en-klare appliance).</li>
+  <li><b>Windows-agents:</b> Windows 10 / 11, Windows Server 2016 en nieuwer, 64-bit.</li>
+  <li><b>Linux-agents:</b> distributies met systemd, x86-64 of ARM64 (Raspberry Pi en ARM-servers). Updates via apt of dnf.</li>
+  <li><b>Browser:</b> een actuele Chrome, Edge, Firefox of Safari.</li>
+</ul>
+
+<h2 id="license">Licentie en ondersteuning</h2>
+<p>ControlZit is vrije software onder de GNU AGPLv3; de broncode staat op <a href="https://github.com/Max-Zit/controlzit" target="_blank" rel="noopener">github.com/Max-Zit/controlzit</a>. Meld fouten met <b>Fout melden</b> onder in het menu. MaxZit biedt betaalde ondersteuning.</p>

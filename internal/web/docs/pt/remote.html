@@ -1,0 +1,29 @@
+<h1>Ambiente de trabalho remoto, terminal e ficheiros</h1>
+<p class="lead">Ajude utilizadores e repare computadores a partir do navegador: sem software do seu lado, sem portas abertas do lado deles. Tudo passa pela ligação encriptada do agente e fica registado na auditoria.</p>
+
+<h2 id="rd">Ambiente de trabalho remoto</h2>
+<p>Abra um dispositivo e clique em <b>Ambiente de trabalho remoto</b> (ou abra-o numa janela própria). Vê o ecrã e controla-o com o rato e o teclado.</p>
+<ul>
+  <li><b>Teclado:</b> clique no ecrã para escrever; as teclas vão para o computador remoto com a sua própria disposição de teclado. <b>Enviar Ctrl+Alt+Del</b> e <b>Enviar texto</b> (escreve um texto, por exemplo uma palavra-passe longa) estão na barra de ferramentas. Em ecrã inteiro, atalhos como <kbd>Ctrl</kbd>+<kbd>W</kbd> ou a tecla Windows também vão para o computador remoto; mantenha <kbd>Esc</kbd> premido para sair do ecrã inteiro.</li>
+  <li><b>Qualidade:</b> Rápida, Equilibrada ou Nítida, consoante a ligação.</li>
+  <li><b>Monitores:</b> escolha um monitor ou todos.</li>
+  <li><b>Os ecrãs de início de sessão e UAC</b> são mostrados e utilizáveis, por isso pode iniciar sessão e confirmar pedidos de administrador.</li>
+</ul>
+
+<h3 id="clipboard">Área de transferência e ficheiros</h3>
+<p>Em computadores Windows, o texto copiado vai nos dois sentidos com <kbd>Ctrl</kbd>+<kbd>C</kbd> e <kbd>Ctrl</kbd>+<kbd>V</kbd>. Os <b>ficheiros</b> copiados no seu Explorador são colados no computador remoto com <kbd>Ctrl</kbd>+<kbd>V</kbd>. Os ficheiros copiados no computador remoto são oferecidos para transferência (<b>Transferir ficheiros copiados</b>), porque um navegador não consegue colocar ficheiros na sua área de transferência. A troca pela área de transferência pode ser desligada em <a href="/settings/remote">Definições → Ambiente de trabalho remoto</a>.</p>
+
+<h3 id="notice">Aviso no ecrã remoto</h3>
+<p>Por predefinição, a pessoa ao computador vê uma barra no topo do ecrã com o seu nome enquanto está ligado. Não vê a barra na imagem. Pode ser desligada em <a href="/settings/remote">Definições → Ambiente de trabalho remoto</a>; cada sessão é sempre registada na auditoria.</p>
+
+<h3 id="linux-rd">Linux</h3>
+<p>O ambiente de trabalho remoto funciona em ambientes de trabalho Linux com X11 (Xorg). O Wayland não permite que um serviço em segundo plano veja ou controle o ecrã: inicie aí uma sessão X11 ou use o terminal. Sem ambiente gráfico, use o terminal.</p>
+
+<h2 id="terminal">Terminal (Linux)</h2>
+<p><b>Terminal</b> abre uma shell root do dispositivo no navegador. Clique nele para escrever; copie selecionando o texto, cole com <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> ou <b>Enviar texto</b>. O início e o fim da sessão são registados na auditoria. No Windows, use <a href="/docs/scripts">Scripts</a>.</p>
+
+<h2 id="files">Ficheiros</h2>
+<p><b>Ficheiros</b> percorre as unidades do computador sem ligar ao ecrã. Carregue ficheiros (até 4 GB), transfira ficheiros, transfira uma pasta ou uma seleção como ZIP, crie pastas, mude nomes e elimine. O agente faz cada operação como SYSTEM (Windows) ou root (Linux); cada uma é registada na auditoria com o seu nome.</p>
+
+<h2 id="processes">Processos e serviços</h2>
+<p><b>Processos</b> lista os programas em execução com memória, threads e sessão e termina um processo. <b>Serviços</b> lista os serviços (serviços Windows ou unidades systemd) e inicia-os, para-os ou reinicia-os. O agente ControlZit protege-se a si próprio: não pode ser parado nem terminado a partir da consola.</p>

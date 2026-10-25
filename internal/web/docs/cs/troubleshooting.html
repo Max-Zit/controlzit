@@ -1,0 +1,51 @@
+<h1>Řešení potíží a časté dotazy</h1>
+<p class="lead">Nejčastější dotazy a co zkontrolovat nejdřív. Pro požadavek na podporu stáhněte diagnostiku v <a href="/settings/diagnostics">Nastavení → Diagnostika</a>.</p>
+
+<h2 id="console">Nemohu se dostat do konzole</h2>
+<ul>
+  <li>Vaše adresa možná není v povolených sítích: spojení se zavře před TLS, takže prohlížeč ukáže chybu spojení. Spusťte na serveru <code>controlzit-server --reset-allowlist</code> (appliance: nabídka nastavení, položka 5), abyste znovu povolili všechny privátní sítě.</li>
+  <li>Po změně portu otevřete konzoli na novém portu.</li>
+  <li>Zkontrolujte službu na serveru: <code>systemctl status controlzit-server</code> a <code>journalctl -u controlzit-server</code>.</li>
+</ul>
+
+<h2 id="signin">Potíže s přihlášením</h2>
+<ul>
+  <li><b>Kód je chybný</b> — čas v telefonu musí být správný (automatický čas).</li>
+  <li><b>Ztracený telefon</b> — přihlaste se záložním kódem; jiný správce může resetovat dvoufázové přihlášení.</li>
+  <li><b>Příliš mnoho neúspěšných pokusů</b> — adresa je na čas zablokována; správce ji může <b>odblokovat</b> v <a href="/settings/security">Nastavení → Přihlášení a zabezpečení</a>. Přihlášení ze samotného serveru se nikdy neblokují.</li>
+  <li><b>LDAP / jednotné přihlášení</b> — použijte <b>Test</b> na stránce LDAP; zkontrolujte skupiny, které poskytovatel posílá. Protokol serveru obsahuje podrobnosti.</li>
+</ul>
+
+<h2 id="agent">Agent se nepřipojuje</h2>
+<ul>
+  <li>Dosáhne počítač na port agentů? Ve Windows: <code>Test-NetConnection rmm.example.com -Port 8444</code>.</li>
+  <li>Je veřejná adresa pro agenty správná? Kódy vytvořené při konzoli otevřené přes localhost posílají agenta na špatný server; nastavte adresu a vytvořte nový kód.</li>
+  <li>Je kód stále platný a nevyčerpaný?</li>
+  <li>Protokoly agenta: Windows <code>C:\ProgramData\ControlZit Agent\agent.log</code>, Linux <code>/var/lib/controlzit-agent/agent.log</code> a <code>journalctl -u controlzit-agent</code>; u připojeného zařízení je otevřete z konzole v <b>Soubory</b>. Ve Windows ikona vedle hodin ukazuje stav spojení.</li>
+</ul>
+
+<h2 id="rd">Vzdálená plocha nic neukazuje</h2>
+<ul>
+  <li>Linux s Waylandem nelze zobrazit: přihlaste se do relace X11 (Xorg) nebo použijte terminál.</li>
+  <li>Linux bez plochy: použijte terminál.</li>
+  <li>Kopírování souborů přes schránku vyžaduje přihlášeného uživatele na počítači s Windows.</li>
+</ul>
+
+<h2 id="updates">Aktualizace Windows se neinstalují</h2>
+<ul>
+  <li>Zkontrolujte automatickou instalaci v <a href="/settings/updates">Nastavení → Aktualizace Windows</a>: dny, hodinu a režim. Zařízení musí být v tu hodinu online.</li>
+  <li>Karta <b>Aktualizace</b> zařízení ukazuje poslední hledání a případnou chybu.</li>
+</ul>
+
+<h2 id="email">E-maily s upozorněními nepřicházejí</h2>
+<p>Použijte <b>Odeslat testovací e-mail</b> v <a href="/settings/monitoring">Nastavení → Monitorování a upozornění</a>; zpráva ukáže odpověď serveru. Heslo se posílá jen přes STARTTLS nebo TLS.</p>
+
+<h2 id="faq">Časté dotazy</h2>
+<h3 id="faq-cloud">Potřebuje ControlZit cloudovou službu?</h3>
+<p>Ne. Vše běží na vašem serveru; nic se neposílá MaxZitu. Server jen kontroluje GitHub kvůli novým vydáním.</p>
+<h3 id="faq-backup">Jak ControlZit zálohovat?</h3>
+<p>Zálohujte databázi PostgreSQL (<code>pg_dump</code>) a složku <code>/var/lib/controlzit</code>. Bez tajného klíče a certifikátů odtud nelze uložená hesla dešifrovat a agenti by novému serveru nedůvěřovali.</p>
+<h3 id="faq-move">Mohu server přesunout na nový stroj?</h3>
+<p>Ano: nainstalujte ControlZit na nový stroj, obnovte databázi a <code>/var/lib/controlzit</code> a ponechte stejnou adresu (nebo změňte veřejnou adresu pro agenty a nasměrujte starý název na nový stroj).</p>
+<h3 id="faq-mac">Existuje agent pro macOS?</h3>
+<p>Zatím ne. Podporovány jsou Windows a Linux (x86-64, ARM64).</p>

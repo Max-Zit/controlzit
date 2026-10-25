@@ -1,0 +1,51 @@
+<h1>トラブルシューティングと FAQ</h1>
+<p class="lead">よくある質問と、最初に確認すべきこと。サポートに問い合わせるときは、<a href="/settings/diagnostics">設定 → 診断</a>で診断情報をダウンロードしてください。</p>
+
+<h2 id="console">コンソールにアクセスできない</h2>
+<ul>
+  <li>アドレスが許可されたネットワークに含まれていない可能性があります。接続は TLS の前に切断されるため、ブラウザーには接続エラーが表示されます。サーバーで <code>controlzit-server --reset-allowlist</code> を実行して（アプライアンス: セットアップメニューの項目 5）、すべてのプライベートネットワークを再び許可します。</li>
+  <li>ポートを変更した後は、新しいポートでコンソールを開きます。</li>
+  <li>サーバーのサービスを確認します: <code>systemctl status controlzit-server</code> と <code>journalctl -u controlzit-server</code>。</li>
+</ul>
+
+<h2 id="signin">サインインの問題</h2>
+<ul>
+  <li><b>コードが間違っている</b> — 電話の時刻が正しい必要があります（自動設定の時刻）。</li>
+  <li><b>電話を紛失した</b> — 回復コードでサインインします。他の管理者が 2 段階サインインをリセットできます。</li>
+  <li><b>失敗回数が多すぎる</b> — アドレスが一定時間ブロックされます。管理者は<a href="/settings/security">設定 → サインインとセキュリティ</a>で<b>ブロックを解除</b>できます。サーバー自身からのサインインはブロックされません。</li>
+  <li><b>LDAP / シングルサインオン</b> — LDAP ページの<b>テスト</b>を使い、プロバイダーが送るグループを確認します。詳細はサーバーログにあります。</li>
+</ul>
+
+<h2 id="agent">エージェントが接続しない</h2>
+<ul>
+  <li>コンピューターからエージェントのポートに到達できますか? Windows では <code>Test-NetConnection rmm.example.com -Port 8444</code>。</li>
+  <li>エージェント用の公開アドレスは正しいですか? コンソールを localhost で開いていたときに作成したコードは、エージェントを誤ったサーバーに向けます。アドレスを設定して新しいコードを作成してください。</li>
+  <li>コードはまだ有効で、使い切っていませんか?</li>
+  <li>エージェントのログ: Windows は <code>C:\ProgramData\ControlZit Agent\agent.log</code>、Linux は <code>/var/lib/controlzit-agent/agent.log</code> と <code>journalctl -u controlzit-agent</code>。接続中のデバイスなら、コンソールの<b>ファイル</b>から開けます。Windows では時計の横のアイコンが接続状態を示します。</li>
+</ul>
+
+<h2 id="rd">リモートデスクトップに何も表示されない</h2>
+<ul>
+  <li>Wayland の Linux は表示できません。X11（Xorg）セッションでサインインするか、ターミナルを使用してください。</li>
+  <li>デスクトップのない Linux: ターミナルを使用してください。</li>
+  <li>クリップボード経由のファイルコピーには、Windows コンピューターにサインイン中のユーザーが必要です。</li>
+</ul>
+
+<h2 id="updates">Windows 更新がインストールされない</h2>
+<ul>
+  <li><a href="/settings/updates">設定 → Windows 更新</a>で自動インストールの曜日、時刻、モードを確認します。デバイスはその時間にオンラインである必要があります。</li>
+  <li>デバイスの<b>更新</b>タブに、前回の検索とそのエラー（ある場合）が表示されます。</li>
+</ul>
+
+<h2 id="email">アラートメールが届かない</h2>
+<p><a href="/settings/monitoring">設定 → 監視とアラート</a>の<b>テストメールを送信</b>を使ってください。メッセージにサーバーの応答が表示されます。パスワードは STARTTLS または TLS でのみ送信されます。</p>
+
+<h2 id="faq">FAQ</h2>
+<h3 id="faq-cloud">ControlZit にクラウドサービスは必要ですか?</h3>
+<p>いいえ。すべてお使いのサーバーで動作し、MaxZit には何も送信されません。サーバーは新しいリリースの確認のために GitHub にアクセスするだけです。</p>
+<h3 id="faq-backup">ControlZit をバックアップするには?</h3>
+<p>PostgreSQL データベース（<code>pg_dump</code>）と <code>/var/lib/controlzit</code> フォルダーをバックアップします。そこにある秘密鍵と証明書がないと、保存済みパスワードを復号できず、エージェントは新しいサーバーを信頼しません。</p>
+<h3 id="faq-move">サーバーを新しいマシンに移行できますか?</h3>
+<p>はい。新しいマシンに ControlZit をインストールし、データベースと <code>/var/lib/controlzit</code> を復元して、同じアドレスを使い続けます（またはエージェント用の公開アドレスを変更し、古い名前を新しいマシンに向けます）。</p>
+<h3 id="faq-mac">macOS 用のエージェントはありますか?</h3>
+<p>まだありません。Windows と Linux（x86-64、ARM64）に対応しています。</p>

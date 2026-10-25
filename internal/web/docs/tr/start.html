@@ -1,0 +1,43 @@
+<h1>Başlarken</h1>
+<p class="lead">ControlZit, kendi sunucunuzda çalışan bir uzaktan izleme ve yönetim (RMM) aracıdır. Kendi sunucunuzdaki tek bir web konsolundan müşterilerinizin Windows ve Linux bilgisayarlarını izler ve yönetirsiniz: envanter, izleme ve uyarılar, uzak masaüstü, terminal, dosyalar, betikler, Windows güncellemeleri, yazılımlar ve raporlar.</p>
+
+<h2 id="what">ControlZit ne yapar</h2>
+<table>
+  <tr><th>Alan</th><th>Ne elde edersiniz</th></tr>
+  <tr><td>Envanter</td><td>Her cihazın donanımı, işletim sistemi, diskleri, ağı, güvenlik durumu (virüsten koruma, güvenlik duvarı, BitLocker) ve kurulu yazılımları. <a href="/docs/devices">Cihazlar</a></td></tr>
+  <tr><td>İzleme ve uyarılar</td><td>CPU, bellek, disk alanı, çevrimdışı cihazlar, durmuş hizmetler, Defender ve güvenlik duvarı; e-posta, Slack, Microsoft Teams veya webhook ile uyarılar. <a href="/docs/monitoring">İzleme</a></td></tr>
+  <tr><td>Uzaktan erişim</td><td>Tarayıcıda uzak masaüstü (Windows, X11'li Linux), pano ve dosya kopyalama, Linux'ta root terminali, dosya yöneticisi, işlemler, hizmetler, yeniden başlatma ve kapatma. <a href="/docs/remote">Uzaktan erişim</a></td></tr>
+  <tr><td>Betikler</td><td>Bir betik kitaplığından PowerShell, cmd, bash veya sh'yi tek cihazda, aynı anda birçok cihazda veya bir zamanlamayla çalıştırma. <a href="/docs/scripts">Betikler</a></td></tr>
+  <tr><td>Güncellemeler ve yazılım</td><td>Eksik Windows güncellemeleri ve Linux paketleri, elle veya zamanlanmış kurulum, winget ile programlar. <a href="/docs/updates">Güncellemeler</a></td></tr>
+  <tr><td>Raporlar</td><td>Müşteri başına bir rapor (cihazlar, güncellemeler, uyarılar, teknisyen çalışmaları); yazdırılabilir veya her hafta ya da ay e-postayla gönderilir. <a href="/docs/reports">Raporlar</a></td></tr>
+</table>
+
+<h2 id="how">Nasıl çalışır</h2>
+<ul>
+  <li><b>Sunucu</b>, PostgreSQL ile bir Linux makinesinde (genellikle küçük bir VM) çalışır. İki portu vardır: <b>konsol</b> (web arayüzü ve API, TCP 8443) ve <b>ajan uç noktası</b> (TCP 8444).</li>
+  <li><b>Ajanlar</b> her yönetilen bilgisayarda hizmet olarak çalışır. Ajan portuna <i>giden</i> bağlantı kurarlar; bilgisayarlarda açık port gerekmez. Ajan, sunucuya kayıt sırasında sabitlediği sertifika parmak izi ile güvenir.</li>
+  <li>Bir ajana giden her komut sunucu tarafından <b>imzalanır</b> ve ajan tarafından doğrulanır; her işlem değiştirilemeyen <a href="/audit">denetim günlüğüne</a> yazılır.</li>
+</ul>
+<div class="callout tip"><p>Konsol her yönetilen bilgisayarı kontrol eder. Yalnızca kendi ağlarınızdan erişilebilir olsun (varsayılan) ve yalnızca ajanların ihtiyaç duyduğu yerde ajan portunu açın. Bkz. <a href="/docs/security">Güvenlik</a>.</p></div>
+
+<h2 id="first-steps">İlk adımlar</h2>
+<ol>
+  <li><b>Sunucuyu kurun</b> — hazır VM görüntüsünü içe aktarın, cihaz ISO'sunu başlatın veya bir Linux sunucusunda kurulum betiğini çalıştırın. Bkz. <a href="/docs/install">Sunucuyu kurma</a>.</li>
+  <li><b>İlk yöneticiyi oluşturun</b>: sunucunun gösterdiği kurulum belirtecini kullanın ve bir kimlik doğrulama uygulamasıyla iki adımlı girişi ayarlayın.</li>
+  <li><b>Ajan adresini kontrol edin</b>: <a href="/settings/network">Ayarlar → Ağ ve erişim</a> altında; ajanlar sunucuya genel ajan adresi veya konsolun ana bilgisayar adı üzerinden ulaşmalıdır.</li>
+  <li><b>Bir müşteri ve konum ekleyin</b>: <a href="/customers">Müşteriler</a> altında, ardından konumda bir <b>kayıt kodu</b> oluşturun.</li>
+  <li><b>Ajanı kurun</b>: o konumun bilgisayarlarına kodla. Bkz. <a href="/docs/agents">Ajanları kurma</a>.</li>
+  <li><b>Uyarıları ayarlayın</b>: <a href="/settings/monitoring">Ayarlar → İzleme ve uyarılar</a> altında ve isterseniz <a href="/settings/updates">Windows güncellemelerinin otomatik kurulumunu</a>.</li>
+  <li><b>Teknisyenlerinizi ekleyin</b>: <a href="/users">Kullanıcılar</a> altında veya Active Directory / LDAP ya da çoklu oturum açmayı bağlayın. Bkz. <a href="/docs/users">Kullanıcılar, roller ve giriş</a>.</li>
+</ol>
+
+<h2 id="requirements">Gereksinimler</h2>
+<ul>
+  <li><b>Sunucu:</b> 2 vCPU, 2–4 GB RAM, 16 GB disk; Debian 12+, Ubuntu 22.04+, AlmaLinux veya Rocky Linux 9+ (ya da hazır cihaz).</li>
+  <li><b>Windows ajanları:</b> Windows 10 / 11, Windows Server 2016 ve sonrası, 64 bit.</li>
+  <li><b>Linux ajanları:</b> systemd'li dağıtımlar, x86-64 veya ARM64 (Raspberry Pi ve ARM sunucular). Güncellemeler apt veya dnf ile.</li>
+  <li><b>Tarayıcı:</b> güncel Chrome, Edge, Firefox veya Safari.</li>
+</ul>
+
+<h2 id="license">Lisans ve destek</h2>
+<p>ControlZit, GNU AGPLv3 altında özgür bir yazılımdır; kaynak kodu <a href="https://github.com/Max-Zit/controlzit" target="_blank" rel="noopener">github.com/Max-Zit/controlzit</a> adresindedir. Hataları menünün altındaki <b>Hata bildir</b> ile bildirin. MaxZit ücretli destek sunar.</p>

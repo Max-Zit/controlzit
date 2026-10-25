@@ -1,0 +1,40 @@
+<h1>Definições e atualizações do servidor</h1>
+<p class="lead">Os administradores encontram as definições do servidor em <a href="/settings">Definições</a>: rede e portas, o certificado, o fuso horário, as atualizações do servidor e dos agentes e o diagnóstico para suporte.</p>
+
+<h2 id="network">Rede e acesso</h2>
+<p>Em <a href="/settings/network">Definições → Rede e acesso</a>:</p>
+<ul>
+  <li><b>Consola</b> — endereço e porta de escuta (predefinição <code>:8443</code>) e as <b>redes permitidas</b>: um endereço IP ou rede por linha (CIDR). As ligações de outros endereços são fechadas antes do TLS; o próprio servidor (127.0.0.1) é sempre permitido. Guardar recusa uma lista que deixaria o seu próprio endereço de fora.</li>
+  <li><b>Ponto de ligação dos agentes</b> — endereço e porta de escuta (predefinição <code>:8444</code>, diferente da consola), as redes de onde os agentes podem vir (vazio = todas) e o <b>endereço público dos agentes</b> incluído nos instaladores e códigos de registo.</li>
+  <li>As novas portas aplicam-se após <b>Reiniciar agora</b> (reinicia o serviço ControlZit; os agentes voltam a ligar-se sozinhos).</li>
+</ul>
+<p>Se ficar sem acesso, execute <code>controlzit-server --reset-allowlist</code> no servidor (appliance: menu de configuração, opção 5).</p>
+
+<h3 id="server-network">Rede do servidor (appliance)</h3>
+<p>No appliance ControlZit também se define aqui a rede do próprio servidor: DHCP ou um endereço fixo com tamanho de rede (p. ex. <code>192.168.1.20/24</code>), gateway, um a três servidores DNS e o nome do servidor. Se o gateway não responder com as novas definições, as anteriores voltam sozinhas após 30 segundos. Noutras instalações é o sistema operativo que gere a rede.</p>
+
+<h3 id="timezone">Fuso horário</h3>
+<p>Os agendamentos (atualizações, scripts, relatórios) e as horas na consola usam o fuso horário do servidor. Escolha-o na lista e clique em <b>Definir</b>; a consola reinicia e volta dentro de alguns segundos. Sem o auxiliar root (ver abaixo), defina-o no servidor: <code>timedatectl set-timezone Europe/Lisbon</code>.</p>
+
+<h2 id="certificate">Certificado (HTTPS)</h2>
+<p>Em <a href="/settings/certificate">Definições → Certificado</a> escolha o certificado que os navegadores veem ao abrir a consola. Os agentes usam a sua própria porta e certificado, por isso alterá-lo nunca os desliga.</p>
+<ul>
+  <li><b>O certificado próprio da consola</b> (autoassinado) — funciona de imediato; os navegadores avisam.</li>
+  <li><b>Let's Encrypt</b> — um certificado gratuito, renovado automaticamente 30 dias antes de expirar. Introduza o nome DNS público da consola e um endereço de e-mail e escolha a verificação:
+    <ul>
+      <li><b>porta 80</b> — o nome aponta para este servidor e a porta 80 está acessível a partir da Internet; o servidor responde na porta 80 e redireciona os navegadores para HTTPS;</li>
+      <li><b>DNS da Cloudflare</b> — para servidores não acessíveis a partir da Internet; precisa de um token de API da Cloudflare com <code>Zone:DNS:Edit</code> para a zona.</li>
+    </ul>
+  </li>
+  <li><b>Carregar um certificado</b> da sua autoridade de certificação ou CA da empresa: o certificado (PEM, com os intermédios) e a chave privada. A chave só é guardada neste servidor.</li>
+</ul>
+
+<h2 id="server-updates">Atualizações do servidor</h2>
+<p><a href="/settings/version">Definições → Atualizações do ControlZit</a> mostra a versão em execução e a mais recente. <b>Instalar</b> atualiza o servidor: só são instaladas versões assinadas com a chave de publicação do ControlZit; antes de instalar, o servidor faz cópia da base de dados e do programa, e se a nova versão não arrancar volta sozinho à antiga. A consola fica indisponível um ou dois minutos. Opcionalmente as novas versões são instaladas automaticamente numa hora escolhida.</p>
+<div class="callout"><p>As atualizações, o fuso horário e a rede precisam do <b>auxiliar root</b> incluído nos pacotes Linux e no appliance. Sem ele (p. ex. o programa isolado), atualize com <code>install.sh</code> ou com o pacote da versão.</p></div>
+
+<h2 id="agent-updates">Atualizações dos agentes</h2>
+<p>Veja <a href="/docs/agents#updates">Instalar agentes → Atualizações dos agentes</a>.</p>
+
+<h2 id="diagnostics">Diagnóstico</h2>
+<p><a href="/settings/diagnostics">Definições → Diagnóstico</a> mostra onde o ControlZit escreve os seus registos, as linhas mais recentes do registo do servidor (filtro por nível ou texto), o registo do auxiliar root e as versões. <b>Transferir diagnóstico (ZIP)</b> cria um ficheiro para suporte com os registos, as versões e um resumo das definições, os dispositivos, os alertas e a auditoria. As palavras-passe, tokens, códigos de registo e chaves são removidos de tudo o que é mostrado e do ficheiro; os scripts e a sua saída não são incluídos.</p>

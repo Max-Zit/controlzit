@@ -1,0 +1,36 @@
+<h1>Monitorização, alertas e notificações</h1>
+<p class="lead">O servidor verifica cada dispositivo uma vez por minuto. Um alerta fica aberto enquanto a condição se mantém e fecha-se sozinho quando desaparece; é avisado por e-mail, num canal de chat ou através de um webhook.</p>
+
+<h2 id="rules">Regras de alerta</h2>
+<p>Defina as regras em <a href="/settings/monitoring">Definições → Monitorização e alertas</a>. Aplicam-se a todos os dispositivos.</p>
+<table>
+  <tr><th>Regra</th><th>Abre quando</th></tr>
+  <tr><td>Carga de CPU</td><td>a carga se mantém acima do limite durante os minutos escolhidos</td></tr>
+  <tr><td>Uso de memória</td><td>o uso de memória se mantém acima do limite durante os minutos escolhidos</td></tr>
+  <tr><td>Espaço em disco</td><td>um disco está mais cheio do que a percentagem ou (em discos com mais do dobro) tem menos espaço livre do que os GB indicados</td></tr>
+  <tr><td>Dispositivo offline</td><td>o agente não se liga há mais minutos do que o indicado</td></tr>
+  <tr><td>Reinício pendente</td><td>há um reinício pendente e o computador está ligado há mais dias do que o indicado</td></tr>
+  <tr><td>Microsoft Defender desligado</td><td>o antivírus ou a proteção em tempo real está desligado (opcional)</td></tr>
+  <tr><td>Firewall desligada</td><td>um perfil da Firewall do Windows está desligado (opcional)</td></tr>
+  <tr><td>Serviço parado</td><td>um serviço da sua lista (nomes de serviço, não nomes a apresentar) está definido para arranque automático mas não está em execução</td></tr>
+</table>
+<p>Os alertas são <b>Aviso</b> ou <b>Crítico</b> (crítico: dispositivos offline, serviços parados, Defender desligado e discos com menos de 1 GB livre ou 98 % usados). <a href="/alerts">Alertas</a> lista os abertos (e, se quiser, os resolvidos); um técnico pode <b>confirmar</b> um alerta para que os outros vejam que alguém está a tratar dele. O número de alertas abertos aparece no menu.</p>
+
+<h2 id="email">E-mails de alerta</h2>
+<ol>
+  <li>Introduza o <b>servidor de e-mail (SMTP)</b>: anfitrião, porta, segurança da ligação (STARTTLS ou TLS; uma palavra-passe nunca é enviada por uma ligação não encriptada), utilizador, palavra-passe e remetente. A palavra-passe é guardada encriptada.</li>
+  <li>Adicione os <b>destinatários</b>, um endereço por linha, e escolha se também é enviado um e-mail quando um alerta é resolvido.</li>
+  <li>Clique em <b>Enviar um e-mail de teste</b>.</li>
+</ol>
+
+<h2 id="channels">Slack, Microsoft Teams e webhooks</h2>
+<p>Em <b>Chat e webhooks</b> adicione até 20 canais:</p>
+<ul>
+  <li><b>Slack</b> — o URL de um webhook de entrada do canal.</li>
+  <li><b>Microsoft Teams</b> — um fluxo de trabalho do canal <i>Quando é recebido um pedido de webhook do Teams</i> e o seu URL.</li>
+  <li><b>Webhook</b> — qualquer URL HTTPS que aceite um POST JSON (sistema de tickets, automatização). Com um segredo, cada pedido leva <code>X-ControlZit-Signature: sha256=&lt;HMAC do corpo&gt;</code>, para que o recetor confirme que veio do seu servidor.</li>
+</ul>
+<p>Para cada canal escolha todos os alertas ou só os críticos, e se os resolvidos também são enviados. <b>Enviar teste</b> envia uma mensagem de teste. Os endereços dos canais são guardados encriptados.</p>
+
+<h2 id="metrics">Valores atuais</h2>
+<p>A página do dispositivo mostra a carga de CPU atual, a memória e os discos, e os serviços automáticos que não estão em execução.</p>
