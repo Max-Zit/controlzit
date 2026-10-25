@@ -1,0 +1,52 @@
+{{template "app" .}}
+{{define "content"}}
+<h1>{{.T "Settings"}}</h1>
+<div class="settings">
+{{template "settingstabs" .}}
+<div class="settings-body">
+<section class="panel">
+  <h2>{{template "icon" "lock"}}{{.T "Certificate"}}</h2>
+  <p class="muted">{{.T "The certificate browsers see when they open the console. Agents use their own port and certificate, so changing it here never disconnects them."}}</p>
+  {{with .Data.Info}}
+  <dl class="facts">
+    <div><dt>{{$.T "Now in use"}}</dt><dd>{{if .Self}}{{$.T "The console's own certificate (browsers warn about it)"}}{{else}}{{or .Subject (join .Names ", ")}}{{end}}</dd></div>
+    <div><dt>{{$.T "Issued by"}}</dt><dd>{{.Issuer}}</dd></div>
+    <div><dt>{{$.T "Names"}}</dt><dd>{{join .Names ", "}}</dd></div>
+    <div><dt>{{$.T "Expires"}}</dt><dd>{{.NotAfter.Format "2006-01-02"}} {{if lt .DaysLeft 15}}<span class="badge bad"><i></i>{{$.T "in %d days" .DaysLeft}}</span>{{else}}<span class="muted">({{$.T "in %d days" .DaysLeft}})</span>{{end}}</dd></div>
+    <div><dt>{{$.T "Port 80"}}</dt><dd>{{if $.Data.Port80}}<span class="badge ok"><i></i>{{$.T "answers and redirects to HTTPS"}}</span>{{else}}{{$.T "not used"}}{{end}}</dd></div>
+  </dl>
+  {{end}}
+  {{with .Data.Err}}<div class="flash err mt" role="alert">{{template "icon" "alert"}}<span>{{$.T "The last attempt failed:"}} {{.}}</span></div>{{end}}
+</section>
+<section class="panel">
+  <form method="post" action="/settings/certificate" enctype="multipart/form-data" class="stack" data-busy="{{.T "Getting the certificate can take a minute…"}}">
+    <fieldset class="box">
+      <legend>{{.T "Certificate"}}</legend>
+      <label class="check"><input type="radio" name="mode" value="self" {{if eq .Data.S.Mode "self"}}checked{{end}}>{{.T "The console's own certificate (self-signed)"}}</label>
+      <label class="check"><input type="radio" name="mode" value="upload" {{if eq .Data.S.Mode "upload"}}checked{{end}}>{{.T "Upload a certificate (from your certificate authority or your company's CA)"}}</label>
+      <label class="check"><input type="radio" name="mode" value="acme" {{if eq .Data.S.Mode "acme"}}checked{{end}}>{{.T "Free certificate from Let's Encrypt, renewed automatically"}}</label>
+    </fieldset>
+    <label>{{.T "Name of the console"}}<input name="hostname" value="{{.Data.S.Hostname}}" placeholder="rmm.example.com" autocapitalize="none" spellcheck="false"><small>{{.T "The DNS name (or, for an uploaded certificate, the IP address) browsers use to open the console."}}</small></label>
+    <fieldset class="box">
+      <legend>{{.T "Upload"}}</legend>
+      <label>{{.T "Certificate (PEM, with the intermediate certificates)"}}<input type="file" name="cert_file" accept=".pem,.crt,.cer"></label>
+      <label>{{.T "or paste it"}}<textarea name="cert" rows="3" class="mono" spellcheck="false" placeholder="-----BEGIN CERTIFICATE-----"></textarea></label>
+      <label>{{.T "Private key (PEM)"}}<input type="file" name="key_file" accept=".pem,.key"></label>
+      <label>{{.T "or paste it"}}<textarea name="key" rows="3" class="mono" spellcheck="false" placeholder="-----BEGIN PRIVATE KEY-----"></textarea></label>
+      <small class="muted">{{.T "The key is stored only on this server, readable by the ControlZit service. Leave both empty to keep the uploaded certificate."}}</small>
+    </fieldset>
+    <fieldset class="box">
+      <legend>Let's Encrypt</legend>
+      <label>{{.T "Email for expiry notices"}} <small>{{.T "optional"}}</small><input type="email" name="acme_email" value="{{.Data.S.ACMEEmail}}"></label>
+      <label class="check"><input type="radio" name="challenge" value="http" {{if ne .Data.S.Challenge "cloudflare"}}checked{{end}}>{{.T "Check over port 80 (the name points to this server and port 80 is reachable from the internet)"}}</label>
+      <label class="check"><input type="radio" name="challenge" value="cloudflare" {{if eq .Data.S.Challenge "cloudflare"}}checked{{end}}>{{.T "Check through Cloudflare DNS (works for servers that are not reachable from the internet)"}}</label>
+      <label>{{.T "Cloudflare API token"}} <small>{{if .Data.HasToken}}{{.T "saved; enter a new one to replace it"}}{{else}}{{.T "permission Zone:DNS:Edit for the zone"}}{{end}}</small><input type="password" name="cloudflare_token" autocomplete="off"></label>
+    </fieldset>
+    <label class="check"><input type="checkbox" name="http80" value="1" {{if .Data.S.HTTP80}}checked{{end}}>{{.T "Answer on port 80: send browsers to HTTPS and answer Let's Encrypt"}}</label>
+    <div class="row"><button class="primary">{{.T "Save"}}</button></div>
+  </form>
+  {{if eq .Data.S.Mode "acme"}}<form method="post" action="/settings/certificate/renew" class="mt" data-busy="{{.T "Getting the certificate can take a minute…"}}"><button class="secondary">{{template "icon" "refresh"}}{{.T "Renew now"}}</button> <small class="muted">{{.T "The server renews it by itself 30 days before it expires."}}</small></form>{{end}}
+</section>
+</div>
+</div>
+{{end}}

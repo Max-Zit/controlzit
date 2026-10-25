@@ -131,6 +131,7 @@ func (s *Server) handleUnblock(w http.ResponseWriter, r *http.Request) {
 
 type auditData struct {
 	Entries []store.AuditEntry
+	Targets map[string]auditTarget
 	Check   store.AuditCheck
 	Q       string
 	Next    int64
@@ -153,6 +154,11 @@ func (s *Server) handleAudit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	d := &auditData{Entries: list, Check: check, Q: q}
+	raw := make([]string, 0, len(list))
+	for _, e := range list {
+		raw = append(raw, e.Target)
+	}
+	d.Targets = s.auditTargets(r.Context(), raw)
 	if len(list) == 100 {
 		d.Next = list[len(list)-1].ID
 	}

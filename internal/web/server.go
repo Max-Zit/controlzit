@@ -60,6 +60,10 @@ type Server struct {
 	DownloadsDir string
 	// CommandKey signs every command to agents.
 	CommandKey ed25519.PrivateKey
+	// TLS serves the console certificate (Settings → Certificate) and port 80.
+	TLS *ConsoleTLS
+	// Port80Addr is where port 80 listens when it is switched on (":80").
+	Port80Addr string
 	setupToken string
 }
 
@@ -357,6 +361,9 @@ func (s *Server) Handler() http.Handler {
 	admin("GET /settings/monitoring", s.handleMonitoringSettings)
 	admin("GET /settings/remote", s.handleRemoteSettings)
 	admin("POST /settings/remote", s.handleRemoteSave)
+	admin("GET /settings/certificate", s.handleCertSettings)
+	admin("POST /settings/certificate", s.handleCertSave)
+	admin("POST /settings/certificate/renew", s.handleCertRenew)
 	admin("POST /settings/monitoring", s.handleMonitoringSave)
 	admin("POST /settings/email", s.handleEmailSave)
 	admin("POST /settings/email/test", s.handleEmailTest)

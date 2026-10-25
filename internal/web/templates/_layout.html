@@ -43,7 +43,7 @@
   </header>
   <main>
     {{if .DevNo2FA}}<div class="flash err" role="alert">{{template "icon" "alert"}}<span>{{.T "Development mode: two-factor sign-in is switched off (--dev-no-2fa). Never use this on a real server."}}</span></div>{{end}}
-    {{if .Flash}}<div class="flash ok" role="status">{{template "icon" "check"}}<span>{{.Flash}}</span></div>{{end}}
+    {{if .Flash}}{{if .FlashErr}}<div class="flash err" role="alert">{{template "icon" "alert"}}<span>{{.Flash}}</span></div>{{else}}<div class="flash ok" role="status">{{template "icon" "check"}}<span>{{.Flash}}</span></div>{{end}}{{end}}
     {{if .Error}}<div class="flash err" role="alert">{{template "icon" "alert"}}<span>{{.Error}}</span></div>{{end}}
     {{template "content" .}}
   </main>
@@ -56,7 +56,7 @@
 <main class="guest-main">
   <div class="guest-brand">{{template "logo"}}<span>Control<b>Zit</b></span></div>
   <div class="guest-card">
-    {{if .Flash}}<div class="flash ok" role="status">{{template "icon" "check"}}<span>{{.Flash}}</span></div>{{end}}
+    {{if .Flash}}{{if .FlashErr}}<div class="flash err" role="alert">{{template "icon" "alert"}}<span>{{.Flash}}</span></div>{{else}}<div class="flash ok" role="status">{{template "icon" "check"}}<span>{{.Flash}}</span></div>{{end}}{{end}}
     {{if .Error}}<div class="flash err" role="alert">{{template "icon" "alert"}}<span>{{.Error}}</span></div>{{end}}
     {{template "content" .}}
   </div>
@@ -73,6 +73,7 @@
 
 {{define "settingstabs"}}<nav class="sidetabs" aria-label="{{.T "Settings"}}">
   <a href="/settings/network" class="{{if eq .Title "Network and access"}}on{{end}}">{{template "icon" "network"}}<span>{{.T "Network and access"}}<small>{{.T "Ports, allowed networks, agent address"}}</small></span></a>
+  <a href="/settings/certificate" class="{{if eq .Title "Certificate"}}on{{end}}">{{template "icon" "lock"}}<span>{{.T "Certificate"}}<small>{{.T "HTTPS for the console, Let's Encrypt"}}</small></span></a>
   <a href="/settings/security" class="{{if eq .Title "Sign-in and security"}}on{{end}}">{{template "icon" "lock"}}<span>{{.T "Sign-in and security"}}<small>{{.T "Session length, blocked addresses"}}</small></span></a>
   <a href="/settings/monitoring" class="{{if eq .Title "Monitoring and alerts"}}on{{end}}">{{template "icon" "online"}}<span>{{.T "Monitoring and alerts"}}<small>{{.T "Rules and alert emails"}}</small></span></a>
   <a href="/settings/remote" class="{{if eq .Title "Remote desktop"}}on{{end}}">{{template "icon" "screen"}}<span>{{.T "Remote desktop"}}<small>{{.T "Notice on the remote screen"}}</small></span></a>

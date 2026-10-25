@@ -75,6 +75,7 @@ type Page struct {
 	Lang       string
 	User       *store.User
 	Flash      string
+	FlashErr   bool // the flash message reports a failure
 	Error      string
 	Version    string
 	DevNo2FA   bool
@@ -143,7 +144,7 @@ var funcs = template.FuncMap{
 		}
 		return uint64(n)
 	},
-	"powerPop": func(p *Page, action string) powerPop { return powerPop{P: p, Action: action} },
+	"powerPop":  func(p *Page, action string) powerPop { return powerPop{P: p, Action: action} },
 	"userTable": func(p *Page, us []*store.User) userTable { return userTable{P: p, Users: us} },
 	"roleForm": func(p *Page, role string, all bool, ids []int64, cs []store.Customer) roleForm {
 		return roleForm{P: p, Role: role, All: all, IDs: ids, Customers: cs}
@@ -245,7 +246,8 @@ func (s *Server) render(w http.ResponseWriter, r *http.Request, status int, name
 		p.AlertCount, _ = s.store.OpenAlertCount(r.Context(), p.User)
 	}
 	if f := s.takeFlash(w, r); f != "" && p.Flash == "" {
-		p.Flash = f
+		// An error message (redirectErr) starts with "!".
+		p.Flash, p.FlashErr = strings.TrimPrefix(f, "!"), strings.HasPrefix(f, "!")
 	}
 	var b strings.Builder
 	if err := t.ExecuteTemplate(&b, name+".html", p); err != nil {
@@ -302,6 +304,9 @@ func (s *Server) takeFlash(w http.ResponseWriter, r *http.Request) string {
 	if len(msg) > 300 {
 		return ""
 	}
+	if strings.HasPrefix(msg, "!") {
+		return msg // an error, translated when it was set
+	}
 	return translate(s.lang(r, userFrom(r)), msg)
 }
 
@@ -326,7 +331,7 @@ type roleForm struct {
 // old app.css or app.js from their cache after an update.
 var assetVersion = func() string {
 	h := sha256.New()
-	for _, f := range []string{"static/app.css", "static/app.js", "static/rd.js"} {
+	for _, f := range []string{"static/app.css", "static/app.js", "static/rd.js", "static/term.js"} {
 		b, _ := staticFS.ReadFile(f)
 		h.Write(b)
 	}

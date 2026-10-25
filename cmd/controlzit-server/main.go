@@ -190,7 +190,9 @@ func run() error {
 		log.Info("listening", "listener", kind, "addr", raw.Addr().String())
 		return nil
 	}
-	if err := serve(net0.MgmtListen, tlsutil.ServerConfig(consoleCert), srv.MgmtACL, srv.Handler(), "console"); err != nil {
+	srv.TLS = web.NewConsoleTLS(filepath.Join(tlsDir, "web"), consoleCert, log)
+	srv.Port80Addr = env("CONTROLZIT_HTTP80", ":80")
+	if err := serve(net0.MgmtListen, srv.TLS.Config(), srv.MgmtACL, srv.Handler(), "console"); err != nil {
 		return err
 	}
 	if err := serve(net0.AgentListen, tlsutil.AgentServerConfig(agentCert), srv.AgentACL, srv.AgentHandler(), "agent"); err != nil {
@@ -209,6 +211,7 @@ func run() error {
 	log.Info("ControlZit server started", "version", version, "agent_fingerprint", srv.AgentFingerprint)
 
 	go srv.RunMonitor(ctx)
+	go srv.RunCertificates(ctx)
 	go func() {
 		t := time.NewTicker(time.Hour)
 		defer t.Stop()

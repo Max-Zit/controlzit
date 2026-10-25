@@ -24,11 +24,11 @@ func uiTexts(t *testing.T) map[string]bool {
 			t.Fatal(err)
 		}
 		for _, m := range tmpl.FindAllStringSubmatch(string(b), -1) {
-			out[m[1]] = true
+			out[unescapeText(m[1])] = true
 		}
 	}
 	// Go: messages passed to translate/T/redirect/show*/fail and errors.
-	goMsg := regexp.MustCompile(`(?:translate\([^,\n]+, |\.T\(|fail\(|redirect\(w, r, "[^"]*", |show\w+\(w, r, http\.Status\w+, [^"\n]*?|errors\.New\()"((?:[^"\\]|\\.)+)"`)
+	goMsg := regexp.MustCompile(`(?:translate\([^,\n]+, |uiErrf?\(|\.T\(|fail\(|redirect\(w, r, "[^"]*", |show\w+\(w, r, http\.Status\w+, [^"\n]*?|errors\.New\()"((?:[^"\\]|\\.)+)"`)
 	for _, dir := range []string{".", "../store"} {
 		gofiles, _ := filepath.Glob(filepath.Join(dir, "*.go"))
 		for _, f := range gofiles {
@@ -38,7 +38,7 @@ func uiTexts(t *testing.T) map[string]bool {
 			b, _ := os.ReadFile(f)
 			for _, m := range goMsg.FindAllStringSubmatch(string(b), -1) {
 				if m[1] != "" {
-					out[m[1]] = true
+					out[unescapeText(m[1])] = true
 				}
 			}
 		}
@@ -47,6 +47,9 @@ func uiTexts(t *testing.T) map[string]bool {
 	out["the password must be between 12 and 256 characters"] = true
 	return out
 }
+
+// unescapeText turns a quoted text from the source into the text itself.
+func unescapeText(s string) string { return strings.NewReplacer(`\"`, `"`, `\\`, `\`).Replace(s) }
 
 func TestSerbianCatalogComplete(t *testing.T) {
 	texts := uiTexts(t)
