@@ -13,3 +13,5 @@ credentials.txt
 /.pgdata/
 /.devdata/
 /.pending/
+# internal working notes
+/NOTES.md

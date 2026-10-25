@@ -1,0 +1,2 @@
+# The public release-signing key in install.sh (not a secret).
+e6aa74faea8e7b5bf595d9e8dc2e8fbda04bada4:packaging/install.sh:generic-api-key:25
