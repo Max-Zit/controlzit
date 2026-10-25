@@ -4,13 +4,20 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
+	"github.com/max-zit/controlzit/internal/helper"
 	"github.com/max-zit/controlzit/internal/netacl"
 	"github.com/max-zit/controlzit/internal/store"
 )
 
 type networkData struct {
 	N            NetworkSettings
+	TimeZone     string
+	Zones        []string
+	HelperOK     bool
+	Server       serverNetwork
+	Last         *helper.Result
 	MgmtText     string
 	AgentText    string
 	RunningMgmt  string
@@ -34,6 +41,10 @@ func (s *Server) showNetwork(w http.ResponseWriter, r *http.Request, status int,
 	d := &networkData{N: n, MgmtText: strings.Join(n.MgmtAllowed, "\n"), AgentText: strings.Join(n.AgentAllowed, "\n"),
 		RunningMgmt: s.RunningMgmt, RunningAgent: s.RunningAgent, ClientIP: clientIP(r), Fingerprint: s.AgentFingerprint}
 	d.Override = s.ListenOverride
+	d.TimeZone, d.Zones, d.HelperOK, d.Server = helper.SystemTimeZone(""), timeZones(), s.helperOK(), readServerNetwork()
+	if res := s.lastHelperResult(); res != nil && res.Action != helper.ActionUpdate && s.now().Sub(res.Started) < time.Hour {
+		d.Last = res
+	}
 	d.Restart = s.RunningMgmt != "" && !s.ListenOverride && (n.MgmtListen != s.RunningMgmt || n.AgentListen != s.RunningAgent)
 	p := &Page{Title: "Network and access", Nav: "settings", Data: d}
 	if errMsg != "" {

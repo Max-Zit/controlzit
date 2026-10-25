@@ -22,6 +22,7 @@ import (
 	embeddedpostgres "github.com/fergusstrange/embedded-postgres"
 
 	"github.com/max-zit/controlzit/internal/auth"
+	"github.com/max-zit/controlzit/internal/helper"
 	"github.com/max-zit/controlzit/internal/netacl"
 	"github.com/max-zit/controlzit/internal/store"
 	"github.com/max-zit/controlzit/internal/tlsutil"
@@ -57,6 +58,7 @@ func run() error {
 	resetACL := flag.Bool("reset-allowlist", false, "allow the console again from the private networks (10/8, 172.16/12, 192.168/16, fc00::/7) and exit")
 	unblock := flag.String("unblock-ip", "", "lift the sign-in block of an address (or \"all\") and exit")
 	showVersion := flag.Bool("version", false, "print the version and exit")
+	runHelper := flag.Bool("helper", false, "root helper: handle a request of the console (updates, time zone, network) and exit; started by controlzit-helper.service")
 	flag.Parse()
 
 	if *showVersion {
@@ -66,6 +68,11 @@ func run() error {
 	log := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
+	if *runHelper {
+		h := &helper.Helper{DataDir: *dataDir, CacheDir: "/var/cache/controlzit", EnvFile: "/etc/controlzit/server.env", Binary: "/usr/bin/controlzit-server",
+			Run: helper.RunCommand, Log: func(format string, args ...any) { log.Info(fmt.Sprintf(format, args...)) }}
+		return h.Handle(ctx)
+	}
 
 	if err := os.MkdirAll(*dataDir, 0o700); err != nil {
 		return err
@@ -122,6 +129,7 @@ func run() error {
 	}
 	srv.Version = version
 	srv.DownloadsDir = filepath.Join(*dataDir, "downloads")
+	srv.DataDir = *dataDir
 	if *devNo2FA {
 		// For development and lab tests only: the console shows a red warning
 		// on every page and the audit log records each start in this mode.
@@ -209,9 +217,14 @@ func run() error {
 		log.Warn("development HTTP console (no TLS)", "addr", *devHTTP)
 	}
 	log.Info("ControlZit server started", "version", version, "agent_fingerprint", srv.AgentFingerprint)
+	// For the root helper: which version runs and where (it checks this after an update).
+	if err := helper.WriteServerInfo(*dataDir, helper.ServerInfo{Version: version, MgmtListen: net0.MgmtListen}); err != nil {
+		log.Warn("cannot write the helper information", "err", err)
+	}
 
 	go srv.RunMonitor(ctx)
 	go srv.RunCertificates(ctx)
+	go srv.RunUpdates(ctx)
 	go func() {
 		t := time.NewTicker(time.Hour)
 		defer t.Stop()

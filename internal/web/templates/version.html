@@ -1,0 +1,41 @@
+{{template "app" .}}
+{{define "content"}}
+<h1>{{.T "Settings"}}</h1>
+<div class="settings">
+{{template "settingstabs" .}}
+<div class="settings-body">
+<section class="panel">
+  <h2>{{template "icon" "download"}}{{.T "ControlZit updates"}}</h2>
+  <dl class="facts">
+    <div><dt>{{.T "Running"}}</dt><dd><b>{{.Data.Version}}</b></dd></div>
+    <div><dt>{{.T "Newest release"}}</dt><dd>{{with .Data.Latest}}<b>{{.Version}}</b> <span class="muted">({{.Released.Format "2006-01-02"}})</span>{{else}}{{$.T "not checked yet"}}{{end}}</dd></div>
+    {{if not .Data.Checked.IsZero}}<div><dt>{{.T "Checked"}}</dt><dd>{{.Time .Data.Checked}}</dd></div>{{end}}
+    {{if .Data.Unofficial}}<div><dt>{{.T "Source"}}</dt><dd><code>{{.Data.Source}}</code></dd></div>{{end}}
+  </dl>
+  {{with .Data.CheckErr}}<div class="flash err mt" role="alert">{{template "icon" "alert"}}<span>{{$.T "The last check failed:"}} {{.}}</span></div>{{end}}
+  <form method="post" action="/settings/version/check" class="mt"><button class="secondary">{{template "icon" "refresh"}}{{.T "Check now"}}</button></form>
+  <p class="small muted mt">{{.T "Only releases signed with the ControlZit release key are installed. Before installing, the server backs up its database and program; if the new version does not start, it goes back to the old one by itself."}}</p>
+</section>
+{{with .Data.Last}}<div class="flash {{if eq .Status "done"}}ok{{else if eq .Status "running"}}info{{else}}err{{end}}" role="status">{{template "icon" "check"}}<span>{{$.T "Last installation"}} ({{$.Time .Started}}): {{.Message}}</span></div>{{end}}
+{{if .Data.Newer}}{{with .Data.Latest}}
+<section class="panel accent">
+  <h2>{{$.T "Version %s is available" .Version}}</h2>
+  {{with .Notes}}<pre class="notes">{{.}}</pre>{{end}}
+  {{if $.Data.Pending}}<p class="flash info">{{$.T "The installation is running; the console restarts when it is done."}}</p>
+  {{else if $.Data.HelperOK}}<form method="post" action="/settings/version/install" data-confirm="{{$.T "Install ControlZit %s now? The console is away for a minute or two; agents reconnect by themselves." .Version}}"><input type="hidden" name="version" value="{{.Version}}"><button class="primary">{{template "icon" "download"}}{{$.T "Install %s" .Version}}</button></form>
+  {{else}}<p class="small muted">{{$.T "This installation has no ControlZit helper (it comes with the Linux packages). Install the new version with install.sh or the package of the release."}}</p>{{end}}
+</section>
+{{end}}{{else if .Data.Latest}}<div class="flash ok" role="status">{{template "icon" "check"}}<span>{{.T "ControlZit is up to date."}}</span></div>{{end}}
+{{if .Data.HelperOK}}
+<section class="panel">
+  <h2>{{template "icon" "clock"}}{{.T "Automatic updates"}}</h2>
+  <form method="post" action="/settings/version/settings" class="stack">
+    <label class="check"><input type="checkbox" name="auto" value="1" {{if .Data.S.Auto}}checked{{end}}>{{.T "Install new ControlZit versions automatically"}}</label>
+    <label>{{.T "In the hour starting at (server time)"}}<select name="hour" class="narrow">{{range .Data.Hours}}<option value="{{.}}" {{if eq . $.Data.S.Hour}}selected{{end}}>{{printf "%02d:00" .}}</option>{{end}}</select></label>
+    <div><button class="primary">{{.T "Save"}}</button></div>
+  </form>
+</section>
+{{end}}
+</div>
+</div>
+{{end}}

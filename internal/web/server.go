@@ -64,7 +64,12 @@ type Server struct {
 	TLS *ConsoleTLS
 	// Port80Addr is where port 80 listens when it is switched on (":80").
 	Port80Addr string
-	setupToken string
+	// DataDir is the data directory (the root helper reads requests from it).
+	DataDir string
+	// HelperAvailable overrides the check for the root helper (tests).
+	HelperAvailable func() bool
+	upd             updateState
+	setupToken      string
 }
 
 // New creates the server; network settings are loaded from the database.
@@ -364,6 +369,13 @@ func (s *Server) Handler() http.Handler {
 	admin("GET /settings/certificate", s.handleCertSettings)
 	admin("POST /settings/certificate", s.handleCertSave)
 	admin("POST /settings/certificate/renew", s.handleCertRenew)
+	admin("POST /settings/timezone", s.handleTimeZone)
+	admin("POST /settings/restart", s.handleRestart)
+	admin("POST /settings/server-network", s.handleServerNetwork)
+	admin("GET /settings/version", s.handleVersion)
+	admin("POST /settings/version/check", s.handleVersionCheck)
+	admin("POST /settings/version/install", s.handleVersionInstall)
+	admin("POST /settings/version/settings", s.handleVersionSettings)
 	admin("POST /settings/monitoring", s.handleMonitoringSave)
 	admin("POST /settings/email", s.handleEmailSave)
 	admin("POST /settings/email/test", s.handleEmailTest)

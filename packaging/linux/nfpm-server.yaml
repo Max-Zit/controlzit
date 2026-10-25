@@ -1,0 +1,49 @@
+name: controlzit-server
+arch: ${ARCH}
+platform: linux
+version: ${VERSION}
+section: admin
+priority: optional
+maintainer: MaxZit <office@maxzit.com>
+description: |
+  ControlZit server: web console for remote monitoring and management of
+  Windows and Linux computers, and the endpoint ControlZit agents connect to.
+vendor: MaxZit
+homepage: https://github.com/Max-Zit/controlzit
+license: AGPL-3.0-only
+overrides:
+  deb:
+    depends:
+      - postgresql-client
+    recommends:
+      - postgresql
+  rpm:
+    depends:
+      - postgresql
+    recommends:
+      - postgresql-server
+contents:
+  - src: ./LICENSE
+    dst: /usr/share/doc/controlzit-server/copyright
+  - src: ./THIRD_PARTY_LICENSES.md
+    dst: /usr/share/doc/controlzit-server/THIRD_PARTY_LICENSES.md
+  - src: ./bin/pkg/controlzit-server
+    dst: /usr/bin/controlzit-server
+    file_info:
+      mode: 0755
+  - src: ./bin/pkg/downloads/*
+    dst: /usr/share/controlzit/downloads/
+  - src: ./packaging/linux/controlzit-server.service
+    dst: /usr/lib/systemd/system/controlzit-server.service
+  - src: ./packaging/linux/controlzit-helper.path
+    dst: /usr/lib/systemd/system/controlzit-helper.path
+  - src: ./packaging/linux/controlzit-helper.service
+    dst: /usr/lib/systemd/system/controlzit-helper.service
+  - src: ./packaging/linux/server.env
+    dst: /etc/controlzit/server.env
+    type: config|noreplace
+    file_info:
+      mode: 0640
+scripts:
+  postinstall: ./packaging/linux/server-postinstall.sh
+  preremove: ./packaging/linux/server-preremove.sh

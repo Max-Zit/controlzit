@@ -1,0 +1,33 @@
+[Unit]
+Description=ControlZit server (web console and agent endpoint)
+Documentation=https://github.com/Max-Zit/controlzit
+Wants=network-online.target
+After=network-online.target postgresql.service
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/controlzit/server.env
+ExecStart=/usr/bin/controlzit-server --data-dir /var/lib/controlzit
+User=controlzit
+Group=controlzit
+StateDirectory=controlzit
+StateDirectoryMode=0700
+Restart=always
+RestartSec=5
+LimitNOFILE=65536
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+ReadWritePaths=/var/lib/controlzit
+# Ports below 1024 (443 for the console, 80 for Let's Encrypt), nothing else.
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target

@@ -32,6 +32,42 @@
   </section>
   <div><button class="primary">{{.T "Save"}}</button></div>
 </form>
+{{with .Data.Last}}<div class="flash {{if eq .Status "done"}}ok{{else if eq .Status "running"}}info{{else}}err{{end}} mt" role="status">{{template "icon" "check"}}<span>{{$.T "Last change on the server"}} ({{$.Time .Started}}): {{.Message}}</span></div>{{end}}
+<section class="panel">
+  <h2>{{template "icon" "refresh"}}{{.T "Restart"}}</h2>
+  <p class="muted">{{.T "New listen addresses and ports take effect after a restart of the ControlZit service. Agents reconnect by themselves."}}</p>
+  {{if .Data.HelperOK}}<form method="post" action="/settings/restart" data-confirm="{{.T "Restart the ControlZit service now? The console is away for a few seconds."}}"><button class="secondary">{{template "icon" "refresh"}}{{.T "Restart now"}}</button></form>
+  {{else}}<p class="small muted">{{.T "On this installation restart it on the server: systemctl restart controlzit-server"}}</p>{{end}}
+</section>
+<section class="panel">
+  <h2>{{template "icon" "clock"}}{{.T "Time zone"}}</h2>
+  <p class="muted">{{.T "Schedules (updates, scripts, reports) and the times in the console use the server's time zone."}}</p>
+  {{if .Data.HelperOK}}<form method="post" action="/settings/timezone" class="row">
+    <select name="timezone" aria-label="{{.T "Time zone"}}">{{range .Data.Zones}}<option {{if eq . $.Data.TimeZone}}selected{{end}}>{{.}}</option>{{end}}</select>
+    <button class="secondary">{{.T "Set"}}</button>
+  </form>
+  {{else}}<p>{{.T "Now:"}} <b>{{.Data.TimeZone}}</b></p><p class="small muted">{{.T "On this installation set it on the server: timedatectl set-timezone Europe/Belgrade"}}</p>{{end}}
+</section>
+<section class="panel">
+  <h2>{{template "icon" "network"}}{{.T "Network of the server"}}</h2>
+  <p>{{.T "Name"}}: <b>{{.Data.Server.Hostname}}</b>{{with .Data.Server.Interface}} · {{$.T "Interface"}}: <b>{{.}}</b>{{end}}{{with .Data.Server.Addresses}} · {{$.T "Addresses"}}: <b>{{join . ", "}}</b>{{end}}</p>
+  {{if and .Data.Server.Appliance .Data.HelperOK}}
+  <form method="post" action="/settings/server-network" class="stack" data-confirm="{{.T "Apply the new network settings? If the address changes, the console moves to the new address."}}">
+    <label>{{.T "Server name"}}<input name="hostname" value="{{.Data.Server.Config.Hostname}}" spellcheck="false" class="narrow"></label>
+    <fieldset class="box">
+      <legend>{{.T "Address"}}</legend>
+      <label class="check"><input type="radio" name="ipmode" value="dhcp" {{if .Data.Server.Config.DHCP}}checked{{end}}>{{.T "Automatic (DHCP)"}}</label>
+      <label class="check"><input type="radio" name="ipmode" value="static" {{if not .Data.Server.Config.DHCP}}checked{{end}}>{{.T "Fixed address"}}</label>
+      <div class="cols">
+        <label>{{.T "Address with network size"}}<input name="address" value="{{.Data.Server.Config.Address}}" placeholder="192.168.1.20/24" class="mono" spellcheck="false"></label>
+        <label>{{.T "Gateway"}}<input name="gateway" value="{{.Data.Server.Config.Gateway}}" placeholder="192.168.1.1" class="mono" spellcheck="false"></label>
+      </div>
+      <label>{{.T "DNS servers"}}<input name="dns" value="{{join .Data.Server.Config.DNS ", "}}" placeholder="192.168.1.1, 1.1.1.1" class="mono" spellcheck="false"><small>{{.T "One to three, separated by commas."}}</small></label>
+    </fieldset>
+    <div><button class="primary">{{.T "Apply"}}</button> <small class="muted">{{.T "If the gateway does not answer with the new settings, the previous ones come back by themselves."}}</small></div>
+  </form>
+  {{else}}<p class="small muted">{{.T "The network of this server is managed by its operating system. On the ControlZit appliance it can be changed here."}}</p>{{end}}
+</section>
 </div>
 </div>
 {{end}}
