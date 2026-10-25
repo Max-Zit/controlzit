@@ -137,3 +137,13 @@ func (s *Store) VerifyAudit(ctx context.Context) (AuditCheck, error) {
 	c.Head = prev
 	return c, rows.Err()
 }
+
+// DBInfo describes the database for diagnostics (version and size; never
+// the connection details).
+func (s *Store) DBInfo(ctx context.Context) string {
+	var ver, size string
+	if err := s.db.QueryRow(ctx, `SELECT current_setting('server_version'), pg_size_pretty(pg_database_size(current_database()))`).Scan(&ver, &size); err != nil {
+		return "unknown"
+	}
+	return "PostgreSQL " + ver + ", " + size
+}

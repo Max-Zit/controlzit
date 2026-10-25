@@ -66,6 +66,8 @@ type Server struct {
 	Port80Addr string
 	// DataDir is the data directory (the root helper reads requests from it).
 	DataDir string
+	// LogFile is the server's log file (Settings → Diagnostics).
+	LogFile string
 	// HelperAvailable overrides the check for the root helper (tests).
 	HelperAvailable func() bool
 	upd             updateState
@@ -376,6 +378,8 @@ func (s *Server) Handler() http.Handler {
 	admin("POST /settings/version/check", s.handleVersionCheck)
 	admin("POST /settings/version/install", s.handleVersionInstall)
 	admin("POST /settings/version/settings", s.handleVersionSettings)
+	admin("GET /settings/diagnostics", s.handleDiagnostics)
+	admin("GET /settings/diagnostics/zip", s.handleDiagnosticsZip)
 	admin("POST /settings/monitoring", s.handleMonitoringSave)
 	admin("POST /settings/email", s.handleEmailSave)
 	admin("POST /settings/email/test", s.handleEmailTest)

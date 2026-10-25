@@ -23,6 +23,7 @@ import (
 
 	"github.com/max-zit/controlzit/internal/auth"
 	"github.com/max-zit/controlzit/internal/helper"
+	"github.com/max-zit/controlzit/internal/logfile"
 	"github.com/max-zit/controlzit/internal/netacl"
 	"github.com/max-zit/controlzit/internal/store"
 	"github.com/max-zit/controlzit/internal/tlsutil"
@@ -65,14 +66,32 @@ func run() error {
 		fmt.Println("controlzit-server", version)
 		return nil
 	}
-	log := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	if *runHelper {
+		// Its own log in a directory only root can write (Settings → Diagnostics shows it).
+		out := io.Writer(os.Stdout)
+		if lw, err := logfile.Open("/var/log/controlzit-helper/helper.log", 0o644); err == nil {
+			_ = os.Chmod("/var/log/controlzit-helper", 0o755) // the console reads it, only root writes
+			defer lw.Close()
+			out = io.MultiWriter(os.Stdout, lw)
+		}
+		log := slog.New(slog.NewTextHandler(out, nil))
 		h := &helper.Helper{DataDir: *dataDir, CacheDir: "/var/cache/controlzit", EnvFile: "/etc/controlzit/server.env", Binary: "/usr/bin/controlzit-server",
 			Run: helper.RunCommand, Log: func(format string, args ...any) { log.Info(fmt.Sprintf(format, args...)) }}
 		return h.Handle(ctx)
 	}
+	// The server log: the journal and a file in the data directory (Settings → Diagnostics).
+	srvLogFile := ""
+	var logOut io.Writer = os.Stdout
+	if err := os.MkdirAll(*dataDir, 0o700); err == nil {
+		if lw, err := logfile.Open(filepath.Join(*dataDir, "logs", "server.log"), 0o600); err == nil {
+			defer lw.Close()
+			logOut = io.MultiWriter(os.Stdout, lw)
+			srvLogFile = filepath.Join(*dataDir, "logs", "server.log")
+		}
+	}
+	log := slog.New(slog.NewTextHandler(logOut, nil))
 
 	if err := os.MkdirAll(*dataDir, 0o700); err != nil {
 		return err
@@ -130,6 +149,7 @@ func run() error {
 	srv.Version = version
 	srv.DownloadsDir = filepath.Join(*dataDir, "downloads")
 	srv.DataDir = *dataDir
+	srv.LogFile = srvLogFile
 	if *devNo2FA {
 		// For development and lab tests only: the console shows a red warning
 		// on every page and the audit log records each start in this mode.

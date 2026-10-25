@@ -1,0 +1,54 @@
+{{template "app" .}}
+{{define "content"}}
+<h1>{{.T "Settings"}}</h1>
+<div class="settings">
+{{template "settingstabs" .}}
+<div class="settings-body">
+<section class="panel">
+  <h2>{{template "icon" "file"}}{{.T "Diagnostics"}}</h2>
+  <p class="muted">{{.T "Where ControlZit writes its logs, and a file for support. Passwords, tokens, enrollment codes and keys are removed from everything shown here and from the file; scripts and their output are not included."}}</p>
+  <dl class="facts">
+    <div><dt>{{.T "Version"}}</dt><dd>ControlZit {{.Data.Version}} · {{.Data.OS}} · {{.Data.GoVersion}}</dd></div>
+    <div><dt>{{.T "Database"}}</dt><dd>{{.Data.DBInfo}}</dd></div>
+  </dl>
+  <p class="mt"><a class="btn primary" href="/settings/diagnostics/zip">{{template "icon" "download"}}{{.T "Download diagnostics (ZIP)"}}</a></p>
+</section>
+<section class="panel">
+  <h2>{{.T "Where the logs are"}}</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{.T "Log"}}</th><th>{{.T "Location"}}</th></tr></thead>
+    <tbody>
+      <tr><td>{{.T "Server"}}</td><td><code>{{or .Data.ServerLog "—"}}</code><br><small class="muted">{{.T "also in the system journal:"}} <code>journalctl -u controlzit-server</code>; {{.T "older files end in .1 … .4"}}</small></td></tr>
+      <tr><td>{{.T "Root helper (updates, time zone, network)"}}</td><td><code>{{.Data.HelperLog}}</code><br><small class="muted"><code>journalctl -u controlzit-helper</code></small></td></tr>
+      <tr><td>{{.T "Database backups before updates"}}</td><td><code>/var/cache/controlzit/backups</code> <small class="muted">({{.T "readable by root only"}})</small></td></tr>
+      <tr><td>{{.T "Configuration"}}</td><td><code>/etc/controlzit/server.env</code> <small class="muted">({{.T "contains the database password; not shown here"}})</small></td></tr>
+      <tr><td>{{.T "Data directory"}}</td><td><code>{{.Data.DataDir}}</code> <small class="muted">({{.T "certificates and the secret key: back it up with the database"}})</small></td></tr>
+      <tr><td>{{.T "Windows agent"}}</td><td><code>C:\ProgramData\ControlZit Agent\agent.log</code><br><small class="muted">{{.T "installer logs:"}} <code>C:\ProgramData\ControlZit Agent\updates\*.log</code>, <code>uninstall.log</code></small></td></tr>
+      <tr><td>{{.T "Linux agent"}}</td><td><code>/var/lib/controlzit-agent/agent.log</code><br><small class="muted"><code>journalctl -u controlzit-agent</code></small></td></tr>
+    </tbody>
+  </table></div>
+  <p class="small muted mt">{{.T "Agent logs can be opened from the console: device → Files."}}</p>
+</section>
+<section class="panel">
+  <h2>{{.T "Server log"}}</h2>
+  <form method="get" action="/settings/diagnostics" class="row filter">
+    <select name="level" aria-label="{{.T "Level"}}">
+      <option value="">{{.T "All"}}</option>
+      <option value="warn" {{if eq .Data.Level "warn"}}selected{{end}}>{{.T "Warnings and errors"}}</option>
+      <option value="error" {{if eq .Data.Level "error"}}selected{{end}}>{{.T "Errors"}}</option>
+    </select>
+    <input type="search" name="q" value="{{.Data.Q}}" placeholder="{{.T "Text"}}" aria-label="{{.T "Text"}}">
+    <button class="secondary">{{.T "Show"}}</button>
+  </form>
+  {{if .Data.Lines}}<pre class="output console log mt">{{range .Data.Lines}}<span class="lv-{{.Level}}">{{.Text}}</span>
+{{end}}</pre><p class="small muted">{{.T "The newest %d lines; the ZIP has the whole log." (len .Data.Lines)}}</p>
+  {{else}}<p class="muted mt">{{.T "No lines."}}</p>{{end}}
+</section>
+{{if .Data.HelperLns}}<section class="panel">
+  <h2>{{.T "Root helper"}}</h2>
+  <pre class="output console log">{{range .Data.HelperLns}}<span class="lv-{{.Level}}">{{.Text}}</span>
+{{end}}</pre>
+</section>{{end}}
+</div>
+</div>
+{{end}}

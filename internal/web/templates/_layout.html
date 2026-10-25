@@ -81,6 +81,7 @@
   <a href="/settings/reports" class="{{if eq .Title "Reports"}}on{{end}}">{{template "icon" "mail"}}<span>{{.T "Reports"}}<small>{{.T "Email reports to customers"}}</small></span></a>
   <a href="/settings/version" class="{{if eq .Title "ControlZit updates"}}on{{end}}">{{template "icon" "download"}}<span>{{.T "ControlZit updates"}}<small>{{.T "New versions of the server"}}</small></span></a>
   <a href="/settings/agents" class="{{if eq .Title "Agent updates"}}on{{end}}">{{template "icon" "download"}}<span>{{.T "Agent updates"}}<small>{{.T "Installer and automatic updates"}}</small></span></a>
+  <a href="/settings/diagnostics" class="{{if eq .Title "Diagnostics"}}on{{end}}">{{template "icon" "file"}}<span>{{.T "Diagnostics"}}<small>{{.T "Logs and a file for support"}}</small></span></a>
 </nav>{{end}}
 
 {{define "qr"}}<svg class="qr" viewBox="0 0 {{.Size}} {{.Size}}" role="img" aria-label="QR"><rect width="{{.Size}}" height="{{.Size}}" fill="#fff"/>{{range .Cells}}<rect x="{{.X}}" y="{{.Y}}" width="1.02" height="1.02" fill="#000"/>{{end}}</svg>{{end}}

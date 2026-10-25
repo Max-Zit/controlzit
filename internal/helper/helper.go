@@ -164,10 +164,21 @@ func (h *Helper) finish(res Result) error {
 func (h *Helper) write(res Result) error {
 	b, _ := json.MarshalIndent(res, "", "  ")
 	p := filepath.Join(h.dir(), ResultFile)
-	tmp := p + ".tmp"
-	_ = os.Remove(tmp)
-	if err := os.WriteFile(tmp, b, 0o644); err != nil { // #nosec G306 -- read by the console
+	// The directory belongs to the console user: never follow a link it
+	// may have planted (O_EXCL also refuses an existing link), and replace
+	// result.json by a rename, which replaces a link, not its target.
+	tmp := fmt.Sprintf("%s.%d.tmp", p, time.Now().UnixNano())
+	f, err := os.OpenFile(tmp, os.O_CREATE|os.O_EXCL|os.O_WRONLY|noFollow, 0o644) // #nosec G302 G304 -- read by the console
+	if err != nil {
 		return err
+	}
+	_, werr := f.Write(b)
+	if err := f.Close(); werr == nil {
+		werr = err
+	}
+	if werr != nil {
+		_ = os.Remove(tmp)
+		return werr
 	}
 	return os.Rename(tmp, p)
 }
