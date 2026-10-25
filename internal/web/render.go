@@ -28,8 +28,13 @@ var i18nFS embed.FS
 // Language is a console language.
 type Language struct{ Code, Name string }
 
-// Languages the console offers; English is the source language.
-var Languages = []Language{{"en", "English"}, {"sr", "Srpski"}}
+// Languages the console offers, by their own names; English is the source
+// language.
+var Languages = []Language{
+	{"en", "English"}, {"de", "Deutsch"}, {"fr", "Français"}, {"es", "Español"}, {"it", "Italiano"},
+	{"pt", "Português"}, {"nl", "Nederlands"}, {"pl", "Polski"}, {"cs", "Čeština"}, {"sr", "Srpski"},
+	{"tr", "Türkçe"}, {"ru", "Русский"}, {"zh", "中文（简体）"}, {"ja", "日本語"},
+}
 
 // catalogs maps language → English text → translation.
 var catalogs = map[string]map[string]string{}

@@ -51,23 +51,25 @@ func uiTexts(t *testing.T) map[string]bool {
 // unescapeText turns a quoted text from the source into the text itself.
 func unescapeText(s string) string { return strings.NewReplacer(`\"`, `"`, `\\`, `\`).Replace(s) }
 
-func TestSerbianCatalogComplete(t *testing.T) {
+func TestCatalogsComplete(t *testing.T) {
 	texts := uiTexts(t)
-	var missing []string
-	for k := range texts {
-		if catalogs["sr"][k] == "" {
-			missing = append(missing, k)
-		}
-	}
-	sort.Strings(missing)
-	if len(missing) > 0 {
-		t.Errorf("%d texts without a Serbian translation:\n%s", len(missing), strings.Join(missing, "\n"))
-	}
-	// Format verbs must survive the translation.
 	verb := regexp.MustCompile(`%[dsv]`)
-	for k, v := range catalogs["sr"] {
-		if strings.Join(verb.FindAllString(k, -1), "") != strings.Join(verb.FindAllString(v, -1), "") {
-			t.Errorf("format verbs differ: %q → %q", k, v)
+	for _, l := range Languages[1:] {
+		var missing []string
+		for k := range texts {
+			if catalogs[l.Code][k] == "" {
+				missing = append(missing, k)
+			}
+		}
+		sort.Strings(missing)
+		if len(missing) > 0 {
+			t.Errorf("%s: %d texts without a translation:\n%s", l.Code, len(missing), strings.Join(missing, "\n"))
+		}
+		// Format verbs must survive the translation.
+		for k, v := range catalogs[l.Code] {
+			if strings.Join(verb.FindAllString(k, -1), "") != strings.Join(verb.FindAllString(v, -1), "") {
+				t.Errorf("%s: format verbs differ: %q → %q", l.Code, k, v)
+			}
 		}
 	}
 }
