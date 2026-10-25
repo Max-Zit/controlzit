@@ -1156,5 +1156,6 @@
   "the account exists with another sign-in method": "nalog postoji sa drugim načinom prijave",
   "the console's SAML key is missing; save the settings again": "nedostaje SAML ključ konzole; ponovo sačuvajte podešavanja",
   "wrong username or password": "pogrešno korisničko ime ili lozinka",
-  "at the identity provider": "kod dobavljača identiteta"
+  "at the identity provider": "kod dobavljača identiteta",
+  "Report a bug": "Prijavi grešku"
 }

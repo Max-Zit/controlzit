@@ -1,0 +1,53 @@
+name: Bug report
+description: Something does not work as described in the guide
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! **Security problems** must not be reported here — use [Report a vulnerability](https://github.com/Max-Zit/controlzit/security/advisories/new) instead.
+  - type: input
+    id: version
+    attributes:
+      label: ControlZit version
+      description: Server version (bottom of the sidebar) and, if relevant, the agent version (device page).
+      placeholder: "server 0.3.0, agent 0.3.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Console / web interface
+        - Agent installation and enrollment
+        - Inventory and monitoring
+        - Alerts and notifications
+        - Remote desktop
+        - Terminal, files and processes
+        - Scripts and scheduled jobs
+        - Windows updates and software
+        - Reports
+        - Users, LDAP / Active Directory, single sign-on
+        - Appliance / installation / updates
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Server host (appliance, Debian/Ubuntu or RHEL package, …), browser, agent operating systems.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Settings → Diagnostics shows the server log (passwords and keys are removed). Remove host names you do not want to share.
+      render: text

@@ -39,6 +39,22 @@ contents:
     dst: /usr/lib/systemd/system/controlzit-helper.path
   - src: ./packaging/linux/controlzit-helper.service
     dst: /usr/lib/systemd/system/controlzit-helper.service
+  - src: ./packaging/appliance/controlzit-setup
+    dst: /usr/share/controlzit/appliance/controlzit-setup
+    file_info:
+      mode: 0755
+  - src: ./packaging/appliance/controlzit-appliance-boot
+    dst: /usr/share/controlzit/appliance/controlzit-appliance-boot
+    file_info:
+      mode: 0755
+  - src: ./packaging/appliance/controlzit-appliance-boot.service
+    dst: /usr/share/controlzit/appliance/controlzit-appliance-boot.service
+  - src: ./packaging/appliance/controlzit-menu.sh
+    dst: /usr/share/controlzit/appliance/controlzit-menu.sh
+  - src: ./packaging/appliance/sudoers-controlzit-setup
+    dst: /usr/share/controlzit/appliance/sudoers-controlzit-setup
+  - src: ./packaging/appliance/sshd-controlzit.conf
+    dst: /usr/share/controlzit/appliance/sshd-controlzit.conf
   - src: ./packaging/linux/server.env
     dst: /etc/controlzit/server.env
     type: config|noreplace

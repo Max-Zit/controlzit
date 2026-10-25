@@ -1,0 +1,25 @@
+#!/bin/sh
+# First start of the ControlZit appliance: SSH keys, database, configuration,
+# console.
+set -e
+if ! ls /etc/ssh/ssh_host_*_key >/dev/null 2>&1; then
+    ssh-keygen -A
+    systemctl reset-failed ssh.service 2>/dev/null || true
+    systemctl restart ssh 2>/dev/null || true
+fi
+# Wait for the network, so the console's certificate names the address.
+for i in $(seq 120); do
+    ip -4 route get 1.1.1.1 >/dev/null 2>&1 && break
+    sleep 1
+done
+DB_PASS=$(head -c 32 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c 24)
+systemctl start postgresql
+su postgres -s /bin/sh -c "cd /; psql -qc \"SET password_encryption = 'scram-sha-256'; CREATE USER controlzit PASSWORD '$DB_PASS';\"" 2>/dev/null ||
+    su postgres -s /bin/sh -c "cd /; psql -qc \"SET password_encryption = 'scram-sha-256'; ALTER USER controlzit PASSWORD '$DB_PASS';\""
+su postgres -s /bin/sh -c "cd /; createdb -O controlzit controlzit" 2>/dev/null || true
+ENV=/etc/controlzit/server.env
+sed -i "s#^CONTROLZIT_DB=.*#CONTROLZIT_DB=postgres://controlzit:$DB_PASS@127.0.0.1:5432/controlzit?sslmode=disable#" $ENV
+systemctl enable --now controlzit-server
+for i in $(seq 60); do [ -f /var/lib/controlzit/setup-token.txt ] && break; sleep 1; done
+/usr/local/sbin/controlzit-appliance-boot issue || true
+touch /var/lib/controlzit/.appliance-ready
