@@ -144,7 +144,10 @@ var funcs = template.FuncMap{
 		}
 		return uint64(n)
 	},
-	"powerPop":  func(p *Page, action string) powerPop { return powerPop{P: p, Action: action} },
+	"powerPop": func(p *Page, action string) powerPop { return powerPop{P: p, Action: action} },
+	"groupMapping": func(p *Page, g GroupMapping, lines string) groupMappingData {
+		return groupMappingData{P: p, G: g, Lines: lines}
+	},
 	"userTable": func(p *Page, us []*store.User) userTable { return userTable{P: p, Users: us} },
 	"roleForm": func(p *Page, role string, all bool, ids []int64, cs []store.Customer) roleForm {
 		return roleForm{P: p, Role: role, All: all, IDs: ids, Customers: cs}

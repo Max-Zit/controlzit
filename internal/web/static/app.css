@@ -425,3 +425,5 @@ pre.notes { white-space: pre-wrap; font-family: inherit; background: var(--panel
 pre.log { max-height: 520px; font-size: 12px; }
 pre.log .lv-warn { color: #fbbf24; }
 pre.log .lv-error { color: #f87171; }
+.btn.wide { display: flex; justify-content: center; width: 100%; }
+.center { text-align: center; }

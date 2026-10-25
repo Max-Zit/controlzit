@@ -10,7 +10,7 @@
   <p><button type="button" class="secondary" data-copy="ul.codes">{{template "icon" "copy"}}{{$.T "Copy"}}</button></p>
 </section>
 {{end}}
-<section class="panel">
+{{if eq .User.Source "local"}}<section class="panel">
   <h2>{{.T "Change password"}}</h2>
   <form method="post" action="/account/password" class="stack">
     <label>{{.T "Current password"}}<input type="password" name="current" required autocomplete="current-password"></label>
@@ -19,6 +19,7 @@
     <div><button class="primary">{{.T "Change password"}}</button></div>
   </form>
 </section>
+{{else}}<section class="panel"><h2>{{.T "Password"}}</h2><p class="muted">{{.T "Your account signs in through its directory; change the password there."}}</p></section>{{end}}
 {{if not .User.MustChangePassword}}
 <section class="panel">
   <h2>{{.T "Recovery codes"}}</h2>

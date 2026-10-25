@@ -72,7 +72,7 @@ func run() error {
 		// Its own log in a directory only root can write (Settings → Diagnostics shows it).
 		out := io.Writer(os.Stdout)
 		if lw, err := logfile.Open("/var/log/controlzit-helper/helper.log", 0o644); err == nil {
-			_ = os.Chmod("/var/log/controlzit-helper", 0o755) // the console reads it, only root writes
+			_ = os.Chmod("/var/log/controlzit-helper", 0o755) // #nosec G302 -- the console reads it, only root writes
 			defer lw.Close()
 			out = io.MultiWriter(os.Stdout, lw)
 		}

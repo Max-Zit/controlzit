@@ -1,0 +1,45 @@
+{{template "app" .}}
+{{define "content"}}
+<h1>{{.T "Settings"}}</h1>
+<div class="settings">
+{{template "settingstabs" .}}
+<div class="settings-body">
+<section class="panel">
+  <h2>{{template "icon" "key"}}{{.T "Single sign-on"}}</h2>
+  <p class="muted">{{.T "Users sign in with their account at an identity provider: OpenID Connect (Microsoft Entra ID, Google, Okta, Keycloak …) or SAML 2.0 (ADFS, Entra ID, Okta …). Local accounts keep working, so an administrator can always sign in."}}</p>
+  <form method="post" action="/settings/sso" class="stack">
+    <fieldset class="box">
+      <legend>{{.T "Protocol"}}</legend>
+      <label class="check"><input type="radio" name="protocol" value="" {{if eq .Data.S.Protocol ""}}checked{{end}}>{{.T "Off"}}</label>
+      <label class="check"><input type="radio" name="protocol" value="oidc" {{if eq .Data.S.Protocol "oidc"}}checked{{end}}>OpenID Connect</label>
+      <label class="check"><input type="radio" name="protocol" value="saml" {{if eq .Data.S.Protocol "saml"}}checked{{end}}>SAML 2.0</label>
+    </fieldset>
+    <label>{{.T "Text of the sign-in button"}} <small>{{.T "optional"}}</small><input name="label" value="{{.Data.S.Label}}" placeholder="Microsoft"></label>
+    <fieldset class="box">
+      <legend>OpenID Connect</legend>
+      <p class="small">{{.T "Redirect URI to register at the identity provider:"}} <code>{{.Data.Base}}/login/sso/callback</code></p>
+      <label>{{.T "Issuer"}}<input name="issuer" value="{{.Data.S.Issuer}}" class="mono" spellcheck="false" placeholder="https://login.microsoftonline.com/TENANT/v2.0"></label>
+      <div class="cols">
+        <label>{{.T "Client ID"}}<input name="client_id" value="{{.Data.S.ClientID}}" class="mono" spellcheck="false"></label>
+        <label>{{.T "Client secret"}} <small>{{if .Data.HasSecret}}{{.T "saved; enter a new one to replace it"}}{{end}}</small><input type="password" name="client_secret" autocomplete="new-password"></label>
+      </div>
+    </fieldset>
+    <fieldset class="box">
+      <legend>SAML 2.0</legend>
+      <p class="small">{{.T "For the identity provider:"}} {{.T "metadata"}} <code>{{.Data.Base}}/login/sso/metadata</code> · {{.T "reply (ACS) address"}} <code>{{.Data.Base}}/login/sso/saml</code></p>
+      <label>{{.T "Metadata URL of the identity provider"}}<input name="metadata_url" value="{{.Data.S.MetadataURL}}" class="mono" spellcheck="false" placeholder="https://adfs.example.com/FederationMetadata/2007-06/FederationMetadata.xml"></label>
+      <label>{{.T "or its metadata XML"}}<textarea name="metadata_xml" rows="3" class="mono" spellcheck="false">{{.Data.S.MetadataXML}}</textarea></label>
+    </fieldset>
+    <label>{{.T "CA certificate"}} <small>{{.T "optional: when the identity provider's certificate comes from a company CA"}}</small><textarea name="ca_cert" rows="3" class="mono" spellcheck="false" placeholder="-----BEGIN CERTIFICATE-----">{{.Data.S.CACert}}</textarea></label>
+    <div class="cols">
+      <label>{{.T "User name claim"}} <small>{{.T "optional"}}</small><input name="username_claim" value="{{.Data.S.UsernameClaim}}" class="mono" spellcheck="false" placeholder="preferred_username"></label>
+      <label>{{.T "Groups claim"}} <small>{{.T "optional"}}</small><input name="groups_claim" value="{{.Data.S.GroupsClaim}}" class="mono" spellcheck="false" placeholder="groups"></label>
+    </div>
+    <label class="check"><input type="checkbox" name="require_totp" value="1" {{if .Data.S.RequireTOTP}}checked{{end}}>{{.T "Also ask for ControlZit's own second factor (otherwise the identity provider's sign-in, with its multi-factor policy, is enough)"}}</label>
+    {{template "groupmapping" (groupMapping . .Data.S.Groups .Data.Groups)}}
+    <div><button class="primary">{{.T "Save"}}</button></div>
+  </form>
+</section>
+</div>
+</div>
+{{end}}

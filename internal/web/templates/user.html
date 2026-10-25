@@ -17,12 +17,13 @@
     <dt>{{.T "Two-factor"}}</dt><dd>{{if .Data.U.TOTPEnabled}}<span class="badge ok"><i></i>{{.T "On"}}</span>{{else}}<span class="badge warn">{{.T "At next sign-in"}}</span>{{end}}</dd>
     <dt>{{.T "Last sign-in"}}</dt><dd>{{.Time .Data.U.LastLoginAt}}</dd>
     <dt>{{.T "Added"}}</dt><dd>{{.Time .Data.U.CreatedAt}}</dd>
+    <dt>{{.T "Sign-in"}}</dt><dd>{{if eq .Data.U.Source "ldap"}}Active Directory / LDAP{{else if eq .Data.U.Source "sso"}}{{.T "Single sign-on"}}{{else}}{{.T "ControlZit account"}}{{end}}{{with .Data.U.Email}} · {{.}}{{end}}</dd>
   </dl>
   {{if not .Data.Self}}
-  <form method="post" action="/users/{{.Data.U.ID}}/password" class="row mt">
+  {{if eq .Data.U.Source "local"}}<form method="post" action="/users/{{.Data.U.ID}}/password" class="row mt">
     <input type="password" name="password" required minlength="12" autocomplete="new-password" placeholder="{{.T "New password"}}" aria-label="{{.T "New password"}}">
     <button class="secondary">{{.T "Set password"}}</button>
-  </form>
+  </form>{{end}}
   {{if .Data.U.TOTPEnabled}}
   <form method="post" action="/users/{{.Data.U.ID}}/reset-2fa" class="mt" data-confirm="{{.T "Reset two-factor sign-in of this user?"}}">
     <button class="danger">{{.T "Reset two-factor sign-in"}}</button> <small class="muted">{{.T "For a user who lost the phone and the recovery codes."}}</small>

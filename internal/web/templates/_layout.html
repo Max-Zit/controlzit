@@ -75,6 +75,8 @@
   <a href="/settings/network" class="{{if eq .Title "Network and access"}}on{{end}}">{{template "icon" "network"}}<span>{{.T "Network and access"}}<small>{{.T "Ports, allowed networks, agent address"}}</small></span></a>
   <a href="/settings/certificate" class="{{if eq .Title "Certificate"}}on{{end}}">{{template "icon" "lock"}}<span>{{.T "Certificate"}}<small>{{.T "HTTPS for the console, Let's Encrypt"}}</small></span></a>
   <a href="/settings/security" class="{{if eq .Title "Sign-in and security"}}on{{end}}">{{template "icon" "lock"}}<span>{{.T "Sign-in and security"}}<small>{{.T "Session length, blocked addresses"}}</small></span></a>
+  <a href="/settings/ldap" class="{{if eq .Title "Active Directory / LDAP"}}on{{end}}">{{template "icon" "users"}}<span>Active Directory / LDAP<small>{{.T "Sign-in with directory accounts"}}</small></span></a>
+  <a href="/settings/sso" class="{{if eq .Title "Single sign-on"}}on{{end}}">{{template "icon" "key"}}<span>{{.T "Single sign-on"}}<small>OpenID Connect, SAML</small></span></a>
   <a href="/settings/monitoring" class="{{if eq .Title "Monitoring and alerts"}}on{{end}}">{{template "icon" "online"}}<span>{{.T "Monitoring and alerts"}}<small>{{.T "Rules and alert emails"}}</small></span></a>
   <a href="/settings/remote" class="{{if eq .Title "Remote desktop"}}on{{end}}">{{template "icon" "screen"}}<span>{{.T "Remote desktop"}}<small>{{.T "Notice on the remote screen"}}</small></span></a>
   <a href="/settings/updates" class="{{if eq .Title "Windows updates"}}on{{end}}">{{template "icon" "refresh"}}<span>{{.T "Windows updates"}}<small>{{.T "Automatic installation schedule"}}</small></span></a>
@@ -208,3 +210,19 @@
   <div class="term-screen" id="term-screen" tabindex="0" aria-label="{{.T "Terminal"}}"></div>
 </div>
 {{end}}
+{{define "groupmapping"}}{{$p := .P}}<fieldset class="box">
+  <legend>{{$p.T "Groups and roles"}}</legend>
+  <p class="small muted">{{$p.T "At every sign-in the groups decide the role; the highest wins. A group is its name or its full DN (Active Directory), or its name or ID at the identity provider (Entra ID sends group IDs)."}}</p>
+  <div class="cols">
+    <label>{{$p.T "Administrators"}}<input name="admin_group" value="{{.G.AdminGroup}}" spellcheck="false" placeholder="ControlZit Admins"></label>
+    <label>{{$p.T "Technicians"}}<input name="technician_group" value="{{.G.TechnicianGroup}}" spellcheck="false" placeholder="ControlZit Technicians"></label>
+    <label>{{$p.T "Read-only"}}<input name="readonly_group" value="{{.G.ReadOnlyGroup}}" spellcheck="false" placeholder="ControlZit Viewers"></label>
+  </div>
+  <label>{{$p.T "Users in none of these groups"}}<select name="default_role">
+    <option value="" {{if eq .G.DefaultRole ""}}selected{{end}}>{{$p.T "cannot sign in"}}</option>
+    <option value="readonly" {{if eq .G.DefaultRole "readonly"}}selected{{end}}>{{$p.T "Read-only"}}</option>
+    <option value="technician" {{if eq .G.DefaultRole "technician"}}selected{{end}}>{{$p.T "Technician"}}</option>
+  </select></label>
+  <label>{{$p.T "Customer groups"}} <small>{{$p.T "optional"}}</small><textarea name="customer_groups" rows="3" spellcheck="false" placeholder="Acme Support = Acme d.o.o.">{{.Lines}}</textarea><small>{{$p.T "One \"group = customer\" per line. Technicians and read-only users in such a group see only those customers."}}</small></label>
+  <label class="check"><input type="checkbox" name="all_by_default" value="1" {{if .G.AllByDefault}}checked{{end}}>{{$p.T "Users in no customer group see all customers"}}</label>
+</fieldset>{{end}}

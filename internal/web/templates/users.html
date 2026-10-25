@@ -25,10 +25,10 @@
 {{define "usertable"}}{{$p := .P}}<div class="table-wrap"><table>
     <thead><tr><th>{{$p.T "Username"}}</th><th>{{$p.T "Role"}}</th><th class="hide-sm">{{$p.T "Customers"}}</th><th>{{$p.T "Two-factor"}}</th><th class="hide-sm">{{$p.T "Last sign-in"}}</th></tr></thead>
     <tbody>{{range .Users}}<tr>
-      <td><a href="/users/{{.ID}}">{{.Username}}</a>{{if .DisplayName}} <span class="muted">· {{.DisplayName}}</span>{{end}}{{if .Disabled}} <span class="badge bad">{{$p.T "Disabled"}}</span>{{end}}</td>
+      <td><a href="/users/{{.ID}}">{{.Username}}</a>{{if .DisplayName}} <span class="muted">· {{.DisplayName}}</span>{{end}}{{if .Disabled}} <span class="badge bad">{{$p.T "Disabled"}}</span>{{end}}{{if eq .Source "ldap"}} <span class="badge">LDAP</span>{{else if eq .Source "sso"}} <span class="badge">SSO</span>{{end}}</td>
       <td>{{$p.RoleName .Role}}</td>
       <td class="hide-sm muted">{{if or .IsAdmin .AllCustomers}}{{$p.T "All"}}{{else}}{{len .CustomerIDs}}{{end}}</td>
-      <td>{{if .TOTPEnabled}}<span class="badge ok"><i></i>{{$p.T "On"}}</span>{{else}}<span class="badge warn">{{$p.T "At next sign-in"}}</span>{{end}}</td>
+      <td>{{if .TOTPEnabled}}<span class="badge ok"><i></i>{{$p.T "On"}}</span>{{else if eq .Source "sso"}}<span class="badge">{{$p.T "at the identity provider"}}</span>{{else}}<span class="badge warn">{{$p.T "At next sign-in"}}</span>{{end}}</td>
       <td class="hide-sm muted">{{$p.Time .LastLoginAt}}</td>
     </tr>{{end}}</tbody>
   </table></div>{{end}}

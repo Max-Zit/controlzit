@@ -248,7 +248,7 @@ func (h *Helper) healthy(ctx context.Context, version string) error {
 				resp, err := hc.Get("https://" + net.JoinHostPort("127.0.0.1", port) + "/login")
 				if err == nil {
 					_, _ = io.Copy(io.Discard, resp.Body)
-					resp.Body.Close()
+					_ = resp.Body.Close()
 					if resp.StatusCode == http.StatusOK {
 						return nil
 					}

@@ -1,10 +1,12 @@
 {{template "guest" .}}
 {{define "content"}}
 <h1>{{.T "Sign in"}}</h1>
+{{with .Data.SSO}}<p><a class="btn primary wide" href="/login/sso?next={{$.Data.Next}}">{{template "icon" "key"}}{{$.T "Sign in with %s" .}}</a></p>
+<p class="muted small center">{{$.T "or with a ControlZit account"}}</p>{{end}}
 <form method="post" action="/login" class="stack">
   <input type="hidden" name="next" value="{{.Data.Next}}">
-  <label>{{.T "Username"}}<input name="username" value="{{.Data.Username}}" required autofocus autocomplete="username" autocapitalize="none" spellcheck="false"></label>
+  <label>{{.T "Username"}}<input name="username" value="{{.Data.Username}}" required {{if not .Data.SSO}}autofocus{{end}} autocomplete="username" autocapitalize="none" spellcheck="false"></label>
   <label>{{.T "Password"}}<input type="password" name="password" required autocomplete="current-password"></label>
-  <button class="primary">{{.T "Sign in"}}</button>
+  <button class="{{if .Data.SSO}}secondary{{else}}primary{{end}}">{{.T "Sign in"}}</button>
 </form>
 {{end}}

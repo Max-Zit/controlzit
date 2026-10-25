@@ -135,6 +135,10 @@ func (s *Server) handleUserPassword(w http.ResponseWriter, r *http.Request) {
 	if u == nil {
 		return
 	}
+	if u.Source != "local" {
+		s.showUser(w, r, http.StatusBadRequest, u, "This account signs in through its directory; its password is changed there.")
+		return
+	}
 	if err := s.store.SetPassword(r.Context(), u.ID, r.FormValue("password"), true, ""); err != nil {
 		s.showUser(w, r, http.StatusBadRequest, u, storeErr(err))
 		return
@@ -189,6 +193,10 @@ func (s *Server) showAccount(w http.ResponseWriter, r *http.Request, status int,
 
 func (s *Server) handleAccountPassword(w http.ResponseWriter, r *http.Request) {
 	u := userFrom(r)
+	if u.Source != "local" {
+		s.showAccount(w, r, http.StatusBadRequest, &accountData{}, "This account signs in through its directory; its password is changed there.")
+		return
+	}
 	if _, err := s.store.CheckPassword(r.Context(), u.Username, r.FormValue("current")); err != nil {
 		s.guard.fail(r.Context(), clientIP(r), u.Username, "password change")
 		s.showAccount(w, r, http.StatusBadRequest, &accountData{}, "The current password is wrong.")

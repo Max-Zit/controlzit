@@ -43,13 +43,13 @@ func main() {
 	case "keygen":
 		pub, priv, err := ed25519.GenerateKey(rand.Reader)
 		check(err)
-		if _, err := os.Stat(*out); err == nil {
+		if _, err := os.Stat(*out); err == nil { // #nosec G703 -- the operator's files
 			check(fmt.Errorf("%s exists", *out))
 		}
-		check(os.WriteFile(*out, []byte(base64.StdEncoding.EncodeToString(priv.Seed())+"\n"), 0o600))
+		check(os.WriteFile(*out, []byte(base64.StdEncoding.EncodeToString(priv.Seed())+"\n"), 0o600)) // #nosec G703 -- the operator's files
 		fmt.Println(base64.StdEncoding.EncodeToString(pub))
 	case "sign":
-		raw, err := os.ReadFile(*keyFile) // #nosec G304 -- the operator's key file
+		raw, err := os.ReadFile(*keyFile) // #nosec G304 G703 -- the operator's key file
 		check(err)
 		seed, err := base64.StdEncoding.DecodeString(strings.TrimSpace(string(raw)))
 		check(err)
@@ -59,7 +59,7 @@ func main() {
 		key := ed25519.NewKeyFromSeed(seed)
 		m := update.Manifest{Product: "controlzit", Version: *version, Released: time.Now().UTC().Truncate(time.Second)}
 		if *notes != "" {
-			b, err := os.ReadFile(*notes) // #nosec G304 -- the operator's notes file
+			b, err := os.ReadFile(*notes) // #nosec G304 G703 -- the operator's notes file
 			check(err)
 			m.Notes = strings.TrimSpace(string(b))
 		}
@@ -81,8 +81,8 @@ func main() {
 		if _, err := update.Verify(b, update.Sign(b, key), []string{base64.StdEncoding.EncodeToString(key.Public().(ed25519.PublicKey))}); err != nil {
 			check(err)
 		}
-		check(os.WriteFile(filepath.Join(*dir, "manifest.json"), b, 0o644))                       // #nosec G306 -- published
-		check(os.WriteFile(filepath.Join(*dir, "manifest.json.sig"), update.Sign(b, key), 0o644)) // #nosec G306 -- published
+		check(os.WriteFile(filepath.Join(*dir, "manifest.json"), b, 0o644))                       // #nosec G306 G703 -- published
+		check(os.WriteFile(filepath.Join(*dir, "manifest.json.sig"), update.Sign(b, key), 0o644)) // #nosec G306 G703 -- published
 		fmt.Printf("signed %d files of %s\n", len(m.Files), *version)
 	default:
 		check(fmt.Errorf("unknown command %s", os.Args[1]))
@@ -123,7 +123,7 @@ func describe(n string) update.File {
 }
 
 func sum(path string) (string, int64) {
-	in, err := os.Open(path) // #nosec G304 -- release files
+	in, err := os.Open(path) // #nosec G304 G703 -- release files
 	check(err)
 	defer in.Close()
 	h := sha256.New()

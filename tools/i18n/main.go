@@ -28,7 +28,7 @@ func texts() map[string]bool {
 	tmpl := regexp.MustCompile(`\.T "((?:[^"\\]|\\.)+)"`)
 	files, _ := filepath.Glob(filepath.Join(dir, "templates", "*.html"))
 	for _, f := range files {
-		b, _ := os.ReadFile(f) // #nosec G304 -- repository files
+		b, _ := os.ReadFile(f) // #nosec G304 G703 -- repository files
 		for _, m := range tmpl.FindAllStringSubmatch(string(b), -1) {
 			out[unquote(m[1])] = true
 		}
@@ -40,7 +40,7 @@ func texts() map[string]bool {
 			if strings.HasSuffix(f, "_test.go") {
 				continue
 			}
-			b, _ := os.ReadFile(f) // #nosec G304 -- repository files
+			b, _ := os.ReadFile(f) // #nosec G304 G703 -- repository files
 			for _, m := range goMsg.FindAllStringSubmatch(string(b), -1) {
 				out[unquote(m[1])] = true
 			}
@@ -60,7 +60,7 @@ type catalog struct {
 
 func load(lang string) *catalog {
 	c := &catalog{m: map[string]string{}}
-	b, err := os.ReadFile(filepath.Join(dir, "i18n", lang+".json")) // #nosec G304 -- repository files
+	b, err := os.ReadFile(filepath.Join(dir, "i18n", lang+".json")) // #nosec G304 G703 -- repository files
 	if err != nil {
 		return c
 	}
@@ -98,7 +98,7 @@ func (c *catalog) save(lang string) {
 		b.WriteString("\n")
 	}
 	b.WriteString("}\n")
-	if err := os.WriteFile(filepath.Join(dir, "i18n", lang+".json"), b.Bytes(), 0o644); err != nil { // #nosec G306 -- repository file
+	if err := os.WriteFile(filepath.Join(dir, "i18n", lang+".json"), b.Bytes(), 0o644); err != nil { // #nosec G306 G703 -- repository file
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
@@ -136,7 +136,7 @@ func main() {
 			}
 		}
 	case "add":
-		f, err := os.Open(os.Args[3])
+		f, err := os.Open(os.Args[3]) // #nosec G703 -- the operator's files
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)

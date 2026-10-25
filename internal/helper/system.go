@@ -169,8 +169,8 @@ func (h *Helper) network(ctx context.Context, req Request, res Result) Result {
 		return fail(err)
 	}
 	path := h.path(NetworkFile)
-	old, oldErr := os.ReadFile(path) // #nosec G304 -- fixed path
-	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+	old, oldErr := os.ReadFile(path)                               // #nosec G304 -- fixed path
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil { // #nosec G301 -- /etc/systemd/network
 		return fail(err)
 	}
 	if err := os.WriteFile(path, []byte(networkFile(iface, c)), 0o644); err != nil { // #nosec G306 -- a network file
@@ -190,7 +190,7 @@ func (h *Helper) network(ctx context.Context, req Request, res Result) Result {
 	}
 	if rerr != nil {
 		if oldErr == nil {
-			_ = os.WriteFile(path, old, 0o644) // #nosec G306 -- a network file
+			_ = os.WriteFile(path, old, 0o644) // #nosec G306 G703 -- the fixed network file
 		} else {
 			_ = os.Remove(path)
 		}

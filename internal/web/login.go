@@ -208,6 +208,7 @@ func (s *Server) handleSetup(w http.ResponseWriter, r *http.Request) {
 type loginData struct {
 	Username string
 	Next     string
+	SSO      string // label of the single sign-on button ("" = none)
 }
 
 func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
@@ -216,6 +217,9 @@ func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	d := &loginData{Next: safeNext(r.FormValue("next"))}
+	if c := s.SSO(r.Context()); c.Protocol != "" {
+		d.SSO = c.label()
+	}
 	p := &Page{Title: "Sign in", Data: d}
 	if r.Method == http.MethodGet {
 		if userFrom(r) != nil {
@@ -239,7 +243,30 @@ func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
 		s.render(w, r, http.StatusTooManyRequests, "login", p)
 		return
 	}
-	u, err := s.store.CheckPassword(r.Context(), d.Username, r.FormValue("password"))
+	// Active Directory / LDAP for usernames that are not local accounts.
+	u, viaLDAP, err := s.ldapSignIn(r.Context(), d.Username, r.FormValue("password"))
+	if viaLDAP && err != nil && !errors.Is(err, errLDAPCredentials) {
+		var ue *uiError
+		if errors.As(err, &ue) {
+			// A group or customer problem: tell the user why.
+			s.guard.fail(r.Context(), ip, d.Username, "directory")
+			s.auditAs(r, d.Username, "login.failed", "user:"+d.Username, "directory sign-in refused: %v", err)
+			p.Error = s.errText(r, err)
+			s.render(w, r, http.StatusForbidden, "login", p)
+			return
+		}
+		s.log.Warn("directory sign-in failed", "user", d.Username, "err", err)
+		s.auditAs(r, d.Username, "login.failed", "user:"+d.Username, "directory not reachable: %v", err)
+		p.Error = translate(lang, "The directory (Active Directory / LDAP) cannot be reached. Try again or ask your administrator.")
+		s.render(w, r, http.StatusServiceUnavailable, "login", p)
+		return
+	}
+	if viaLDAP && err != nil {
+		err = store.ErrNotFound // wrong password: like a local account
+	}
+	if !viaLDAP {
+		u, err = s.store.CheckPassword(r.Context(), d.Username, r.FormValue("password"))
+	}
 	if err != nil {
 		if !errors.Is(err, store.ErrNotFound) {
 			s.serverError(w, r, err)

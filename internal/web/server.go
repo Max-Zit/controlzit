@@ -71,6 +71,7 @@ type Server struct {
 	// HelperAvailable overrides the check for the root helper (tests).
 	HelperAvailable func() bool
 	upd             updateState
+	sso             ssoCache
 	setupToken      string
 }
 
@@ -282,6 +283,10 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("POST /login/2fa", s.handleLogin2FA)
 	mux.HandleFunc("GET /login/enroll", s.handleEnroll)
 	mux.HandleFunc("POST /login/enroll", s.handleEnroll)
+	mux.HandleFunc("GET /login/sso", s.handleSSOStart)
+	mux.HandleFunc("GET /login/sso/callback", s.handleOIDCCallback)
+	mux.HandleFunc("POST /login/sso/saml", s.handleSAMLACS)
+	mux.HandleFunc("GET /login/sso/metadata", s.handleSAMLMetadata)
 	mux.HandleFunc("POST /logout", s.handleLogout)
 	mux.HandleFunc("POST /lang", s.handleLang)
 
@@ -378,6 +383,11 @@ func (s *Server) Handler() http.Handler {
 	admin("POST /settings/version/check", s.handleVersionCheck)
 	admin("POST /settings/version/install", s.handleVersionInstall)
 	admin("POST /settings/version/settings", s.handleVersionSettings)
+	admin("GET /settings/ldap", s.handleLDAPSettings)
+	admin("POST /settings/ldap", s.handleLDAPSave)
+	admin("POST /settings/ldap/test", s.handleLDAPTest)
+	admin("GET /settings/sso", s.handleSSOSettings)
+	admin("POST /settings/sso", s.handleSSOSave)
 	admin("GET /settings/diagnostics", s.handleDiagnostics)
 	admin("GET /settings/diagnostics/zip", s.handleDiagnosticsZip)
 	admin("POST /settings/monitoring", s.handleMonitoringSave)
@@ -468,6 +478,12 @@ func (s *Server) aclCheck(l *netacl.List, next http.Handler) http.Handler {
 func (s *Server) csrf(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet || r.Method == http.MethodHead || r.Method == http.MethodOptions {
+			next.ServeHTTP(w, r)
+			return
+		}
+		// The identity provider posts the SAML response from its own site; the
+		// response is signed and must answer a request of this console.
+		if r.Method == http.MethodPost && r.URL.Path == "/login/sso/saml" {
 			next.ServeHTTP(w, r)
 			return
 		}

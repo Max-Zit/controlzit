@@ -548,7 +548,6 @@ func (c cloudflare) remove(ctx context.Context, zone, id string) error {
 	return c.do(ctx, http.MethodDelete, "/zones/"+zone+"/dns_records/"+id, nil, nil)
 }
 
-
 // Port80 reports whether the port 80 listener runs.
 func (t *ConsoleTLS) Port80() bool {
 	t.mu.RLock()

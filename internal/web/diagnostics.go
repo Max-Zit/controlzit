@@ -79,18 +79,18 @@ type diagLogLine struct {
 }
 
 type diagData struct {
-	ServerLog  string
-	HelperLog  string
-	DataDir    string
-	Lines      []diagLogLine
-	HelperLns  []diagLogLine
-	Level      string
-	Q          string
-	Version    string
-	HelperOK   bool
-	DBInfo     string
-	GoVersion  string
-	OS         string
+	ServerLog string
+	HelperLog string
+	DataDir   string
+	Lines     []diagLogLine
+	HelperLns []diagLogLine
+	Level     string
+	Q         string
+	Version   string
+	HelperOK  bool
+	DBInfo    string
+	GoVersion string
+	OS        string
 }
 
 func logLines(b []byte, level, q string, max int) []diagLogLine {

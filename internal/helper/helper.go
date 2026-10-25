@@ -208,7 +208,7 @@ func Submit(dataDir string, req Request) error {
 	req.At = time.Now().UTC()
 	b, _ := json.Marshal(req)
 	tmp := filepath.Join(d, RequestFile+".tmp")
-	if err := os.WriteFile(tmp, b, 0o640); err != nil {
+	if err := os.WriteFile(tmp, b, 0o600); err != nil {
 		return err
 	}
 	return os.Rename(tmp, filepath.Join(d, RequestFile))
@@ -232,5 +232,5 @@ func WriteServerInfo(dataDir string, info ServerInfo) error {
 		return err
 	}
 	b, _ := json.Marshal(info)
-	return os.WriteFile(filepath.Join(d, ServerFile), b, 0o640)
+	return os.WriteFile(filepath.Join(d, ServerFile), b, 0o600)
 }
