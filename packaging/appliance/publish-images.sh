@@ -6,7 +6,7 @@
 #   ./publish-images.sh 0.3.0 /root/appliance/out
 #
 # Files: controlzit-appliance.iso, .ova, .qcow2, controlzit-appliance-vhdx.zip
-# (GitHub limits release files to 2 GiB, the VHDX is larger) and SHA256SUMS.
+# (GitHub limits release files to 2 GiB, the VHDX is larger) and SHA256SUMS-appliance (the release's own SHA256SUMS covers the programs).
 # Afterwards prune-images.sh removes the images from releases older than the
 # newest 8 (KEEP=n to change it).
 # Needs the GitHub CLI (gh), logged in with rights to the repository.
@@ -30,7 +30,7 @@ done
 [ -f "$DIR/$SRC.vhdx" ] || { echo "missing $DIR/$SRC.vhdx" >&2; exit 1; }
 ln "$DIR/$SRC.vhdx" "$WORK/controlzit-appliance.vhdx" 2>/dev/null || cp "$DIR/$SRC.vhdx" "$WORK/controlzit-appliance.vhdx"
 (cd "$WORK" && zip -q -1 controlzit-appliance-vhdx.zip controlzit-appliance.vhdx && rm controlzit-appliance.vhdx)
-(cd "$WORK" && sha256sum controlzit-appliance.iso controlzit-appliance.ova controlzit-appliance.qcow2 controlzit-appliance-vhdx.zip > SHA256SUMS)
+(cd "$WORK" && sha256sum controlzit-appliance.iso controlzit-appliance.ova controlzit-appliance.qcow2 controlzit-appliance-vhdx.zip > SHA256SUMS-appliance)
 for f in "$WORK"/*; do
     size=$(stat -c %s "$f")
     [ "$size" -lt 2147483648 ] || { echo "$f is larger than 2 GiB" >&2; exit 1; }
