@@ -28,6 +28,10 @@ printf '# Written by ControlZit (Settings -> Network).\n[Match]\nName=en* eth*\n
 printf 'auto lo\niface lo inet loopback\n' > /etc/network/interfaces
 systemctl enable systemd-networkd systemd-networkd-wait-online systemd-resolved
 ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+# No name announcements on the network (LLMNR, mDNS): only ports 22, 8443 and
+# 8444 stay open.
+mkdir -p /etc/systemd/resolved.conf.d
+printf '[Resolve]\nLLMNR=no\nMulticastDNS=no\n' > /etc/systemd/resolved.conf.d/50-controlzit.conf
 if [ -f IMAGE ]; then
     # A VM image is copied many times: no host identity baked in (SSH keys
     # and the machine ID are created at the first start).
