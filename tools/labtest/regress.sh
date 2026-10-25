@@ -120,7 +120,7 @@ check "agent runs the installer version" '$C $S/settings/agents | grep -q "All a
 
 # --- event logs and programs (winget)
 check "System event log readable" '$C "$S/devices/$DEV/events?log=System&level=0&hours=720" | grep -q "events, newest first"'
-check "winget lists installed programs" '$C "$S/devices/$DEV/software?view=list" | grep -q "value=\"Microsoft.Edge\""'
+check "installed programs listed from the registry" '$C "$S/devices/$DEV/software?view=list" | grep -q "name=\"name\" value=\"ControlZit Agent\""'
 
 # --- Windows updates
 check "device reports Windows updates" '$C $S/devices/$DEV/updates | grep -q "Searched"'

@@ -32,7 +32,7 @@
   </section>
   <div><button class="primary">{{.T "Save"}}</button></div>
 </form>
-{{with .Data.Last}}<div class="flash {{if eq .Status "done"}}ok{{else if eq .Status "running"}}info{{else}}err{{end}} mt" role="status">{{template "icon" "check"}}<span>{{$.T "Last change on the server"}} ({{$.Time .Started}}): {{.Message}}</span></div>{{end}}
+{{with .Data.Last}}<div class="flash {{if eq .Status "done"}}ok{{else if eq .Status "running"}}info{{else}}err{{end}}" role="status">{{template "icon" "check"}}<span>{{$.T "Last change on the server"}} ({{$.Time .Started}}): {{.Message}}</span></div>{{end}}
 <section class="panel">
   <h2>{{template "icon" "refresh"}}{{.T "Restart"}}</h2>
   <p class="muted">{{.T "New listen addresses and ports take effect after a restart of the ControlZit service. Agents reconnect by themselves."}}</p>

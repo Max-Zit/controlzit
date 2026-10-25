@@ -1173,5 +1173,17 @@
   "User guide": "Handbuch",
   "Users, roles and sign-in": "Benutzer, Rollen und Anmeldung",
   "Windows updates and software": "Windows-Updates und Software",
-  "e.g. enrollment code, static address, Let's Encrypt": "z. B. Registrierungscode, feste Adresse, Let's Encrypt"
+  "e.g. enrollment code, static address, Let's Encrypt": "z. B. Registrierungscode, feste Adresse, Let's Encrypt",
+  "All programs in the Windows list of installed programs, for the computer and for signed-in users. Uninstall runs silently; programs without a silent uninstaller have to be removed on the computer or with a script.": "Alle Programme aus der Windows-Liste der installierten Programme, für den Computer und für angemeldete Benutzer. Die Deinstallation läuft unbeaufsichtigt; Programme ohne stilles Deinstallationsprogramm entfernen Sie am Computer oder mit einem Skript.",
+  "Filter by name or publisher": "Nach Name oder Herausgeber filtern",
+  "No installed programs found.": "Keine installierten Programme gefunden.",
+  "This program has no silent uninstaller; remove it on the computer or with a script.": "Dieses Programm hat kein stilles Deinstallationsprogramm; entfernen Sie es am Computer oder mit einem Skript.",
+  "no silent uninstaller": "kein stilles Deinstallationsprogramm",
+  "only for %s": "nur für %s",
+  "this program has no silent uninstaller; remove it on the computer or with a script": "dieses Programm hat kein stilles Deinstallationsprogramm; entfernen Sie es am Computer oder mit einem Skript",
+  "the program is not installed anymore; refresh the list": "das Programm ist nicht mehr installiert; aktualisieren Sie die Liste",
+  "this user is not signed in anymore; refresh the list": "dieser Benutzer ist nicht mehr angemeldet; aktualisieren Sie die Liste",
+  "the uninstaller did not finish in 20 minutes": "das Deinstallationsprogramm wurde nicht innerhalb von 20 Minuten fertig",
+  "the uninstaller ended, but the program is still installed": "das Deinstallationsprogramm wurde beendet, aber das Programm ist noch installiert",
+  "bad program key": "ungültiger Programmschlüssel"
 }

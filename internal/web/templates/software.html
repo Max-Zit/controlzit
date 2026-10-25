@@ -24,6 +24,33 @@
 
 {{if .Data.Err}}<div class="flash err" role="alert">{{template "icon" "alert"}}<span>{{.Data.Err}}</span></div>{{end}}
 
+{{with .Data.Programs}}
+<section class="panel">
+  <form method="get" action="/devices/{{$d.ID}}/software" class="row filter">
+    <input type="hidden" name="view" value="list">
+    <input type="search" name="q" value="{{$.Data.Query}}" maxlength="80" placeholder="{{$.T "Filter by name or publisher"}}" aria-label="{{$.T "Filter"}}">
+    <button class="secondary">{{$.T "Filter"}}</button>
+  </form>
+  <p class="small muted mt">{{$.T "All programs in the Windows list of installed programs, for the computer and for signed-in users. Uninstall runs silently; programs without a silent uninstaller have to be removed on the computer or with a script."}}</p>
+  {{if .Programs}}
+  <div class="table-wrap mt"><table>
+    <thead><tr><th>{{$.T "Program"}}</th><th class="hide-sm">{{$.T "Publisher"}}</th><th>{{$.T "Version"}}</th><th></th></tr></thead>
+    <tbody>{{range .Programs}}{{if $.Data.Shown .}}<tr>
+      <td><b>{{.Name}}</b>{{with .User}}<br><span class="small muted">{{$.T "only for %s" .}}</span>{{end}}</td>
+      <td class="hide-sm small">{{.Publisher}}</td>
+      <td class="small">{{.Version}}</td>
+      <td class="nowrap actions">
+        {{if .Silent}}<form method="post" action="/devices/{{$d.ID}}/software" class="inline" data-confirm="{{$.T "Uninstall %s?" .Name}}" data-busy="{{$.T "Working… installers can take several minutes."}}">
+          <input type="hidden" name="key" value="{{.Key}}"><input type="hidden" name="name" value="{{.Name}}"><input type="hidden" name="view" value="list"><input type="hidden" name="q" value="{{$.Data.Query}}">
+          <button class="ghost sm" name="action" value="remove">{{$.T "Uninstall"}}</button>
+        </form>{{else}}<span class="small muted" title="{{$.T "This program has no silent uninstaller; remove it on the computer or with a script."}}">{{$.T "no silent uninstaller"}}</span>{{end}}
+      </td>
+    </tr>{{end}}{{end}}</tbody>
+  </table></div>
+  {{else}}<p class="muted">{{$.T "No installed programs found."}}</p>{{end}}
+</section>
+{{end}}
+
 {{with .Data.Result}}
 <section class="panel">
   {{if .Packages}}
@@ -53,7 +80,7 @@
     </tr>{{end}}</tbody>
   </table></div>
   {{else}}
-  <p class="muted">{{if eq $.Data.View "upgrades"}}{{$.T "All programs that winget knows are up to date."}}{{else if eq $.Data.View "list"}}{{$.T "winget knows none of the installed programs."}}{{else}}{{$.T "Nothing found."}}{{end}}</p>
+  <p class="muted">{{if eq $.Data.View "upgrades"}}{{$.T "All programs that winget knows are up to date."}}{{else}}{{$.T "Nothing found."}}{{end}}</p>
   {{end}}
 </section>
 {{end}}

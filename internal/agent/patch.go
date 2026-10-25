@@ -6,6 +6,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -147,7 +148,7 @@ func (a *Agent) installJob(ctx context.Context, in proto.PatchInstall) {
 	})
 	a.Log.Info("installing Windows updates", "count", len(in.IDs), "by", in.By)
 	ictx, cancel := context.WithTimeout(ctx, patchInstallMax)
-	res, err := PatchInstall(ictx, in.IDs)
+	res, err := PatchInstall(ictx, a.currentDefinitions(ictx, in.IDs))
 	cancel()
 	run.Finished = time.Now().UTC()
 	if err != nil {
@@ -165,6 +166,58 @@ func (a *Agent) installJob(ctx context.Context, in proto.PatchInstall) {
 	a.Log.Info("Windows updates installed", "result", run.Result, "reboot_required", run.RebootRequired, "err", run.Error)
 	a.changePatches(func(r *proto.PatchReport) { r.Install = run })
 	a.scanJob(ctx) // the list changed
+}
+
+// currentDefinitions swaps requested definition updates (Defender) for the
+// ones Windows Update offers now: every new definition version has its own
+// update ID and comes out several times a day, so the ID of the last scan
+// is usually gone by the time someone installs it.
+func (a *Agent) currentDefinitions(ctx context.Context, ids []string) []string {
+	a.patch.mu.Lock()
+	known := map[string]proto.PatchUpdate{}
+	for _, u := range a.patch.report.Updates {
+		known[strings.ToLower(u.ID)] = u
+	}
+	a.patch.mu.Unlock()
+	defs := false
+	for _, id := range ids {
+		if u, ok := known[strings.ToLower(id)]; ok && u.Definitions() && u.KB != "" {
+			defs = true
+		}
+	}
+	if !defs {
+		return ids
+	}
+	sctx, cancel := context.WithTimeout(ctx, patchScanLimit)
+	defer cancel()
+	now, err := PatchScan(sctx)
+	if err != nil {
+		a.Log.Warn("Windows Update scan before installing definitions failed", "err", err)
+		return ids
+	}
+	offered := map[string]bool{}
+	byKB := map[string]string{}
+	for _, u := range now.Updates {
+		offered[strings.ToLower(u.ID)] = true
+		if u.Definitions() && u.KB != "" {
+			byKB[u.KB] = u.ID
+		}
+	}
+	out := make([]string, 0, len(ids))
+	seen := map[string]bool{}
+	for _, id := range ids {
+		if u, ok := known[strings.ToLower(id)]; ok && !offered[strings.ToLower(id)] && u.Definitions() {
+			if cur, ok := byKB[u.KB]; ok {
+				a.Log.Info("installing the current definition update instead", "requested", u.Title, "id", cur)
+				id = cur
+			}
+		}
+		if !seen[strings.ToLower(id)] {
+			seen[strings.ToLower(id)] = true
+			out = append(out, id)
+		}
+	}
+	return out
 }
 
 func init() {

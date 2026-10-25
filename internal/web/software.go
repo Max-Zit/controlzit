@@ -16,12 +16,19 @@ import (
 // install, upgrade and uninstall (technician role, audited).
 
 type softwareData struct {
-	D       *store.Device
-	View    string // upgrades, list, search
-	Query   string
-	Result  *proto.WingetResult
-	Err     string
-	Offline bool
+	D        *store.Device
+	View     string // upgrades, list, search
+	Query    string
+	Result   *proto.WingetResult
+	Programs *proto.ProgramsResult // installed (the registry, not only what winget knows)
+	Err      string
+	Offline  bool
+}
+
+// Shown reports whether the installed program matches the filter.
+func (sd *softwareData) Shown(p proto.Program) bool {
+	q := strings.ToLower(sd.Query)
+	return q == "" || strings.Contains(strings.ToLower(p.Name), q) || strings.Contains(strings.ToLower(p.Publisher), q)
 }
 
 func (s *Server) handleSoftware(w http.ResponseWriter, r *http.Request) {
@@ -39,7 +46,16 @@ func (s *Server) handleSoftware(w http.ResponseWriter, r *http.Request) {
 	default:
 		sd.View = "upgrades"
 	}
-	if sd.View != "search" || sd.Query != "" {
+	if sd.View == "list" {
+		var res proto.ProgramsResult
+		err := s.call(r.Context(), d.ID, s.issuer(r), proto.KindPrograms, struct{}{}, &res, time.Minute)
+		if err != nil {
+			sd.Offline = errors.Is(err, ErrOffline)
+			sd.Err = translate(s.lang(r, userFrom(r)), err.Error())
+		} else {
+			sd.Programs = &res
+		}
+	} else if sd.View != "search" || sd.Query != "" {
 		var res proto.WingetResult
 		err := s.call(r.Context(), d.ID, s.issuer(r), proto.KindWinget, a, &res, 4*time.Minute)
 		if err != nil {
@@ -59,6 +75,10 @@ func (s *Server) handleSoftwareAction(w http.ResponseWriter, r *http.Request) {
 	}
 	a := proto.Winget{Action: r.FormValue("action"), ID: strings.TrimSpace(r.FormValue("id"))}
 	back := s.deviceURL(d, "/software?view="+url.QueryEscape(r.FormValue("view"))+"&q="+url.QueryEscape(r.FormValue("q")))
+	if a.Action == "remove" {
+		s.removeProgram(w, r, d, r.FormValue("key"), back)
+		return
+	}
 	switch a.Action {
 	case proto.WingetInstall, proto.WingetUninstall, proto.WingetUpgrade:
 	default:
@@ -89,4 +109,27 @@ func (s *Server) handleSoftwareAction(w http.ResponseWriter, r *http.Request) {
 	}
 	msg := map[string]string{proto.WingetInstall: "%s installed.", proto.WingetUpgrade: "%s updated.", proto.WingetUninstall: "%s uninstalled."}[a.Action]
 	s.redirect(w, r, back, translate(lang, msg, what))
+}
+
+// removeProgram uninstalls an installed program silently; the agent reports
+// success only when its uninstall entry is gone.
+func (s *Server) removeProgram(w http.ResponseWriter, r *http.Request, d *store.Device, key, back string) {
+	if !proto.ValidProgramKey(key) {
+		s.redirect(w, r, back, "Unknown action.")
+		return
+	}
+	_ = http.NewResponseController(w).SetWriteDeadline(time.Time{}) // uninstallers take a while
+	name := strings.TrimSpace(r.FormValue("name"))
+	var res proto.UninstallResult
+	err := s.call(r.Context(), d.ID, s.issuer(r), proto.KindUninstall, proto.Uninstall{Key: key}, &res, 27*time.Minute)
+	if err != nil {
+		s.audit(r, "software.uninstall", deviceTarget(d), "uninstall %s (%s) on %q failed: %v", clip(name, 200), key, d.Hostname, err)
+		s.redirect(w, r, back, err.Error())
+		return
+	}
+	if res.Name != "" {
+		name = res.Name
+	}
+	s.audit(r, "software.uninstall", deviceTarget(d), "uninstalled %s (%s, %s) on %q: exit code %d", name, key, res.Method, d.Hostname, res.ExitCode)
+	s.redirect(w, r, back, translate(s.lang(r, userFrom(r)), "%s uninstalled.", name))
 }

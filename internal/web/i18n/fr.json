@@ -1173,5 +1173,17 @@
   "User guide": "Guide d'utilisation",
   "Users, roles and sign-in": "Utilisateurs, rôles et connexion",
   "Windows updates and software": "Mises à jour Windows et logiciels",
-  "e.g. enrollment code, static address, Let's Encrypt": "p. ex. code d'inscription, adresse fixe, Let's Encrypt"
+  "e.g. enrollment code, static address, Let's Encrypt": "p. ex. code d'inscription, adresse fixe, Let's Encrypt",
+  "All programs in the Windows list of installed programs, for the computer and for signed-in users. Uninstall runs silently; programs without a silent uninstaller have to be removed on the computer or with a script.": "Tous les programmes de la liste Windows des programmes installés, pour l'ordinateur et pour les utilisateurs connectés. La désinstallation est silencieuse ; les programmes sans désinstalleur silencieux doivent être supprimés sur l'ordinateur ou par un script.",
+  "Filter by name or publisher": "Filtrer par nom ou éditeur",
+  "No installed programs found.": "Aucun programme installé trouvé.",
+  "This program has no silent uninstaller; remove it on the computer or with a script.": "Ce programme n'a pas de désinstalleur silencieux ; supprimez-le sur l'ordinateur ou par un script.",
+  "no silent uninstaller": "pas de désinstalleur silencieux",
+  "only for %s": "uniquement pour %s",
+  "this program has no silent uninstaller; remove it on the computer or with a script": "ce programme n'a pas de désinstalleur silencieux ; supprimez-le sur l'ordinateur ou par un script",
+  "the program is not installed anymore; refresh the list": "le programme n'est plus installé ; actualisez la liste",
+  "this user is not signed in anymore; refresh the list": "cet utilisateur n'est plus connecté ; actualisez la liste",
+  "the uninstaller did not finish in 20 minutes": "le désinstalleur ne s'est pas terminé en 20 minutes",
+  "the uninstaller ended, but the program is still installed": "le désinstalleur s'est terminé, mais le programme est toujours installé",
+  "bad program key": "clé de programme invalide"
 }

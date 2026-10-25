@@ -49,6 +49,17 @@ func (u *PatchUpdate) Security() bool {
 	return false
 }
 
+// Definitions reports whether the update is a definition update (Defender
+// signatures), which Windows Update replaces with a new ID several times a day.
+func (u *PatchUpdate) Definitions() bool {
+	for _, c := range u.Categories {
+		if c == "Definition Updates" {
+			return true
+		}
+	}
+	return false
+}
+
 // Upgrade reports whether the update is a Windows feature upgrade (never
 // installed automatically).
 func (u *PatchUpdate) Upgrade() bool {

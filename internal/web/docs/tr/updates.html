@@ -6,6 +6,7 @@
 
 <h2 id="device">Bir cihazda</h2>
 <p>Bir cihazın <b>Güncellemeler</b> sekmesi eksik güncellemeleri kategori ve önem derecesiyle ve yakın zamanda kurulanları listeler. Güncellemeleri seçin ve <b>Seçilenleri kur</b>'a tıklayın; bittiğinde sayfa sonucu gösterir. Yeniden başlatma gerekiyorsa cihaz bunu gösterir ve sayfasından yeniden başlatabilirsiniz.</p>
+<p>Defender tanımları (<i>Security Intelligence Update</i>) günde birkaç kez, her biri yeni bir güncelleştirme kimliğiyle çıkar. Birini yüklediğinizde aracı önce yeniden arar ve Windows Update'in o anda sunduğu tanım sürümünü yükler.</p>
 
 <h2 id="automatic">Otomatik kurulum</h2>
 <p><a href="/settings/updates">Ayarlar → Windows güncellemeleri</a> altında sunucunun kendiliğinden neyi kuracağını seçin:</p>
@@ -21,4 +22,4 @@
 <p>Linux'ta ajan mevcut paket güncellemelerini <b>apt</b> (Debian, Ubuntu; güvenlik güncellemeleri <code>-security</code> kaynaklarından) veya <b>dnf</b> (RHEL ailesi; güvenlik güncellemeleri güncelleme bilgilerinden) ile okur ve seçilen paketleri kurar. Otomatik kurulum Linux cihazlar için de geçerlidir; orada "güvenlik güncellemeleri" güvenlik kaynaklarından gelen paketlerdir.</p>
 
 <h2 id="programs">Programlar (winget)</h2>
-<p>Bir Windows cihazının <b>Programlar</b> sekmesi, winget'in tanıdığı kurulu programları ve mevcut güncellemeleri listeler. <b>Tümünü güncelle</b> hepsini günceller; tek tek programlar güncellenebilir veya kaldırılabilir. <b>Program kur</b>, winget topluluk deposunda arama yapar (örneğin <i>7-Zip</i> veya <i>Chrome</i>) ve programı tüm kullanıcılar için sessizce kurar. Cihazda güncel Windows 10 ve 11 ile gelen winget (Uygulama Yükleyicisi) bulunmalıdır.</p>
+<p>Bir Windows cihazının <b>Programlar</b> sekmesi üç bölümden oluşur. <b>Mevcut güncelleştirmeler</b>, winget'in güncelleyebildiği programları listeler; <b>Tümünü güncelleştir</b> hepsini günceller veya programları tek tek güncelleyebilirsiniz. <b>Yüklü</b>, Windows'un yüklü programlar listesindeki her programı bilgisayar ve oturum açmış kullanıcılar için, ada veya yayımcıya göre filtreyle listeler. <b>Kaldır</b> bir programı sessizce kaldırır: Windows Installer (MSI) paketlerini <code>msiexec /x</code> ile, Inno Setup ve NSIS kaldırıcılarını sessiz parametreleriyle veya programın kendi sessiz komutuyla. Sonuç ancak program gerçekten kaldırıldığında bildirilir; sessiz kaldırıcısı olmayan programlar işaretlenir ve bilgisayarda ya da bir betikle kaldırılmalıdır. <b>Program yükle</b>, winget topluluk deposunda arar (örneğin <i>7-Zip</i> veya <i>Chrome</i>) ve tüm kullanıcılar için sessizce yükler. Yükleme ve güncelleştirme için güncel Windows 10 ve 11 ile gelen winget (App Installer) gerekir.</p>

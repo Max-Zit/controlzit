@@ -1173,5 +1173,17 @@
   "User guide": "Guida per l'utente",
   "Users, roles and sign-in": "Utenti, ruoli e accesso",
   "Windows updates and software": "Aggiornamenti di Windows e software",
-  "e.g. enrollment code, static address, Let's Encrypt": "ad es. codice di registrazione, indirizzo fisso, Let's Encrypt"
+  "e.g. enrollment code, static address, Let's Encrypt": "ad es. codice di registrazione, indirizzo fisso, Let's Encrypt",
+  "All programs in the Windows list of installed programs, for the computer and for signed-in users. Uninstall runs silently; programs without a silent uninstaller have to be removed on the computer or with a script.": "Tutti i programmi dell'elenco di Windows dei programmi installati, per il computer e per gli utenti connessi. La disinstallazione è silenziosa; i programmi senza disinstallazione silenziosa vanno rimossi sul computer o con uno script.",
+  "Filter by name or publisher": "Filtra per nome o editore",
+  "No installed programs found.": "Nessun programma installato trovato.",
+  "This program has no silent uninstaller; remove it on the computer or with a script.": "Questo programma non ha una disinstallazione silenziosa; rimuovilo sul computer o con uno script.",
+  "no silent uninstaller": "nessuna disinstallazione silenziosa",
+  "only for %s": "solo per %s",
+  "this program has no silent uninstaller; remove it on the computer or with a script": "questo programma non ha una disinstallazione silenziosa; rimuovilo sul computer o con uno script",
+  "the program is not installed anymore; refresh the list": "il programma non è più installato; aggiorna l'elenco",
+  "this user is not signed in anymore; refresh the list": "questo utente non è più connesso; aggiorna l'elenco",
+  "the uninstaller did not finish in 20 minutes": "la disinstallazione non è terminata entro 20 minuti",
+  "the uninstaller ended, but the program is still installed": "la disinstallazione è terminata, ma il programma è ancora installato",
+  "bad program key": "chiave del programma non valida"
 }

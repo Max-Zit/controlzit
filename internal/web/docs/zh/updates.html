@@ -6,6 +6,7 @@
 
 <h2 id="device">在一台设备上</h2>
 <p>设备的<b>更新</b>选项卡列出缺少的更新及其类别和严重性，以及最近安装的更新。选择更新并点击<b>安装所选</b>；完成后页面会显示结果。如果需要重启，设备会显示提示，您可以从其页面重启。</p>
+<p>Defender 定义（<i>Security Intelligence Update</i>）每天发布多次，每次都有新的更新 ID。安装时，代理会先重新搜索，然后安装 Windows Update 当时提供的定义版本。</p>
 
 <h2 id="automatic">自动安装</h2>
 <p>在<a href="/settings/updates">设置 → Windows 更新</a>中选择服务器自动安装的内容：</p>
@@ -21,4 +22,4 @@
 <p>在 Linux 上，代理通过 <b>apt</b>（Debian、Ubuntu；安全更新来自 <code>-security</code> 源）或 <b>dnf</b>（RHEL 系列；安全更新依据更新信息）读取可用的软件包更新，并安装所选软件包。自动安装同样适用于 Linux 设备；在那里，“安全更新”指来自安全源的软件包。</p>
 
 <h2 id="programs">程序（winget）</h2>
-<p>Windows 设备的<b>程序</b>选项卡列出 winget 识别的已安装程序和可用更新。<b>全部更新</b>会更新它们；单个程序可以更新或卸载。<b>安装程序</b>会在 winget 社区存储库中搜索（例如 <i>7-Zip</i> 或 <i>Chrome</i>），并为所有用户静默安装。设备需要 winget（应用安装程序），它随附于最新的 Windows 10 和 11。</p>
+<p>Windows 设备的<b>程序</b>选项卡分为三部分。<b>可用更新</b>列出 winget 可以更新的程序；<b>全部更新</b>会更新它们，也可以单独更新程序。<b>已安装</b>列出 Windows 已安装程序列表中的每个程序，包括计算机级和已登录用户的程序，并可按名称或发布者筛选。<b>卸载</b>以静默方式删除程序：Windows Installer（MSI）包使用 <code>msiexec /x</code>，Inno Setup 和 NSIS 卸载程序使用其静默参数，或使用程序自带的静默命令。只有在程序确实被删除后才会报告结果；没有静默卸载程序的程序会被标记，需要在计算机上或通过脚本删除。<b>安装程序</b>在 winget 社区存储库中搜索（例如 <i>7-Zip</i> 或 <i>Chrome</i>），并为所有用户静默安装。安装和更新需要 winget（App Installer），当前的 Windows 10 和 11 已自带。</p>

@@ -1173,5 +1173,17 @@
   "User guide": "Příručka",
   "Users, roles and sign-in": "Uživatelé, role a přihlášení",
   "Windows updates and software": "Aktualizace Windows a software",
-  "e.g. enrollment code, static address, Let's Encrypt": "např. registrační kód, pevná adresa, Let's Encrypt"
+  "e.g. enrollment code, static address, Let's Encrypt": "např. registrační kód, pevná adresa, Let's Encrypt",
+  "All programs in the Windows list of installed programs, for the computer and for signed-in users. Uninstall runs silently; programs without a silent uninstaller have to be removed on the computer or with a script.": "Všechny programy ze seznamu nainstalovaných programů Windows, pro počítač i pro přihlášené uživatele. Odinstalace probíhá potichu; programy bez tichého odinstalátoru odeberte na počítači nebo skriptem.",
+  "Filter by name or publisher": "Filtrovat podle názvu nebo vydavatele",
+  "No installed programs found.": "Nebyly nalezeny žádné nainstalované programy.",
+  "This program has no silent uninstaller; remove it on the computer or with a script.": "Tento program nemá tichý odinstalátor; odeberte ho na počítači nebo skriptem.",
+  "no silent uninstaller": "bez tichého odinstalátoru",
+  "only for %s": "jen pro %s",
+  "this program has no silent uninstaller; remove it on the computer or with a script": "tento program nemá tichý odinstalátor; odeberte ho na počítači nebo skriptem",
+  "the program is not installed anymore; refresh the list": "program už není nainstalován; obnovte seznam",
+  "this user is not signed in anymore; refresh the list": "tento uživatel už není přihlášen; obnovte seznam",
+  "the uninstaller did not finish in 20 minutes": "odinstalátor neskončil do 20 minut",
+  "the uninstaller ended, but the program is still installed": "odinstalátor skončil, ale program je stále nainstalován",
+  "bad program key": "neplatný klíč programu"
 }

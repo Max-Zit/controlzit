@@ -1173,5 +1173,17 @@
   "User guide": "使用指南",
   "Users, roles and sign-in": "用户、角色与登录",
   "Windows updates and software": "Windows 更新与软件",
-  "e.g. enrollment code, static address, Let's Encrypt": "例如：注册码、固定地址、Let's Encrypt"
+  "e.g. enrollment code, static address, Let's Encrypt": "例如：注册码、固定地址、Let's Encrypt",
+  "All programs in the Windows list of installed programs, for the computer and for signed-in users. Uninstall runs silently; programs without a silent uninstaller have to be removed on the computer or with a script.": "Windows 已安装程序列表中的所有程序，包括计算机级和已登录用户的程序。卸载以静默方式运行；没有静默卸载程序的程序需要在计算机上或通过脚本删除。",
+  "Filter by name or publisher": "按名称或发布者筛选",
+  "No installed programs found.": "未找到已安装的程序。",
+  "This program has no silent uninstaller; remove it on the computer or with a script.": "此程序没有静默卸载程序；请在计算机上或通过脚本删除。",
+  "no silent uninstaller": "无静默卸载程序",
+  "only for %s": "仅限 %s",
+  "this program has no silent uninstaller; remove it on the computer or with a script": "此程序没有静默卸载程序；请在计算机上或通过脚本删除",
+  "the program is not installed anymore; refresh the list": "该程序已不再安装；请刷新列表",
+  "this user is not signed in anymore; refresh the list": "该用户已不再登录；请刷新列表",
+  "the uninstaller did not finish in 20 minutes": "卸载程序未在 20 分钟内完成",
+  "the uninstaller ended, but the program is still installed": "卸载程序已结束，但程序仍已安装",
+  "bad program key": "无效的程序键"
 }

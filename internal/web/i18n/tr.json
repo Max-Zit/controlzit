@@ -1173,5 +1173,17 @@
   "User guide": "Kullanım kılavuzu",
   "Users, roles and sign-in": "Kullanıcılar, roller ve giriş",
   "Windows updates and software": "Windows güncellemeleri ve yazılımlar",
-  "e.g. enrollment code, static address, Let's Encrypt": "ör. kayıt kodu, sabit adres, Let's Encrypt"
+  "e.g. enrollment code, static address, Let's Encrypt": "ör. kayıt kodu, sabit adres, Let's Encrypt",
+  "All programs in the Windows list of installed programs, for the computer and for signed-in users. Uninstall runs silently; programs without a silent uninstaller have to be removed on the computer or with a script.": "Windows'un yüklü programlar listesindeki tüm programlar, bilgisayar ve oturum açmış kullanıcılar için. Kaldırma sessiz çalışır; sessiz kaldırıcısı olmayan programları bilgisayarda veya bir betikle kaldırın.",
+  "Filter by name or publisher": "Ada veya yayımcıya göre filtrele",
+  "No installed programs found.": "Yüklü program bulunamadı.",
+  "This program has no silent uninstaller; remove it on the computer or with a script.": "Bu programın sessiz kaldırıcısı yok; bilgisayarda veya bir betikle kaldırın.",
+  "no silent uninstaller": "sessiz kaldırıcı yok",
+  "only for %s": "yalnızca %s için",
+  "this program has no silent uninstaller; remove it on the computer or with a script": "bu programın sessiz kaldırıcısı yok; bilgisayarda veya bir betikle kaldırın",
+  "the program is not installed anymore; refresh the list": "program artık yüklü değil; listeyi yenileyin",
+  "this user is not signed in anymore; refresh the list": "bu kullanıcı artık oturum açmış değil; listeyi yenileyin",
+  "the uninstaller did not finish in 20 minutes": "kaldırıcı 20 dakika içinde bitmedi",
+  "the uninstaller ended, but the program is still installed": "kaldırıcı bitti, ancak program hâlâ yüklü",
+  "bad program key": "geçersiz program anahtarı"
 }

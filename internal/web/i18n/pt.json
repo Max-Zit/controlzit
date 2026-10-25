@@ -1173,5 +1173,17 @@
   "User guide": "Guia do utilizador",
   "Users, roles and sign-in": "Utilizadores, funções e início de sessão",
   "Windows updates and software": "Atualizações do Windows e software",
-  "e.g. enrollment code, static address, Let's Encrypt": "p. ex. código de registo, endereço fixo, Let's Encrypt"
+  "e.g. enrollment code, static address, Let's Encrypt": "p. ex. código de registo, endereço fixo, Let's Encrypt",
+  "All programs in the Windows list of installed programs, for the computer and for signed-in users. Uninstall runs silently; programs without a silent uninstaller have to be removed on the computer or with a script.": "Todos os programas da lista do Windows de programas instalados, para o computador e para os usuários conectados. A desinstalação é silenciosa; programas sem desinstalador silencioso devem ser removidos no computador ou com um script.",
+  "Filter by name or publisher": "Filtrar por nome ou editor",
+  "No installed programs found.": "Nenhum programa instalado encontrado.",
+  "This program has no silent uninstaller; remove it on the computer or with a script.": "Este programa não tem desinstalador silencioso; remova-o no computador ou com um script.",
+  "no silent uninstaller": "sem desinstalador silencioso",
+  "only for %s": "apenas para %s",
+  "this program has no silent uninstaller; remove it on the computer or with a script": "este programa não tem desinstalador silencioso; remova-o no computador ou com um script",
+  "the program is not installed anymore; refresh the list": "o programa não está mais instalado; atualize a lista",
+  "this user is not signed in anymore; refresh the list": "este usuário não está mais conectado; atualize a lista",
+  "the uninstaller did not finish in 20 minutes": "o desinstalador não terminou em 20 minutos",
+  "the uninstaller ended, but the program is still installed": "o desinstalador terminou, mas o programa ainda está instalado",
+  "bad program key": "chave de programa inválida"
 }

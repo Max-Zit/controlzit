@@ -1173,5 +1173,17 @@
   "User guide": "Руководство",
   "Users, roles and sign-in": "Пользователи, роли и вход",
   "Windows updates and software": "Обновления Windows и программы",
-  "e.g. enrollment code, static address, Let's Encrypt": "например, код регистрации, постоянный адрес, Let's Encrypt"
+  "e.g. enrollment code, static address, Let's Encrypt": "например, код регистрации, постоянный адрес, Let's Encrypt",
+  "All programs in the Windows list of installed programs, for the computer and for signed-in users. Uninstall runs silently; programs without a silent uninstaller have to be removed on the computer or with a script.": "Все программы из списка установленных программ Windows — для компьютера и для вошедших пользователей. Удаление выполняется без вопросов; программы без тихого деинсталлятора удалите на компьютере или скриптом.",
+  "Filter by name or publisher": "Фильтр по названию или издателю",
+  "No installed programs found.": "Установленные программы не найдены.",
+  "This program has no silent uninstaller; remove it on the computer or with a script.": "У этой программы нет тихого деинсталлятора; удалите её на компьютере или скриптом.",
+  "no silent uninstaller": "нет тихого деинсталлятора",
+  "only for %s": "только для %s",
+  "this program has no silent uninstaller; remove it on the computer or with a script": "у этой программы нет тихого деинсталлятора; удалите её на компьютере или скриптом",
+  "the program is not installed anymore; refresh the list": "программа больше не установлена; обновите список",
+  "this user is not signed in anymore; refresh the list": "этот пользователь больше не в системе; обновите список",
+  "the uninstaller did not finish in 20 minutes": "деинсталлятор не завершился за 20 минут",
+  "the uninstaller ended, but the program is still installed": "деинсталлятор завершился, но программа всё ещё установлена",
+  "bad program key": "неверный ключ программы"
 }

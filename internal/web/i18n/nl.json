@@ -1173,5 +1173,17 @@
   "User guide": "Handleiding",
   "Users, roles and sign-in": "Gebruikers, rollen en aanmelden",
   "Windows updates and software": "Windows-updates en software",
-  "e.g. enrollment code, static address, Let's Encrypt": "bijv. registratiecode, vast adres, Let's Encrypt"
+  "e.g. enrollment code, static address, Let's Encrypt": "bijv. registratiecode, vast adres, Let's Encrypt",
+  "All programs in the Windows list of installed programs, for the computer and for signed-in users. Uninstall runs silently; programs without a silent uninstaller have to be removed on the computer or with a script.": "Alle programma's uit de Windows-lijst van geïnstalleerde programma's, voor de computer en voor aangemelde gebruikers. Verwijderen gebeurt stil; programma's zonder stil verwijderprogramma verwijdert u op de computer of met een script.",
+  "Filter by name or publisher": "Filteren op naam of uitgever",
+  "No installed programs found.": "Geen geïnstalleerde programma's gevonden.",
+  "This program has no silent uninstaller; remove it on the computer or with a script.": "Dit programma heeft geen stil verwijderprogramma; verwijder het op de computer of met een script.",
+  "no silent uninstaller": "geen stil verwijderprogramma",
+  "only for %s": "alleen voor %s",
+  "this program has no silent uninstaller; remove it on the computer or with a script": "dit programma heeft geen stil verwijderprogramma; verwijder het op de computer of met een script",
+  "the program is not installed anymore; refresh the list": "het programma is niet meer geïnstalleerd; vernieuw de lijst",
+  "this user is not signed in anymore; refresh the list": "deze gebruiker is niet meer aangemeld; vernieuw de lijst",
+  "the uninstaller did not finish in 20 minutes": "het verwijderprogramma was niet binnen 20 minuten klaar",
+  "the uninstaller ended, but the program is still installed": "het verwijderprogramma is klaar, maar het programma is nog geïnstalleerd",
+  "bad program key": "ongeldige programmasleutel"
 }

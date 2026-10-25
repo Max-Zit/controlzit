@@ -1173,5 +1173,17 @@
   "Monitoring, alerts and notifications": "Nadzor, upozorenja i obaveštenja",
   "Users, roles and sign-in": "Korisnici, uloge i prijava",
   "Server settings and updates": "Podešavanja i ažuriranje servera",
-  "Troubleshooting and FAQ": "Rešavanje problema i česta pitanja"
+  "Troubleshooting and FAQ": "Rešavanje problema i česta pitanja",
+  "All programs in the Windows list of installed programs, for the computer and for signed-in users. Uninstall runs silently; programs without a silent uninstaller have to be removed on the computer or with a script.": "Svi programi sa Windows liste instaliranih programa, za računar i za prijavljene korisnike. Deinstalacija radi tiho; programe bez tihog deinstalera uklonite na računaru ili skriptom.",
+  "Filter by name or publisher": "Filtriraj po nazivu ili izdavaču",
+  "No installed programs found.": "Nije pronađen nijedan instaliran program.",
+  "This program has no silent uninstaller; remove it on the computer or with a script.": "Ovaj program nema tihi deinstaler; uklonite ga na računaru ili skriptom.",
+  "no silent uninstaller": "nema tihi deinstaler",
+  "only for %s": "samo za %s",
+  "this program has no silent uninstaller; remove it on the computer or with a script": "ovaj program nema tihi deinstaler; uklonite ga na računaru ili skriptom",
+  "the program is not installed anymore; refresh the list": "program više nije instaliran; osvežite listu",
+  "this user is not signed in anymore; refresh the list": "ovaj korisnik više nije prijavljen; osvežite listu",
+  "the uninstaller did not finish in 20 minutes": "deinstaler nije završio za 20 minuta",
+  "the uninstaller ended, but the program is still installed": "deinstaler je završio, ali je program i dalje instaliran",
+  "bad program key": "neispravan ključ programa"
 }

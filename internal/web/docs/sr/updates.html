@@ -6,6 +6,7 @@
 
 <h2 id="device">Na uređaju</h2>
 <p>Kartica <b>Ažuriranja</b> uređaja pokazuje nedostajuća ažuriranja sa kategorijom i važnošću i nedavno instalirana. Označite ažuriranja i kliknite <b>Instaliraj izabrana</b>; stranica pokazuje rezultat kad se završi. Ako je potreban restart, uređaj to pokazuje, a restart možete pokrenuti sa njegove stranice.</p>
+<p>Defender definicije (<i>Security Intelligence Update</i>) izlaze nekoliko puta dnevno, svaka sa novim ID-jem ažuriranja. Kada je instalirate, agent prvo ponovo pretraži i instalira verziju definicija koju Windows Update nudi u tom trenutku.</p>
 
 <h2 id="automatic">Automatska instalacija</h2>
 <p>U <a href="/settings/updates">Podešavanja → Windows ažuriranja</a> birate šta server instalira sam:</p>
@@ -21,4 +22,4 @@
 <p>Na Linuxu agent čita dostupna ažuriranja paketa preko <b>apt-a</b> (Debian, Ubuntu; bezbednosna ažuriranja iz <code>-security</code> izvora) ili <b>dnf-a</b> (RHEL porodica; bezbednosna iz informacija o ažuriranjima) i instalira izabrane pakete. Automatska instalacija važi i za Linux uređaje; tamo su „bezbednosna ažuriranja” paketi iz bezbednosnih izvora.</p>
 
 <h2 id="programs">Programi (winget)</h2>
-<p>Kartica <b>Programi</b> Windows uređaja pokazuje instalirane programe koje winget poznaje i dostupna ažuriranja. <b>Ažuriraj sve</b> ih ažurira; pojedinačni programi se mogu ažurirati ili deinstalirati. <b>Instaliraj program</b> pretražuje winget repozitorijum zajednice (na primer <i>7-Zip</i> ili <i>Chrome</i>) i instalira ga tiho za sve korisnike. Uređaju treba winget (App Installer), koji dolazi sa aktuelnim Windowsom 10 i 11.</p>
+<p>Kartica <b>Programi</b> Windows uređaja ima tri dela. <b>Dostupna ažuriranja</b> prikazuje programe koje winget može da ažurira; <b>Ažuriraj sve</b> ih ažurira, a možete ažurirati i pojedinačne programe. <b>Instalirani</b> prikazuje svaki program sa Windows liste instaliranih programa, za računar i za prijavljene korisnike, sa filterom po nazivu ili izdavaču. <b>Deinstaliraj</b> uklanja program tiho: Windows Installer (MSI) pakete sa <code>msiexec /x</code>, Inno Setup i NSIS deinstalere sa njihovim tihim parametrom, ili sopstvenom tihom komandom programa. Rezultat se javlja tek kada program zaista nestane; programi bez tihog deinstalera su označeni i uklanjaju se na računaru ili skriptom. <b>Instaliraj program</b> pretražuje winget repozitorijum zajednice (na primer <i>7-Zip</i> ili <i>Chrome</i>) i instalira program tiho za sve korisnike. Za instalaciju i ažuriranje potreban je winget (App Installer), koji dolazi uz aktuelni Windows 10 i 11.</p>

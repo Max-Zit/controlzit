@@ -1173,5 +1173,17 @@
   "User guide": "ユーザーガイド",
   "Users, roles and sign-in": "ユーザー、ロール、サインイン",
   "Windows updates and software": "Windows 更新とソフトウェア",
-  "e.g. enrollment code, static address, Let's Encrypt": "例: 登録コード、固定アドレス、Let's Encrypt"
+  "e.g. enrollment code, static address, Let's Encrypt": "例: 登録コード、固定アドレス、Let's Encrypt",
+  "All programs in the Windows list of installed programs, for the computer and for signed-in users. Uninstall runs silently; programs without a silent uninstaller have to be removed on the computer or with a script.": "Windows のインストール済みプログラム一覧にあるすべてのプログラム（コンピューター全体とサインイン中のユーザー）。アンインストールはサイレントで実行されます。サイレントアンインストーラーのないプログラムは、コンピューター上またはスクリプトで削除してください。",
+  "Filter by name or publisher": "名前または発行元で絞り込む",
+  "No installed programs found.": "インストール済みのプログラムが見つかりません。",
+  "This program has no silent uninstaller; remove it on the computer or with a script.": "このプログラムにはサイレントアンインストーラーがありません。コンピューター上またはスクリプトで削除してください。",
+  "no silent uninstaller": "サイレントアンインストーラーなし",
+  "only for %s": "%s のみ",
+  "this program has no silent uninstaller; remove it on the computer or with a script": "このプログラムにはサイレントアンインストーラーがありません。コンピューター上またはスクリプトで削除してください",
+  "the program is not installed anymore; refresh the list": "プログラムはすでにインストールされていません。一覧を更新してください",
+  "this user is not signed in anymore; refresh the list": "このユーザーはすでにサインインしていません。一覧を更新してください",
+  "the uninstaller did not finish in 20 minutes": "アンインストーラーが 20 分以内に終了しませんでした",
+  "the uninstaller ended, but the program is still installed": "アンインストーラーは終了しましたが、プログラムはまだインストールされています",
+  "bad program key": "無効なプログラムキー"
 }

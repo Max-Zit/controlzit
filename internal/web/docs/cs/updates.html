@@ -6,6 +6,7 @@
 
 <h2 id="device">Na zařízení</h2>
 <p>Karta <b>Aktualizace</b> zařízení ukazuje chybějící aktualizace s kategorií a závažností a nedávno nainstalované. Vyberte aktualizace a klikněte na <b>Instalovat vybrané</b>; stránka ukáže výsledek po dokončení. Je-li potřeba restart, zařízení to ukáže a restart spustíte z jeho stránky.</p>
+<p>Definice Defenderu (<i>Security Intelligence Update</i>) vycházejí několikrát denně, každá s novým ID aktualizace. Když jednu instalujete, agent nejprve znovu vyhledá a nainstaluje verzi definic, kterou Windows Update nabízí v tu chvíli.</p>
 
 <h2 id="automatic">Automatická instalace</h2>
 <p>V <a href="/settings/updates">Nastavení → Aktualizace Windows</a> zvolte, co server instaluje sám:</p>
@@ -21,4 +22,4 @@
 <p>Na Linuxu agent čte dostupné aktualizace balíčků přes <b>apt</b> (Debian, Ubuntu; bezpečnostní aktualizace ze zdrojů <code>-security</code>) nebo <b>dnf</b> (rodina RHEL; bezpečnostní aktualizace z informací o aktualizacích) a instaluje vybrané balíčky. Automatická instalace platí i pro zařízení s Linuxem; tam jsou „bezpečnostní aktualizace“ balíčky z bezpečnostních zdrojů.</p>
 
 <h2 id="programs">Programy (winget)</h2>
-<p>Karta <b>Programy</b> zařízení s Windows ukazuje nainstalované programy, které winget zná, a dostupné aktualizace. <b>Aktualizovat vše</b> je aktualizuje; jednotlivé programy lze aktualizovat nebo odinstalovat. <b>Nainstalovat program</b> hledá v komunitním repozitáři winget (například <i>7-Zip</i> nebo <i>Chrome</i>) a nainstaluje jej tiše pro všechny uživatele. Zařízení potřebuje winget (Instalační služba aplikace), který je součástí aktuálních Windows 10 a 11.</p>
+<p>Karta <b>Programy</b> zařízení s Windows má tři části. <b>Dostupné aktualizace</b> ukazuje programy, které winget umí aktualizovat; <b>Aktualizovat vše</b> je aktualizuje, nebo aktualizujte jednotlivé programy. <b>Nainstalované</b> ukazuje každý program ze seznamu nainstalovaných programů Windows, pro počítač i pro přihlášené uživatele, s filtrem podle názvu nebo vydavatele. <b>Odinstalovat</b> odebere program potichu: balíčky Windows Installer (MSI) přes <code>msiexec /x</code>, odinstalátory Inno Setup a NSIS s jejich tichým přepínačem, nebo vlastním tichým příkazem programu. Výsledek se hlásí až ve chvíli, kdy program opravdu zmizí; programy bez tichého odinstalátoru jsou označené a je třeba je odebrat na počítači nebo skriptem. <b>Nainstalovat program</b> hledá v komunitním repozitáři winget (například <i>7-Zip</i> nebo <i>Chrome</i>) a instaluje potichu pro všechny uživatele. Instalace a aktualizace potřebují winget (App Installer), který je součástí aktuálních Windows 10 a 11.</p>
