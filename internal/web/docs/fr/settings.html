@@ -1,0 +1,40 @@
+<h1>Paramètres et mises à jour du serveur</h1>
+<p class="lead">Les administrateurs trouvent les paramètres du serveur dans <a href="/settings">Paramètres</a> : réseau et ports, certificat, fuseau horaire, mises à jour du serveur et des agents, et diagnostic pour le support.</p>
+
+<h2 id="network">Réseau et accès</h2>
+<p>Dans <a href="/settings/network">Paramètres → Réseau et accès</a> :</p>
+<ul>
+  <li><b>Console</b> — adresse et port d'écoute (par défaut <code>:8443</code>) et les <b>réseaux autorisés</b> : une adresse IP ou un réseau par ligne (CIDR). Les connexions d'autres adresses sont fermées avant TLS ; le serveur lui-même (127.0.0.1) est toujours autorisé. L'enregistrement refuse une liste qui bloquerait votre propre adresse.</li>
+  <li><b>Point d'accès des agents</b> — adresse et port d'écoute (par défaut <code>:8444</code>, différent de la console), les réseaux d'où les agents peuvent venir (vide = tous) et l'<b>adresse publique des agents</b> inscrite dans les installateurs et les codes d'inscription.</li>
+  <li>Les nouveaux ports s'appliquent après <b>Redémarrer maintenant</b> (redémarre le service ControlZit ; les agents se reconnectent d'eux-mêmes).</li>
+</ul>
+<p>Si vous vous bloquez, lancez <code>controlzit-server --reset-allowlist</code> sur le serveur (appliance : menu de configuration, élément 5).</p>
+
+<h3 id="server-network">Réseau du serveur (appliance)</h3>
+<p>Sur l'appliance ControlZit, le réseau du serveur lui-même se règle aussi ici : DHCP ou adresse fixe avec taille du réseau (p. ex. <code>192.168.1.20/24</code>), passerelle, un à trois serveurs DNS et nom du serveur. Si la passerelle ne répond pas avec les nouveaux paramètres, les précédents reviennent d'eux-mêmes après 30 secondes. Sur les autres installations, c'est le système d'exploitation qui gère le réseau.</p>
+
+<h3 id="timezone">Fuseau horaire</h3>
+<p>Les planifications (mises à jour, scripts, rapports) et les heures de la console utilisent le fuseau horaire du serveur. Choisissez-le dans la liste et cliquez sur <b>Définir</b> ; la console redémarre et revient en quelques secondes. Sans l'assistant root (voir ci-dessous), réglez-le sur le serveur : <code>timedatectl set-timezone Europe/Paris</code>.</p>
+
+<h2 id="certificate">Certificat (HTTPS)</h2>
+<p>Dans <a href="/settings/certificate">Paramètres → Certificat</a>, choisissez le certificat que voient les navigateurs en ouvrant la console. Les agents utilisent leur propre port et leur propre certificat : le modifier ne les déconnecte jamais.</p>
+<ul>
+  <li><b>Le certificat propre de la console</b> (auto-signé) — fonctionne immédiatement ; les navigateurs avertissent.</li>
+  <li><b>Let's Encrypt</b> — un certificat gratuit, renouvelé automatiquement 30 jours avant son expiration. Saisissez le nom DNS public de la console et une adresse e-mail, et choisissez la vérification :
+    <ul>
+      <li><b>port 80</b> — le nom pointe vers ce serveur et le port 80 est joignable depuis Internet ; le serveur répond sur le port 80 et redirige les navigateurs vers HTTPS ;</li>
+      <li><b>DNS Cloudflare</b> — pour les serveurs non joignables depuis Internet ; nécessite un jeton d'API Cloudflare avec <code>Zone:DNS:Edit</code> pour la zone.</li>
+    </ul>
+  </li>
+  <li><b>Téléverser un certificat</b> de votre autorité de certification ou de l'AC de l'entreprise : le certificat (PEM, avec les certificats intermédiaires) et la clé privée. La clé n'est stockée que sur ce serveur.</li>
+</ul>
+
+<h2 id="server-updates">Mises à jour du serveur</h2>
+<p><a href="/settings/version">Paramètres → Mises à jour de ControlZit</a> affiche la version en cours et la dernière version publiée. <b>Installer</b> met le serveur à jour : seules les versions signées avec la clé de publication ControlZit sont installées ; avant l'installation, le serveur sauvegarde sa base de données et son programme, et si la nouvelle version ne démarre pas, il revient de lui-même à l'ancienne. La console est indisponible une ou deux minutes. En option, les nouvelles versions s'installent automatiquement à une heure choisie.</p>
+<div class="callout"><p>Les mises à jour, le fuseau horaire et le réseau nécessitent l'<b>assistant root</b> fourni avec les paquets Linux et l'appliance. Sans lui (p. ex. le programme seul), mettez à jour avec <code>install.sh</code> ou le paquet de la version.</p></div>
+
+<h2 id="agent-updates">Mises à jour des agents</h2>
+<p>Voir <a href="/docs/agents#updates">Installer les agents → Mises à jour des agents</a>.</p>
+
+<h2 id="diagnostics">Diagnostic</h2>
+<p><a href="/settings/diagnostics">Paramètres → Diagnostic</a> montre où ControlZit écrit ses journaux, les dernières lignes du journal du serveur (filtre par niveau ou texte), le journal de l'assistant root et les versions. <b>Télécharger le diagnostic (ZIP)</b> crée un fichier pour le support avec les journaux, les versions et un résumé des paramètres, les appareils, les alertes et le journal d'audit. Les mots de passe, jetons, codes d'inscription et clés sont retirés de tout ce qui est affiché et du fichier ; les scripts et leur sortie ne sont pas inclus.</p>

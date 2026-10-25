@@ -1,0 +1,58 @@
+<h1>Installer le serveur</h1>
+<p class="lead">Choisissez l'une des quatre méthodes. L'image VM prête à l'emploi est la plus rapide ; le script d'installation convient à un serveur Linux existant.</p>
+
+<table>
+  <tr><th>Méthode</th><th>Idéale pour</th><th>Nécessite</th></tr>
+  <tr><td><b>1. Image VM</b> (OVA, qcow2, VHDX)</td><td>importer, démarrer, se connecter, en quelques minutes</td><td>VMware, Proxmox / KVM ou Hyper-V</td></tr>
+  <tr><td><b>2. ISO de l'appliance</b></td><td>une nouvelle VM ou un serveur physique, sans intervention</td><td>un accès Internet pendant l'installation</td></tr>
+  <tr><td><b>3. Script d'installation</b></td><td>un serveur Debian, Ubuntu, AlmaLinux ou Rocky Linux existant</td><td>root et un accès Internet</td></tr>
+  <tr><td><b>4. Paquets à la main</b></td><td>votre propre PostgreSQL, gestion de configuration, serveurs hors ligne</td><td>le paquet deb ou rpm d'une version</td></tr>
+</table>
+<p>Tous les fichiers sont sur la <a href="https://github.com/Max-Zit/controlzit/releases/latest" target="_blank" rel="noopener">page des versions</a>. Donnez au serveur 2 vCPU, 2–4 Go de RAM et un disque d'au moins 16 Go.</p>
+
+<h2 id="image">1. Image VM</h2>
+<ol>
+  <li>Importez l'image :
+    <ul>
+      <li><b>VMware ESXi / Workstation, VirtualBox :</b> déployez <code>controlzit-appliance.ova</code> (<i>Create / Register VM → Deploy a virtual machine from an OVF or OVA file</i>).</li>
+      <li><b>Proxmox VE :</b> créez une VM sans disque (2 vCPU, 2–4 Go de RAM, réseau VirtIO), copiez <code>controlzit-appliance.qcow2</code> sur le nœud et lancez <code>qm importdisk &lt;vmid&gt; controlzit-appliance.qcow2 local-lvm</code> ; attachez le disque en SCSI et faites-en le disque de démarrage.</li>
+      <li><b>Hyper-V :</b> décompressez <code>controlzit-appliance-vhdx.zip</code> et créez une VM de <b>génération 1</b> avec le VHDX comme disque.</li>
+    </ul>
+  </li>
+  <li>Démarrez la VM. Le disque s'agrandit tout seul à la taille du disque virtuel. L'écran de la VM affiche <b>l'adresse de la console et le jeton de configuration</b>.</li>
+  <li>Ouvrez <code>https://&lt;adresse&gt;:8443</code>. Le navigateur avertit une fois au sujet du certificat auto-signé (remplacez-le plus tard dans <a href="/settings/certificate">Paramètres → Certificat</a>). Saisissez le jeton et créez le premier administrateur.</li>
+</ol>
+<p>L'appliance obtient son adresse par DHCP. Pour une adresse fixe, le nom du serveur ou le fuseau horaire, connectez-vous sur l'écran de la VM en tant que <code>czadmin</code> (premier mot de passe <code>controlzit</code>, à changer) : un menu de configuration s'ouvre. Le fuseau horaire et le réseau peuvent aussi être modifiés plus tard dans la console.</p>
+
+<h2 id="iso">2. ISO de l'appliance</h2>
+<ol>
+  <li>Démarrez une VM ou un serveur sur <code>controlzit-appliance.iso</code>. Après 5 secondes l'installation démarre seule : elle <b>efface le premier disque</b>, installe Debian, PostgreSQL et ControlZit et nécessite un accès Internet (10–20 minutes).</li>
+  <li>Après le redémarrage, l'écran affiche l'adresse de la console et le jeton de configuration, comme avec l'image VM.</li>
+</ol>
+
+<h2 id="script">3. Script d'installation</h2>
+<p>Sur un serveur Linux existant, en root :</p>
+<pre>curl -fsSL https://github.com/Max-Zit/controlzit/releases/latest/download/install.sh | sudo sh</pre>
+<p>Le script installe PostgreSQL, télécharge la dernière version, <b>vérifie sa signature</b>, crée une base de données avec un mot de passe aléatoire et démarre le service. Options (après <code>sh -s --</code>) : <code>--version X</code>, <code>--db postgres://…</code> pour une base existante, <code>--no-auto-updates</code> pour laisser désactivées les mises à jour de sécurité automatiques du système. Le relancer met ControlZit à jour en conservant les données.</p>
+
+<h2 id="packages">4. Paquets à la main</h2>
+<pre>sudo apt install ./controlzit-server_X_amd64.deb      # Debian, Ubuntu
+sudo dnf install ./controlzit-server-X-1.x86_64.rpm     # AlmaLinux, Rocky Linux</pre>
+<p>Indiquez ensuite l'adresse de la base dans <code>/etc/controlzit/server.env</code> (<code>CONTROLZIT_DB=postgres://…</code>) et démarrez le service avec <code>systemctl enable --now controlzit-server</code>.</p>
+
+<h2 id="first-sign-in">Première connexion</h2>
+<ul>
+  <li>Le jeton de configuration se trouve dans <code>/var/lib/controlzit/setup-token.txt</code> et dans le journal du serveur (<code>journalctl -u controlzit-server</code>). Il ne sert qu'une fois.</li>
+  <li>Chaque compte nécessite une <b>application d'authentification</b> (TOTP) et reçoit 10 codes de récupération. Conservez-les en lieu sûr.</li>
+  <li>Par défaut la console n'accepte que les connexions des <b>réseaux privés</b>. Si vous vous bloquez, lancez <code>controlzit-server --reset-allowlist</code> sur le serveur (appliance : menu de configuration, élément 5).</li>
+</ul>
+
+<h2 id="files">Où se trouvent les éléments</h2>
+<table>
+  <tr><th>Chemin</th><th>Contenu</th></tr>
+  <tr><td><code>/etc/controlzit/server.env</code></td><td>configuration : base de données, ports, source des mises à jour (lisible seulement par root et le service)</td></tr>
+  <tr><td><code>/var/lib/controlzit</code></td><td>répertoire de données : certificats, clé secrète, installateurs des agents (<code>downloads</code>), journaux</td></tr>
+  <tr><td><code>/var/lib/controlzit/logs/server.log</code></td><td>journal du serveur ; aussi dans <code>journalctl -u controlzit-server</code></td></tr>
+  <tr><td><code>/var/log/controlzit-helper</code></td><td>journal de l'assistant root (mises à jour, fuseau horaire, réseau)</td></tr>
+</table>
+<div class="callout warn"><p>Sauvegardez la base de données avec <code>/var/lib/controlzit</code> : la clé secrète qui s'y trouve déchiffre les mots de passe enregistrés et les certificats identifient le serveur auprès de ses agents.</p></div>

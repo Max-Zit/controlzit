@@ -1,0 +1,18 @@
+<h1>Skripte i zakazani poslovi</h1>
+<p class="lead">Pokrećite PowerShell, cmd, bash ili sh na jednom uređaju, na više uređaja odjednom ili po rasporedu. Skripte rade kao SYSTEM (Windows) ili root (Linux), bez prozora.</p>
+
+<h2 id="single">Na jednom uređaju</h2>
+<p>Na stranici uređaja otvorite <b>Skripte</b>, izaberite ljusku, napišite skriptu (ili je učitajte iz biblioteke) i postavite vremensko ograničenje (5–1500 sekundi). Stranica čeka rezultat i pokazuje izlazni kod i izlaz (prvi 1 MB). Ranija pokretanja ostaju na spisku; <b>Izmeni i pokreni ponovo</b> otvara pokretanje kao novu skriptu.</p>
+
+<h2 id="library">Biblioteka skripti</h2>
+<p>Skripte koje često koristite sačuvajte u <a href="/scripts">Skripte → Biblioteka skripti</a>, sa imenom i opisom. Odatle skriptu pokrećete na izabranim uređajima, na svim uređajima nekih klijenata ili na svim uređajima.</p>
+
+<h2 id="jobs">Poslovi</h2>
+<p>Pokretanje skripte iz biblioteke na više uređaja pravi <b>posao</b>. Stranica posla pokazuje svaki uređaj sa stanjem (čeka, radi, uspelo, neuspelo, isteklo) i izlazom. Izlazni kod 0 se računa kao uspeh. Uređaji van mreže pokreću skriptu kad se povežu, u roku od 24 sata; posle toga se računaju kao istekli.</p>
+
+<h2 id="schedules">Rasporedi</h2>
+<p>Skripta iz biblioteke može da se pokreće po rasporedu: izabranih dana u nedelji u određeno vreme (vreme servera), na pojedinačnim uređajima, na svim uređajima nekih klijenata ili na svim uređajima (i novim). Raspored se može pauzirati i nastaviti. Uređaji koji su tada van mreže pokreću skriptu kad se povežu, u roku od 24 sata.</p>
+
+<h2 id="audit">Šta se beleži</h2>
+<p>Skripta i početak njenog izlaza se upisuju u dnevnik izmena sa vašim imenom. Korisnici samo za čitanje ne mogu da pokreću skripte.</p>
+<div class="callout warn"><p>Skripte imaju puna prava na računarima. Držite biblioteku urednom, tehničarima dajte samo klijente koji im trebaju i isprobajte skriptu na jednom uređaju pre nego što je pokrenete na mnogima.</p></div>

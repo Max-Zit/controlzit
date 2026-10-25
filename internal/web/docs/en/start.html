@@ -1,0 +1,43 @@
+<h1>Getting started</h1>
+<p class="lead">ControlZit is a self-hosted remote monitoring and management (RMM) tool. From one web console on your own server you watch and manage the Windows and Linux computers of your customers: inventory, monitoring and alerts, remote desktop, terminal, files, scripts, Windows updates, software and reports.</p>
+
+<h2 id="what">What ControlZit does</h2>
+<table>
+  <tr><th>Area</th><th>What you get</th></tr>
+  <tr><td>Inventory</td><td>Hardware, operating system, disks, network, security state (antivirus, firewall, BitLocker) and installed software of every device. <a href="/docs/devices">Devices</a></td></tr>
+  <tr><td>Monitoring and alerts</td><td>CPU, memory, disk space, offline devices, stopped services, Defender and firewall; alerts by email, Slack, Microsoft Teams or webhook. <a href="/docs/monitoring">Monitoring</a></td></tr>
+  <tr><td>Remote access</td><td>Remote desktop in the browser (Windows, Linux with X11) with clipboard and file copy, a root terminal on Linux, a file manager, processes, services, restart and shutdown. <a href="/docs/remote">Remote access</a></td></tr>
+  <tr><td>Scripts</td><td>PowerShell, cmd, bash or sh on one device, on many devices at once or on a schedule, from a script library. <a href="/docs/scripts">Scripts</a></td></tr>
+  <tr><td>Updates and software</td><td>Missing Windows updates and Linux packages, installation by hand or on a schedule, programs through winget. <a href="/docs/updates">Updates</a></td></tr>
+  <tr><td>Reports</td><td>A report per customer (devices, updates, alerts, work of technicians), printable or sent by email every week or month. <a href="/docs/reports">Reports</a></td></tr>
+</table>
+
+<h2 id="how">How it works</h2>
+<ul>
+  <li><b>The server</b> runs on a Linux machine (usually a small VM) with PostgreSQL. It has two ports: the <b>console</b> (web interface and API, TCP 8443) and the <b>agent endpoint</b> (TCP 8444).</li>
+  <li><b>Agents</b> run as a service on every managed computer. They connect <i>outbound</i> to the agent port; the computers need no open ports. An agent trusts the server by the fingerprint of its certificate, which it pins when it enrolls.</li>
+  <li>Every command to an agent is <b>signed</b> by the server and checked by the agent, and every action is written to the tamper-evident <a href="/audit">audit log</a>.</li>
+</ul>
+<div class="callout tip"><p>The console controls every managed computer. Keep it reachable only from your own networks (the default) and open only the agent port where agents need it. See <a href="/docs/security">Security</a>.</p></div>
+
+<h2 id="first-steps">First steps</h2>
+<ol>
+  <li><b>Install the server</b> — import the ready-made VM image, boot the appliance ISO or run the install script on a Linux server. See <a href="/docs/install">Installing the server</a>.</li>
+  <li><b>Create the first administrator</b> with the setup token shown on the server, and set up two-factor sign-in with an authenticator app.</li>
+  <li><b>Check the agent address</b> under <a href="/settings/network">Settings → Network and access</a>: agents must reach the server by the public agent address or the console's host name.</li>
+  <li><b>Add a customer and a site</b> under <a href="/customers">Customers</a>, then create an <b>enrollment code</b> on the site.</li>
+  <li><b>Install the agent</b> on the computers of that site with the code. See <a href="/docs/agents">Installing agents</a>.</li>
+  <li><b>Set up alerts</b> under <a href="/settings/monitoring">Settings → Monitoring and alerts</a> and, if you want, the <a href="/settings/updates">automatic installation of Windows updates</a>.</li>
+  <li><b>Add your technicians</b> under <a href="/users">Users</a>, or connect Active Directory / LDAP or single sign-on. See <a href="/docs/users">Users, roles and sign-in</a>.</li>
+</ol>
+
+<h2 id="requirements">Requirements</h2>
+<ul>
+  <li><b>Server:</b> 2 vCPU, 2–4 GB RAM, 16 GB disk; Debian 12+, Ubuntu 22.04+, AlmaLinux or Rocky Linux 9+ (or the ready-made appliance).</li>
+  <li><b>Windows agents:</b> Windows 10 / 11, Windows Server 2016 and newer, 64-bit.</li>
+  <li><b>Linux agents:</b> distributions with systemd, x86-64 or ARM64 (Raspberry Pi and ARM servers). Updates through apt or dnf.</li>
+  <li><b>Browser:</b> a current Chrome, Edge, Firefox or Safari.</li>
+</ul>
+
+<h2 id="license">License and support</h2>
+<p>ControlZit is free software under the GNU AGPLv3; the source code is at <a href="https://github.com/Max-Zit/controlzit" target="_blank" rel="noopener">github.com/Max-Zit/controlzit</a>. Report bugs with <b>Report a bug</b> at the bottom of the menu. MaxZit offers paid support.</p>

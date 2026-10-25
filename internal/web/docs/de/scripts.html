@@ -1,0 +1,18 @@
+<h1>Skripte und geplante Aufträge</h1>
+<p class="lead">Führen Sie PowerShell, cmd, bash oder sh auf einem Gerät, auf vielen Geräten gleichzeitig oder nach Zeitplan aus. Skripte laufen als SYSTEM (Windows) oder root (Linux), ohne Fenster.</p>
+
+<h2 id="single">Auf einem Gerät</h2>
+<p>Öffnen Sie auf einer Geräteseite <b>Skripte</b>, wählen Sie die Shell, schreiben Sie das Skript (oder laden Sie eines aus der Bibliothek) und setzen Sie ein Zeitlimit (5–1500 Sekunden). Die Seite wartet auf das Ergebnis und zeigt Exitcode und Ausgabe (das erste 1 MB). Frühere Läufe bleiben in der Liste; <b>Bearbeiten und erneut ausführen</b> öffnet einen Lauf als neues Skript.</p>
+
+<h2 id="library">Skriptbibliothek</h2>
+<p>Speichern Sie häufig verwendete Skripte unter <a href="/scripts">Skripte → Skriptbibliothek</a> mit Name und Beschreibung. Von dort führen Sie ein Skript auf ausgewählten Geräten, auf allen Geräten einiger Kunden oder auf allen Geräten aus.</p>
+
+<h2 id="jobs">Aufträge</h2>
+<p>Ein Bibliotheksskript auf mehreren Geräten auszuführen erzeugt einen <b>Auftrag</b>. Die Auftragsseite zeigt jedes Gerät mit seinem Status (wartend, läuft, erfolgreich, fehlgeschlagen, abgelaufen) und seiner Ausgabe. Exitcode 0 gilt als Erfolg. Offline-Geräte führen das Skript beim Verbinden aus, innerhalb von 24 Stunden; danach gelten sie als abgelaufen.</p>
+
+<h2 id="schedules">Zeitpläne</h2>
+<p>Ein Skript der Bibliothek kann nach Zeitplan laufen: an gewählten Wochentagen zu einer Uhrzeit (Serverzeit), auf einzelnen Geräten, auf allen Geräten einiger Kunden oder auf allen Geräten (auch neuen). Ein Zeitplan kann pausiert und fortgesetzt werden. Geräte, die zu diesem Zeitpunkt offline sind, führen das Skript beim Verbinden aus, innerhalb von 24 Stunden.</p>
+
+<h2 id="audit">Was protokolliert wird</h2>
+<p>Das Skript und der Anfang seiner Ausgabe werden mit Ihrem Namen im Prüfprotokoll vermerkt. Nur-Lesen-Benutzer können keine Skripte ausführen.</p>
+<div class="callout warn"><p>Skripte haben volle Rechte auf den Computern. Halten Sie die Bibliothek ordentlich, geben Sie Technikern nur die Kunden, die sie brauchen, und testen Sie ein Skript auf einem Gerät, bevor Sie es auf vielen ausführen.</p></div>

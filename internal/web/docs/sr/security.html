@@ -1,0 +1,30 @@
+<h1>Bezbednost</h1>
+<p class="lead">RMM server može da upravlja svakim računarom kojim upravlja. ControlZit je napravljen tako da napadač koji dođe do konzole, mreže ili čak servera dobije što je moguće manje.</p>
+
+<h2 id="design">Kako vas ControlZit štiti</h2>
+<ul>
+  <li><b>Dva porta.</b> Konzola i tačka za agente slušaju na odvojenim portovima. Konzola prihvata veze samo iz dozvoljenih mreža, provereno pre TLS-a; port za agente može biti javan bez otkrivanja konzole.</li>
+  <li><b>Agenti se povezuju ka serveru.</b> Računarima ne treba nijedan otvoren port. Agenti pamte sertifikat servera po otisku, pa ih lažni server ne može preuzeti.</li>
+  <li><b>Potpisane komande.</b> Svaku komandu agentu potpisuje ključ za komande servera, a agent je proverava; ažuriranja agenata moraju da se poklope sa SHA-256 iz potpisane komande.</li>
+  <li><b>Jaka prijava.</b> Prijava u dva koraka za svaki lokalni i direktorijumski nalog, argon2id lozinke, kratke sesije, odjava posle neaktivnosti, rastuće blokiranje neuspelih prijava.</li>
+  <li><b>Zaštite u pregledaču.</b> CSRF provera pri svakoj izmeni, stroga Content Security Policy bez umetnutih skripti, <code>__Host-</code> kolačići sesije.</li>
+  <li><b>Najmanja prava.</b> Uloge i pristup po klijentu; konzola radi kao neprivilegovan korisnik, a retke root radnje (ažuriranja, mreža, vremenska zona) idu kroz poseban root pomoćnik koji prihvata samo fiksne, proverene zahteve.</li>
+  <li><b>Revizija.</b> Dnevnik izmena ulančan heševima za svaku izmenu i svaku udaljenu radnju.</li>
+  <li><b>Potpisana izdanja.</b> Server, agenti i <code>install.sh</code> instaliraju samo izdanja potpisana ControlZit ključem za izdanja.</li>
+  <li><b>Tajne.</b> Sačuvane lozinke (e-pošta, LDAP, kanali, Cloudflare) šifruju se tajnim ključem servera; dijagnostika uklanja tajne.</li>
+</ul>
+
+<h2 id="practice">Dobra praksa</h2>
+<ol>
+  <li>Neka konzola bude dostupna samo iz vaših administratorskih mreža; za pristup spolja koristite VPN (na primer WireGuard) umesto otvaranja porta konzole.</li>
+  <li>Port za agente otvorite samo gde su agenti i podesite mreže agenata ako svi agenti dolaze sa poznatih adresa.</li>
+  <li>Koristite sertifikat kome pregledači veruju (Let's Encrypt ili vaš CA), da korisnici ne nauče da preskaču upozorenja.</li>
+  <li>Svakoj osobi dajte sopstveni nalog sa najmanjom ulogom i samo klijentima koji joj trebaju; isključite naloge ljudi koji odu.</li>
+  <li>Zadržite jednog lokalnog administratora za hitne slučajeve, sa rezervnim kodovima čuvanim van mreže.</li>
+  <li>Ažuriranja ControlZit-a instalirajte brzo (ili uključite automatska) i održavajte operativni sistem servera ažurnim; uređaj sam instalira Debian bezbednosna ažuriranja.</li>
+  <li>Redovno pravite rezervnu kopiju baze i <code>/var/lib/controlzit</code> i držite je dalje od servera.</li>
+  <li>Povremeno pregledajte dnevnik izmena i ostavite obaveštenje na udaljenom ekranu uključeno, da korisnici znaju kad je neko povezan.</li>
+</ol>
+
+<h2 id="report">Prijava ranjivosti</h2>
+<p>Bezbednosne probleme prijavite privatno preko <a href="https://github.com/Max-Zit/controlzit/security/advisories/new" target="_blank" rel="noopener">GitHub → Security → Report a vulnerability</a>, ne u javnom issue-u.</p>

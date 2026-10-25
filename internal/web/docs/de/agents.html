@@ -1,0 +1,34 @@
+<h1>Agents installieren</h1>
+<p class="lead">Der Agent ist ein kleiner Dienst auf jedem verwalteten Computer. Er verbindet sich ausgehend mit dem Agent-Port des Servers, meldet Inventar und Messwerte und führt die signierten Befehle der Konsole aus.</p>
+
+<h2 id="before">Bevor Sie beginnen</h2>
+<ul>
+  <li>Agents müssen den Server auf dem <b>Agent-Port</b> erreichen (standardmäßig TCP 8444). Für Computer außerhalb Ihres Netzes öffnen Sie diesen Port in der Firewall und setzen die <b>öffentliche Agent-Adresse</b> unter <a href="/settings/network">Einstellungen → Netzwerk und Zugriff</a> (zum Beispiel <code>https://rmm.example.com:8444</code>). Der Konsolen-Port bleibt geschlossen.</li>
+  <li>Wenn Sie die Konsole auf dem Server selbst (localhost) geöffnet haben und keine öffentliche Agent-Adresse gesetzt ist, warnt die Standortseite: Agents würden versuchen, sich mit der Loopback-Adresse des Servers zu verbinden.</li>
+</ul>
+
+<h2 id="codes">Registrierungscodes</h2>
+<p>Agents treten einem <b>Standort</b> eines Kunden mit einem Registrierungscode bei. Öffnen Sie den Standort unter <a href="/customers">Kunden</a> und klicken Sie auf <b>Registrierungscode erstellen</b>. Sie wählen, wie lange er gilt (1–365 Tage) und wie viele Computer ihn verwenden dürfen. Der Code (<code>CZ1-…</code>) enthält die Serveradresse und den Fingerabdruck des Serverzertifikats, das Installationsprogramm braucht also nichts weiter. Er wird nur einmal angezeigt; widerrufen Sie ihn, wenn er nicht mehr gebraucht wird.</p>
+
+<h2 id="windows">Windows</h2>
+<p>Laden Sie das MSI auf der Standortseite herunter (<b>Agent herunterladen (MSI, 64-Bit)</b>) und doppelklicken Sie es und fügen den Code ein, oder installieren Sie es still, zum Beispiel per Gruppenrichtlinie, Intune oder Skript:</p>
+<pre>msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="CZ1-…"</pre>
+<p>Der Agent läuft als Windows-Dienst <i>ControlZit Agent</i>. Ein kleines Symbol neben der Uhr zeigt, ob er verbunden ist (grün), und öffnet ein Fenster mit dem Server und wer den Computer verwaltet.</p>
+<p>Ohne MSI (PowerShell als Administrator):</p>
+<pre>.\controlzit-agent.exe enroll --code "CZ1-…"
+.\controlzit-agent.exe install</pre>
+
+<h2 id="linux">Linux</h2>
+<p>Laden Sie den Linux-Agent auf der Standortseite herunter (x86-64 oder ARM64 für Raspberry Pi und ARM-Server), kopieren Sie ihn auf den Rechner und führen Sie ihn als root aus:</p>
+<pre>chmod +x controlzit-agent-linux-amd64
+sudo ./controlzit-agent-linux-amd64 install --code "CZ1-…"</pre>
+<p>Er kopiert sich nach <code>/usr/local/bin/controlzit-agent</code>, registriert sich und startet den systemd-Dienst <code>controlzit-agent</code>.</p>
+
+<h2 id="updates">Agent-Updates</h2>
+<p>Der Server bringt die Agent-Installationsprogramme seiner eigenen Version mit. Unter <a href="/settings/agents">Einstellungen → Agent-Updates</a> sehen Sie, welche Agents veraltet sind, aktualisieren alle auf einmal oder lassen veraltete Agents sich beim Verbinden selbst aktualisieren. Ein einzelner Agent wird auf seiner Geräteseite aktualisiert. Der Agent lädt das Installationsprogramm über seine eigene verschlüsselte Verbindung und installiert es nur, wenn es zum SHA-256 im signierten Update-Befehl passt. Dort können Sie auch ein anderes Installationsprogramm hochladen (ein MSI oder einen Linux-Agent).</p>
+
+<h2 id="windows-update">Windows Update auf verwalteten Computern</h2>
+<p>Der Agent schaltet die automatische Installation von Windows Update per Richtlinie ab, sodass Updates nur von ControlZit kommen, von Hand oder nach Ihrem Zeitplan (siehe <a href="/docs/updates">Windows-Updates</a>). Die vorherigen Einstellungen werden gespeichert und kehren zurück, wenn der Agent entfernt wird.</p>
+
+<h2 id="remove">Einen Agent entfernen</h2>
+<p>Löschen Sie das Gerät auf seiner Seite (<b>Gerät entfernen</b>). Ist es online, deinstalliert sich der Agent innerhalb von Sekunden und Windows Update erhält seine eigenen Einstellungen zurück. Ein Offline-Computer kann sich nicht mehr verbinden; deinstallieren Sie den Agent dort von Hand (Windows: <i>Apps → ControlZit Agent → Deinstallieren</i>; Linux: <code>sudo controlzit-agent uninstall</code>).</p>

@@ -1157,5 +1157,21 @@
   "the account exists with another sign-in method": "该账户已以其他登录方式存在",
   "the console's SAML key is missing; save the settings again": "缺少控制台的 SAML 密钥；请重新保存设置",
   "wrong username or password": "用户名或密码错误",
-  "at the identity provider": "在身份提供商处"
+  "at the identity provider": "在身份提供商处",
+  "Customers, sites and devices": "客户、站点和设备",
+  "Documentation": "文档",
+  "Getting started": "快速入门",
+  "Installing agents": "安装代理",
+  "Installing the server": "安装服务器",
+  "Monitoring, alerts and notifications": "监控、警报与通知",
+  "Nothing in the guide contains all of these words. Try fewer or other words.": "指南中没有同时包含所有这些词的内容。请尝试更少或其他的词。",
+  "Remote desktop, terminal and files": "远程桌面、终端和文件",
+  "Scripts and scheduled jobs": "脚本与计划作业",
+  "Search the guide": "搜索指南",
+  "Server settings and updates": "服务器设置与更新",
+  "Troubleshooting and FAQ": "故障排除与常见问题",
+  "User guide": "使用指南",
+  "Users, roles and sign-in": "用户、角色与登录",
+  "Windows updates and software": "Windows 更新与软件",
+  "e.g. enrollment code, static address, Let's Encrypt": "例如：注册码、固定地址、Let's Encrypt"
 }

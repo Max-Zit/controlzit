@@ -1,0 +1,29 @@
+<h1>Remote desktop, terminal and files</h1>
+<p class="lead">Help users and fix computers from the browser: no software on your side, no open ports on theirs. Everything goes through the agent's encrypted connection and is written to the audit log.</p>
+
+<h2 id="rd">Remote desktop</h2>
+<p>Open a device and click <b>Remote desktop</b> (or open it in its own window). You see the screen and control it with mouse and keyboard.</p>
+<ul>
+  <li><b>Keyboard:</b> click the screen to type; keys go to the remote computer with its own keyboard layout. <b>Send Ctrl+Alt+Del</b> and <b>Send text</b> (types a text, for example a long password) are in the toolbar. In full screen, shortcuts such as <kbd>Ctrl</kbd>+<kbd>W</kbd> or the Windows key also go to the remote computer; hold <kbd>Esc</kbd> to leave full screen.</li>
+  <li><b>Quality:</b> Fast, Balanced or Sharp, depending on the connection.</li>
+  <li><b>Monitors:</b> choose one monitor or all of them.</li>
+  <li><b>Sign-in and UAC screens</b> are shown and can be used, so you can sign in and confirm administrator prompts.</li>
+</ul>
+
+<h3 id="clipboard">Clipboard and files</h3>
+<p>On Windows computers, copied text goes both ways with <kbd>Ctrl</kbd>+<kbd>C</kbd> and <kbd>Ctrl</kbd>+<kbd>V</kbd>. <b>Files</b> copied in your Explorer are pasted on the remote computer with <kbd>Ctrl</kbd>+<kbd>V</kbd>. Files copied on the remote computer are offered as a download (<b>Download copied files</b>), because a browser cannot put files on your clipboard. The clipboard exchange can be switched off under <a href="/settings/remote">Settings → Remote desktop</a>.</p>
+
+<h3 id="notice">Notice on the remote screen</h3>
+<p>By default the person at the computer sees a bar at the top of the screen with your name while you are connected. You do not see the bar in the picture. It can be switched off under <a href="/settings/remote">Settings → Remote desktop</a>; every session is written to the audit log either way.</p>
+
+<h3 id="linux-rd">Linux</h3>
+<p>Remote desktop works on Linux desktops with X11 (Xorg). Wayland does not let a background service see or control the screen: sign in with an X11 session there, or use the terminal. Without a graphical desktop, use the terminal.</p>
+
+<h2 id="terminal">Terminal (Linux)</h2>
+<p><b>Terminal</b> opens a root shell of the device in the browser. Click into it to type; copy by selecting text, paste with <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> or <b>Send text</b>. The start and the end of the session are written to the audit log. On Windows, use <a href="/docs/scripts">Scripts</a>.</p>
+
+<h2 id="files">Files</h2>
+<p><b>Files</b> browses the drives of the computer without connecting to the screen. Upload files (up to 4 GB), download files, download a folder or a selection as ZIP, create folders, rename and delete. The agent does every file operation as SYSTEM (Windows) or root (Linux); every operation is written to the audit log with your name.</p>
+
+<h2 id="processes">Processes and services</h2>
+<p><b>Processes</b> lists running programs with their memory, threads and session and ends a process. <b>Services</b> lists services (Windows services or systemd units) and starts, stops or restarts them. The ControlZit agent protects itself: it cannot be stopped or ended from the console.</p>

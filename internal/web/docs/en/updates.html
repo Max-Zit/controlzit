@@ -1,0 +1,24 @@
+<h1>Windows updates and software</h1>
+<p class="lead">ControlZit shows which updates are missing on every computer and installs them by hand or on your schedule. Programs are installed and updated with winget.</p>
+
+<h2 id="overview">The overview</h2>
+<p><a href="/updates">Updates</a> lists the devices with missing updates (security updates counted separately), devices waiting for a restart, the last installation and the last search. Agents search for missing updates a few minutes after they start and then twice a day; <b>Search now</b> starts a search at once.</p>
+
+<h2 id="device">On a device</h2>
+<p>The <b>Updates</b> tab of a device lists the missing updates with their category and severity and the recently installed ones. Select updates and click <b>Install selected</b>; the page shows the result when it is done. If a restart is needed, the device says so, and you can restart it from its page.</p>
+
+<h2 id="automatic">Automatic installation</h2>
+<p>Under <a href="/settings/updates">Settings → Windows updates</a> choose what the server installs by itself:</p>
+<ul>
+  <li><b>Off</b> — updates are installed only from the console.</li>
+  <li><b>Security and critical updates, Defender definitions</b>.</li>
+  <li><b>All updates except feature upgrades</b> — new Windows versions are never installed automatically.</li>
+</ul>
+<p>Choose the days and the hour (server time). Devices that are online during that hour install once that day; offline devices wait for the next scheduled day. Optionally the computer restarts by itself when an update needs it, 5 minutes after a notice to the signed-in user.</p>
+<div class="callout"><p>So that updates do not arrive at random times, the agent switches off the automatic installation of Windows Update by policy. When the agent is removed, the earlier settings come back.</p></div>
+
+<h2 id="linux">Linux</h2>
+<p>On Linux the agent reads the available package updates through <b>apt</b> (Debian, Ubuntu; security updates from the <code>-security</code> suites) or <b>dnf</b> (RHEL family; security updates from the update information) and installs selected packages. The automatic installation applies to Linux devices too; there, "security updates" are the packages from the security sources.</p>
+
+<h2 id="programs">Programs (winget)</h2>
+<p>The <b>Programs</b> tab of a Windows device lists the installed programs that winget knows and the available updates. <b>Update all</b> updates them; single programs can be updated or uninstalled. <b>Install a program</b> searches the winget community repository (for example <i>7-Zip</i> or <i>Chrome</i>) and installs it silently for all users. The device needs winget (App Installer), which comes with current Windows 10 and 11.</p>

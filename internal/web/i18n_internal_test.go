@@ -45,6 +45,9 @@ func uiTexts(t *testing.T) map[string]bool {
 	}
 	// Composed in other packages.
 	out["the password must be between 12 and 256 characters"] = true
+	for _, p := range DocPages {
+		out[p.Title] = true
+	}
 	return out
 }
 

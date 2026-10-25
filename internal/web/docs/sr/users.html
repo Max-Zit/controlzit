@@ -1,0 +1,40 @@
+<h1>Korisnici, uloge i prijava</h1>
+<p class="lead">Svaka osoba se prijavljuje svojim nalogom. Uloge određuju šta sme da radi, pristup klijentima šta sme da vidi, a svaka radnja se upisuje u dnevnik izmena sa njenim imenom.</p>
+
+<h2 id="roles">Uloge</h2>
+<table>
+  <tr><th>Uloga</th><th>Sme</th></tr>
+  <tr><td><b>Administrator</b></td><td>sve, uključujući korisnike i podešavanja; uvek vidi sve klijente</td></tr>
+  <tr><td><b>Tehničar</b></td><td>upravlja uređajima dozvoljenih klijenata: udaljeni pristup, skripte, ažuriranja, programi, upozorenja</td></tr>
+  <tr><td><b>Samo čitanje</b></td><td>samo pregleda dozvoljene klijente: uređaje, upozorenja, ažuriranja, izveštaje</td></tr>
+</table>
+<p>Tehničari i korisnici samo za čitanje dobijaju pristup <b>svim klijentima</b> (i budućim) ili <b>samo nekim klijentima</b>.</p>
+
+<h2 id="local">Lokalni nalozi</h2>
+<p>U <a href="/users">Korisnici</a> administrator dodaje korisnika sa početnom lozinkom; korisnik pri prvoj prijavi mora da je promeni i podesi prijavu u dva koraka. Administrator može da isključi korisnika (otvorene sesije se završavaju), postavi novu lozinku ili poništi prijavu u dva koraka korisniku koji je izgubio telefon i rezervne kodove. Uvek ostaje bar jedan uključen administrator.</p>
+
+<h2 id="2fa">Prijava u dva koraka</h2>
+<p>ControlZit ima administratorski pristup svakom računaru, pa svaki lokalni i direktorijumski nalog traži <b>aplikaciju za autentifikaciju</b> (Microsoft Authenticator, Google Authenticator, Authy, 1Password, Bitwarden …). Svaki nalog dobija i 10 jednokratnih <b>rezervnih kodova</b>; nove pravite u <a href="/account">Nalog</a>. Neuspele prijave blokiraju adresu na neko vreme (duže posle svake ponovljene blokade); granice su u <a href="/settings/security">Podešavanja → Prijava i bezbednost</a>, zajedno sa trajanjem sesije i odjavom posle neaktivnosti.</p>
+
+<h2 id="ldap">Active Directory / LDAP</h2>
+<p>U <a href="/settings/ldap">Podešavanja → Active Directory / LDAP</a> korisnici se prijavljuju direktorijumskim nalogom. Direktorijum proverava lozinku; ControlZit i dalje traži svoj drugi korak.</p>
+<ul>
+  <li><b>Server:</b> <code>ldaps://dc1.example.local</code> (port 636), ili <code>ldap://</code> (389) sa StartTLS-om — lozinke nikad ne idu mrežom nešifrovane. Dodajte CA sertifikat ako sertifikat direktorijuma potiče od firmenog CA.</li>
+  <li><b>Servisni nalog</b> (DN ili <code>korisnik@domen</code>) i njegova lozinka, <b>osnovni DN</b> i <b>filter korisnika</b>, npr. <code>(&amp;(objectClass=user)(sAMAccountName={username}))</code> za Active Directory.</li>
+  <li><b>Grupe i uloge:</b> povežite grupe direktorijuma sa ulogama Administrator, Tehničar i Samo čitanje; pobeđuje najviša uloga. Mogu se uključiti ugnježdene grupe Active Directory-ja.</li>
+  <li><b>Grupe klijenata:</b> redovi <code>grupa = klijent</code> ograničavaju tehničare i korisnike samo za čitanje na te klijente.</li>
+</ul>
+<p><b>Proveri</b> proverava direktorijumski nalog sa sačuvanim podešavanjima, bez prijave, i pokazuje šta bi ControlZit od njega napravio. Direktorijumski nalozi menjaju lozinku u direktorijumu, ne u ControlZit-u.</p>
+
+<h2 id="sso">Jedinstvena prijava (OpenID Connect, SAML)</h2>
+<p>U <a href="/settings/sso">Podešavanja → Jedinstvena prijava</a> korisnici se prijavljuju nalogom kod dobavljača identiteta: <b>OpenID Connect</b> (Microsoft Entra ID, Google, Okta, Keycloak …) ili <b>SAML 2.0</b> (ADFS, Entra ID, Okta …). Stranica za prijavu tada pokazuje dugme.</p>
+<ul>
+  <li><b>OpenID Connect:</b> registrujte aplikaciju kod dobavljača sa adresom za preusmeravanje sa stranice, pa unesite izdavaoca (npr. <code>https://login.microsoftonline.com/&lt;tenant&gt;/v2.0</code>), ID klijenta i tajnu klijenta.</li>
+  <li><b>SAML:</b> dajte dobavljaču metapodatke konzole (veza na stranici) ili njen entity ID i adresu za odgovor (ACS), pa unesite URL metapodataka dobavljača ili nalepite njegov XML.</li>
+  <li><b>Claim grupa</b> nosi grupe (imena ili ID-jeve; Entra ID šalje ID-jeve grupa), povezane sa ulogama i klijentima kao kod LDAP-a.</li>
+  <li>Važi politika višestruke provere dobavljača identiteta; po želji ControlZit traži i svoj drugi korak.</li>
+</ul>
+<div class="callout tip"><p>Lokalni nalozi rade i kad su LDAP ili jedinstvena prijava uključeni, pa administrator uvek može da se prijavi. Zadržite jednog lokalnog administratora za hitne slučajeve.</p></div>
+
+<h2 id="audit">Dnevnik izmena</h2>
+<p><a href="/audit">Dnevnik izmena</a> pokazuje svaku izmenu i svaku udaljenu radnju sa korisnikom, ciljem (klijent, lokacija, uređaj ili korisnik, sa vezom) i adresom. Unosi su ulančani heševima; konzola proverava lanac pri svakom prikazu i javlja ako je neki unos promenjen ili obrisan.</p>

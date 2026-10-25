@@ -1,0 +1,40 @@
+<h1>Users, roles and sign-in</h1>
+<p class="lead">Every person signs in with their own account. Roles decide what they may do, customer access decides what they may see, and every action is written to the audit log with their name.</p>
+
+<h2 id="roles">Roles</h2>
+<table>
+  <tr><th>Role</th><th>May</th></tr>
+  <tr><td><b>Administrator</b></td><td>everything, including users and settings; always sees all customers</td></tr>
+  <tr><td><b>Technician</b></td><td>manages the devices of the allowed customers: remote access, scripts, updates, programs, alerts</td></tr>
+  <tr><td><b>Read-only</b></td><td>only views the allowed customers: devices, alerts, updates, reports</td></tr>
+</table>
+<p>Technicians and read-only users get access to <b>all customers</b> (also future ones) or <b>only some customers</b>.</p>
+
+<h2 id="local">Local accounts</h2>
+<p>Under <a href="/users">Users</a> an administrator adds a user with an initial password; the user must change it and set up two-factor sign-in at the first sign-in. An administrator can disable a user (open sessions end), set a new password, or reset two-factor sign-in for a user who lost the phone and the recovery codes. At least one enabled administrator always remains.</p>
+
+<h2 id="2fa">Two-factor sign-in</h2>
+<p>ControlZit has administrator access to every managed computer, so every local and directory account needs an <b>authenticator app</b> (Microsoft Authenticator, Google Authenticator, Authy, 1Password, Bitwarden …). Each account also gets 10 single-use <b>recovery codes</b>; new ones can be made under <a href="/account">Account</a>. Failed sign-ins block the address for a while (longer after each repeated block); the limits are under <a href="/settings/security">Settings → Sign-in and security</a>, together with the session length and the sign-out after inactivity.</p>
+
+<h2 id="ldap">Active Directory / LDAP</h2>
+<p>Under <a href="/settings/ldap">Settings → Active Directory / LDAP</a> users sign in with their directory account. The directory checks the password; ControlZit still asks for its own second factor.</p>
+<ul>
+  <li><b>Server:</b> <code>ldaps://dc1.example.local</code> (port 636), or <code>ldap://</code> (389) with StartTLS — passwords never cross the network unencrypted. Add the CA certificate if the directory's certificate comes from a company CA.</li>
+  <li><b>Service account</b> (DN or <code>user@domain</code>) and its password, the <b>base DN</b> and the <b>user filter</b>, e.g. <code>(&amp;(objectClass=user)(sAMAccountName={username}))</code> for Active Directory.</li>
+  <li><b>Groups and roles:</b> map directory groups to Administrator, Technician and Read-only; the highest role wins. Nested groups of Active Directory can be included.</li>
+  <li><b>Customer groups:</b> lines <code>group = customer</code> limit technicians and read-only users to those customers.</li>
+</ul>
+<p><b>Test</b> checks a directory account with the saved settings, without signing in, and shows what ControlZit would make of it. Directory accounts change their password in the directory, not in ControlZit.</p>
+
+<h2 id="sso">Single sign-on (OpenID Connect, SAML)</h2>
+<p>Under <a href="/settings/sso">Settings → Single sign-on</a> users sign in with their account at an identity provider: <b>OpenID Connect</b> (Microsoft Entra ID, Google, Okta, Keycloak …) or <b>SAML 2.0</b> (ADFS, Entra ID, Okta …). The sign-in page then shows a button.</p>
+<ul>
+  <li><b>OpenID Connect:</b> register an application at the provider with the redirect URI shown on the page, then enter the issuer (e.g. <code>https://login.microsoftonline.com/&lt;tenant&gt;/v2.0</code>), the client ID and the client secret.</li>
+  <li><b>SAML:</b> give the provider the console's metadata (link on the page) or its entity ID and reply (ACS) address, then enter the provider's metadata URL or paste its metadata XML.</li>
+  <li>The <b>groups claim</b> carries the groups (names or IDs; Entra ID sends group IDs), mapped to roles and customers as with LDAP.</li>
+  <li>The identity provider's own multi-factor policy applies; optionally ControlZit asks for its own second factor too.</li>
+</ul>
+<div class="callout tip"><p>Local accounts keep working when LDAP or single sign-on is on, so an administrator can always sign in. Keep one local administrator for emergencies.</p></div>
+
+<h2 id="audit">Audit log</h2>
+<p><a href="/audit">Audit log</a> lists every change and every remote action with the user, the target (customer, site, device or user, with a link) and the address. The entries are hash-chained; the console checks the chain on every view and reports if an entry was changed or deleted.</p>

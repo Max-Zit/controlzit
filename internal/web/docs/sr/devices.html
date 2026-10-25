@@ -1,0 +1,34 @@
+<h1>Klijenti, lokacije i uređaji</h1>
+<p class="lead">Uređaji su organizovani po klijentima i lokacijama. Tehničari i korisnici samo za čitanje mogu biti ograničeni na neke klijente, pa svaki izveštaj i svaki spisak pokazuje samo ono što smeju da vide.</p>
+
+<h2 id="customers">Klijenti i lokacije</h2>
+<ul>
+  <li><b>Klijenti</b> su firme o kojima brinete (ili odeljenja vaše firme). Dodajte ih u <a href="/customers">Klijenti</a>.</li>
+  <li><b>Lokacije</b> su njihove kancelarije ili ogranci. Svaki uređaj pripada jednoj lokaciji; kodovi za prijavu se prave po lokaciji.</li>
+  <li>Klijent ili lokacija se mogu obrisati tek kad više ne sadrže lokacije ili uređaje.</li>
+</ul>
+
+<h2 id="list">Spisak uređaja</h2>
+<p><a href="/devices">Uređaji</a> pokazuje sve uređaje koje smete da vidite sa klijentom i lokacijom, operativnim sistemom, prijavljenim korisnikom, da li su na mreži i kad su poslednji put viđeni. Pretražujte po imenu, korisniku, sistemu ili klijentu, ili filtrirajte po klijentu i stanju.</p>
+
+<h2 id="page">Stranica uređaja</h2>
+<p>Stranica uređaja ima kartice za sve što s njim možete da radite:</p>
+<table>
+  <tr><th>Kartica</th><th>Šta pokazuje ili radi</th></tr>
+  <tr><td>Pregled</td><td>Otvorena upozorenja, trenutno opterećenje, memorija i diskovi, automatski servisi koji ne rade, restart na čekanju; ispod ceo inventar.</td></tr>
+  <tr><td>Udaljena radna površina, Terminal, Fajlovi</td><td>Udaljeni pristup, vidi <a href="/docs/remote">Udaljena radna površina, terminal i fajlovi</a>.</td></tr>
+  <tr><td>Procesi, Servisi</td><td>Pokrenuti procesi (prekid) i servisi (pokretanje, zaustavljanje, restart).</td></tr>
+  <tr><td>Skripte</td><td>Pokretanje skripte i ranija pokretanja sa izlazom, vidi <a href="/docs/scripts">Skripte</a>.</td></tr>
+  <tr><td>Ažuriranja</td><td>Nedostajuća i nedavno instalirana Windows ažuriranja ili Linux paketi, vidi <a href="/docs/updates">Ažuriranja</a>.</td></tr>
+  <tr><td>Programi</td><td>Instalacija, ažuriranje i deinstalacija programa preko wingeta (Windows).</td></tr>
+  <tr><td>Događaji</td><td>Windows dnevnici događaja (System, Application, Security, Setup), filtrirani po nivou, periodu i tekstu.</td></tr>
+</table>
+
+<h2 id="inventory">Inventar</h2>
+<p>Agent šalje inventar nekoliko sekundi posle povezivanja i zatim redovno: operativni sistem i build, domen ili radna grupa, model i serijski broj, procesor, memorija, diskovi sa slobodnim prostorom i stanjem BitLocker-a, mrežni adapteri sa adresama i mrežnim prolazima, Microsoft Defender i njegove definicije, profili Windows zaštitnog zida, restart na čekanju i instalirani softver (programi na Windowsu, paketi na Linuxu). <b>Osveži inventar</b> odmah traži novi.</p>
+
+<h2 id="power">Restart i gašenje</h2>
+<p>Dugmad za napajanje na stranici uređaja restartuju ili gase računar, odmah ili posle odlaganja, uz poruku prijavljenom korisniku po želji; zakazani restart se može otkazati. Korisnici prijavljeni na računaru gube nesačuvan rad.</p>
+
+<h2 id="remove">Uklanjanje uređaja</h2>
+<p><b>Ukloni uređaj</b> ga briše iz konzole. Agent na mreži se sam deinstalira; vidi <a href="/docs/agents#remove">Uklanjanje agenta</a>.</p>

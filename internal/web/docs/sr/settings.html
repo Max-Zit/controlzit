@@ -1,0 +1,40 @@
+<h1>Podešavanja i ažuriranje servera</h1>
+<p class="lead">Administratori podešavanja servera nalaze u <a href="/settings">Podešavanja</a>: mreža i portovi, sertifikat, vremenska zona, ažuriranje servera i agenata i dijagnostika za podršku.</p>
+
+<h2 id="network">Mreža i pristup</h2>
+<p>U <a href="/settings/network">Podešavanja → Mreža i pristup</a>:</p>
+<ul>
+  <li><b>Konzola</b> — adresa i port na kom sluša (podrazumevano <code>:8443</code>) i <b>dozvoljene mreže</b>: jedna IP adresa ili mreža po redu (CIDR). Veze sa drugih adresa se zatvaraju pre TLS-a; sam server (127.0.0.1) je uvek dozvoljen. Čuvanje odbija spisak koji bi zaključao vašu adresu.</li>
+  <li><b>Tačka za agente</b> — adresa i port (podrazumevano <code>:8444</code>, mora se razlikovati od konzole), mreže sa kojih agenti smeju da dolaze (prazno = sve) i <b>javna adresa za agente</b> koja ide u instalacije i kodove za prijavu.</li>
+  <li>Novi portovi važe posle <b>Restartuj sada</b> (restartuje servis ControlZit; agenti se sami ponovo povezuju).</li>
+</ul>
+<p>Ako se zaključate, pokrenite <code>controlzit-server --reset-allowlist</code> na serveru (uređaj: meni za podešavanje, stavka 5).</p>
+
+<h3 id="server-network">Mreža servera (uređaj)</h3>
+<p>Na ControlZit uređaju ovde se podešava i mreža samog servera: DHCP ili fiksna adresa sa veličinom mreže (npr. <code>192.168.1.20/24</code>), mrežni prolaz, jedan do tri DNS servera i ime servera. Ako mrežni prolaz ne odgovori sa novim podešavanjima, stara se sama vraćaju posle 30 sekundi. Na drugim instalacijama mrežom upravlja operativni sistem.</p>
+
+<h3 id="timezone">Vremenska zona</h3>
+<p>Rasporedi (ažuriranja, skripte, izveštaji) i vremena u konzoli koriste vremensku zonu servera. Izaberite je sa spiska i kliknite <b>Postavi</b>; konzola se restartuje i vraća za nekoliko sekundi. Bez root pomoćnika (vidi ispod) podesite je na serveru: <code>timedatectl set-timezone Europe/Belgrade</code>.</p>
+
+<h2 id="certificate">Sertifikat (HTTPS)</h2>
+<p>U <a href="/settings/certificate">Podešavanja → Sertifikat</a> birate sertifikat koji pregledači vide kad otvore konzolu. Agenti koriste svoj port i sertifikat, pa ih promena nikad ne prekida.</p>
+<ul>
+  <li><b>Sopstveni sertifikat konzole</b> (samopotpisani) — radi odmah; pregledači upozoravaju na njega.</li>
+  <li><b>Let's Encrypt</b> — besplatan sertifikat, obnavlja se sam 30 dana pre isteka. Unesite javno DNS ime konzole i adresu e-pošte i izaberite proveru:
+    <ul>
+      <li><b>port 80</b> — ime pokazuje na ovaj server i port 80 je dostupan sa interneta; server odgovara na portu 80 i preusmerava pregledače na HTTPS;</li>
+      <li><b>Cloudflare DNS</b> — za servere koji nisu dostupni sa interneta; traži Cloudflare API token sa <code>Zone:DNS:Edit</code> za zonu.</li>
+    </ul>
+  </li>
+  <li><b>Otpremi sertifikat</b> od vašeg sertifikacionog tela ili firmenog CA: sertifikat (PEM, sa međusertifikatima) i privatni ključ. Ključ se čuva samo na ovom serveru.</li>
+</ul>
+
+<h2 id="server-updates">Ažuriranje servera</h2>
+<p><a href="/settings/version">Podešavanja → ControlZit ažuriranja</a> pokazuje verziju koja radi i najnovije izdanje. <b>Instaliraj</b> ažurira server: instaliraju se samo izdanja potpisana ControlZit ključem za izdanja; pre instalacije server pravi rezervnu kopiju baze i programa, a ako nova verzija ne krene, sam se vraća na staru. Konzola nije dostupna minut-dva. Po želji se nove verzije instaliraju automatski u izabranom satu.</p>
+<div class="callout"><p>Ažuriranja, vremenska zona i mreža traže <b>root pomoćnika</b> koji dolazi sa Linux paketima i uređajem. Bez njega (npr. samostalan program) ažurirajte pomoću <code>install.sh</code> ili paketa izdanja.</p></div>
+
+<h2 id="agent-updates">Ažuriranje agenata</h2>
+<p>Vidi <a href="/docs/agents#updates">Instalacija agenata → Ažuriranje agenata</a>.</p>
+
+<h2 id="diagnostics">Dijagnostika</h2>
+<p><a href="/settings/diagnostics">Podešavanja → Dijagnostika</a> pokazuje gde ControlZit piše dnevnike, najnovije redove dnevnika servera (filter po nivou ili tekstu), dnevnik root pomoćnika i verzije. <b>Preuzmi dijagnostiku (ZIP)</b> pravi fajl za podršku sa dnevnicima, verzijama i sažetkom podešavanja, uređajima, upozorenjima i dnevnikom izmena. Lozinke, tokeni, kodovi za prijavu i ključevi se uklanjaju iz svega što se prikazuje i iz fajla; skripte i njihov izlaz nisu uključeni.</p>

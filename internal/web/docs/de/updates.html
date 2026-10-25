@@ -1,0 +1,24 @@
+<h1>Windows-Updates und Software</h1>
+<p class="lead">ControlZit zeigt, welche Updates auf jedem Computer fehlen, und installiert sie von Hand oder nach Ihrem Zeitplan. Programme werden mit winget installiert und aktualisiert.</p>
+
+<h2 id="overview">Die Übersicht</h2>
+<p><a href="/updates">Updates</a> listet die Geräte mit fehlenden Updates (Sicherheitsupdates getrennt gezählt), Geräte, die auf einen Neustart warten, die letzte Installation und die letzte Suche. Agents suchen einige Minuten nach dem Start und dann zweimal täglich nach fehlenden Updates; <b>Jetzt suchen</b> startet sofort eine Suche.</p>
+
+<h2 id="device">Auf einem Gerät</h2>
+<p>Die Registerkarte <b>Updates</b> eines Geräts listet die fehlenden Updates mit Kategorie und Schweregrad sowie die kürzlich installierten. Wählen Sie Updates aus und klicken Sie auf <b>Auswahl installieren</b>; die Seite zeigt das Ergebnis, wenn es fertig ist. Ist ein Neustart nötig, zeigt das Gerät es an, und Sie können es von seiner Seite neu starten.</p>
+
+<h2 id="automatic">Automatische Installation</h2>
+<p>Unter <a href="/settings/updates">Einstellungen → Windows-Updates</a> wählen Sie, was der Server selbst installiert:</p>
+<ul>
+  <li><b>Aus</b> — Updates werden nur über die Konsole installiert.</li>
+  <li><b>Sicherheits- und kritische Updates, Defender-Definitionen</b>.</li>
+  <li><b>Alle Updates außer Funktionsupdates</b> — neue Windows-Versionen werden nie automatisch installiert.</li>
+</ul>
+<p>Wählen Sie die Tage und die Stunde (Serverzeit). Geräte, die in dieser Stunde online sind, installieren einmal an diesem Tag; Offline-Geräte warten auf den nächsten geplanten Tag. Optional startet der Computer selbst neu, wenn ein Update es erfordert, 5 Minuten nach einem Hinweis an den angemeldeten Benutzer.</p>
+<div class="callout"><p>Damit Updates nicht zu beliebigen Zeiten kommen, schaltet der Agent die automatische Installation von Windows Update per Richtlinie ab. Wird der Agent entfernt, kehren die früheren Einstellungen zurück.</p></div>
+
+<h2 id="linux">Linux</h2>
+<p>Unter Linux liest der Agent die verfügbaren Paketupdates über <b>apt</b> (Debian, Ubuntu; Sicherheitsupdates aus den <code>-security</code>-Quellen) oder <b>dnf</b> (RHEL-Familie; Sicherheitsupdates aus den Update-Informationen) und installiert ausgewählte Pakete. Die automatische Installation gilt auch für Linux-Geräte; dort sind „Sicherheitsupdates“ die Pakete aus den Sicherheitsquellen.</p>
+
+<h2 id="programs">Programme (winget)</h2>
+<p>Die Registerkarte <b>Programme</b> eines Windows-Geräts listet die installierten Programme, die winget kennt, und die verfügbaren Updates. <b>Alle aktualisieren</b> aktualisiert sie; einzelne Programme lassen sich aktualisieren oder deinstallieren. <b>Programm installieren</b> durchsucht das winget-Community-Repository (zum Beispiel <i>7-Zip</i> oder <i>Chrome</i>) und installiert still für alle Benutzer. Das Gerät braucht winget (App Installer), das mit aktuellen Windows 10 und 11 kommt.</p>

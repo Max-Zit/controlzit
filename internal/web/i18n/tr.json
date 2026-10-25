@@ -1157,5 +1157,21 @@
   "the account exists with another sign-in method": "hesap başka bir giriş yöntemiyle mevcut",
   "the console's SAML key is missing; save the settings again": "konsolun SAML anahtarı eksik; ayarları yeniden kaydedin",
   "wrong username or password": "kullanıcı adı veya parola yanlış",
-  "at the identity provider": "kimlik sağlayıcıda"
+  "at the identity provider": "kimlik sağlayıcıda",
+  "Customers, sites and devices": "Müşteriler, konumlar ve cihazlar",
+  "Documentation": "Belgeler",
+  "Getting started": "Başlarken",
+  "Installing agents": "Ajanları kurma",
+  "Installing the server": "Sunucuyu kurma",
+  "Monitoring, alerts and notifications": "İzleme, uyarılar ve bildirimler",
+  "Nothing in the guide contains all of these words. Try fewer or other words.": "Kılavuzda bu kelimelerin hepsini içeren bir yer yok. Daha az veya başka kelimeler deneyin.",
+  "Remote desktop, terminal and files": "Uzak masaüstü, terminal ve dosyalar",
+  "Scripts and scheduled jobs": "Betikler ve zamanlanmış işler",
+  "Search the guide": "Kılavuzda ara",
+  "Server settings and updates": "Sunucu ayarları ve güncellemeleri",
+  "Troubleshooting and FAQ": "Sorun giderme ve SSS",
+  "User guide": "Kullanım kılavuzu",
+  "Users, roles and sign-in": "Kullanıcılar, roller ve giriş",
+  "Windows updates and software": "Windows güncellemeleri ve yazılımlar",
+  "e.g. enrollment code, static address, Let's Encrypt": "ör. kayıt kodu, sabit adres, Let's Encrypt"
 }

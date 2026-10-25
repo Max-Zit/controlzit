@@ -364,6 +364,9 @@ func (s *Server) Handler() http.Handler {
 	admin("POST /users/{id}", s.handleUserUpdate)
 	admin("POST /users/{id}/password", s.handleUserPassword)
 	admin("POST /users/{id}/reset-2fa", s.handleUserReset2FA)
+	app("GET /docs", s.handleDocs)
+	app("GET /docs/search", s.handleDocsSearch)
+	app("GET /docs/{page}", s.handleDocs)
 	admin("GET /audit", s.handleAudit)
 	admin("GET /settings", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/settings/network", http.StatusFound)

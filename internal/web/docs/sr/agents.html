@@ -1,0 +1,34 @@
+<h1>Instalacija agenata</h1>
+<p class="lead">Agent je mali servis na svakom računaru kojim upravljate. Povezuje se ka portu za agente na serveru, šalje inventar i merenja i izvršava potpisane komande konzole.</p>
+
+<h2 id="before">Pre početka</h2>
+<ul>
+  <li>Agenti moraju da dođu do servera na <b>portu za agente</b> (podrazumevano TCP 8444). Za računare van vaše mreže otvorite taj port na zaštitnom zidu i podesite <b>javnu adresu za agente</b> u <a href="/settings/network">Podešavanja → Mreža i pristup</a> (na primer <code>https://rmm.example.com:8444</code>). Port konzole ostaje zatvoren.</li>
+  <li>Ako ste konzolu otvorili na samom serveru (localhost), a javna adresa za agente nije podešena, stranica lokacije vas upozorava: agenti bi pokušali da se povežu na lokalnu adresu servera.</li>
+</ul>
+
+<h2 id="codes">Kodovi za prijavu</h2>
+<p>Agenti se priključuju <b>lokaciji</b> klijenta pomoću koda za prijavu. Otvorite lokaciju u <a href="/customers">Klijenti</a> i kliknite <b>Napravi kod za prijavu</b>. Birate koliko dugo važi (1–365 dana) i koliko ga računara sme iskoristiti. Kod (<code>CZ1-…</code>) sadrži adresu servera i otisak sertifikata servera, pa instalaciji ne treba ništa drugo. Prikazuje se samo jednom; opozovite ga kad više nije potreban.</p>
+
+<h2 id="windows">Windows</h2>
+<p>Preuzmite MSI na stranici lokacije (<b>Preuzmi agenta (MSI, 64-bit)</b>) i ili ga pokrenite dvoklikom i nalepite kod, ili ga instalirajte tiho, na primer preko Group Policy-ja, Intune-a ili skripte:</p>
+<pre>msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="CZ1-…"</pre>
+<p>Agent radi kao Windows servis <i>ControlZit Agent</i>. Mala ikonica pored sata pokazuje da li je povezan (zelena) i otvara prozor sa serverom i time ko upravlja računarom.</p>
+<p>Bez MSI-ja (PowerShell kao administrator):</p>
+<pre>.\controlzit-agent.exe enroll --code "CZ1-…"
+.\controlzit-agent.exe install</pre>
+
+<h2 id="linux">Linux</h2>
+<p>Preuzmite Linux agenta na stranici lokacije (x86-64, ili ARM64 za Raspberry Pi i ARM servere), kopirajte ga na mašinu i pokrenite kao root:</p>
+<pre>chmod +x controlzit-agent-linux-amd64
+sudo ./controlzit-agent-linux-amd64 install --code "CZ1-…"</pre>
+<p>Kopira se u <code>/usr/local/bin/controlzit-agent</code>, prijavi se i pokrene systemd servis <code>controlzit-agent</code>.</p>
+
+<h2 id="updates">Ažuriranje agenata</h2>
+<p>Server nosi instalacije agenata svoje verzije. U <a href="/settings/agents">Podešavanja → Ažuriranje agenata</a> vidite koji su agenti zastareli, ažurirate ih sve odjednom ili pustite da se zastareli agenti sami ažuriraju kad se povežu. Pojedinačni agent se ažurira na stranici uređaja. Agent preuzima instalaciju preko svoje šifrovane veze i instalira je samo ako se poklapa sa SHA-256 iz potpisane komande. Tu možete otpremiti i drugu instalaciju (MSI ili Linux agenta).</p>
+
+<h2 id="windows-update">Windows Update na računarima</h2>
+<p>Agent pravilom isključuje automatsku instalaciju Windows Update-a, tako da ažuriranja stižu samo iz ControlZit-a, ručno ili po vašem rasporedu (vidi <a href="/docs/updates">Windows ažuriranja</a>). Prethodna podešavanja se čuvaju i vraćaju kad se agent ukloni.</p>
+
+<h2 id="remove">Uklanjanje agenta</h2>
+<p>Obrišite uređaj na njegovoj stranici (<b>Ukloni uređaj</b>). Ako je na mreži, agent se sam deinstalira za nekoliko sekundi i Windows Update dobija nazad svoja podešavanja. Računar van mreže više ne može da se poveže; tamo deinstalirajte agenta ručno (Windows: <i>Aplikacije → ControlZit Agent → Deinstaliraj</i>; Linux: <code>sudo controlzit-agent uninstall</code>).</p>

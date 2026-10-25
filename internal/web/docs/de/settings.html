@@ -1,0 +1,40 @@
+<h1>Servereinstellungen und Updates</h1>
+<p class="lead">Administratoren finden die Einstellungen des Servers unter <a href="/settings">Einstellungen</a>: Netzwerk und Ports, das Zertifikat, Zeitzone, Updates von Server und Agents und die Diagnose für den Support.</p>
+
+<h2 id="network">Netzwerk und Zugriff</h2>
+<p>Unter <a href="/settings/network">Einstellungen → Netzwerk und Zugriff</a>:</p>
+<ul>
+  <li><b>Konsole</b> — Lauschadresse und Port (Standard <code>:8443</code>) und die <b>erlaubten Netze</b>: eine IP-Adresse oder ein Netz pro Zeile (CIDR). Verbindungen von anderen Adressen werden vor TLS geschlossen; der Server selbst (127.0.0.1) ist immer erlaubt. Das Speichern verweigert eine Liste, die Ihre eigene Adresse aussperren würde.</li>
+  <li><b>Agent-Endpunkt</b> — Lauschadresse und Port (Standard <code>:8444</code>, muss sich von der Konsole unterscheiden), die Netze, aus denen Agents kommen dürfen (leer = alle), und die <b>öffentliche Agent-Adresse</b>, die in Installationsprogramme und Registrierungscodes eingetragen wird.</li>
+  <li>Neue Ports gelten nach <b>Jetzt neu starten</b> (startet den ControlZit-Dienst neu; Agents verbinden sich von selbst wieder).</li>
+</ul>
+<p>Wenn Sie sich aussperren, führen Sie <code>controlzit-server --reset-allowlist</code> auf dem Server aus (Appliance: Einrichtungsmenü, Punkt 5).</p>
+
+<h3 id="server-network">Netzwerk des Servers (Appliance)</h3>
+<p>Auf der ControlZit-Appliance wird hier auch das eigene Netzwerk des Servers eingestellt: DHCP oder eine feste Adresse mit Netzgröße (z. B. <code>192.168.1.20/24</code>), Gateway, ein bis drei DNS-Server und der Servername. Antwortet das Gateway mit den neuen Einstellungen nicht, kehren die vorherigen nach 30 Sekunden von selbst zurück. Bei anderen Installationen verwaltet das Betriebssystem das Netzwerk.</p>
+
+<h3 id="timezone">Zeitzone</h3>
+<p>Zeitpläne (Updates, Skripte, Berichte) und die Zeiten in der Konsole verwenden die Zeitzone des Servers. Wählen Sie sie aus der Liste und klicken Sie auf <b>Festlegen</b>; die Konsole startet neu und ist in wenigen Sekunden zurück. Ohne Root-Helfer (siehe unten) stellen Sie sie auf dem Server ein: <code>timedatectl set-timezone Europe/Berlin</code>.</p>
+
+<h2 id="certificate">Zertifikat (HTTPS)</h2>
+<p>Unter <a href="/settings/certificate">Einstellungen → Zertifikat</a> wählen Sie das Zertifikat, das Browser beim Öffnen der Konsole sehen. Agents verwenden ihren eigenen Port und ihr eigenes Zertifikat, eine Änderung trennt sie daher nie.</p>
+<ul>
+  <li><b>Das eigene Zertifikat der Konsole</b> (selbstsigniert) — funktioniert sofort; Browser warnen davor.</li>
+  <li><b>Let's Encrypt</b> — ein kostenloses Zertifikat, automatisch 30 Tage vor Ablauf erneuert. Geben Sie den öffentlichen DNS-Namen der Konsole und eine E-Mail-Adresse ein und wählen Sie die Prüfung:
+    <ul>
+      <li><b>Port 80</b> — der Name zeigt auf diesen Server und Port 80 ist aus dem Internet erreichbar; der Server antwortet auf Port 80 und leitet Browser auf HTTPS um;</li>
+      <li><b>Cloudflare-DNS</b> — für Server, die aus dem Internet nicht erreichbar sind; braucht ein Cloudflare-API-Token mit <code>Zone:DNS:Edit</code> für die Zone.</li>
+    </ul>
+  </li>
+  <li><b>Zertifikat hochladen</b> von Ihrer Zertifizierungsstelle oder Unternehmens-CA: das Zertifikat (PEM, mit Zwischenzertifikaten) und den privaten Schlüssel. Der Schlüssel wird nur auf diesem Server gespeichert.</li>
+</ul>
+
+<h2 id="server-updates">Updates des Servers</h2>
+<p><a href="/settings/version">Einstellungen → ControlZit-Updates</a> zeigt die laufende Version und die neueste Version. <b>Installieren</b> aktualisiert den Server: Es werden nur Versionen installiert, die mit dem ControlZit-Release-Schlüssel signiert sind; vor der Installation sichert der Server Datenbank und Programm, und startet die neue Version nicht, kehrt er von selbst zur alten zurück. Die Konsole ist ein bis zwei Minuten weg. Optional werden neue Versionen automatisch in einer gewählten Stunde installiert.</p>
+<div class="callout"><p>Updates, Zeitzone und Netzwerk brauchen den <b>Root-Helfer</b>, der mit den Linux-Paketen und der Appliance kommt. Ohne ihn (z. B. das reine Programm) aktualisieren Sie mit <code>install.sh</code> oder dem Paket der Version.</p></div>
+
+<h2 id="agent-updates">Agent-Updates</h2>
+<p>Siehe <a href="/docs/agents#updates">Agents installieren → Agent-Updates</a>.</p>
+
+<h2 id="diagnostics">Diagnose</h2>
+<p><a href="/settings/diagnostics">Einstellungen → Diagnose</a> zeigt, wo ControlZit seine Protokolle schreibt, die neuesten Zeilen des Serverprotokolls (Filter nach Ebene oder Text), das Protokoll des Root-Helfers und die Versionen. <b>Diagnose herunterladen (ZIP)</b> erstellt eine Datei für den Support mit den Protokollen, den Versionen und einer Zusammenfassung der Einstellungen, den Geräten, den Alarmen und dem Prüfprotokoll. Passwörter, Tokens, Registrierungscodes und Schlüssel werden aus allem Angezeigten und aus der Datei entfernt; Skripte und ihre Ausgabe sind nicht enthalten.</p>

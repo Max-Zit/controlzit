@@ -1157,5 +1157,21 @@
   "the console's SAML key is missing; save the settings again": "nedostaje SAML ključ konzole; ponovo sačuvajte podešavanja",
   "wrong username or password": "pogrešno korisničko ime ili lozinka",
   "at the identity provider": "kod dobavljača identiteta",
-  "Report a bug": "Prijavi grešku"
+  "Report a bug": "Prijavi grešku",
+  "Documentation": "Dokumentacija",
+  "User guide": "Uputstvo",
+  "Search the guide": "Pretraga uputstva",
+  "e.g. enrollment code, static address, Let's Encrypt": "npr. kod za prijavu, fiksna adresa, Let's Encrypt",
+  "Nothing in the guide contains all of these words. Try fewer or other words.": "Nijedan deo uputstva ne sadrži sve ove reči. Probajte sa manje ili drugim rečima.",
+  "Getting started": "Prvi koraci",
+  "Installing the server": "Instalacija servera",
+  "Installing agents": "Instalacija agenata",
+  "Customers, sites and devices": "Klijenti, lokacije i uređaji",
+  "Remote desktop, terminal and files": "Udaljena radna površina, terminal i fajlovi",
+  "Scripts and scheduled jobs": "Skripte i zakazani poslovi",
+  "Windows updates and software": "Windows ažuriranja i programi",
+  "Monitoring, alerts and notifications": "Nadzor, upozorenja i obaveštenja",
+  "Users, roles and sign-in": "Korisnici, uloge i prijava",
+  "Server settings and updates": "Podešavanja i ažuriranje servera",
+  "Troubleshooting and FAQ": "Rešavanje problema i česta pitanja"
 }

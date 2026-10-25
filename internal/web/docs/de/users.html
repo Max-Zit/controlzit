@@ -1,0 +1,40 @@
+<h1>Benutzer, Rollen und Anmeldung</h1>
+<p class="lead">Jede Person meldet sich mit ihrem eigenen Konto an. Rollen bestimmen, was sie tun darf, der Kundenzugriff, was sie sehen darf, und jede Aktion wird mit ihrem Namen im Prüfprotokoll vermerkt.</p>
+
+<h2 id="roles">Rollen</h2>
+<table>
+  <tr><th>Rolle</th><th>Darf</th></tr>
+  <tr><td><b>Administrator</b></td><td>alles, auch Benutzer und Einstellungen; sieht immer alle Kunden</td></tr>
+  <tr><td><b>Techniker</b></td><td>verwaltet die Geräte der erlaubten Kunden: Fernzugriff, Skripte, Updates, Programme, Alarme</td></tr>
+  <tr><td><b>Nur lesen</b></td><td>sieht nur die erlaubten Kunden: Geräte, Alarme, Updates, Berichte</td></tr>
+</table>
+<p>Techniker und Nur-Lesen-Benutzer erhalten Zugriff auf <b>alle Kunden</b> (auch künftige) oder <b>nur einige Kunden</b>.</p>
+
+<h2 id="local">Lokale Konten</h2>
+<p>Unter <a href="/users">Benutzer</a> legt ein Administrator einen Benutzer mit einem Anfangspasswort an; der Benutzer muss es bei der ersten Anmeldung ändern und die Zwei-Faktor-Anmeldung einrichten. Ein Administrator kann einen Benutzer deaktivieren (offene Sitzungen enden), ein neues Passwort setzen oder die Zwei-Faktor-Anmeldung eines Benutzers zurücksetzen, der Telefon und Wiederherstellungscodes verloren hat. Mindestens ein aktivierter Administrator bleibt immer.</p>
+
+<h2 id="2fa">Zwei-Faktor-Anmeldung</h2>
+<p>ControlZit hat Administratorzugriff auf jeden verwalteten Computer, daher braucht jedes lokale und Verzeichniskonto eine <b>Authenticator-App</b> (Microsoft Authenticator, Google Authenticator, Authy, 1Password, Bitwarden …). Jedes Konto erhält außerdem 10 einmalige <b>Wiederherstellungscodes</b>; neue lassen sich unter <a href="/account">Konto</a> erstellen. Fehlgeschlagene Anmeldungen sperren die Adresse eine Zeit lang (länger nach jeder wiederholten Sperre); die Grenzen stehen unter <a href="/settings/security">Einstellungen → Anmeldung und Sicherheit</a>, zusammen mit der Sitzungsdauer und der Abmeldung nach Inaktivität.</p>
+
+<h2 id="ldap">Active Directory / LDAP</h2>
+<p>Unter <a href="/settings/ldap">Einstellungen → Active Directory / LDAP</a> melden sich Benutzer mit ihrem Verzeichniskonto an. Das Verzeichnis prüft das Passwort; ControlZit fragt trotzdem nach seinem eigenen zweiten Faktor.</p>
+<ul>
+  <li><b>Server:</b> <code>ldaps://dc1.example.local</code> (Port 636) oder <code>ldap://</code> (389) mit StartTLS — Passwörter gehen nie unverschlüsselt durchs Netz. Fügen Sie das CA-Zertifikat hinzu, wenn das Zertifikat des Verzeichnisses von einer Unternehmens-CA stammt.</li>
+  <li><b>Dienstkonto</b> (DN oder <code>user@domain</code>) und sein Passwort, der <b>Basis-DN</b> und der <b>Benutzerfilter</b>, z. B. <code>(&amp;(objectClass=user)(sAMAccountName={username}))</code> für Active Directory.</li>
+  <li><b>Gruppen und Rollen:</b> Ordnen Sie Verzeichnisgruppen Administrator, Techniker und Nur lesen zu; die höchste Rolle gewinnt. Verschachtelte Gruppen von Active Directory können einbezogen werden.</li>
+  <li><b>Kundengruppen:</b> Zeilen <code>Gruppe = Kunde</code> beschränken Techniker und Nur-Lesen-Benutzer auf diese Kunden.</li>
+</ul>
+<p><b>Test</b> prüft ein Verzeichniskonto mit den gespeicherten Einstellungen, ohne Anmeldung, und zeigt, was ControlZit daraus machen würde. Verzeichniskonten ändern ihr Passwort im Verzeichnis, nicht in ControlZit.</p>
+
+<h2 id="sso">Einmalanmeldung (OpenID Connect, SAML)</h2>
+<p>Unter <a href="/settings/sso">Einstellungen → Einmalanmeldung</a> melden sich Benutzer mit ihrem Konto bei einem Identitätsanbieter an: <b>OpenID Connect</b> (Microsoft Entra ID, Google, Okta, Keycloak …) oder <b>SAML 2.0</b> (ADFS, Entra ID, Okta …). Die Anmeldeseite zeigt dann eine Schaltfläche.</p>
+<ul>
+  <li><b>OpenID Connect:</b> Registrieren Sie beim Anbieter eine Anwendung mit der auf der Seite angezeigten Weiterleitungs-URI und geben Sie dann den Aussteller (z. B. <code>https://login.microsoftonline.com/&lt;tenant&gt;/v2.0</code>), die Client-ID und das Client-Geheimnis ein.</li>
+  <li><b>SAML:</b> Geben Sie dem Anbieter die Metadaten der Konsole (Link auf der Seite) oder deren Entity-ID und Antwortadresse (ACS) und tragen Sie dann die Metadaten-URL des Anbieters ein oder fügen Sie dessen Metadaten-XML ein.</li>
+  <li>Der <b>Gruppen-Claim</b> trägt die Gruppen (Namen oder IDs; Entra ID sendet Gruppen-IDs), die wie bei LDAP Rollen und Kunden zugeordnet werden.</li>
+  <li>Die MFA-Richtlinie des Identitätsanbieters gilt; optional fragt ControlZit zusätzlich nach seinem eigenen zweiten Faktor.</li>
+</ul>
+<div class="callout tip"><p>Lokale Konten funktionieren weiter, wenn LDAP oder Einmalanmeldung aktiv ist, sodass sich ein Administrator immer anmelden kann. Behalten Sie einen lokalen Administrator für Notfälle.</p></div>
+
+<h2 id="audit">Prüfprotokoll</h2>
+<p><a href="/audit">Prüfprotokoll</a> listet jede Änderung und jede Fernaktion mit dem Benutzer, dem Ziel (Kunde, Standort, Gerät oder Benutzer, mit Link) und der Adresse. Die Einträge sind per Hash verkettet; die Konsole prüft die Kette bei jeder Anzeige und meldet, wenn ein Eintrag geändert oder gelöscht wurde.</p>

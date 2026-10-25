@@ -1,0 +1,29 @@
+<h1>Fernsteuerung, Terminal und Dateien</h1>
+<p class="lead">Helfen Sie Benutzern und reparieren Sie Computer im Browser: keine Software auf Ihrer Seite, keine offenen Ports auf deren Seite. Alles läuft über die verschlüsselte Verbindung des Agents und wird im Prüfprotokoll vermerkt.</p>
+
+<h2 id="rd">Fernsteuerung</h2>
+<p>Öffnen Sie ein Gerät und klicken Sie auf <b>Fernsteuerung</b> (oder öffnen Sie sie in einem eigenen Fenster). Sie sehen den Bildschirm und steuern ihn mit Maus und Tastatur.</p>
+<ul>
+  <li><b>Tastatur:</b> Klicken Sie auf den Bildschirm, um zu tippen; die Tasten gehen mit dessen eigenem Tastaturlayout an den entfernten Computer. <b>Strg+Alt+Entf senden</b> und <b>Text senden</b> (tippt einen Text, etwa ein langes Passwort) sind in der Werkzeugleiste. Im Vollbild gehen auch Tastenkürzel wie <kbd>Strg</kbd>+<kbd>W</kbd> oder die Windows-Taste an den entfernten Computer; halten Sie <kbd>Esc</kbd> gedrückt, um das Vollbild zu verlassen.</li>
+  <li><b>Qualität:</b> Schnell, Ausgewogen oder Scharf, je nach Verbindung.</li>
+  <li><b>Monitore:</b> einen Monitor oder alle wählen.</li>
+  <li><b>Anmelde- und UAC-Bildschirme</b> werden angezeigt und sind bedienbar, sodass Sie sich anmelden und Administratorabfragen bestätigen können.</li>
+</ul>
+
+<h3 id="clipboard">Zwischenablage und Dateien</h3>
+<p>Auf Windows-Computern geht kopierter Text in beide Richtungen mit <kbd>Strg</kbd>+<kbd>C</kbd> und <kbd>Strg</kbd>+<kbd>V</kbd>. In Ihrem Explorer kopierte <b>Dateien</b> werden auf dem entfernten Computer mit <kbd>Strg</kbd>+<kbd>V</kbd> eingefügt. Auf dem entfernten Computer kopierte Dateien werden zum Download angeboten (<b>Kopierte Dateien herunterladen</b>), weil ein Browser keine Dateien in Ihre Zwischenablage legen kann. Der Austausch über die Zwischenablage lässt sich unter <a href="/settings/remote">Einstellungen → Fernsteuerung</a> ausschalten.</p>
+
+<h3 id="notice">Hinweis auf dem entfernten Bildschirm</h3>
+<p>Standardmäßig sieht die Person am Computer eine Leiste oben am Bildschirm mit Ihrem Namen, solange Sie verbunden sind. Sie selbst sehen die Leiste im Bild nicht. Sie lässt sich unter <a href="/settings/remote">Einstellungen → Fernsteuerung</a> ausschalten; jede Sitzung wird in jedem Fall im Prüfprotokoll vermerkt.</p>
+
+<h3 id="linux-rd">Linux</h3>
+<p>Fernsteuerung funktioniert auf Linux-Desktops mit X11 (Xorg). Wayland erlaubt einem Hintergrunddienst nicht, den Bildschirm zu sehen oder zu steuern: Melden Sie sich dort mit einer X11-Sitzung an oder verwenden Sie das Terminal. Ohne grafischen Desktop verwenden Sie das Terminal.</p>
+
+<h2 id="terminal">Terminal (Linux)</h2>
+<p><b>Terminal</b> öffnet eine Root-Shell des Geräts im Browser. Klicken Sie hinein, um zu tippen; kopieren Sie durch Markieren, fügen Sie mit <kbd>Strg</kbd>+<kbd>Umschalt</kbd>+<kbd>V</kbd> oder <b>Text senden</b> ein. Beginn und Ende der Sitzung werden im Prüfprotokoll vermerkt. Unter Windows verwenden Sie <a href="/docs/scripts">Skripte</a>.</p>
+
+<h2 id="files">Dateien</h2>
+<p><b>Dateien</b> durchsucht die Laufwerke des Computers, ohne sich mit dem Bildschirm zu verbinden. Dateien hochladen (bis 4 GB), herunterladen, einen Ordner oder eine Auswahl als ZIP herunterladen, Ordner anlegen, umbenennen und löschen. Der Agent führt jede Dateioperation als SYSTEM (Windows) oder root (Linux) aus; jede wird mit Ihrem Namen im Prüfprotokoll vermerkt.</p>
+
+<h2 id="processes">Prozesse und Dienste</h2>
+<p><b>Prozesse</b> listet laufende Programme mit Arbeitsspeicher, Threads und Sitzung und beendet einen Prozess. <b>Dienste</b> listet Dienste (Windows-Dienste oder systemd-Units) und startet, stoppt oder startet sie neu. Der ControlZit-Agent schützt sich selbst: Er kann über die Konsole nicht gestoppt oder beendet werden.</p>

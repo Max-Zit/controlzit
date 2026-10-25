@@ -1,0 +1,36 @@
+<h1>Überwachung, Alarme und Benachrichtigungen</h1>
+<p class="lead">Der Server prüft jedes Gerät einmal pro Minute. Ein Alarm bleibt offen, solange seine Bedingung besteht, und schließt sich von selbst, wenn sie wegfällt; Sie erfahren davon per E-Mail, in einem Chat-Kanal oder über einen Webhook.</p>
+
+<h2 id="rules">Alarmregeln</h2>
+<p>Legen Sie die Regeln unter <a href="/settings/monitoring">Einstellungen → Überwachung und Alarme</a> fest. Sie gelten für alle Geräte.</p>
+<table>
+  <tr><th>Regel</th><th>Löst aus, wenn</th></tr>
+  <tr><td>CPU-Last</td><td>die Last für die gewählten Minuten über der Grenze bleibt</td></tr>
+  <tr><td>Speichernutzung</td><td>die Speichernutzung für die gewählten Minuten über der Grenze bleibt</td></tr>
+  <tr><td>Speicherplatz</td><td>ein Datenträger voller als der Prozentsatz ist oder (bei Datenträgern über dem Doppelten) weniger frei hat als die angegebenen GB</td></tr>
+  <tr><td>Gerät offline</td><td>der Agent sich länger als die angegebenen Minuten nicht verbunden hat</td></tr>
+  <tr><td>Neustart ausstehend</td><td>ein Neustart aussteht und der Computer länger als die angegebenen Tage läuft</td></tr>
+  <tr><td>Microsoft Defender aus</td><td>der Virenschutz oder sein Echtzeitschutz aus ist (optional)</td></tr>
+  <tr><td>Firewall aus</td><td>ein Windows-Firewall-Profil aus ist (optional)</td></tr>
+  <tr><td>Dienst gestoppt</td><td>ein Dienst aus Ihrer Liste (Dienstnamen, nicht Anzeigenamen) automatisch starten soll, aber nicht läuft</td></tr>
+</table>
+<p>Alarme sind <b>Warnung</b> oder <b>Kritisch</b> (kritisch: Offline-Geräte, gestoppte Dienste, Defender aus und Datenträger mit weniger als 1 GB frei oder 98 % belegt). <a href="/alerts">Alarme</a> listet die offenen (und auf Wunsch die behobenen); ein Techniker kann einen Alarm <b>bestätigen</b>, damit andere sehen, dass sich jemand darum kümmert. Die Zahl offener Alarme steht im Menü.</p>
+
+<h2 id="email">Alarm-E-Mails</h2>
+<ol>
+  <li>Geben Sie den <b>E-Mail-Server (SMTP)</b> ein: Host, Port, Verbindungssicherheit (STARTTLS oder TLS; ein Passwort wird nie über eine unverschlüsselte Verbindung gesendet), Benutzer, Passwort und Absender. Das Passwort wird verschlüsselt gespeichert.</li>
+  <li>Fügen Sie die <b>Empfänger</b> hinzu, eine Adresse pro Zeile, und wählen Sie, ob auch bei behobenen Alarmen eine E-Mail geht.</li>
+  <li>Klicken Sie auf <b>Test-E-Mail senden</b>.</li>
+</ol>
+
+<h2 id="channels">Slack, Microsoft Teams und Webhooks</h2>
+<p>Unter <b>Chat und Webhooks</b> fügen Sie bis zu 20 Kanäle hinzu:</p>
+<ul>
+  <li><b>Slack</b> — die URL eines eingehenden Webhooks des Kanals.</li>
+  <li><b>Microsoft Teams</b> — ein Kanal-Workflow <i>Bei Empfang einer Teams-Webhookanforderung</i> und dessen URL.</li>
+  <li><b>Webhook</b> — jede HTTPS-URL, die einen JSON-POST annimmt (Ticketsystem, Automatisierung). Mit einem Geheimnis trägt jede Anfrage <code>X-ControlZit-Signature: sha256=&lt;HMAC des Inhalts&gt;</code>, sodass der Empfänger prüfen kann, dass sie von Ihrem Server kommt.</li>
+</ul>
+<p>Wählen Sie für jeden Kanal alle Alarme oder nur kritische und ob behobene Alarme ebenfalls gesendet werden. <b>Test senden</b> sendet eine Testnachricht. Kanaladressen werden verschlüsselt gespeichert.</p>
+
+<h2 id="metrics">Aktuelle Werte</h2>
+<p>Die Geräteseite zeigt die aktuelle CPU-Last, Arbeitsspeicher und Datenträger sowie die automatischen Dienste, die nicht laufen.</p>

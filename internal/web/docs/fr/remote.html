@@ -1,0 +1,29 @@
+<h1>Bureau à distance, terminal et fichiers</h1>
+<p class="lead">Aidez les utilisateurs et réparez les ordinateurs depuis le navigateur : aucun logiciel de votre côté, aucun port ouvert du leur. Tout passe par la connexion chiffrée de l'agent et est inscrit au journal d'audit.</p>
+
+<h2 id="rd">Bureau à distance</h2>
+<p>Ouvrez un appareil et cliquez sur <b>Bureau à distance</b> (ou ouvrez-le dans sa propre fenêtre). Vous voyez l'écran et le contrôlez avec la souris et le clavier.</p>
+<ul>
+  <li><b>Clavier :</b> cliquez sur l'écran pour taper ; les touches vont à l'ordinateur distant avec sa propre disposition de clavier. <b>Envoyer Ctrl+Alt+Suppr</b> et <b>Envoyer du texte</b> (tape un texte, par exemple un long mot de passe) sont dans la barre d'outils. En plein écran, les raccourcis comme <kbd>Ctrl</kbd>+<kbd>W</kbd> ou la touche Windows vont aussi à l'ordinateur distant ; maintenez <kbd>Échap</kbd> pour quitter le plein écran.</li>
+  <li><b>Qualité :</b> Rapide, Équilibrée ou Nette, selon la connexion.</li>
+  <li><b>Moniteurs :</b> choisissez un moniteur ou tous.</li>
+  <li><b>Les écrans de connexion et UAC</b> sont affichés et utilisables, vous pouvez donc vous connecter et confirmer les demandes administrateur.</li>
+</ul>
+
+<h3 id="clipboard">Presse-papiers et fichiers</h3>
+<p>Sur les ordinateurs Windows, le texte copié passe dans les deux sens avec <kbd>Ctrl</kbd>+<kbd>C</kbd> et <kbd>Ctrl</kbd>+<kbd>V</kbd>. Les <b>fichiers</b> copiés dans votre Explorateur sont collés sur l'ordinateur distant avec <kbd>Ctrl</kbd>+<kbd>V</kbd>. Les fichiers copiés sur l'ordinateur distant sont proposés au téléchargement (<b>Télécharger les fichiers copiés</b>), car un navigateur ne peut pas placer de fichiers dans votre presse-papiers. L'échange par le presse-papiers peut être désactivé dans <a href="/settings/remote">Paramètres → Bureau à distance</a>.</p>
+
+<h3 id="notice">Avis sur l'écran distant</h3>
+<p>Par défaut, la personne devant l'ordinateur voit en haut de l'écran une barre avec votre nom tant que vous êtes connecté. Vous ne voyez pas cette barre dans l'image. Elle peut être désactivée dans <a href="/settings/remote">Paramètres → Bureau à distance</a> ; chaque session est inscrite au journal d'audit dans tous les cas.</p>
+
+<h3 id="linux-rd">Linux</h3>
+<p>Le bureau à distance fonctionne sur les bureaux Linux avec X11 (Xorg). Wayland ne permet pas à un service en arrière-plan de voir ou de contrôler l'écran : connectez-vous avec une session X11, ou utilisez le terminal. Sans bureau graphique, utilisez le terminal.</p>
+
+<h2 id="terminal">Terminal (Linux)</h2>
+<p><b>Terminal</b> ouvre un shell root de l'appareil dans le navigateur. Cliquez dedans pour taper ; copiez en sélectionnant le texte, collez avec <kbd>Ctrl</kbd>+<kbd>Maj</kbd>+<kbd>V</kbd> ou <b>Envoyer du texte</b>. Le début et la fin de la session sont inscrits au journal d'audit. Sous Windows, utilisez les <a href="/docs/scripts">Scripts</a>.</p>
+
+<h2 id="files">Fichiers</h2>
+<p><b>Fichiers</b> parcourt les lecteurs de l'ordinateur sans se connecter à l'écran. Téléversez des fichiers (jusqu'à 4 Go), téléchargez des fichiers, téléchargez un dossier ou une sélection en ZIP, créez des dossiers, renommez et supprimez. L'agent effectue chaque opération en tant que SYSTEM (Windows) ou root (Linux) ; chacune est inscrite au journal d'audit avec votre nom.</p>
+
+<h2 id="processes">Processus et services</h2>
+<p><b>Processus</b> liste les programmes en cours avec leur mémoire, leurs threads et leur session et termine un processus. <b>Services</b> liste les services (services Windows ou unités systemd) et les démarre, arrête ou redémarre. L'agent ControlZit se protège lui-même : il ne peut pas être arrêté ni terminé depuis la console.</p>

@@ -1,0 +1,36 @@
+<h1>Surveillance, alertes et notifications</h1>
+<p class="lead">Le serveur vérifie chaque appareil une fois par minute. Une alerte reste ouverte tant que sa condition persiste et se ferme d'elle-même quand elle disparaît ; vous êtes prévenu par e-mail, dans un canal de discussion ou par webhook.</p>
+
+<h2 id="rules">Règles d'alerte</h2>
+<p>Définissez les règles dans <a href="/settings/monitoring">Paramètres → Surveillance et alertes</a>. Elles s'appliquent à tous les appareils.</p>
+<table>
+  <tr><th>Règle</th><th>Se déclenche quand</th></tr>
+  <tr><td>Charge CPU</td><td>la charge reste au-dessus de la limite pendant les minutes choisies</td></tr>
+  <tr><td>Mémoire utilisée</td><td>l'utilisation de la mémoire reste au-dessus de la limite pendant les minutes choisies</td></tr>
+  <tr><td>Espace disque</td><td>un disque est plus rempli que le pourcentage, ou (sur les disques de plus du double) a moins d'espace libre que les Go indiqués</td></tr>
+  <tr><td>Appareil hors ligne</td><td>l'agent ne s'est pas connecté depuis plus de minutes que la valeur indiquée</td></tr>
+  <tr><td>Redémarrage en attente</td><td>un redémarrage est en attente et l'ordinateur est allumé depuis plus de jours que la valeur indiquée</td></tr>
+  <tr><td>Microsoft Defender désactivé</td><td>l'antivirus ou sa protection en temps réel est désactivé (facultatif)</td></tr>
+  <tr><td>Pare-feu désactivé</td><td>un profil du pare-feu Windows est désactivé (facultatif)</td></tr>
+  <tr><td>Service arrêté</td><td>un service de votre liste (noms de service, pas noms d'affichage) est en démarrage automatique mais ne tourne pas</td></tr>
+</table>
+<p>Les alertes sont <b>Avertissement</b> ou <b>Critique</b> (critique : appareils hors ligne, services arrêtés, Defender désactivé, et disques avec moins de 1 Go libre ou 98 % utilisés). <a href="/alerts">Alertes</a> liste les alertes ouvertes (et, si vous le souhaitez, les résolues) ; un technicien peut <b>acquitter</b> une alerte pour que les autres voient que quelqu'un s'en occupe. Le nombre d'alertes ouvertes s'affiche dans le menu.</p>
+
+<h2 id="email">E-mails d'alerte</h2>
+<ol>
+  <li>Saisissez le <b>serveur e-mail (SMTP)</b> : hôte, port, sécurité de la connexion (STARTTLS ou TLS ; un mot de passe n'est jamais envoyé sur une connexion non chiffrée), utilisateur, mot de passe et expéditeur. Le mot de passe est stocké chiffré.</li>
+  <li>Ajoutez les <b>destinataires</b>, une adresse par ligne, et choisissez si un e-mail part aussi quand une alerte est résolue.</li>
+  <li>Cliquez sur <b>Envoyer un e-mail de test</b>.</li>
+</ol>
+
+<h2 id="channels">Slack, Microsoft Teams et webhooks</h2>
+<p>Dans <b>Chat et webhooks</b>, ajoutez jusqu'à 20 canaux :</p>
+<ul>
+  <li><b>Slack</b> — l'URL d'un webhook entrant du canal.</li>
+  <li><b>Microsoft Teams</b> — un workflow de canal <i>Lorsqu'une demande de webhook Teams est reçue</i>, et son URL.</li>
+  <li><b>Webhook</b> — toute URL HTTPS qui accepte un POST JSON (système de tickets, automatisation). Avec un secret, chaque requête porte <code>X-ControlZit-Signature: sha256=&lt;HMAC du contenu&gt;</code>, pour que le destinataire vérifie qu'elle vient de votre serveur.</li>
+</ul>
+<p>Pour chaque canal, choisissez toutes les alertes ou seulement les critiques, et si les alertes résolues sont aussi envoyées. <b>Envoyer un test</b> envoie un message de test. Les adresses des canaux sont stockées chiffrées.</p>
+
+<h2 id="metrics">Valeurs en direct</h2>
+<p>La page de l'appareil affiche la charge CPU actuelle, la mémoire et les disques, ainsi que les services automatiques arrêtés.</p>

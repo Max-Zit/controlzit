@@ -1,0 +1,34 @@
+<h1>Clients, sites et appareils</h1>
+<p class="lead">Les appareils sont organisés par client et par site. Les techniciens et les utilisateurs en lecture seule peuvent être limités à certains clients, si bien que chaque rapport et chaque liste n'affichent que ce qu'ils peuvent voir.</p>
+
+<h2 id="customers">Clients et sites</h2>
+<ul>
+  <li><b>Les clients</b> sont les entreprises dont vous vous occupez (ou les services de votre propre entreprise). Ajoutez-les dans <a href="/customers">Clients</a>.</li>
+  <li><b>Les sites</b> sont leurs bureaux ou agences. Chaque appareil appartient à un site ; les codes d'inscription sont créés par site.</li>
+  <li>Un client ou un site ne peut être supprimé que lorsqu'il ne contient plus de sites ni d'appareils.</li>
+</ul>
+
+<h2 id="list">La liste des appareils</h2>
+<p><a href="/devices">Appareils</a> liste tous les appareils que vous pouvez voir avec leur client et leur site, le système d'exploitation, l'utilisateur connecté, s'ils sont en ligne et quand ils ont été vus pour la dernière fois. Recherchez par nom, utilisateur, système ou client, ou filtrez par client et par état.</p>
+
+<h2 id="page">La page d'un appareil</h2>
+<p>La page d'un appareil a des onglets pour tout ce que vous pouvez en faire :</p>
+<table>
+  <tr><th>Onglet</th><th>Ce qu'il montre ou fait</th></tr>
+  <tr><td>Vue d'ensemble</td><td>Alertes ouvertes, charge actuelle, mémoire et disques, services automatiques arrêtés, redémarrages en attente ; l'inventaire complet en dessous.</td></tr>
+  <tr><td>Bureau à distance, Terminal, Fichiers</td><td>Accès à distance, voir <a href="/docs/remote">Bureau à distance, terminal et fichiers</a>.</td></tr>
+  <tr><td>Processus, Services</td><td>Processus en cours (les terminer) et services (démarrer, arrêter, redémarrer).</td></tr>
+  <tr><td>Scripts</td><td>Exécuter un script et voir les exécutions précédentes avec leur sortie, voir <a href="/docs/scripts">Scripts</a>.</td></tr>
+  <tr><td>Mises à jour</td><td>Mises à jour Windows ou paquets Linux manquants et récemment installés, voir <a href="/docs/updates">Mises à jour</a>.</td></tr>
+  <tr><td>Programmes</td><td>Installer, mettre à jour et désinstaller des programmes avec winget (Windows).</td></tr>
+  <tr><td>Événements</td><td>Les journaux d'événements Windows (System, Application, Security, Setup), filtrés par niveau, période et texte.</td></tr>
+</table>
+
+<h2 id="inventory">Inventaire</h2>
+<p>L'agent envoie son inventaire quelques secondes après sa connexion puis régulièrement : système d'exploitation et build, domaine ou groupe de travail, modèle et numéro de série, processeur, mémoire, disques avec espace libre et état BitLocker, cartes réseau avec adresses et passerelles, Microsoft Defender et ses signatures, les profils du pare-feu Windows, un redémarrage en attente et les logiciels installés (programmes sous Windows, paquets sous Linux). <b>Actualiser l'inventaire</b> en demande un nouveau immédiatement.</p>
+
+<h2 id="power">Redémarrage et arrêt</h2>
+<p>Les boutons d'alimentation de la page de l'appareil redémarrent ou arrêtent l'ordinateur, tout de suite ou après un délai, avec un message facultatif à l'utilisateur connecté ; un redémarrage planifié peut être annulé. Les utilisateurs connectés perdent leur travail non enregistré.</p>
+
+<h2 id="remove">Retirer un appareil</h2>
+<p><b>Retirer l'appareil</b> le supprime de la console. Un agent en ligne se désinstalle lui-même ; voir <a href="/docs/agents#remove">Retirer un agent</a>.</p>

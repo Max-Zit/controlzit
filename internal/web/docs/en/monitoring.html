@@ -1,0 +1,36 @@
+<h1>Monitoring, alerts and notifications</h1>
+<p class="lead">The server checks every device once a minute. An alert opens while its condition holds and closes by itself when it is gone; you are told by email, in a chat channel or through a webhook.</p>
+
+<h2 id="rules">Alert rules</h2>
+<p>Set the rules under <a href="/settings/monitoring">Settings → Monitoring and alerts</a>. They apply to all devices.</p>
+<table>
+  <tr><th>Rule</th><th>Opens when</th></tr>
+  <tr><td>CPU load</td><td>the load stays above the limit for the chosen minutes</td></tr>
+  <tr><td>Memory use</td><td>memory use stays above the limit for the chosen minutes</td></tr>
+  <tr><td>Disk space</td><td>a disk is fuller than the percentage, or (on disks larger than twice this) has less free space than the given GB</td></tr>
+  <tr><td>Device offline</td><td>the agent has not connected for longer than the given minutes</td></tr>
+  <tr><td>Restart pending</td><td>a restart is pending and the computer has been up longer than the given days</td></tr>
+  <tr><td>Microsoft Defender off</td><td>the antivirus or its real-time protection is off (optional)</td></tr>
+  <tr><td>Firewall off</td><td>a Windows Firewall profile is off (optional)</td></tr>
+  <tr><td>Service stopped</td><td>a service from your list (service names, not display names) is set to start automatically but is not running</td></tr>
+</table>
+<p>Alerts are a <b>Warning</b> or <b>Critical</b> (critical: offline devices, stopped services, Defender off, and disks with less than 1 GB free or 98 % used). <a href="/alerts">Alerts</a> lists the open ones (and, if you want, the resolved ones); a technician can <b>acknowledge</b> an alert so others see that someone is on it. The number of open alerts is shown in the menu.</p>
+
+<h2 id="email">Alert emails</h2>
+<ol>
+  <li>Enter the <b>email server (SMTP)</b>: host, port, connection security (STARTTLS or TLS; a password is never sent over an unencrypted connection), user, password and sender. The password is stored encrypted.</li>
+  <li>Add the <b>recipients</b>, one address per line, and choose whether an email also goes out when an alert is resolved.</li>
+  <li>Click <b>Send a test email</b>.</li>
+</ol>
+
+<h2 id="channels">Slack, Microsoft Teams and webhooks</h2>
+<p>Under <b>Chat and webhooks</b> add up to 20 channels:</p>
+<ul>
+  <li><b>Slack</b> — an incoming webhook URL of the channel.</li>
+  <li><b>Microsoft Teams</b> — a channel workflow <i>When a Teams webhook request is received</i>, and its URL.</li>
+  <li><b>Webhook</b> — any HTTPS URL that accepts a JSON POST (ticket system, automation). With a secret, every request carries <code>X-ControlZit-Signature: sha256=&lt;HMAC of the body&gt;</code>, so the receiver can check it came from your server.</li>
+</ul>
+<p>For each channel choose all alerts or only critical ones, and whether resolved alerts are sent too. <b>Send test</b> sends a test message. Channel addresses are stored encrypted.</p>
+
+<h2 id="metrics">Live values</h2>
+<p>The device page shows the current CPU load, memory and disks, and the automatic services that are not running.</p>

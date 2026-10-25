@@ -1157,5 +1157,21 @@
   "the account exists with another sign-in method": "別のサインイン方法でアカウントが存在します",
   "the console's SAML key is missing; save the settings again": "コンソールの SAML 鍵がありません。設定をもう一度保存してください",
   "wrong username or password": "ユーザー名またはパスワードが間違っています",
-  "at the identity provider": "ID プロバイダーで"
+  "at the identity provider": "ID プロバイダーで",
+  "Customers, sites and devices": "顧客、拠点、デバイス",
+  "Documentation": "ドキュメント",
+  "Getting started": "はじめに",
+  "Installing agents": "エージェントのインストール",
+  "Installing the server": "サーバーのインストール",
+  "Monitoring, alerts and notifications": "監視、アラート、通知",
+  "Nothing in the guide contains all of these words. Try fewer or other words.": "これらの語をすべて含む箇所はガイドにありません。語を減らすか別の語でお試しください。",
+  "Remote desktop, terminal and files": "リモートデスクトップ、ターミナル、ファイル",
+  "Scripts and scheduled jobs": "スクリプトとスケジュールジョブ",
+  "Search the guide": "ガイドを検索",
+  "Server settings and updates": "サーバーの設定と更新",
+  "Troubleshooting and FAQ": "トラブルシューティングと FAQ",
+  "User guide": "ユーザーガイド",
+  "Users, roles and sign-in": "ユーザー、ロール、サインイン",
+  "Windows updates and software": "Windows 更新とソフトウェア",
+  "e.g. enrollment code, static address, Let's Encrypt": "例: 登録コード、固定アドレス、Let's Encrypt"
 }

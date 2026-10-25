@@ -1,0 +1,18 @@
+<h1>Scripts et tâches planifiées</h1>
+<p class="lead">Exécutez PowerShell, cmd, bash ou sh sur un appareil, sur plusieurs appareils à la fois ou selon une planification. Les scripts s'exécutent en tant que SYSTEM (Windows) ou root (Linux), sans fenêtre.</p>
+
+<h2 id="single">Sur un appareil</h2>
+<p>Sur la page d'un appareil, ouvrez <b>Scripts</b>, choisissez le shell, écrivez le script (ou chargez-en un depuis la bibliothèque) et fixez un délai maximal (5–1500 secondes). La page attend le résultat et affiche le code de sortie et la sortie (le premier Mo). Les exécutions précédentes restent dans la liste ; <b>Modifier et relancer</b> ouvre une exécution comme nouveau script.</p>
+
+<h2 id="library">Bibliothèque de scripts</h2>
+<p>Enregistrez les scripts que vous utilisez souvent dans <a href="/scripts">Scripts → Bibliothèque de scripts</a>, avec un nom et une description. De là, exécutez un script sur des appareils choisis, sur tous les appareils de certains clients ou sur tous les appareils.</p>
+
+<h2 id="jobs">Tâches</h2>
+<p>Exécuter un script de la bibliothèque sur plusieurs appareils crée une <b>tâche</b>. La page de la tâche montre chaque appareil avec son état (en attente, en cours, réussi, échoué, expiré) et sa sortie. Le code de sortie 0 compte comme un succès. Les appareils hors ligne exécutent le script à leur connexion, dans les 24 heures ; ensuite ils sont considérés comme expirés.</p>
+
+<h2 id="schedules">Planifications</h2>
+<p>Un script de la bibliothèque peut s'exécuter selon une planification : certains jours de la semaine à une heure donnée (heure du serveur), sur des appareils précis, sur tous les appareils de certains clients ou sur tous les appareils (y compris les nouveaux). Une planification peut être suspendue et reprise. Les appareils hors ligne à ce moment exécutent le script à leur connexion, dans les 24 heures.</p>
+
+<h2 id="audit">Ce qui est journalisé</h2>
+<p>Le script et le début de sa sortie sont inscrits au journal d'audit avec votre nom. Les utilisateurs en lecture seule ne peuvent pas exécuter de scripts.</p>
+<div class="callout warn"><p>Les scripts ont tous les droits sur les ordinateurs. Gardez la bibliothèque en ordre, donnez aux techniciens uniquement les clients dont ils ont besoin et testez un script sur un appareil avant de l'exécuter sur plusieurs.</p></div>

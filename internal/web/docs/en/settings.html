@@ -1,0 +1,40 @@
+<h1>Server settings and updates</h1>
+<p class="lead">Administrators find the server's settings under <a href="/settings">Settings</a>: network and ports, the certificate, time zone, updates of the server and the agents, and the diagnostics for support.</p>
+
+<h2 id="network">Network and access</h2>
+<p>Under <a href="/settings/network">Settings → Network and access</a>:</p>
+<ul>
+  <li><b>Console</b> — listen address and port (default <code>:8443</code>) and the <b>allowed networks</b>: one IP address or network per line (CIDR). Connections from other addresses are closed before TLS; the server itself (127.0.0.1) is always allowed. Saving refuses a list that would lock out your own address.</li>
+  <li><b>Agent endpoint</b> — listen address and port (default <code>:8444</code>, must differ from the console), the networks agents may come from (empty = all) and the <b>public agent address</b> put into installers and enrollment codes.</li>
+  <li>New ports take effect after <b>Restart now</b> (restarts the ControlZit service; agents reconnect by themselves).</li>
+</ul>
+<p>If you lock yourself out, run <code>controlzit-server --reset-allowlist</code> on the server (appliance: setup menu, item 5).</p>
+
+<h3 id="server-network">Network of the server (appliance)</h3>
+<p>On the ControlZit appliance the server's own network is set here too: DHCP or a fixed address with network size (e.g. <code>192.168.1.20/24</code>), gateway, one to three DNS servers and the server name. If the gateway does not answer with the new settings, the previous ones come back by themselves after 30 seconds. On other installations the operating system manages the network.</p>
+
+<h3 id="timezone">Time zone</h3>
+<p>Schedules (updates, scripts, reports) and the times in the console use the server's time zone. Choose it from the list and click <b>Set</b>; the console restarts and is back in a few seconds. Without the root helper (see below), set it on the server: <code>timedatectl set-timezone Europe/Berlin</code>.</p>
+
+<h2 id="certificate">Certificate (HTTPS)</h2>
+<p>Under <a href="/settings/certificate">Settings → Certificate</a> choose the certificate browsers see when they open the console. Agents use their own port and certificate, so changing it never disconnects them.</p>
+<ul>
+  <li><b>The console's own certificate</b> (self-signed) — works at once; browsers warn about it.</li>
+  <li><b>Let's Encrypt</b> — a free certificate, renewed automatically 30 days before it expires. Enter the console's public DNS name and an email address, and choose the check:
+    <ul>
+      <li><b>port 80</b> — the name points to this server and port 80 is reachable from the internet; the server answers on port 80 and redirects browsers to HTTPS;</li>
+      <li><b>Cloudflare DNS</b> — for servers that are not reachable from the internet; needs a Cloudflare API token with <code>Zone:DNS:Edit</code> for the zone.</li>
+    </ul>
+  </li>
+  <li><b>Upload a certificate</b> from your certificate authority or company CA: the certificate (PEM, with the intermediate certificates) and the private key. The key is stored only on this server.</li>
+</ul>
+
+<h2 id="server-updates">Updates of the server</h2>
+<p><a href="/settings/version">Settings → ControlZit updates</a> shows the running version and the newest release. <b>Install</b> updates the server: only releases signed with the ControlZit release key are installed; before installing, the server backs up its database and program, and if the new version does not start it goes back to the old one by itself. The console is away for a minute or two. Optionally new versions are installed automatically in a chosen hour.</p>
+<div class="callout"><p>Updates, the time zone and the network need the <b>root helper</b> that comes with the Linux packages and the appliance. Without it (e.g. the plain program), update with <code>install.sh</code> or the package of the release.</p></div>
+
+<h2 id="agent-updates">Agent updates</h2>
+<p>See <a href="/docs/agents#updates">Installing agents → Agent updates</a>.</p>
+
+<h2 id="diagnostics">Diagnostics</h2>
+<p><a href="/settings/diagnostics">Settings → Diagnostics</a> shows where ControlZit writes its logs, the newest lines of the server log (filter by level or text), the root helper's log and the versions. <b>Download diagnostics (ZIP)</b> creates a file for support with the logs, the versions and settings summary, the devices, the alerts and the audit log. Passwords, tokens, enrollment codes and keys are removed from everything shown and from the file; scripts and their output are not included.</p>

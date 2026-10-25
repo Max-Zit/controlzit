@@ -1157,5 +1157,21 @@
   "the account exists with another sign-in method": "het account bestaat met een andere aanmeldmethode",
   "the console's SAML key is missing; save the settings again": "de SAML-sleutel van de console ontbreekt; sla de instellingen opnieuw op",
   "wrong username or password": "onjuiste gebruikersnaam of wachtwoord",
-  "at the identity provider": "bij de identiteitsprovider"
+  "at the identity provider": "bij de identiteitsprovider",
+  "Customers, sites and devices": "Klanten, locaties en apparaten",
+  "Documentation": "Documentatie",
+  "Getting started": "Aan de slag",
+  "Installing agents": "Agents installeren",
+  "Installing the server": "De server installeren",
+  "Monitoring, alerts and notifications": "Bewaking, waarschuwingen en meldingen",
+  "Nothing in the guide contains all of these words. Try fewer or other words.": "Niets in de handleiding bevat al deze woorden. Probeer minder of andere woorden.",
+  "Remote desktop, terminal and files": "Extern bureaublad, terminal en bestanden",
+  "Scripts and scheduled jobs": "Scripts en geplande taken",
+  "Search the guide": "Handleiding doorzoeken",
+  "Server settings and updates": "Serverinstellingen en updates",
+  "Troubleshooting and FAQ": "Probleemoplossing en veelgestelde vragen",
+  "User guide": "Handleiding",
+  "Users, roles and sign-in": "Gebruikers, rollen en aanmelden",
+  "Windows updates and software": "Windows-updates en software",
+  "e.g. enrollment code, static address, Let's Encrypt": "bijv. registratiecode, vast adres, Let's Encrypt"
 }

@@ -1,0 +1,24 @@
+<h1>Mises à jour Windows et logiciels</h1>
+<p class="lead">ControlZit montre quelles mises à jour manquent sur chaque ordinateur et les installe à la main ou selon votre planification. Les programmes sont installés et mis à jour avec winget.</p>
+
+<h2 id="overview">La vue d'ensemble</h2>
+<p><a href="/updates">Mises à jour</a> liste les appareils avec des mises à jour manquantes (celles de sécurité comptées à part), les appareils en attente de redémarrage, la dernière installation et la dernière recherche. Les agents recherchent les mises à jour manquantes quelques minutes après leur démarrage puis deux fois par jour ; <b>Rechercher maintenant</b> lance une recherche immédiatement.</p>
+
+<h2 id="device">Sur un appareil</h2>
+<p>L'onglet <b>Mises à jour</b> d'un appareil liste les mises à jour manquantes avec leur catégorie et leur gravité, ainsi que celles récemment installées. Sélectionnez des mises à jour et cliquez sur <b>Installer la sélection</b> ; la page affiche le résultat une fois terminé. Si un redémarrage est nécessaire, l'appareil l'indique et vous pouvez le redémarrer depuis sa page.</p>
+
+<h2 id="automatic">Installation automatique</h2>
+<p>Dans <a href="/settings/updates">Paramètres → Mises à jour Windows</a>, choisissez ce que le serveur installe de lui-même :</p>
+<ul>
+  <li><b>Désactivé</b> — les mises à jour ne sont installées que depuis la console.</li>
+  <li><b>Mises à jour de sécurité et critiques, définitions Defender</b>.</li>
+  <li><b>Toutes les mises à jour sauf les mises à niveau de fonctionnalités</b> — les nouvelles versions de Windows ne sont jamais installées automatiquement.</li>
+</ul>
+<p>Choisissez les jours et l'heure (heure du serveur). Les appareils en ligne pendant cette heure installent une fois ce jour-là ; les appareils hors ligne attendent le prochain jour planifié. En option, l'ordinateur redémarre seul quand une mise à jour l'exige, 5 minutes après un avis à l'utilisateur connecté.</p>
+<div class="callout"><p>Pour que les mises à jour n'arrivent pas à n'importe quel moment, l'agent désactive par stratégie l'installation automatique de Windows Update. Quand l'agent est retiré, les anciens paramètres reviennent.</p></div>
+
+<h2 id="linux">Linux</h2>
+<p>Sous Linux, l'agent lit les mises à jour de paquets disponibles via <b>apt</b> (Debian, Ubuntu ; mises à jour de sécurité des dépôts <code>-security</code>) ou <b>dnf</b> (famille RHEL ; mises à jour de sécurité d'après les informations de mise à jour) et installe les paquets sélectionnés. L'installation automatique s'applique aussi aux appareils Linux ; là, les « mises à jour de sécurité » sont les paquets issus des sources de sécurité.</p>
+
+<h2 id="programs">Programmes (winget)</h2>
+<p>L'onglet <b>Programmes</b> d'un appareil Windows liste les programmes installés connus de winget et les mises à jour disponibles. <b>Tout mettre à jour</b> les met à jour ; chaque programme peut être mis à jour ou désinstallé. <b>Installer un programme</b> recherche dans le dépôt communautaire winget (par exemple <i>7-Zip</i> ou <i>Chrome</i>) et l'installe en silence pour tous les utilisateurs. L'appareil a besoin de winget (App Installer), fourni avec les versions récentes de Windows 10 et 11.</p>

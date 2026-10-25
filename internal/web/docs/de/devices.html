@@ -1,0 +1,34 @@
+<h1>Kunden, Standorte und Geräte</h1>
+<p class="lead">Geräte sind nach Kunde und Standort geordnet. Techniker und Nur-Lesen-Benutzer können auf einige Kunden beschränkt werden, sodass jeder Bericht und jede Liste nur zeigt, was sie sehen dürfen.</p>
+
+<h2 id="customers">Kunden und Standorte</h2>
+<ul>
+  <li><b>Kunden</b> sind die Firmen, die Sie betreuen (oder die Abteilungen Ihrer eigenen Firma). Legen Sie sie unter <a href="/customers">Kunden</a> an.</li>
+  <li><b>Standorte</b> sind deren Büros oder Filialen. Jedes Gerät gehört zu einem Standort; Registrierungscodes werden pro Standort erstellt.</li>
+  <li>Ein Kunde oder Standort kann erst gelöscht werden, wenn er keine Standorte oder Geräte mehr enthält.</li>
+</ul>
+
+<h2 id="list">Die Geräteliste</h2>
+<p><a href="/devices">Geräte</a> listet alle Geräte, die Sie sehen dürfen, mit Kunde und Standort, Betriebssystem, angemeldetem Benutzer, ob sie online sind und wann sie zuletzt gesehen wurden. Suchen Sie nach Name, Benutzer, System oder Kunde oder filtern Sie nach Kunde und Status.</p>
+
+<h2 id="page">Die Geräteseite</h2>
+<p>Die Seite eines Geräts hat Registerkarten für alles, was Sie damit tun können:</p>
+<table>
+  <tr><th>Registerkarte</th><th>Was sie zeigt oder tut</th></tr>
+  <tr><td>Übersicht</td><td>Offene Alarme, aktuelle Last, Arbeitsspeicher und Datenträger, automatische Dienste, die nicht laufen, ausstehende Neustarts; darunter das vollständige Inventar.</td></tr>
+  <tr><td>Fernsteuerung, Terminal, Dateien</td><td>Fernzugriff, siehe <a href="/docs/remote">Fernsteuerung, Terminal und Dateien</a>.</td></tr>
+  <tr><td>Prozesse, Dienste</td><td>Laufende Prozesse (beenden) und Dienste (starten, stoppen, neu starten).</td></tr>
+  <tr><td>Skripte</td><td>Ein Skript ausführen und frühere Läufe mit ihrer Ausgabe sehen, siehe <a href="/docs/scripts">Skripte</a>.</td></tr>
+  <tr><td>Updates</td><td>Fehlende und kürzlich installierte Windows-Updates oder Linux-Pakete, siehe <a href="/docs/updates">Updates</a>.</td></tr>
+  <tr><td>Programme</td><td>Programme mit winget installieren, aktualisieren und deinstallieren (Windows).</td></tr>
+  <tr><td>Ereignisse</td><td>Die Windows-Ereignisprotokolle (System, Application, Security, Setup), gefiltert nach Ebene, Zeitraum und Text.</td></tr>
+</table>
+
+<h2 id="inventory">Inventar</h2>
+<p>Der Agent sendet sein Inventar wenige Sekunden nach dem Verbinden und danach regelmäßig: Betriebssystem und Build, Domäne oder Arbeitsgruppe, Modell und Seriennummer, Prozessor, Arbeitsspeicher, Datenträger mit freiem Platz und BitLocker-Status, Netzwerkadapter mit Adressen und Gateways, Microsoft Defender und seine Signaturen, die Windows-Firewall-Profile, einen ausstehenden Neustart und die installierte Software (Programme unter Windows, Pakete unter Linux). <b>Inventar aktualisieren</b> fordert sofort ein neues an.</p>
+
+<h2 id="power">Neustart und Herunterfahren</h2>
+<p>Die Ein-/Aus-Schaltflächen auf der Geräteseite starten den Computer neu oder fahren ihn herunter, sofort oder nach einer Verzögerung, mit optionaler Nachricht an den angemeldeten Benutzer; ein geplanter Neustart kann abgebrochen werden. Dort angemeldete Benutzer verlieren ungespeicherte Arbeit.</p>
+
+<h2 id="remove">Ein Gerät entfernen</h2>
+<p><b>Gerät entfernen</b> löscht es aus der Konsole. Ein Online-Agent deinstalliert sich selbst; siehe <a href="/docs/agents#remove">Einen Agent entfernen</a>.</p>

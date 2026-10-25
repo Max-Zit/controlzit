@@ -1,0 +1,51 @@
+<h1>Rešavanje problema i česta pitanja</h1>
+<p class="lead">Najčešća pitanja i šta prvo proveriti. Za zahtev podršci preuzmite dijagnostiku u <a href="/settings/diagnostics">Podešavanja → Dijagnostika</a>.</p>
+
+<h2 id="console">Ne mogu da otvorim konzolu</h2>
+<ul>
+  <li>Vaša adresa možda nije u dozvoljenim mrežama: veza se zatvara pre TLS-a, pa pregledač pokazuje grešku veze. Pokrenite <code>controlzit-server --reset-allowlist</code> na serveru (uređaj: meni za podešavanje, stavka 5) da ponovo dozvolite sve privatne mreže.</li>
+  <li>Posle promene porta otvorite konzolu na novom portu.</li>
+  <li>Proverite servis na serveru: <code>systemctl status controlzit-server</code> i <code>journalctl -u controlzit-server</code>.</li>
+</ul>
+
+<h2 id="signin">Problemi sa prijavom</h2>
+<ul>
+  <li><b>Kod je pogrešan</b> — vreme na telefonu mora biti tačno (automatsko vreme).</li>
+  <li><b>Izgubljen telefon</b> — prijavite se rezervnim kodom; drugi administrator može da poništi prijavu u dva koraka.</li>
+  <li><b>Previše neuspelih pokušaja</b> — adresa je blokirana neko vreme; administrator je može <b>Odblokirati</b> u <a href="/settings/security">Podešavanja → Prijava i bezbednost</a>. Prijave sa samog servera se nikad ne blokiraju.</li>
+  <li><b>LDAP / jedinstvena prijava</b> — koristite <b>Proveri</b> na LDAP stranici; proverite grupe koje dobavljač šalje. Dnevnik servera ima detalje.</li>
+</ul>
+
+<h2 id="agent">Agent se ne povezuje</h2>
+<ul>
+  <li>Da li računar dolazi do porta za agente? Na Windowsu: <code>Test-NetConnection rmm.example.com -Port 8444</code>.</li>
+  <li>Da li je javna adresa za agente dobra? Kodovi napravljeni dok je konzola bila otvorena na localhost-u šalju agenta na pogrešan server; podesite adresu i napravite nov kod.</li>
+  <li>Da li kod još važi i nije potrošen?</li>
+  <li>Dnevnici agenta: Windows <code>C:\ProgramData\ControlZit Agent\agent.log</code>, Linux <code>/var/lib/controlzit-agent/agent.log</code> i <code>journalctl -u controlzit-agent</code>; za povezan uređaj otvorite ih iz konzole u <b>Fajlovi</b>. Na Windowsu ikonica pored sata pokazuje stanje veze.</li>
+</ul>
+
+<h2 id="rd">Udaljena radna površina ne pokazuje ništa</h2>
+<ul>
+  <li>Linux sa Waylandom ne može da se prikaže: prijavite se u X11 (Xorg) sesiju ili koristite terminal.</li>
+  <li>Linux bez radne površine: koristite terminal.</li>
+  <li>Kopiranje fajlova kroz klipbord traži prijavljenog korisnika na Windows računaru.</li>
+</ul>
+
+<h2 id="updates">Windows ažuriranja se ne instaliraju</h2>
+<ul>
+  <li>Proverite automatsku instalaciju u <a href="/settings/updates">Podešavanja → Windows ažuriranja</a>: dane, sat i režim. Uređaji moraju biti na mreži u tom satu.</li>
+  <li>Kartica <b>Ažuriranja</b> uređaja pokazuje poslednju pretragu i njenu grešku, ako je ima.</li>
+</ul>
+
+<h2 id="email">Upozorenja e-poštom ne stižu</h2>
+<p>Koristite <b>Pošalji probnu poruku</b> u <a href="/settings/monitoring">Podešavanja → Nadzor i upozorenja</a>; poruka pokazuje odgovor servera. Lozinka se šalje samo preko STARTTLS-a ili TLS-a.</p>
+
+<h2 id="faq">Česta pitanja</h2>
+<h3 id="faq-cloud">Da li ControlZitu treba usluga u oblaku?</h3>
+<p>Ne. Sve radi na vašem serveru; ništa se ne šalje MaxZitu. Server samo proverava GitHub zbog novih izdanja.</p>
+<h3 id="faq-backup">Kako da napravim rezervnu kopiju ControlZit-a?</h3>
+<p>Napravite kopiju PostgreSQL baze (<code>pg_dump</code>) i foldera <code>/var/lib/controlzit</code>. Bez tajnog ključa i sertifikata odatle sačuvane lozinke se ne mogu dešifrovati, a agenti ne bi verovali novom serveru.</p>
+<h3 id="faq-move">Mogu li da preselim server na novu mašinu?</h3>
+<p>Da: instalirajte ControlZit na novu mašinu, vratite bazu i <code>/var/lib/controlzit</code> i zadržite istu adresu (ili promenite javnu adresu za agente i usmerite staro ime na novu mašinu).</p>
+<h3 id="faq-mac">Postoji li agent za macOS?</h3>
+<p>Još ne. Podržani su Windows i Linux (x86-64, ARM64).</p>

@@ -1,0 +1,43 @@
+<h1>Prvi koraci</h1>
+<p class="lead">ControlZit je alat za udaljeni nadzor i upravljanje (RMM) koji radi na vašem serveru. Iz jedne veb konzole pratite i održavate Windows i Linux računare svojih klijenata: inventar, nadzor i upozorenja, udaljenu radnu površinu, terminal, fajlove, skripte, Windows ažuriranja, programe i izveštaje.</p>
+
+<h2 id="what">Šta ControlZit radi</h2>
+<table>
+  <tr><th>Oblast</th><th>Šta dobijate</th></tr>
+  <tr><td>Inventar</td><td>Hardver, operativni sistem, diskovi, mreža, stanje zaštite (antivirus, zaštitni zid, BitLocker) i instalirani programi svakog uređaja. <a href="/docs/devices">Uređaji</a></td></tr>
+  <tr><td>Nadzor i upozorenja</td><td>Procesor, memorija, prostor na disku, uređaji van mreže, zaustavljeni servisi, Defender i zaštitni zid; upozorenja e-poštom, na Slack, Microsoft Teams ili webhook. <a href="/docs/monitoring">Nadzor</a></td></tr>
+  <tr><td>Udaljeni pristup</td><td>Udaljena radna površina u pregledaču (Windows, Linux sa X11) sa klipbordom i kopiranjem fajlova, root terminal na Linuxu, upravljanje fajlovima, procesi, servisi, restart i gašenje. <a href="/docs/remote">Udaljeni pristup</a></td></tr>
+  <tr><td>Skripte</td><td>PowerShell, cmd, bash ili sh na jednom uređaju, na više uređaja odjednom ili po rasporedu, iz biblioteke skripti. <a href="/docs/scripts">Skripte</a></td></tr>
+  <tr><td>Ažuriranja i programi</td><td>Nedostajuća Windows ažuriranja i Linux paketi, instalacija ručno ili po rasporedu, programi preko wingeta. <a href="/docs/updates">Ažuriranja</a></td></tr>
+  <tr><td>Izveštaji</td><td>Izveštaj po klijentu (uređaji, ažuriranja, upozorenja, rad tehničara), za štampu ili e-poštom svake nedelje ili meseca. <a href="/docs/reports">Izveštaji</a></td></tr>
+</table>
+
+<h2 id="how">Kako radi</h2>
+<ul>
+  <li><b>Server</b> radi na Linux mašini (obično maloj virtuelnoj mašini) sa PostgreSQL-om. Ima dva porta: <b>konzolu</b> (veb interfejs i API, TCP 8443) i <b>tačku za agente</b> (TCP 8444).</li>
+  <li><b>Agenti</b> rade kao servis na svakom računaru kojim upravljate. Povezuju se <i>ka serveru</i> na port za agente; računarima ne treba nijedan otvoren port. Agent veruje serveru po otisku njegovog sertifikata, koji zapamti pri prijavi.</li>
+  <li>Svaku komandu agentu server <b>potpisuje</b>, a agent proverava, i svaka radnja se upisuje u <a href="/audit">dnevnik izmena</a> koji se ne može neprimetno menjati.</li>
+</ul>
+<div class="callout tip"><p>Konzola upravlja svakim računarom. Neka bude dostupna samo iz vaših mreža (podrazumevano), a port za agente otvorite samo gde je agentima potreban. Vidi <a href="/docs/security">Bezbednost</a>.</p></div>
+
+<h2 id="first-steps">Prvi koraci</h2>
+<ol>
+  <li><b>Instalirajte server</b> — uvezite gotovu sliku virtuelne mašine, pokrenite instalacioni ISO ili skriptu za instalaciju na Linux serveru. Vidi <a href="/docs/install">Instalacija servera</a>.</li>
+  <li><b>Napravite prvog administratora</b> pomoću tokena za podešavanje koji pokazuje server i podesite prijavu u dva koraka sa aplikacijom za autentifikaciju.</li>
+  <li><b>Proverite adresu za agente</b> u <a href="/settings/network">Podešavanja → Mreža i pristup</a>: agenti moraju da dođu do servera preko javne adrese za agente ili imena konzole.</li>
+  <li><b>Dodajte klijenta i lokaciju</b> u <a href="/customers">Klijenti</a>, pa na lokaciji napravite <b>kod za prijavu</b>.</li>
+  <li><b>Instalirajte agenta</b> na računare te lokacije pomoću koda. Vidi <a href="/docs/agents">Instalacija agenata</a>.</li>
+  <li><b>Podesite upozorenja</b> u <a href="/settings/monitoring">Podešavanja → Nadzor i upozorenja</a> i, po želji, <a href="/settings/updates">automatsku instalaciju Windows ažuriranja</a>.</li>
+  <li><b>Dodajte tehničare</b> u <a href="/users">Korisnici</a> ili povežite Active Directory / LDAP ili jedinstvenu prijavu. Vidi <a href="/docs/users">Korisnici, uloge i prijava</a>.</li>
+</ol>
+
+<h2 id="requirements">Zahtevi</h2>
+<ul>
+  <li><b>Server:</b> 2 vCPU, 2–4 GB RAM, disk od 16 GB; Debian 12+, Ubuntu 22.04+, AlmaLinux ili Rocky Linux 9+ (ili gotov uređaj).</li>
+  <li><b>Windows agenti:</b> Windows 10 / 11, Windows Server 2016 i noviji, 64-bitni.</li>
+  <li><b>Linux agenti:</b> distribucije sa systemd-om, x86-64 ili ARM64 (Raspberry Pi i ARM serveri). Ažuriranja preko apt-a ili dnf-a.</li>
+  <li><b>Pregledač:</b> aktuelni Chrome, Edge, Firefox ili Safari.</li>
+</ul>
+
+<h2 id="license">Licenca i podrška</h2>
+<p>ControlZit je slobodan softver pod licencom GNU AGPLv3; izvorni kod je na <a href="https://github.com/Max-Zit/controlzit" target="_blank" rel="noopener">github.com/Max-Zit/controlzit</a>. Greške prijavite dugmetom <b>Prijavi grešku</b> na dnu menija. MaxZit nudi plaćenu podršku.</p>

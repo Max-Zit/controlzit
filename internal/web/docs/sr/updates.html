@@ -1,0 +1,24 @@
+<h1>Windows ažuriranja i programi</h1>
+<p class="lead">ControlZit pokazuje koja ažuriranja nedostaju na svakom računaru i instalira ih ručno ili po vašem rasporedu. Programi se instaliraju i ažuriraju preko wingeta.</p>
+
+<h2 id="overview">Pregled</h2>
+<p><a href="/updates">Ažuriranja</a> pokazuju uređaje sa nedostajućim ažuriranjima (bezbednosna se broje posebno), uređaje koji čekaju restart, poslednju instalaciju i poslednju pretragu. Agenti traže nedostajuća ažuriranja nekoliko minuta posle pokretanja i zatim dvaput dnevno; <b>Traži sada</b> odmah pokreće pretragu.</p>
+
+<h2 id="device">Na uređaju</h2>
+<p>Kartica <b>Ažuriranja</b> uređaja pokazuje nedostajuća ažuriranja sa kategorijom i važnošću i nedavno instalirana. Označite ažuriranja i kliknite <b>Instaliraj izabrana</b>; stranica pokazuje rezultat kad se završi. Ako je potreban restart, uređaj to pokazuje, a restart možete pokrenuti sa njegove stranice.</p>
+
+<h2 id="automatic">Automatska instalacija</h2>
+<p>U <a href="/settings/updates">Podešavanja → Windows ažuriranja</a> birate šta server instalira sam:</p>
+<ul>
+  <li><b>Isključeno</b> — ažuriranja se instaliraju samo iz konzole.</li>
+  <li><b>Bezbednosna i kritična ažuriranja, Defender definicije</b>.</li>
+  <li><b>Sva ažuriranja osim nadogradnji funkcija</b> — nove verzije Windowsa se nikad ne instaliraju automatski.</li>
+</ul>
+<p>Izaberite dane i sat (vreme servera). Uređaji koji su na mreži u tom satu instaliraju jednom tog dana; uređaji van mreže čekaju sledeći zakazani dan. Po želji se računar sam restartuje kad ažuriranje to traži, 5 minuta posle obaveštenja prijavljenom korisniku.</p>
+<div class="callout"><p>Da ažuriranja ne bi stizala u nasumično vreme, agent pravilom isključuje automatsku instalaciju Windows Update-a. Kad se agent ukloni, ranija podešavanja se vraćaju.</p></div>
+
+<h2 id="linux">Linux</h2>
+<p>Na Linuxu agent čita dostupna ažuriranja paketa preko <b>apt-a</b> (Debian, Ubuntu; bezbednosna ažuriranja iz <code>-security</code> izvora) ili <b>dnf-a</b> (RHEL porodica; bezbednosna iz informacija o ažuriranjima) i instalira izabrane pakete. Automatska instalacija važi i za Linux uređaje; tamo su „bezbednosna ažuriranja” paketi iz bezbednosnih izvora.</p>
+
+<h2 id="programs">Programi (winget)</h2>
+<p>Kartica <b>Programi</b> Windows uređaja pokazuje instalirane programe koje winget poznaje i dostupna ažuriranja. <b>Ažuriraj sve</b> ih ažurira; pojedinačni programi se mogu ažurirati ili deinstalirati. <b>Instaliraj program</b> pretražuje winget repozitorijum zajednice (na primer <i>7-Zip</i> ili <i>Chrome</i>) i instalira ga tiho za sve korisnike. Uređaju treba winget (App Installer), koji dolazi sa aktuelnim Windowsom 10 i 11.</p>

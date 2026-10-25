@@ -1157,5 +1157,21 @@
   "the account exists with another sign-in method": "учётная запись существует с другим способом входа",
   "the console's SAML key is missing; save the settings again": "отсутствует SAML-ключ консоли; сохраните настройки ещё раз",
   "wrong username or password": "неверное имя пользователя или пароль",
-  "at the identity provider": "у поставщика удостоверений"
+  "at the identity provider": "у поставщика удостоверений",
+  "Customers, sites and devices": "Клиенты, площадки и устройства",
+  "Documentation": "Документация",
+  "Getting started": "Начало работы",
+  "Installing agents": "Установка агентов",
+  "Installing the server": "Установка сервера",
+  "Monitoring, alerts and notifications": "Мониторинг, оповещения и уведомления",
+  "Nothing in the guide contains all of these words. Try fewer or other words.": "В руководстве нет раздела, где встречаются все эти слова. Попробуйте меньше слов или другие слова.",
+  "Remote desktop, terminal and files": "Удалённый рабочий стол, терминал и файлы",
+  "Scripts and scheduled jobs": "Скрипты и задания по расписанию",
+  "Search the guide": "Поиск по руководству",
+  "Server settings and updates": "Настройки и обновления сервера",
+  "Troubleshooting and FAQ": "Устранение неполадок и FAQ",
+  "User guide": "Руководство",
+  "Users, roles and sign-in": "Пользователи, роли и вход",
+  "Windows updates and software": "Обновления Windows и программы",
+  "e.g. enrollment code, static address, Let's Encrypt": "например, код регистрации, постоянный адрес, Let's Encrypt"
 }

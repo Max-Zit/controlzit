@@ -1157,5 +1157,21 @@
   "the account exists with another sign-in method": "le compte existe avec une autre méthode de connexion",
   "the console's SAML key is missing; save the settings again": "la clé SAML de la console est manquante ; enregistrez à nouveau les paramètres",
   "wrong username or password": "nom d'utilisateur ou mot de passe incorrect",
-  "at the identity provider": "chez le fournisseur d'identité"
+  "at the identity provider": "chez le fournisseur d'identité",
+  "Customers, sites and devices": "Clients, sites et appareils",
+  "Documentation": "Documentation",
+  "Getting started": "Premiers pas",
+  "Installing agents": "Installer les agents",
+  "Installing the server": "Installer le serveur",
+  "Monitoring, alerts and notifications": "Surveillance, alertes et notifications",
+  "Nothing in the guide contains all of these words. Try fewer or other words.": "Rien dans le guide ne contient tous ces mots. Essayez moins de mots ou d'autres mots.",
+  "Remote desktop, terminal and files": "Bureau à distance, terminal et fichiers",
+  "Scripts and scheduled jobs": "Scripts et tâches planifiées",
+  "Search the guide": "Rechercher dans le guide",
+  "Server settings and updates": "Paramètres et mises à jour du serveur",
+  "Troubleshooting and FAQ": "Dépannage et FAQ",
+  "User guide": "Guide d'utilisation",
+  "Users, roles and sign-in": "Utilisateurs, rôles et connexion",
+  "Windows updates and software": "Mises à jour Windows et logiciels",
+  "e.g. enrollment code, static address, Let's Encrypt": "p. ex. code d'inscription, adresse fixe, Let's Encrypt"
 }

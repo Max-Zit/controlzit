@@ -1,0 +1,21 @@
+<h1>Reports</h1>
+<p class="lead">A report shows a customer's devices over a period: operating systems, updates, alerts and the work of your technicians. Print it, save it as PDF or send it to the customer every week or month.</p>
+
+<h2 id="create">Creating a report</h2>
+<p>Under <a href="/reports">Reports</a> choose a customer (or all customers) and the period (last 7, 30 or 90 days) and click <b>Show report</b>. It contains:</p>
+<ul>
+  <li><b>Devices</b> — how many, online now, not seen for over 7 days, and the operating systems.</li>
+  <li><b>Updates</b> — missing updates and missing security updates per device, devices waiting for a restart, update installations in the period.</li>
+  <li><b>Alerts</b> — alerts opened in the period, how many were resolved and how fast, and what is still open.</li>
+  <li><b>Technician work</b> — remote desktop and terminal sessions, scripts run and file operations, from the audit log.</li>
+</ul>
+<p><b>Print or save as PDF</b> uses the browser's print dialog; the menu and buttons are left out of the printout.</p>
+
+<h2 id="email">Reports by email</h2>
+<p>Under <a href="/settings/reports">Settings → Reports</a> every customer can get its report by email:</p>
+<ol>
+  <li>Choose <b>every week</b> (last 7 days, on a weekday) or <b>every month</b> (last 30 days, on a day of the month), the time (server time) and the language of the report.</li>
+  <li>Enter the recipients of each customer (addresses separated by commas, at most 20). <b>Always send a copy to</b> adds your own address to every customer's report.</li>
+  <li><b>Send</b> next to a customer sends its report now, to test it.</li>
+</ol>
+<p>Email reports need the email server from <a href="/settings/monitoring">Settings → Monitoring and alerts</a>. The report is in the HTML part of the email.</p>

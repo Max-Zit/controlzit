@@ -1,0 +1,36 @@
+<h1>Nadzor, upozorenja i obaveštenja</h1>
+<p class="lead">Server proverava svaki uređaj jednom u minuti. Upozorenje se otvara dok uslov važi i samo se zatvara kad prestane; o tome saznajete e-poštom, u kanalu za ćaskanje ili preko webhooka.</p>
+
+<h2 id="rules">Pravila upozorenja</h2>
+<p>Pravila podešavate u <a href="/settings/monitoring">Podešavanja → Nadzor i upozorenja</a>. Važe za sve uređaje.</p>
+<table>
+  <tr><th>Pravilo</th><th>Otvara se kad</th></tr>
+  <tr><td>Opterećenje procesora</td><td>opterećenje ostane iznad granice izabrani broj minuta</td></tr>
+  <tr><td>Zauzeće memorije</td><td>zauzeće memorije ostane iznad granice izabrani broj minuta</td></tr>
+  <tr><td>Prostor na disku</td><td>je disk puniji od procenta, ili (na diskovima većim od dvostruke vrednosti) ima manje slobodnog prostora od zadatih GB</td></tr>
+  <tr><td>Uređaj van mreže</td><td>se agent nije povezao duže od zadatih minuta</td></tr>
+  <tr><td>Restart na čekanju</td><td>restart čeka, a računar radi duže od zadatih dana</td></tr>
+  <tr><td>Microsoft Defender isključen</td><td>je antivirus ili njegova zaštita u realnom vremenu isključena (po izboru)</td></tr>
+  <tr><td>Zaštitni zid isključen</td><td>je neki profil Windows zaštitnog zida isključen (po izboru)</td></tr>
+  <tr><td>Servis zaustavljen</td><td>servis sa vašeg spiska (imena servisa, ne prikazana imena) je podešen da se pokreće automatski, ali ne radi</td></tr>
+</table>
+<p>Upozorenja su <b>Upozorenje</b> ili <b>Kritično</b> (kritično: uređaji van mreže, zaustavljeni servisi, isključen Defender i diskovi sa manje od 1 GB slobodnog ili 98 % zauzeća). <a href="/alerts">Upozorenja</a> pokazuju otvorena (i, po želji, rešena); tehničar može da <b>potvrdi</b> upozorenje da bi drugi videli da neko radi na tome. Broj otvorenih upozorenja se vidi u meniju.</p>
+
+<h2 id="email">Upozorenja e-poštom</h2>
+<ol>
+  <li>Unesite <b>server za e-poštu (SMTP)</b>: adresu, port, zaštitu veze (STARTTLS ili TLS; lozinka se nikad ne šalje nešifrovanom vezom), korisnika, lozinku i pošiljaoca. Lozinka se čuva šifrovano.</li>
+  <li>Dodajte <b>primaoce</b>, jednu adresu po redu, i izaberite da li ide e-pošta i kad je upozorenje rešeno.</li>
+  <li>Kliknite <b>Pošalji probnu poruku</b>.</li>
+</ol>
+
+<h2 id="channels">Slack, Microsoft Teams i webhookovi</h2>
+<p>U delu <b>Ćaskanje i webhookovi</b> dodajte do 20 kanala:</p>
+<ul>
+  <li><b>Slack</b> — URL dolaznog webhooka kanala.</li>
+  <li><b>Microsoft Teams</b> — tok posla kanala <i>When a Teams webhook request is received</i> i njegov URL.</li>
+  <li><b>Webhook</b> — bilo koji HTTPS URL koji prima JSON POST (sistem za tikete, automatizacija). Sa tajnom, svaki zahtev nosi <code>X-ControlZit-Signature: sha256=&lt;HMAC tela&gt;</code>, pa primalac može da proveri da je stigao sa vašeg servera.</li>
+</ul>
+<p>Za svaki kanal birate sva upozorenja ili samo kritična i da li se šalju i rešena. <b>Pošalji probu</b> šalje probnu poruku. Adrese kanala se čuvaju šifrovano.</p>
+
+<h2 id="metrics">Trenutne vrednosti</h2>
+<p>Stranica uređaja pokazuje trenutno opterećenje procesora, memoriju i diskove i automatske servise koji ne rade.</p>

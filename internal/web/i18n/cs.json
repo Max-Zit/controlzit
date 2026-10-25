@@ -1157,5 +1157,21 @@
   "the account exists with another sign-in method": "účet existuje s jinou metodou přihlášení",
   "the console's SAML key is missing; save the settings again": "chybí klíč SAML konzole; uložte nastavení znovu",
   "wrong username or password": "chybné uživatelské jméno nebo heslo",
-  "at the identity provider": "u poskytovatele identity"
+  "at the identity provider": "u poskytovatele identity",
+  "Customers, sites and devices": "Zákazníci, pobočky a zařízení",
+  "Documentation": "Dokumentace",
+  "Getting started": "Začínáme",
+  "Installing agents": "Instalace agentů",
+  "Installing the server": "Instalace serveru",
+  "Monitoring, alerts and notifications": "Monitorování, upozornění a oznámení",
+  "Nothing in the guide contains all of these words. Try fewer or other words.": "Nic v příručce neobsahuje všechna tato slova. Zkuste méně slov nebo jiná slova.",
+  "Remote desktop, terminal and files": "Vzdálená plocha, terminál a soubory",
+  "Scripts and scheduled jobs": "Skripty a naplánované úlohy",
+  "Search the guide": "Hledat v příručce",
+  "Server settings and updates": "Nastavení a aktualizace serveru",
+  "Troubleshooting and FAQ": "Řešení potíží a časté dotazy",
+  "User guide": "Příručka",
+  "Users, roles and sign-in": "Uživatelé, role a přihlášení",
+  "Windows updates and software": "Aktualizace Windows a software",
+  "e.g. enrollment code, static address, Let's Encrypt": "např. registrační kód, pevná adresa, Let's Encrypt"
 }

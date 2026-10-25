@@ -47,6 +47,12 @@ func texts() map[string]bool {
 		}
 	}
 	out["the password must be between 12 and 256 characters"] = true
+	// Titles of the user guide's pages (DocPages).
+	if b, err := os.ReadFile(filepath.Join(dir, "docs.go")); err == nil {
+		for _, m := range regexp.MustCompile(`\{"[a-z-]+", "([^"]+)"\}`).FindAllStringSubmatch(string(b), -1) {
+			out[m[1]] = true
+		}
+	}
 	return out
 }
 

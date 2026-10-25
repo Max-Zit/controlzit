@@ -1,0 +1,29 @@
+<h1>Udaljena radna površina, terminal i fajlovi</h1>
+<p class="lead">Pomažite korisnicima i popravljajte računare iz pregledača: bez softvera kod vas, bez otvorenih portova kod njih. Sve ide kroz šifrovanu vezu agenta i upisuje se u dnevnik izmena.</p>
+
+<h2 id="rd">Udaljena radna površina</h2>
+<p>Otvorite uređaj i kliknite <b>Udaljena radna površina</b> (ili je otvorite u posebnom prozoru). Vidite ekran i upravljate mišem i tastaturom.</p>
+<ul>
+  <li><b>Tastatura:</b> kliknite na ekran da kucate; tasteri idu na udaljeni računar sa njegovim rasporedom tastature. <b>Pošalji Ctrl+Alt+Del</b> i <b>Pošalji tekst</b> (otkuca tekst, na primer dugačku lozinku) su na traci alata. Preko celog ekrana i prečice kao <kbd>Ctrl</kbd>+<kbd>W</kbd> ili Windows taster idu na udaljeni računar; držite <kbd>Esc</kbd> da izađete iz celog ekrana.</li>
+  <li><b>Kvalitet:</b> Brzo, Uravnoteženo ili Oštro, zavisno od veze.</li>
+  <li><b>Monitori:</b> izaberite jedan monitor ili sve.</li>
+  <li><b>Ekrani za prijavu i UAC</b> se vide i mogu se koristiti, pa se možete prijaviti i potvrditi administratorske upite.</li>
+</ul>
+
+<h3 id="clipboard">Klipbord i fajlovi</h3>
+<p>Na Windows računarima kopirani tekst ide u oba smera sa <kbd>Ctrl</kbd>+<kbd>C</kbd> i <kbd>Ctrl</kbd>+<kbd>V</kbd>. <b>Fajlovi</b> kopirani u vašem Exploreru nalepe se na udaljenom računaru sa <kbd>Ctrl</kbd>+<kbd>V</kbd>. Fajlovi kopirani na udaljenom računaru nude se za preuzimanje (<b>Preuzmi kopirane fajlove</b>), jer pregledač ne može da stavi fajlove na vaš klipbord. Razmena klipborda se može isključiti u <a href="/settings/remote">Podešavanja → Udaljena radna površina</a>.</p>
+
+<h3 id="notice">Obaveštenje na udaljenom ekranu</h3>
+<p>Podrazumevano osoba za računarom vidi traku na vrhu ekrana sa vašim imenom dok ste povezani. Vi tu traku ne vidite na slici. Može se isključiti u <a href="/settings/remote">Podešavanja → Udaljena radna površina</a>; svaka sesija se u svakom slučaju upisuje u dnevnik izmena.</p>
+
+<h3 id="linux-rd">Linux</h3>
+<p>Udaljena radna površina radi na Linux radnim površinama sa X11 (Xorg). Wayland ne dozvoljava pozadinskom servisu da vidi ili kontroliše ekran: tamo se prijavite u X11 sesiju ili koristite terminal. Bez grafičke radne površine koristite terminal.</p>
+
+<h2 id="terminal">Terminal (Linux)</h2>
+<p><b>Terminal</b> otvara root ljusku uređaja u pregledaču. Kliknite u njega da kucate; kopirajte označavanjem teksta, nalepite sa <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> ili <b>Pošalji tekst</b>. Početak i kraj sesije se upisuju u dnevnik izmena. Na Windowsu koristite <a href="/docs/scripts">Skripte</a>.</p>
+
+<h2 id="files">Fajlovi</h2>
+<p><b>Fajlovi</b> pregledaju diskove računara bez povezivanja na ekran. Otpremajte fajlove (do 4 GB), preuzimajte fajlove, preuzmite folder ili izbor kao ZIP, pravite foldere, preimenujte i brišite. Agent svaku radnju sa fajlovima obavlja kao SYSTEM (Windows) ili root (Linux); svaka se upisuje u dnevnik izmena sa vašim imenom.</p>
+
+<h2 id="processes">Procesi i servisi</h2>
+<p><b>Procesi</b> pokazuju pokrenute programe sa memorijom, nitima i sesijom i prekidaju proces. <b>Servisi</b> pokazuju servise (Windows servise ili systemd jedinice) i pokreću, zaustavljaju ili restartuju ih. ControlZit agent štiti sam sebe: ne može se zaustaviti ili prekinuti iz konzole.</p>
