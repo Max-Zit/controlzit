@@ -166,12 +166,17 @@
   function showMonitors(list, shown) {
     if (!monSel) return;
     if (list.length < 2) { monSel.hidden = true; return; }
-    var html = "";
+    // The sizes come from the agent: text nodes only, never markup.
+    monSel.textContent = "";
+    function opt(value, text) {
+      var o = document.createElement("option");
+      o.value = value; o.textContent = text;
+      monSel.appendChild(o);
+    }
     list.forEach(function (m, i) {
-      html += "<option value=\"" + i + "\">" + t("monitor") + " " + (i + 1) + (m.primary ? " (" + t("primary") + ")" : "") + " · " + m.w + "×" + m.h + "</option>";
+      opt(String(i), t("monitor") + " " + (i + 1) + (m.primary ? " (" + t("primary") + ")" : "") + " · " + Number(m.w) + "×" + Number(m.h));
     });
-    html += "<option value=\"-1\">" + t("allmonitors") + "</option>";
-    monSel.innerHTML = html;
+    opt("-1", t("allmonitors"));
     monSel.value = String(shown);
     monSel.hidden = false;
   }

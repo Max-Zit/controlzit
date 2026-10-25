@@ -101,10 +101,10 @@ func (d *xDesktop) newShm(size int) error {
 	if err != nil {
 		return err
 	}
-	if uid, err := strconv.Atoi(os.Getenv("CZ_XSERVER_UID")); err == nil && uid != 0 {
+	if uid, err := strconv.ParseUint(os.Getenv("CZ_XSERVER_UID"), 10, 32); err == nil && uid != 0 {
 		var desc unix.SysvShmDesc
 		if _, err := unix.SysvShmCtl(id, unix.IPC_STAT, &desc); err == nil {
-			desc.Perm.Uid = uint32(uid) // #nosec G115 -- a uid
+			desc.Perm.Uid = uint32(uid) // parsed as 32 bits
 			_, _ = unix.SysvShmCtl(id, unix.IPC_SET, &desc)
 		}
 	}
