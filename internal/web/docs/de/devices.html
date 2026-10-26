@@ -22,7 +22,12 @@
   <tr><td>Updates</td><td>Fehlende und kürzlich installierte Windows-Updates oder Linux-Pakete, siehe <a href="/docs/updates">Updates</a>.</td></tr>
   <tr><td>Programme</td><td>Programme mit winget installieren, aktualisieren und deinstallieren (Windows).</td></tr>
   <tr><td>Ereignisse</td><td>Die Windows-Ereignisprotokolle (System, Application, Security, Setup), gefiltert nach Ebene, Zeitraum und Text.</td></tr>
+  <tr><td>Aktivität</td><td>Was die Konsole auf dem Gerät tut: laufende und wartende Aufgaben, die angehalten oder abgebrochen werden können, und der Verlauf, siehe <a href="/docs/devices#activity">Aktivität</a>.</td></tr>
 </table>
+
+<h2 id="activity">Aktivität</h2>
+<p>Jede Aktion der Konsole auf einem Gerät ist eine Aufgabe: Skripte, Bibliotheksaufträge, Suche und Installation von Windows-Updates, Installieren und Deinstallieren von Programmen (winget, Chocolatey, Softwarebibliothek), Agent-Updates, Neustart und Herunterfahren, auch die automatischen Aktionen des Servers. Die Registerkarte <b>Aktivität</b> eines Geräts zeigt, was <b>läuft</b>, was <b>wartet</b>, und den <b>Verlauf</b> mit Ergebnis und Auslöser; die Zahl auf der Registerkarte zählt die laufenden und wartenden Aufgaben. Der Name einer Aufgabe führt zu den Details, zum Beispiel zur Ausgabe eines Skripts.</p>
+<p>Die Aufgaben eines Geräts laufen nacheinander. Ist das Gerät offline, wartet eine Aufgabe, bis es sich verbindet, bis zu 24 Stunden. Sie können die Seite jederzeit verlassen: Eine kurze Aufgabe zeigt ihr Ergebnis sofort, eine längere läuft weiter und die Registerkarte Aktivität aktualisiert sich selbst. <b>Abbrechen</b> entfernt eine wartende Aufgabe; <b>Anhalten</b> beendet eine laufende: Der Agent beendet das Skript oder Installationsprogramm, das er für sie ausführt, samt den davon gestarteten Prozessen. Windows kann das Update, das es gerade installiert, trotzdem noch abschließen.</p>
 
 <h2 id="inventory">Inventar</h2>
 <p>Der Agent sendet sein Inventar wenige Sekunden nach dem Verbinden und danach regelmäßig: Betriebssystem und Build, Domäne oder Arbeitsgruppe, Modell und Seriennummer, Prozessor, Arbeitsspeicher, Datenträger mit freiem Platz und BitLocker-Status, Netzwerkadapter mit Adressen und Gateways, Microsoft Defender und seine Signaturen, die Windows-Firewall-Profile, einen ausstehenden Neustart und die installierte Software (Programme unter Windows, Pakete unter Linux). <b>Inventar aktualisieren</b> fordert sofort ein neues an.</p>

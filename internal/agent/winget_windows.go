@@ -122,6 +122,7 @@ func runWinget(ctx context.Context, raw json.RawMessage) (any, error) {
 func wingetRun(ctx context.Context, exe string, argv []string) (*proto.WingetResult, error) {
 	cmd := exec.CommandContext(ctx, exe, argv...) // #nosec G204 -- winget with validated arguments
 	cmd.SysProcAttr = hiddenProc
+	killTree(cmd)
 	var out bytes.Buffer
 	cmd.Stdout, cmd.Stderr = &out, &out
 	err := cmd.Run()

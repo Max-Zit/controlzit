@@ -77,6 +77,7 @@ Write-Result ([pscustomobject]@{ result = [int]$res.ResultCode; reboot = [bool]$
 func runPatchScript(ctx context.Context, script string, v any) error {
 	cmd := exec.CommandContext(ctx, powershell(), "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-EncodedCommand", encodeCommand(script)) // #nosec G204 -- embedded script, validated IDs
 	cmd.SysProcAttr = hiddenProc
+	killTree(cmd)
 	var out, errb bytes.Buffer
 	cmd.Stdout, cmd.Stderr = &out, &errb
 	if err := cmd.Run(); err != nil {

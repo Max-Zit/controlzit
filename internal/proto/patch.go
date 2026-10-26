@@ -11,6 +11,7 @@ import (
 const (
 	KindPatchScan    = "patch.scan"
 	KindPatchInstall = "patch.install"
+	KindPatchCancel  = "patch.cancel" // stops the running scan or installation
 	TypePatchReport  = "patch_report" // agent → server
 )
 

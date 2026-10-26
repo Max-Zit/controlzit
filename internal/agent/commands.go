@@ -102,6 +102,8 @@ func (a *Agent) runCommand(ctx context.Context, ws *websocket.Conn, sc proto.Sig
 	}
 	cctx, cancel := context.WithDeadline(ctx, cmd.Expires.Add(proto.MaxCommandAge))
 	defer cancel()
+	runningCommands.add(cmd.ID, cancel)
+	defer runningCommands.remove(cmd.ID)
 	out, err := h(cctx, cmd.Args)
 	if err != nil {
 		res.Error = err.Error()
@@ -145,4 +147,45 @@ func redact(raw json.RawMessage) string {
 	}
 	b, _ := json.Marshal(m)
 	return string(b)
+}
+
+// runningCommands are the commands in progress, so the server can stop one
+// (a task cancelled in the console).
+var runningCommands = &cmdSet{m: map[string]context.CancelFunc{}}
+
+type cmdSet struct {
+	mu sync.Mutex
+	m  map[string]context.CancelFunc
+}
+
+func (c *cmdSet) add(id string, cancel context.CancelFunc) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.m[id] = cancel
+}
+
+func (c *cmdSet) remove(id string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	delete(c.m, id)
+}
+
+func (c *cmdSet) cancel(id string) bool {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if f := c.m[id]; f != nil {
+		f()
+		return true
+	}
+	return false
+}
+
+func init() {
+	register(proto.KindCancel, func(_ context.Context, raw json.RawMessage) (any, error) {
+		var a proto.Cancel
+		if err := args(raw, &a); err != nil {
+			return nil, err
+		}
+		return map[string]bool{"stopped": runningCommands.cancel(a.ID)}, nil
+	})
 }

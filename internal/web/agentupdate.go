@@ -239,16 +239,9 @@ func (s *Server) autoUpdate(d *store.Device, version string) {
 	s.pkg.last[d.ID] = s.now()
 	s.pkg.mu.Unlock()
 	time.Sleep(5 * time.Second) // let the channel settle (welcome, first heartbeat)
-	dd := *d
-	dd.AgentVersion = version
-	err := s.updateDevice(ctx, &dd, "system")
-	target := "device:" + strconv.FormatInt(d.ID, 10)
-	if err != nil {
+	if _, err := s.queueTask(ctx, d, "system", "agent.update", "Update the agent to %s (automatic)", []string{pkg.Version}, struct{}{}); err != nil {
 		s.log.Warn("automatic agent update failed", "device", d.ID, "err", err)
-		_ = s.store.Audit(ctx, "system", "", "agent.update", target, "automatic update of "+d.Hostname+" from "+version+" to "+pkg.Version+" failed: "+err.Error())
-		return
 	}
-	_ = s.store.Audit(ctx, "system", "", "agent.update", target, "automatic update of "+d.Hostname+" from "+version+" to "+pkg.Version+" started")
 }
 
 // ---- console
@@ -386,30 +379,19 @@ func (s *Server) handleUpdateAll(w http.ResponseWriter, r *http.Request) {
 	}
 	pkgs := s.packages()
 	issuer := s.issuer(r)
-	started, failed := 0, 0
-	var wg sync.WaitGroup
-	var mu sync.Mutex
+	queued := 0
 	for _, d := range list {
 		if !pkgs.Offers(d) || !s.Connected(d.ID) {
 			continue
 		}
-		wg.Add(1)
-		go func(d *store.Device) {
-			defer wg.Done()
-			err := s.updateDevice(r.Context(), d, issuer)
-			mu.Lock()
-			defer mu.Unlock()
-			if err != nil {
-				failed++
-				s.audit(r, "agent.update", "device:"+strconv.FormatInt(d.ID, 10), "update of %q from %s to %s failed: %v", d.Hostname, d.AgentVersion, pkgs.For(d).Version, err)
-				return
-			}
-			started++
-			s.audit(r, "agent.update", "device:"+strconv.FormatInt(d.ID, 10), "update of %q from %s to %s started", d.Hostname, d.AgentVersion, pkgs.For(d).Version)
-		}(d)
+		if _, err := s.queueTask(r.Context(), d, issuer, "agent.update", "Update the agent to %s", []string{pkgs.For(d).Version}, struct{}{}); err != nil {
+			s.serverError(w, r, err)
+			return
+		}
+		queued++
 	}
-	wg.Wait()
-	s.redirect(w, r, "/settings/agents", translate(s.lang(r, userFrom(r)), "Update started on %d agents (%d failed).", started, failed))
+	s.audit(r, "agent.update", "agents", "update of %d online agents queued", queued)
+	s.redirect(w, r, "/settings/agents", translate(s.lang(r, userFrom(r)), "Update started on %d agents; each device shows it under Activity.", queued))
 }
 
 // handleDeviceUpdate updates one device's agent (device page).
@@ -424,11 +406,5 @@ func (s *Server) handleDeviceUpdate(w http.ResponseWriter, r *http.Request) {
 		s.redirect(w, r, back, "there is no agent installer with a known version for this device on the server")
 		return
 	}
-	if err := s.updateDevice(r.Context(), d, s.issuer(r)); err != nil {
-		s.audit(r, "agent.update", deviceTarget(d), "update of %q failed: %v", d.Hostname, err)
-		s.redirect(w, r, back, err.Error())
-		return
-	}
-	s.audit(r, "agent.update", deviceTarget(d), "update of %q from %s to %s started", d.Hostname, d.AgentVersion, pkg.Version)
-	s.redirect(w, r, back, translate(s.lang(r, userFrom(r)), "The agent is updating to %s; the device reconnects in a minute.", pkg.Version))
+	s.startTask(w, r, d, "agent.update", "Update the agent to %s", []string{pkg.Version}, struct{}{})
 }

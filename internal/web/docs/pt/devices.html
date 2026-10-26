@@ -22,7 +22,12 @@
   <tr><td>Atualizações</td><td>Atualizações do Windows ou pacotes Linux em falta e recentemente instalados, veja <a href="/docs/updates">Atualizações</a>.</td></tr>
   <tr><td>Programas</td><td>Instalar, atualizar e desinstalar programas com winget (Windows).</td></tr>
   <tr><td>Eventos</td><td>Os registos de eventos do Windows (System, Application, Security, Setup), filtrados por nível, período e texto.</td></tr>
+  <tr><td>Atividade</td><td>O que o console está fazendo no dispositivo: tarefas em andamento e aguardando, que podem ser interrompidas ou canceladas, e o histórico, veja <a href="/docs/devices#activity">Atividade</a>.</td></tr>
 </table>
+
+<h2 id="activity">Atividade</h2>
+<p>Cada ação do console em um dispositivo é uma tarefa: scripts, tarefas da biblioteca, pesquisa e instalação de atualizações do Windows, instalação e desinstalação de programas (winget, Chocolatey, biblioteca de software), atualizações do agente, reinicialização e desligamento, também as ações automáticas do servidor. A guia <b>Atividade</b> de um dispositivo mostra o que está <b>em andamento</b>, o que está <b>aguardando</b> e o <b>histórico</b> com o resultado e quem iniciou; o número na guia conta as tarefas em andamento e aguardando. O nome de uma tarefa leva aos detalhes, por exemplo à saída de um script.</p>
+<p>As tarefas de um dispositivo são executadas uma após a outra. Se o dispositivo estiver offline, a tarefa aguarda a conexão, até 24 horas. Você pode sair da página a qualquer momento: uma tarefa rápida mostra o resultado na hora, uma mais longa continua e a guia Atividade se atualiza sozinha. <b>Cancelar</b> remove uma tarefa aguardando; <b>Interromper</b> encerra uma em andamento: o agente interrompe o script ou instalador que executa para ela, incluindo os processos que eles iniciaram. O Windows ainda pode concluir a atualização que está instalando naquele momento.</p>
 
 <h2 id="inventory">Inventário</h2>
 <p>O agente envia o inventário alguns segundos depois de se ligar e depois regularmente: sistema operativo e compilação, domínio ou grupo de trabalho, modelo e número de série, processador, memória, discos com espaço livre e estado do BitLocker, adaptadores de rede com endereços e gateways, Microsoft Defender e as suas assinaturas, os perfis da Firewall do Windows, um reinício pendente e o software instalado (programas no Windows, pacotes no Linux). <b>Atualizar inventário</b> pede um novo de imediato.</p>

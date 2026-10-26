@@ -1,0 +1,64 @@
+{{template "app" .}}
+{{define "content"}}
+{{$d := .Data.D}}
+<p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a> / <a href="/devices/{{$d.ID}}">{{$d.Hostname}}</a></p>
+<h1>{{template "icon" "clock"}}{{.T "Activity"}} <span class="muted h1-sub">{{$d.Hostname}}</span></h1>
+{{template "devtabs" (devtabs . $d "activity")}}
+
+<div {{if or .Data.Running .Data.Queued}}data-autorefresh{{end}}>
+<section class="panel">
+  <h2>{{template "icon" "refresh"}}{{.T "Running and waiting"}}</h2>
+  {{if or .Data.Running .Data.Queued}}
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{.T "Task"}}</th><th>{{.T "Status"}}</th><th class="hide-sm">{{.T "Started by"}}</th><th class="hide-sm">{{.T "Since"}}</th><th></th></tr></thead>
+    <tbody>
+    {{range .Data.Tasks}}{{if .Active}}<tr>
+      <td><b>{{$.TaskText .Title .TitleArgs}}</b></td>
+      <td class="nowrap">{{if eq .Status "running"}}<span class="badge warn"><i></i>{{$.T "running"}}</span>{{else}}<span class="badge"><i></i>{{$.T "waiting"}}</span>{{end}}</td>
+      <td class="hide-sm small">{{.CreatedBy}}</td>
+      <td class="hide-sm small nowrap">{{if .StartedAt}}{{$.Ago .StartedAt}}{{else}}{{$.Ago .CreatedAt}}{{end}}</td>
+      <td class="nowrap actions">{{if $.User.CanWrite}}
+        <form method="post" action="/devices/{{$d.ID}}/activity/{{.ID}}/cancel" class="inline" data-confirm="{{if eq .Status "running"}}{{$.T "Stop %s? The agent stops what it runs for this task." ($.TaskText .Title .TitleArgs)}}{{else}}{{$.T "Cancel %s?" ($.TaskText .Title .TitleArgs)}}{{end}}">
+          <button class="danger sm">{{if eq .Status "running"}}{{$.T "Stop"}}{{else}}{{$.T "Cancel"}}{{end}}</button>
+        </form>{{end}}
+      </td>
+    </tr>{{end}}{{end}}
+    {{range .Data.Jobs}}<tr>
+      <td><b><a href="/jobs/{{.JobID}}">{{if eq .Shell "package"}}{{$.T "Job #%s: install %s" (printf "%d" .JobID) .Name}}{{else}}{{$.T "Job #%s: %s" (printf "%d" .JobID) .Name}}{{end}}</a></b></td>
+      <td class="nowrap"><span class="badge"><i></i>{{$.T "waiting"}}</span></td>
+      <td class="hide-sm small">{{.CreatedBy}}</td>
+      <td class="hide-sm small nowrap">{{$.Ago .CreatedAt}}</td>
+      <td class="nowrap actions">{{if $.User.CanWrite}}
+        <form method="post" action="/devices/{{$d.ID}}/activity/jobs/{{.JobID}}/cancel" class="inline" data-confirm="{{$.T "Cancel job #%s on this device?" (printf "%d" .JobID)}}">
+          <button class="danger sm">{{$.T "Cancel"}}</button>
+        </form>{{end}}
+      </td>
+    </tr>{{end}}
+    </tbody>
+  </table></div>
+  {{else}}
+  <p class="muted">{{.T "Nothing is running or waiting on this device."}}</p>
+  {{end}}
+  <p class="small muted mt">{{.T "Tasks of a device run one after the other. If the device is offline, they wait until it connects, up to 24 hours."}}</p>
+</section>
+
+<section class="panel">
+  <h2>{{template "icon" "audit"}}{{.T "History"}}</h2>
+  {{$any := false}}{{range .Data.Tasks}}{{if not .Active}}{{$any = true}}{{end}}{{end}}
+  {{if $any}}
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{.T "Task"}}</th><th>{{.T "Result"}}</th><th class="hide-sm">{{.T "Started by"}}</th><th class="hide-sm">{{.T "Ended"}}</th></tr></thead>
+    <tbody>{{range .Data.Tasks}}{{if not .Active}}<tr>
+      <td>{{if .Link}}<a href="{{.Link}}">{{$.TaskText .Title .TitleArgs}}</a>{{else}}{{$.TaskText .Title .TitleArgs}}{{end}}</td>
+      <td>{{if eq .Status "done"}}<span class="badge ok"><i></i>{{$.T "succeeded"}}</span>{{else if eq .Status "cancelled"}}<span class="badge"><i></i>{{$.T "cancelled"}}</span>{{else if eq .Status "expired"}}<span class="badge"><i></i>{{$.T "expired"}}</span>{{else}}<span class="badge bad"><i></i>{{$.T "failed"}}</span>{{end}}
+        {{if .Result}}<span class="small">{{$.TaskText .Result .ResultArgs}}</span>{{end}}</td>
+      <td class="hide-sm small">{{.CreatedBy}}</td>
+      <td class="hide-sm small nowrap">{{$.Time .FinishedAt}}</td>
+    </tr>{{end}}{{end}}</tbody>
+  </table></div>
+  {{else}}
+  <p class="muted">{{.T "No tasks yet."}}</p>
+  {{end}}
+</section>
+</div>
+{{end}}

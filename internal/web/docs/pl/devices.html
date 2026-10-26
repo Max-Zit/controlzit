@@ -22,7 +22,12 @@
   <tr><td>Aktualizacje</td><td>Brakujące i niedawno zainstalowane aktualizacje Windows lub pakiety Linuksa, zobacz <a href="/docs/updates">Aktualizacje</a>.</td></tr>
   <tr><td>Programy</td><td>Instalowanie, aktualizowanie i odinstalowywanie programów przez winget (Windows).</td></tr>
   <tr><td>Zdarzenia</td><td>Dzienniki zdarzeń Windows (System, Application, Security, Setup), filtrowane według poziomu, okresu i tekstu.</td></tr>
+  <tr><td>Aktywność</td><td>Co konsola robi na urządzeniu: zadania trwające i oczekujące, które można zatrzymać lub anulować, oraz historia, zobacz <a href="/docs/devices#activity">Aktywność</a>.</td></tr>
 </table>
+
+<h2 id="activity">Aktywność</h2>
+<p>Każda akcja konsoli na urządzeniu jest zadaniem: skrypty, zadania z biblioteki, wyszukiwanie i instalacja aktualizacji Windows, instalacja i odinstalowanie programów (winget, Chocolatey, biblioteka oprogramowania), aktualizacje agenta, ponowne uruchomienie i wyłączenie, także automatyczne akcje serwera. Karta <b>Aktywność</b> urządzenia pokazuje, co <b>trwa</b>, co <b>czeka</b>, oraz <b>historię</b> z wynikiem i informacją, kto uruchomił; liczba na karcie liczy zadania trwające i oczekujące. Nazwa zadania prowadzi do szczegółów, na przykład do wyjścia skryptu.</p>
+<p>Zadania urządzenia są wykonywane jedno po drugim. Jeśli urządzenie jest offline, zadanie czeka na połączenie, do 24 godzin. Stronę można opuścić w dowolnej chwili: krótkie zadanie od razu pokazuje wynik, dłuższe działa dalej, a karta Aktywność odświeża się sama. <b>Anuluj</b> usuwa zadanie oczekujące; <b>Zatrzymaj</b> kończy trwające: agent zatrzymuje skrypt lub instalator, który dla niego uruchamia, razem z procesami, które one uruchomiły. Windows może jednak dokończyć aktualizację, którą właśnie instaluje.</p>
 
 <h2 id="inventory">Inwentaryzacja</h2>
 <p>Agent wysyła inwentaryzację kilka sekund po połączeniu, a potem regularnie: system operacyjny i kompilacja, domena lub grupa robocza, model i numer seryjny, procesor, pamięć, dyski z wolnym miejscem i stanem BitLockera, karty sieciowe z adresami i bramami, Microsoft Defender i jego sygnatury, profile Zapory systemu Windows, oczekujący restart i zainstalowane oprogramowanie (programy w Windows, pakiety w Linuksie). <b>Odśwież inwentaryzację</b> natychmiast prosi o nową.</p>

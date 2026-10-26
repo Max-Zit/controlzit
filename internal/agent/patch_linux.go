@@ -26,7 +26,7 @@ func pkgEnv(cmd *exec.Cmd) *exec.Cmd {
 }
 
 func runOut(ctx context.Context, name string, args ...string) (string, int, error) {
-	cmd := pkgEnv(exec.CommandContext(ctx, name, args...)) // #nosec G204 -- package manager with validated names
+	cmd := killTree(pkgEnv(exec.CommandContext(ctx, name, args...))) // #nosec G204 -- package manager with validated names
 	var out bytes.Buffer
 	cmd.Stdout, cmd.Stderr = &out, &out
 	err := cmd.Run()

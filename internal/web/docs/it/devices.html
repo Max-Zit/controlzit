@@ -22,7 +22,12 @@
   <tr><td>Aggiornamenti</td><td>Aggiornamenti di Windows o pacchetti Linux mancanti e installati di recente, vedi <a href="/docs/updates">Aggiornamenti</a>.</td></tr>
   <tr><td>Programmi</td><td>Installare, aggiornare e disinstallare programmi con winget (Windows).</td></tr>
   <tr><td>Eventi</td><td>I registri eventi di Windows (System, Application, Security, Setup), filtrati per livello, periodo e testo.</td></tr>
+  <tr><td>Attività</td><td>Ciò che la console sta facendo sul dispositivo: attività in corso e in attesa, che possono essere fermate o annullate, e la cronologia, vedi <a href="/docs/devices#activity">Attività</a>.</td></tr>
 </table>
+
+<h2 id="activity">Attività</h2>
+<p>Ogni azione della console su un dispositivo è un'attività: script, attività della libreria, ricerca e installazione degli aggiornamenti di Windows, installazione e disinstallazione di programmi (winget, Chocolatey, libreria software), aggiornamenti dell'agent, riavvio e spegnimento, anche le azioni automatiche del server. La scheda <b>Attività</b> di un dispositivo mostra ciò che è <b>in corso</b>, ciò che è <b>in attesa</b> e la <b>cronologia</b> con il risultato e chi l'ha avviata; il numero sulla scheda conta le attività in corso e in attesa. Il nome di un'attività porta ai dettagli, per esempio all'output di uno script.</p>
+<p>Le attività di un dispositivo vengono eseguite una dopo l'altra. Se il dispositivo è offline, un'attività attende che si connetta, fino a 24 ore. Puoi lasciare la pagina in qualsiasi momento: un'attività breve mostra subito il risultato, una più lunga continua e la scheda Attività si aggiorna da sola. <b>Annulla</b> rimuove un'attività in attesa; <b>Ferma</b> termina un'attività in corso: l'agent ferma lo script o il programma di installazione che esegue per essa, compresi i processi che hanno avviato. Windows può comunque completare l'aggiornamento che sta installando in quel momento.</p>
 
 <h2 id="inventory">Inventario</h2>
 <p>L'agent invia l'inventario pochi secondi dopo la connessione e poi regolarmente: sistema operativo e build, dominio o gruppo di lavoro, modello e numero di serie, processore, memoria, dischi con spazio libero e stato BitLocker, schede di rete con indirizzi e gateway, Microsoft Defender e le sue firme, i profili di Windows Firewall, un riavvio in sospeso e il software installato (programmi su Windows, pacchetti su Linux). <b>Aggiorna inventario</b> ne chiede subito uno nuovo.</p>

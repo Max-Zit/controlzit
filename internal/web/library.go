@@ -64,7 +64,9 @@ func (s *Server) DispatchJobs(ctx context.Context) {
 func (s *Server) runJob(jr store.JobRun) {
 	s.jobs.sem <- struct{}{}
 	defer func() { <-s.jobs.sem }()
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(jr.Timeout)*time.Second+2*actionTimeout)
+	base, cancelTask := context.WithCancelCause(context.Background())
+	defer cancelTask(nil)
+	ctx, cancel := context.WithTimeout(base, time.Duration(jr.Timeout)*time.Second+2*actionTimeout)
 	defer cancel()
 	d, err := s.store.Device(ctx, jr.DeviceID)
 	if err != nil {
@@ -72,8 +74,23 @@ func (s *Server) runJob(jr store.JobRun) {
 		return
 	}
 	jobID := jr.JobID
+	// The run is a task of the device too: visible under Activity, and it
+	// can be stopped there.
+	title := "Job #%s: %s"
+	if jr.Shell == "package" {
+		title = "Job #%s: install %s"
+	}
+	task := &store.DeviceTask{DeviceID: d.ID, Kind: "job", Title: title, TitleArgs: []string{strconv.FormatInt(jobID, 10), jr.Name}, CreatedBy: jr.CreatedBy, JobID: &jobID}
+	if err := s.store.AddRunningTask(ctx, task); err != nil {
+		s.log.Warn("jobs: cannot record the task", "job", jobID, "err", err)
+		task = nil
+	} else {
+		s.tasks.add(task.ID, cancelTask)
+		defer s.tasks.remove(task.ID)
+	}
 	status := "failed"
 	var runID *int64
+	var out taskOutcome
 	if jr.Shell == "package" {
 		run, ok, err := s.runPackage(ctx, d, jr.CreatedBy, jr.Body, &jobID)
 		if err == nil {
@@ -81,30 +98,52 @@ func (s *Server) runJob(jr store.JobRun) {
 			if ok {
 				status = "done"
 			}
-			outcome := run.Error
-			if outcome == "" {
-				outcome = "exit code " + strconv.Itoa(*run.ExitCode)
+			result := run.Error
+			if result == "" {
+				result = "exit code " + strconv.Itoa(*run.ExitCode)
+				out = outcome(ok, s.deviceURL(d, "/scripts/"+strconv.FormatInt(run.ID, 10)), "exit code %s", *run.ExitCode)
+			} else {
+				out = outcome(false, s.deviceURL(d, "/scripts/"+strconv.FormatInt(run.ID, 10)), run.Error)
 			}
-			_ = s.store.Audit(ctx, jr.CreatedBy, "", "package.install", deviceTarget(d), "job #"+strconv.FormatInt(jr.JobID, 10)+": install "+jr.Name+" on \""+d.Hostname+"\": "+status+" ("+outcome+")")
+			_ = s.store.Audit(ctx, jr.CreatedBy, "", "package.install", deviceTarget(d), "job #"+strconv.FormatInt(jr.JobID, 10)+": install "+jr.Name+" on \""+d.Hostname+"\": "+status+" ("+result+")")
+		} else {
+			out = outcome(false, "", err.Error())
 		}
-		if err := s.store.FinishJobRun(ctx, jr.JobID, jr.DeviceID, status, runID); err != nil {
-			s.log.Warn("jobs: cannot store a result", "job", jr.JobID, "device", jr.DeviceID, "err", err)
+	} else {
+		run, err := s.runScript(ctx, d, jr.CreatedBy, jr.Shell, jr.Body, jr.Timeout, &jobID)
+		if err == nil {
+			runID = &run.ID
+			link := s.deviceURL(d, "/scripts/"+strconv.FormatInt(run.ID, 10))
+			switch {
+			case run.Error != "":
+				out = outcome(false, link, run.Error)
+			case run.TimedOut:
+				out = outcome(false, link, "time limit reached")
+			default:
+				out = outcome(*run.ExitCode == 0, link, "exit code %s", *run.ExitCode)
+			}
+			if out.OK {
+				status = "done"
+			}
+			_ = s.store.Audit(ctx, jr.CreatedBy, "", "script.run", deviceTarget(d), "job #"+strconv.FormatInt(jr.JobID, 10)+" ("+jr.Name+"): "+scriptAudit(d, run))
+		} else {
+			out = outcome(false, "", err.Error())
 		}
-		s.DispatchJobs(ctx)
-		return
 	}
-	run, err := s.runScript(ctx, d, jr.CreatedBy, jr.Shell, jr.Body, jr.Timeout, &jobID)
-	if err == nil {
-		runID = &run.ID
-		if run.Error == "" && !run.TimedOut && run.ExitCode != nil && *run.ExitCode == 0 {
-			status = "done"
-		}
-		_ = s.store.Audit(ctx, jr.CreatedBy, "", "script.run", deviceTarget(d), "job #"+strconv.FormatInt(jr.JobID, 10)+" ("+jr.Name+"): "+scriptAudit(d, run))
+	if errors.Is(context.Cause(base), errTaskCancelled) {
+		status, out = "cancelled", outcome(false, out.Link, "stopped from the console")
 	}
-	if err := s.store.FinishJobRun(ctx, jr.JobID, jr.DeviceID, status, runID); err != nil {
+	if err := s.store.FinishJobRun(context.Background(), jr.JobID, jr.DeviceID, status, runID); err != nil {
 		s.log.Warn("jobs: cannot store a result", "job", jr.JobID, "device", jr.DeviceID, "err", err)
 	}
-	s.DispatchJobs(ctx) // the device's next pending job
+	if task != nil {
+		taskStatus := status
+		if taskStatus != "done" && taskStatus != "cancelled" {
+			taskStatus = "failed"
+		}
+		_ = s.store.FinishTask(context.Background(), task.ID, taskStatus, out.Result, out.Args, out.Link)
+	}
+	s.DispatchJobs(context.Background()) // the device's next pending job
 }
 
 // ---- library pages
@@ -365,7 +404,7 @@ func (s *Server) handleJob(w http.ResponseWriter, r *http.Request) {
 }
 
 func statusOrder(st string) int {
-	return map[string]int{"failed": 0, "running": 1, "pending": 2, "expired": 3, "done": 4}[st]
+	return map[string]int{"failed": 0, "running": 1, "pending": 2, "expired": 3, "cancelled": 3, "done": 4}[st]
 }
 
 // ---- schedules

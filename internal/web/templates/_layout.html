@@ -139,6 +139,7 @@
   <a href="/devices/{{$id}}/software" class="{{if eq .Cur "software"}}on{{end}}">{{template "icon" "plus"}}{{.P.T "Programs"}}</a>{{end}}
   {{end}}
   <a href="/devices/{{$id}}/updates" class="{{if eq .Cur "updates"}}on{{end}}">{{template "icon" "download"}}{{.P.T "Updates"}}</a>
+  {{if .P.User.CanWrite}}<a href="/devices/{{$id}}/activity" class="{{if eq .Cur "activity"}}on{{end}}">{{template "icon" "clock"}}{{.P.T "Activity"}}{{with .P.ActiveTasks $id}} <span class="navcount">{{.}}</span>{{end}}</a>{{end}}
 </nav>{{end}}
 
 {{define "jobtable"}}{{if .Data.Jobs}}

@@ -155,3 +155,12 @@ type FSRename struct {
 	From string `json:"from"`
 	To   string `json:"to"`
 }
+
+// KindCancel stops a command the agent is still running (the server sends
+// it when a task is cancelled in the console).
+const KindCancel = "cmd.cancel"
+
+// Cancel is the argument of cmd.cancel: the ID of the command to stop.
+type Cancel struct {
+	ID string `json:"id"`
+}

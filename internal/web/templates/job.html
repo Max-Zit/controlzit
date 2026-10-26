@@ -16,7 +16,7 @@
     <tbody>{{range .Data.Devices}}<tr>
       <td><a href="/devices/{{.DeviceID}}">{{.Hostname}}</a></td>
       <td class="hide-sm">{{.Customer}} / {{.Site}}</td>
-      <td class="nowrap">{{if eq .Status "done"}}<span class="badge ok"><i></i>{{$.T "succeeded"}}</span>{{else if eq .Status "failed"}}<span class="badge bad"><i></i>{{$.T "failed"}}</span>{{else if eq .Status "running"}}<span class="badge warn"><i></i>{{$.T "running"}}</span>{{else if eq .Status "expired"}}<span class="badge"><i></i>{{$.T "expired"}}</span>{{else}}<span class="badge"><i></i>{{$.T "waiting"}}</span>{{end}}</td>
+      <td class="nowrap">{{if eq .Status "done"}}<span class="badge ok"><i></i>{{$.T "succeeded"}}</span>{{else if eq .Status "failed"}}<span class="badge bad"><i></i>{{$.T "failed"}}</span>{{else if eq .Status "running"}}<span class="badge warn"><i></i>{{$.T "running"}}</span>{{else if eq .Status "expired"}}<span class="badge"><i></i>{{$.T "expired"}}</span>{{else if eq .Status "cancelled"}}<span class="badge"><i></i>{{$.T "cancelled"}}</span>{{else}}<span class="badge"><i></i>{{$.T "waiting"}}</span>{{end}}</td>
       <td>{{if .RunID}}<a href="/devices/{{.DeviceID}}/scripts/{{deref64 .RunID}}">{{if .Error}}{{.Error}}{{else if .TimedOut}}{{$.T "time limit reached"}}{{else}}{{$.T "exit code %d" (deref .ExitCode)}}{{end}}</a>{{else if eq .Status "failed"}}<span class="muted small">{{$.T "the server restarted during the run"}}</span>{{end}}</td>
     </tr>{{end}}</tbody>
   </table></div>

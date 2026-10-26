@@ -30,12 +30,16 @@ type Server struct {
 	store *store.Store
 	pkg   packageCache
 	jobs  jobRunner
+	tasks taskRunner
 	log   *slog.Logger
 	tmpl  map[string]*template.Template
 	now   func() time.Time
 	guard *loginGuard
 	hub   *hub
 	rd    rdHub
+
+	// TaskWait is how long a page waits for a new task (0: taskWait).
+	TaskWait time.Duration
 
 	// MgmtACL guards the console listener, AgentACL the agent listener.
 	MgmtACL  *netacl.List
@@ -87,6 +91,9 @@ func New(ctx context.Context, st *store.Store, log *slog.Logger) (*Server, error
 	}
 	// Job runs in flight when the server stopped cannot report any more.
 	if err := st.ExpireJobs(ctx, true); err != nil {
+		return nil, err
+	}
+	if err := st.ExpireTasks(ctx, true); err != nil {
 		return nil, err
 	}
 	s.guard = newLoginGuard(st, func() time.Time { return s.now() })
@@ -327,6 +334,9 @@ func (s *Server) Handler() http.Handler {
 	app("POST /devices/{id}/services", s.handleServiceControl)
 	app("GET /devices/{id}/processes", s.handleProcesses)
 	app("POST /devices/{id}/processes/kill", s.handleProcessKill)
+	app("GET /devices/{id}/activity", s.handleActivity)
+	app("POST /devices/{id}/activity/{tid}/cancel", s.handleTaskCancel)
+	app("POST /devices/{id}/activity/jobs/{jid}/cancel", s.handleJobRunCancel)
 	app("GET /devices/{id}/scripts", s.handleScripts)
 	app("GET /devices/{id}/scripts/{rid}", s.handleScripts)
 	app("POST /devices/{id}/scripts", s.handleScriptRun)

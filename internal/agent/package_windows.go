@@ -69,6 +69,7 @@ func (a *Agent) installPackage(ctx context.Context, p proto.PackageInstall) (*pr
 	cmd := exec.CommandContext(ctx, exe) // #nosec G204 G702 -- installer and arguments from the signed command
 	cmd.Dir = dir
 	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true, CreationFlags: windows.CREATE_NO_WINDOW, CmdLine: cmdline}
+	killTree(cmd)
 	var out bytes.Buffer
 	cmd.Stdout, cmd.Stderr = &out, &out
 	err := cmd.Run()

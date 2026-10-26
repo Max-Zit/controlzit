@@ -88,11 +88,25 @@ type Page struct {
 	AlertCount int
 	Path       string
 	Data       any
+	// activeTasks counts the queued and running tasks of a device (the
+	// Activity tab shows the number).
+	activeTasks func(deviceID int64) int
 	// CSRF-free forms post back to the same origin; nothing else needed.
 }
 
 // T translates a text for the page language.
 func (p *Page) T(key string, args ...any) string { return translate(p.Lang, key, args...) }
+
+// ActiveTasks is the number of queued and running tasks of a device.
+func (p *Page) ActiveTasks(deviceID int64) int {
+	if p.activeTasks == nil {
+		return 0
+	}
+	return p.activeTasks(deviceID)
+}
+
+// TaskText translates the title or result of a task.
+func (p *Page) TaskText(key string, args []string) string { return taskText(p.Lang, key, args) }
 
 // Languages lists the console languages (for the language menu).
 func (p *Page) Languages() []Language { return Languages }
@@ -185,10 +199,8 @@ var funcs = template.FuncMap{
 		}
 		return out
 	},
-	"shellName": func(s string) string {
-		return map[string]string{"powershell": "PowerShell", "cmd": "cmd", "bash": "bash", "sh": "sh", "package": "MSI / EXE"}[s]
-	},
-	"weekday": func(d int) string { return time.Weekday(d).String() },
+	"shellName": shellName,
+	"weekday":   func(d int) string { return time.Weekday(d).String() },
 	"wuResult": func(code int) string {
 		switch code {
 		case 2:
@@ -252,6 +264,10 @@ func (s *Server) render(w http.ResponseWriter, r *http.Request, status int, name
 	p.Path = r.URL.RequestURI()
 	if p.User != nil {
 		p.AlertCount, _ = s.store.OpenAlertCount(r.Context(), p.User)
+	}
+	p.activeTasks = func(id int64) int {
+		n, _ := s.store.ActiveTasks(r.Context(), id)
+		return n
 	}
 	if f := s.takeFlash(w, r); f != "" && p.Flash == "" {
 		// An error message (redirectErr) starts with "!".
@@ -364,4 +380,8 @@ func (s *Server) renderString(name string, p *Page) (string, error) {
 		return "", err
 	}
 	return b.String(), nil
+}
+
+func shellName(s string) string {
+	return map[string]string{"powershell": "PowerShell", "cmd": "cmd", "bash": "bash", "sh": "sh", "package": "MSI / EXE"}[s]
 }

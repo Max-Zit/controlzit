@@ -22,7 +22,12 @@
   <tr><td>Updates</td><td>Ontbrekende en onlangs geïnstalleerde Windows-updates of Linux-pakketten, zie <a href="/docs/updates">Updates</a>.</td></tr>
   <tr><td>Programma's</td><td>Programma's installeren, bijwerken en verwijderen met winget (Windows).</td></tr>
   <tr><td>Gebeurtenissen</td><td>De Windows-gebeurtenislogboeken (System, Application, Security, Setup), gefilterd op niveau, periode en tekst.</td></tr>
+  <tr><td>Activiteit</td><td>Wat de console op het apparaat doet: lopende en wachtende taken, die gestopt of geannuleerd kunnen worden, en de geschiedenis, zie <a href="/docs/devices#activity">Activiteit</a>.</td></tr>
 </table>
+
+<h2 id="activity">Activiteit</h2>
+<p>Elke actie van de console op een apparaat is een taak: scripts, bibliotheektaken, zoeken naar en installeren van Windows-updates, installeren en verwijderen van programma's (winget, Chocolatey, softwarebibliotheek), agentupdates, herstarten en afsluiten, ook de automatische acties van de server. Het tabblad <b>Activiteit</b> van een apparaat toont wat <b>loopt</b>, wat <b>wacht</b> en de <b>geschiedenis</b> met het resultaat en wie het startte; het getal op het tabblad telt de lopende en wachtende taken. De naam van een taak leidt naar de details, bijvoorbeeld de uitvoer van een script.</p>
+<p>De taken van een apparaat lopen na elkaar. Als het apparaat offline is, wacht een taak tot het verbinding maakt, tot 24 uur. U kunt de pagina altijd verlaten: een korte taak toont meteen het resultaat, een langere loopt door en het tabblad Activiteit werkt zichzelf bij. <b>Annuleren</b> verwijdert een wachtende taak; <b>Stoppen</b> beëindigt een lopende: de agent stopt het script of installatieprogramma dat hij ervoor uitvoert, inclusief de processen die die gestart hebben. Windows kan de update die het op dat moment installeert toch nog afmaken.</p>
 
 <h2 id="inventory">Inventaris</h2>
 <p>De agent stuurt zijn inventaris enkele seconden na het verbinden en daarna regelmatig: besturingssysteem en build, domein of werkgroep, model en serienummer, processor, geheugen, schijven met vrije ruimte en BitLocker-status, netwerkadapters met adressen en gateways, Microsoft Defender en zijn handtekeningen, de Windows Firewall-profielen, een geplande herstart en de geïnstalleerde software (programma's op Windows, pakketten op Linux). <b>Inventaris vernieuwen</b> vraagt direct een nieuwe aan.</p>

@@ -3,7 +3,6 @@ package web
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -123,26 +122,14 @@ func (s *Server) handleSoftwareAction(w http.ResponseWriter, r *http.Request) {
 		s.redirect(w, r, back, "Unknown action.")
 		return
 	}
-	_ = http.NewResponseController(w).SetWriteDeadline(time.Time{}) // installers take a while
-	var res proto.WingetResult
-	err := s.call(r.Context(), d.ID, s.issuer(r), proto.KindWinget, a, &res, 27*time.Minute)
-	what := a.ID
+	title := map[string]string{proto.WingetInstall: "Install %s (winget)", proto.WingetUpgrade: "Update %s (winget)", proto.WingetUninstall: "Uninstall %s (winget)"}[a.Action]
+	var args []string
 	if a.ID == proto.WingetAll {
-		what = "all packages"
+		title = "Update all programs (winget)"
+	} else {
+		args = []string{a.ID}
 	}
-	if err != nil {
-		s.audit(r, "software."+a.Action, deviceTarget(d), "winget %s %s on %q failed: %v", a.Action, what, d.Hostname, err)
-		s.redirect(w, r, back, err.Error())
-		return
-	}
-	s.audit(r, "software."+a.Action, deviceTarget(d), "winget %s %s on %q: exit code 0x%X\n%s", a.Action, what, d.Hostname, uint32(res.ExitCode), clip(res.Output, auditOutput)) // #nosec G115 -- exit codes are 32-bit
-	lang := s.lang(r, userFrom(r))
-	if res.ExitCode != 0 {
-		s.redirect(w, r, back, translate(lang, "winget ended with code %s; the audit log has its output.", fmt.Sprintf("0x%X", uint32(res.ExitCode)))) // #nosec G115 -- exit codes are 32-bit
-		return
-	}
-	msg := map[string]string{proto.WingetInstall: "%s installed.", proto.WingetUpgrade: "%s updated.", proto.WingetUninstall: "%s uninstalled."}[a.Action]
-	s.redirect(w, r, back, translate(lang, msg, what))
+	s.startTask(w, r, d, "winget", title, args, wingetTask{Winget: a, Back: back})
 }
 
 // removeProgram uninstalls an installed program silently; the agent reports
@@ -152,20 +139,11 @@ func (s *Server) removeProgram(w http.ResponseWriter, r *http.Request, d *store.
 		s.redirect(w, r, back, "Unknown action.")
 		return
 	}
-	_ = http.NewResponseController(w).SetWriteDeadline(time.Time{}) // uninstallers take a while
 	name := strings.TrimSpace(r.FormValue("name"))
-	var res proto.UninstallResult
-	err := s.call(r.Context(), d.ID, s.issuer(r), proto.KindUninstall, proto.Uninstall{Key: key}, &res, 27*time.Minute)
-	if err != nil {
-		s.audit(r, "software.uninstall", deviceTarget(d), "uninstall %s (%s) on %q failed: %v", clip(name, 200), key, d.Hostname, err)
-		s.redirect(w, r, back, err.Error())
-		return
+	if name == "" {
+		name = key
 	}
-	if res.Name != "" {
-		name = res.Name
-	}
-	s.audit(r, "software.uninstall", deviceTarget(d), "uninstalled %s (%s, %s) on %q: exit code %d", name, key, res.Method, d.Hostname, res.ExitCode)
-	s.redirect(w, r, back, translate(s.lang(r, userFrom(r)), "%s uninstalled.", name))
+	s.startTask(w, r, d, "uninstall", "Uninstall %s", []string{name}, uninstallTask{Key: key, Name: name, Back: back})
 }
 
 // chocoCall runs a Chocolatey list action; it returns the error as text.
@@ -187,29 +165,14 @@ func (s *Server) chocoAction(w http.ResponseWriter, r *http.Request, d *store.De
 		s.redirect(w, r, back, "Unknown action.")
 		return
 	}
-	_ = http.NewResponseController(w).SetWriteDeadline(time.Time{}) // installers take a while
-	var res proto.WingetResult
-	err := s.call(r.Context(), d.ID, s.issuer(r), proto.KindChoco, proto.Choco{Action: action, ID: id}, &res, 27*time.Minute)
-	what := id
-	if id == proto.WingetAll {
-		what = "all packages"
+	title, args := "Install %s (Chocolatey)", []string{id}
+	switch {
+	case id == proto.WingetAll:
+		title, args = "Update all Chocolatey packages", nil
+	case action == proto.ChocoUpgrade:
+		title = "Update %s (Chocolatey)"
 	}
-	if err != nil {
-		s.audit(r, "software."+action, deviceTarget(d), "choco %s %s on %q failed: %v", action, what, d.Hostname, err)
-		s.redirect(w, r, back, err.Error())
-		return
-	}
-	s.audit(r, "software."+action, deviceTarget(d), "choco %s %s on %q: exit code %d\n%s", action, what, d.Hostname, res.ExitCode, clip(res.Output, auditOutput))
-	lang := s.lang(r, userFrom(r))
-	if res.ExitCode != 0 {
-		s.redirect(w, r, back, translate(lang, "Chocolatey ended with code %d; the audit log has its output.", res.ExitCode))
-		return
-	}
-	if action == proto.ChocoInstall {
-		s.redirect(w, r, back, translate(lang, "%s installed.", what))
-		return
-	}
-	s.redirect(w, r, back, translate(lang, "%s updated.", what))
+	s.startTask(w, r, d, "choco", title, args, chocoTask{Choco: proto.Choco{Action: action, ID: id}, Back: back})
 }
 
 // installFromLibrary starts a job that installs a library package on this

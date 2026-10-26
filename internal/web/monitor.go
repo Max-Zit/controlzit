@@ -18,6 +18,7 @@ func (s *Server) RunMonitor(ctx context.Context) {
 		s.CheckAlerts(ctx)
 		s.RunPatchSchedule(ctx)
 		s.RunSchedules(ctx)
+		s.DispatchTasks(ctx)
 		s.RunReports(ctx)
 		if time.Since(purge) > 6*time.Hour {
 			purge = time.Now()

@@ -150,13 +150,7 @@ func (s *Server) handlePatchScan(w http.ResponseWriter, r *http.Request) {
 	if d == nil {
 		return
 	}
-	back := s.deviceURL(d, "/updates")
-	if err := s.call(r.Context(), d.ID, s.issuer(r), proto.KindPatchScan, nil, nil, actionTimeout); err != nil {
-		s.redirect(w, r, back, err.Error())
-		return
-	}
-	s.audit(r, "patch.scan", deviceTarget(d), "search for Windows updates on %q", d.Hostname)
-	s.redirect(w, r, back, "The search for updates started; it can take a few minutes.")
+	s.startTask(w, r, d, "patch.scan", "Search for updates", nil, struct{}{})
 }
 
 func (s *Server) handlePatchInstall(w http.ResponseWriter, r *http.Request) {
@@ -189,12 +183,7 @@ func (s *Server) handlePatchInstall(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	in := proto.PatchInstall{IDs: ids, Reboot: r.FormValue("reboot") == "1", By: s.issuer(r)}
-	if err := s.call(r.Context(), d.ID, s.issuer(r), proto.KindPatchInstall, in, nil, actionTimeout); err != nil {
-		s.redirect(w, r, back, err.Error())
-		return
-	}
-	s.audit(r, "patch.install", deviceTarget(d), "install %d Windows updates on %q (restart if needed: %v): %s", len(ids), d.Hostname, in.Reboot, strings.Join(titles, "; "))
-	s.redirect(w, r, back, translate(s.lang(r, userFrom(r)), "Installing %d updates; the page shows the result when it is done.", len(ids)))
+	s.startTask(w, r, d, "patch.install", "Install %s updates", []string{strconv.Itoa(len(ids))}, patchInstallTask{PatchInstall: in, Titles: titles})
 }
 
 // ---- all devices
@@ -336,11 +325,9 @@ func (s *Server) RunPatchSchedule(ctx context.Context) {
 			continue
 		}
 		in := proto.PatchInstall{IDs: ids, Reboot: p.Reboot, By: "automatic"}
-		target := "device:" + strconv.FormatInt(dp.ID, 10)
-		if err := s.call(ctx, dp.ID, "system", proto.KindPatchInstall, in, nil, actionTimeout); err != nil {
-			_ = s.store.Audit(ctx, "system", "", "patch.install", target, "automatic installation of "+strconv.Itoa(len(ids))+" Windows updates on "+dp.Hostname+" failed: "+err.Error())
-			continue
+		d := &store.Device{ID: dp.ID, Hostname: dp.Hostname}
+		if _, err := s.queueTask(ctx, d, "system", "patch.install", "Install %s updates (automatic)", []string{strconv.Itoa(len(ids))}, patchInstallTask{PatchInstall: in}); err != nil {
+			s.log.Warn("patch schedule", "device", dp.ID, "err", err)
 		}
-		_ = s.store.Audit(ctx, "system", "", "patch.install", target, "automatic installation of "+strconv.Itoa(len(ids))+" Windows updates on "+dp.Hostname+" started")
 	}
 }

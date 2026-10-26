@@ -22,7 +22,12 @@
   <tr><td>Updates</td><td>Missing and recently installed Windows updates or Linux packages, see <a href="/docs/updates">Updates</a>.</td></tr>
   <tr><td>Programs</td><td>Install, update and uninstall programs with winget (Windows).</td></tr>
   <tr><td>Events</td><td>The Windows event logs (System, Application, Security, Setup), filtered by level, period and text.</td></tr>
+  <tr><td>Activity</td><td>What the console is doing on the device: running and waiting tasks, which can be stopped or cancelled, and the history, see <a href="/docs/devices#activity">Activity</a>.</td></tr>
 </table>
+
+<h2 id="activity">Activity</h2>
+<p>Every action of the console on a device is a task: scripts, library jobs, Windows Update searches and installations, installing and uninstalling programs (winget, Chocolatey, the software library), agent updates, restart and shutdown, also the automatic ones of the server. The <b>Activity</b> tab of a device shows what is <b>running</b>, what is <b>waiting</b> and the <b>history</b> with the result and who started it; the number in the tab counts the running and waiting tasks. A task's name links to its details, for example the output of a script.</p>
+<p>The tasks of a device run one after the other. If the device is offline, a task waits until it connects, up to 24 hours. You can leave the page at any time: a quick task shows its result at once, a longer one keeps running and the Activity tab updates by itself. <b>Cancel</b> removes a waiting task; <b>Stop</b> ends a running one: the agent stops the script or installer it runs for it, including the processes they started. Windows itself may still finish the update it is installing at that moment.</p>
 
 <h2 id="inventory">Inventory</h2>
 <p>The agent sends its inventory a few seconds after it connects and then regularly: operating system and build, domain or workgroup, model and serial number, processor, memory, disks with free space and BitLocker state, network adapters with addresses and gateways, Microsoft Defender and its signatures, the Windows Firewall profiles, a pending restart and the installed software (programs on Windows, packages on Linux). <b>Refresh inventory</b> asks for a new one at once.</p>

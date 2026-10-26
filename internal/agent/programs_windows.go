@@ -245,6 +245,7 @@ func uninstallProgram(ctx context.Context, key string) (*proto.UninstallResult, 
 	cmd := exec.CommandContext(cctx, exe) // #nosec G204 G702 -- the program's own registered uninstaller
 	// The registered command line as it is (quoting rules of the uninstaller).
 	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true, CreationFlags: windows.CREATE_NO_WINDOW, CmdLine: syscall.EscapeArg(exe) + " " + strings.TrimSpace(rest)}
+	killTree(cmd)
 	err = cmd.Run()
 	var ee *exec.ExitError
 	switch {

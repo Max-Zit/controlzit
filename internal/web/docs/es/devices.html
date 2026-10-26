@@ -22,7 +22,12 @@
   <tr><td>Actualizaciones</td><td>Actualizaciones de Windows o paquetes de Linux que faltan y los instalados recientemente, consulte <a href="/docs/updates">Actualizaciones</a>.</td></tr>
   <tr><td>Programas</td><td>Instalar, actualizar y desinstalar programas con winget (Windows).</td></tr>
   <tr><td>Eventos</td><td>Los registros de eventos de Windows (System, Application, Security, Setup), filtrados por nivel, periodo y texto.</td></tr>
+  <tr><td>Actividad</td><td>Lo que la consola hace en el dispositivo: tareas en curso y en espera, que se pueden detener o cancelar, y el historial, vea <a href="/docs/devices#activity">Actividad</a>.</td></tr>
 </table>
+
+<h2 id="activity">Actividad</h2>
+<p>Cada acción de la consola en un dispositivo es una tarea: scripts, trabajos de la biblioteca, búsqueda e instalación de actualizaciones de Windows, instalación y desinstalación de programas (winget, Chocolatey, biblioteca de software), actualizaciones del agente, reinicio y apagado, también las acciones automáticas del servidor. La pestaña <b>Actividad</b> de un dispositivo muestra lo que está <b>en curso</b>, lo que está <b>en espera</b> y el <b>historial</b> con el resultado y quién lo inició; el número de la pestaña cuenta las tareas en curso y en espera. El nombre de una tarea lleva a sus detalles, por ejemplo a la salida de un script.</p>
+<p>Las tareas de un dispositivo se ejecutan una tras otra. Si el dispositivo está sin conexión, una tarea espera a que se conecte, hasta 24 horas. Puede salir de la página en cualquier momento: una tarea rápida muestra su resultado al instante, una más larga sigue en curso y la pestaña Actividad se actualiza sola. <b>Cancelar</b> quita una tarea en espera; <b>Detener</b> termina una en curso: el agente detiene el script o instalador que ejecuta para ella, incluidos los procesos que estos iniciaron. Windows aún puede terminar la actualización que está instalando en ese momento.</p>
 
 <h2 id="inventory">Inventario</h2>
 <p>El agente envía su inventario unos segundos después de conectarse y luego con regularidad: sistema operativo y compilación, dominio o grupo de trabajo, modelo y número de serie, procesador, memoria, discos con espacio libre y estado de BitLocker, adaptadores de red con direcciones y puertas de enlace, Microsoft Defender y sus firmas, los perfiles del Firewall de Windows, un reinicio pendiente y el software instalado (programas en Windows, paquetes en Linux). <b>Actualizar inventario</b> pide uno nuevo al instante.</p>

@@ -22,7 +22,12 @@
   <tr><td>Mises à jour</td><td>Mises à jour Windows ou paquets Linux manquants et récemment installés, voir <a href="/docs/updates">Mises à jour</a>.</td></tr>
   <tr><td>Programmes</td><td>Installer, mettre à jour et désinstaller des programmes avec winget (Windows).</td></tr>
   <tr><td>Événements</td><td>Les journaux d'événements Windows (System, Application, Security, Setup), filtrés par niveau, période et texte.</td></tr>
+  <tr><td>Activité</td><td>Ce que la console fait sur l'appareil : les tâches en cours et en attente, qui peuvent être arrêtées ou annulées, et l'historique, voir <a href="/docs/devices#activity">Activité</a>.</td></tr>
 </table>
+
+<h2 id="activity">Activité</h2>
+<p>Chaque action de la console sur un appareil est une tâche : scripts, tâches de la bibliothèque, recherche et installation des mises à jour Windows, installation et désinstallation de programmes (winget, Chocolatey, bibliothèque de logiciels), mises à jour de l'agent, redémarrage et arrêt, y compris les actions automatiques du serveur. L'onglet <b>Activité</b> d'un appareil montre ce qui est <b>en cours</b>, ce qui est <b>en attente</b> et l'<b>historique</b> avec le résultat et qui l'a lancé ; le nombre sur l'onglet compte les tâches en cours et en attente. Le nom d'une tâche mène à ses détails, par exemple la sortie d'un script.</p>
+<p>Les tâches d'un appareil s'exécutent l'une après l'autre. Si l'appareil est hors ligne, une tâche attend sa connexion, jusqu'à 24 heures. Vous pouvez quitter la page à tout moment : une tâche rapide affiche son résultat tout de suite, une plus longue continue et l'onglet Activité se met à jour tout seul. <b>Annuler</b> retire une tâche en attente ; <b>Arrêter</b> met fin à une tâche en cours : l'agent arrête le script ou le programme d'installation qu'il exécute pour elle, y compris les processus qu'ils ont lancés. Windows peut tout de même terminer la mise à jour qu'il installe à ce moment.</p>
 
 <h2 id="inventory">Inventaire</h2>
 <p>L'agent envoie son inventaire quelques secondes après sa connexion puis régulièrement : système d'exploitation et build, domaine ou groupe de travail, modèle et numéro de série, processeur, mémoire, disques avec espace libre et état BitLocker, cartes réseau avec adresses et passerelles, Microsoft Defender et ses signatures, les profils du pare-feu Windows, un redémarrage en attente et les logiciels installés (programmes sous Windows, paquets sous Linux). <b>Actualiser l'inventaire</b> en demande un nouveau immédiatement.</p>

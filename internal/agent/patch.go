@@ -30,6 +30,7 @@ type patchState struct {
 	report proto.PatchReport
 	dirty  bool
 	busy   bool
+	cancel context.CancelFunc // stops the running scan or installation
 	notify chan struct{}
 }
 
@@ -104,15 +105,17 @@ func (a *Agent) startPatchJob(job func(ctx context.Context)) error {
 		a.patch.mu.Unlock()
 		return errPatchBusy
 	}
-	a.patch.busy = true
+	ctx, cancel := context.WithCancel(a.runCtx)
+	a.patch.busy, a.patch.cancel = true, cancel
 	a.patch.mu.Unlock()
 	go func() {
 		defer func() {
 			a.patch.mu.Lock()
-			a.patch.busy = false
+			a.patch.busy, a.patch.cancel = false, nil
 			a.patch.mu.Unlock()
+			cancel()
 		}()
-		job(a.runCtx)
+		job(ctx)
 	}()
 	return nil
 }
@@ -126,6 +129,9 @@ func (a *Agent) scanJob(ctx context.Context) {
 		r.State = proto.PatchIdle
 		if err != nil {
 			r.ScanError = err.Error()
+			if ctx.Err() != nil && a.runCtx.Err() == nil {
+				r.ScanError = errStoppedByConsole.Error()
+			}
 			return
 		}
 		r.ScanError = ""
@@ -153,6 +159,9 @@ func (a *Agent) installJob(ctx context.Context, in proto.PatchInstall) {
 	run.Finished = time.Now().UTC()
 	if err != nil {
 		run.Error = err.Error()
+		if ctx.Err() != nil && a.runCtx.Err() == nil {
+			run.Error = errStoppedByConsole.Error()
+		}
 	} else {
 		run.Result, run.RebootRequired, run.Results = res.Result, res.RebootRequired, res.Results
 	}
@@ -165,7 +174,7 @@ func (a *Agent) installJob(ctx context.Context, in proto.PatchInstall) {
 	}
 	a.Log.Info("Windows updates installed", "result", run.Result, "reboot_required", run.RebootRequired, "err", run.Error)
 	a.changePatches(func(r *proto.PatchReport) { r.Install = run })
-	a.scanJob(ctx) // the list changed
+	a.scanJob(a.runCtx) // the list changed (also after a stop from the console)
 }
 
 // currentDefinitions swaps requested definition updates (Defender) for the
@@ -259,4 +268,21 @@ type PatchInstallResult struct {
 	Result         int                 `json:"result"`
 	RebootRequired bool                `json:"reboot"`
 	Results        []proto.PatchResult `json:"results"`
+}
+
+var errStoppedByConsole = errors.New("stopped from the console")
+
+func init() {
+	register(proto.KindPatchCancel, func(context.Context, json.RawMessage) (any, error) {
+		if self == nil || self.patch == nil {
+			return nil, errors.New("the agent is not running")
+		}
+		self.patch.mu.Lock()
+		cancel := self.patch.cancel
+		self.patch.mu.Unlock()
+		if cancel != nil {
+			cancel()
+		}
+		return map[string]bool{"stopped": cancel != nil}, nil
+	})
 }

@@ -22,7 +22,12 @@
   <tr><td>Ažuriranja</td><td>Nedostajuća i nedavno instalirana Windows ažuriranja ili Linux paketi, vidi <a href="/docs/updates">Ažuriranja</a>.</td></tr>
   <tr><td>Programi</td><td>Instalacija, ažuriranje i deinstalacija programa preko wingeta (Windows).</td></tr>
   <tr><td>Događaji</td><td>Windows dnevnici događaja (System, Application, Security, Setup), filtrirani po nivou, periodu i tekstu.</td></tr>
+  <tr><td>Aktivnosti</td><td>Šta konzola radi na uređaju: zadaci u toku i na čekanju, koji mogu da se zaustave ili otkažu, i istorija, vidi <a href="/docs/devices#activity">Aktivnosti</a>.</td></tr>
 </table>
+
+<h2 id="activity">Aktivnosti</h2>
+<p>Svaka akcija konzole na uređaju je zadatak: skripte, poslovi iz biblioteke, pretraga i instalacija Windows ažuriranja, instalacija i deinstalacija programa (winget, Chocolatey, biblioteka softvera), ažuriranje agenta, restart i gašenje, kao i automatske akcije servera. Kartica <b>Aktivnosti</b> uređaja prikazuje šta je <b>u toku</b>, šta <b>čeka</b> i <b>istoriju</b> sa rezultatom i onim ko je pokrenuo; broj na kartici broji zadatke u toku i na čekanju. Naziv zadatka vodi na detalje, na primer na izlaz skripte.</p>
+<p>Zadaci jednog uređaja izvršavaju se jedan za drugim. Ako uređaj nije na mreži, zadatak čeka da se poveže, do 24 sata. Stranicu možete napustiti bilo kada: brz zadatak odmah prikaže rezultat, a duži nastavlja da radi i kartica Aktivnosti se sama osvežava. <b>Otkaži</b> uklanja zadatak na čekanju; <b>Zaustavi</b> prekida zadatak u toku: agent zaustavlja skriptu ili instaler koji za njega pokreće, zajedno sa procesima koje su oni pokrenuli. Windows ipak može da završi ažuriranje koje u tom trenutku instalira.</p>
 
 <h2 id="inventory">Inventar</h2>
 <p>Agent šalje inventar nekoliko sekundi posle povezivanja i zatim redovno: operativni sistem i build, domen ili radna grupa, model i serijski broj, procesor, memorija, diskovi sa slobodnim prostorom i stanjem BitLocker-a, mrežni adapteri sa adresama i mrežnim prolazima, Microsoft Defender i njegove definicije, profili Windows zaštitnog zida, restart na čekanju i instalirani softver (programi na Windowsu, paketi na Linuxu). <b>Osveži inventar</b> odmah traži novi.</p>

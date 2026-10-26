@@ -22,7 +22,12 @@
   <tr><td>Güncellemeler</td><td>Eksik ve yakın zamanda kurulmuş Windows güncellemeleri veya Linux paketleri, bkz. <a href="/docs/updates">Güncellemeler</a>.</td></tr>
   <tr><td>Programlar</td><td>winget ile program kurma, güncelleme ve kaldırma (Windows).</td></tr>
   <tr><td>Olaylar</td><td>Windows olay günlükleri (System, Application, Security, Setup), düzey, dönem ve metne göre filtrelenmiş.</td></tr>
+  <tr><td>Etkinlik</td><td>Konsolun cihazda yaptıkları: durdurulabilen veya iptal edilebilen çalışan ve bekleyen görevler ile geçmiş, bkz. <a href="/docs/devices#activity">Etkinlik</a>.</td></tr>
 </table>
+
+<h2 id="activity">Etkinlik</h2>
+<p>Konsolun bir cihazdaki her eylemi bir görevdir: betikler, kitaplık görevleri, Windows güncelleştirmelerini arama ve yükleme, program yükleme ve kaldırma (winget, Chocolatey, yazılım kitaplığı), aracı güncelleştirmeleri, yeniden başlatma ve kapatma, sunucunun otomatik eylemleri de. Bir cihazın <b>Etkinlik</b> sekmesi neyin <b>çalıştığını</b>, neyin <b>beklediğini</b> ve sonucu ile başlatanı içeren <b>geçmişi</b> gösterir; sekmedeki sayı çalışan ve bekleyen görevleri sayar. Bir görevin adı ayrıntılarına, örneğin bir betiğin çıktısına götürür.</p>
+<p>Bir cihazın görevleri sırayla çalışır. Cihaz çevrimdışıysa görev bağlanmasını 24 saate kadar bekler. Sayfadan istediğiniz zaman çıkabilirsiniz: kısa bir görev sonucunu hemen gösterir, daha uzun olan çalışmaya devam eder ve Etkinlik sekmesi kendini yeniler. <b>İptal</b> bekleyen bir görevi kaldırır; <b>Durdur</b> çalışan bir görevi bitirir: aracı onun için çalıştırdığı betiği veya yükleyiciyi, başlattıkları işlemlerle birlikte durdurur. Windows o anda yüklediği güncelleştirmeyi yine de tamamlayabilir.</p>
 
 <h2 id="inventory">Envanter</h2>
 <p>Ajan, bağlandıktan birkaç saniye sonra ve ardından düzenli olarak envanterini gönderir: işletim sistemi ve derleme, etki alanı veya çalışma grubu, model ve seri numarası, işlemci, bellek, boş alanları ve BitLocker durumlarıyla diskler, adresleri ve ağ geçitleriyle ağ bağdaştırıcıları, Microsoft Defender ve imzaları, Windows Güvenlik Duvarı profilleri, bekleyen bir yeniden başlatma ve kurulu yazılımlar (Windows'ta programlar, Linux'ta paketler). <b>Envanteri yenile</b> hemen yenisini ister.</p>

@@ -22,7 +22,12 @@
   <tr><td>Aktualizace</td><td>Chybějící a nedávno nainstalované aktualizace Windows nebo balíčky Linuxu, viz <a href="/docs/updates">Aktualizace</a>.</td></tr>
   <tr><td>Programy</td><td>Instalace, aktualizace a odinstalace programů pomocí winget (Windows).</td></tr>
   <tr><td>Události</td><td>Protokoly událostí Windows (System, Application, Security, Setup), filtrované podle úrovně, období a textu.</td></tr>
+  <tr><td>Aktivita</td><td>Co konzole na zařízení dělá: běžící a čekající úlohy, které lze zastavit nebo zrušit, a historie, viz <a href="/docs/devices#activity">Aktivita</a>.</td></tr>
 </table>
+
+<h2 id="activity">Aktivita</h2>
+<p>Každá akce konzole na zařízení je úloha: skripty, úlohy z knihovny, hledání a instalace aktualizací Windows, instalace a odinstalace programů (winget, Chocolatey, knihovna softwaru), aktualizace agenta, restart a vypnutí, i automatické akce serveru. Karta <b>Aktivita</b> zařízení ukazuje, co <b>běží</b>, co <b>čeká</b>, a <b>historii</b> s výsledkem a tím, kdo úlohu spustil; číslo na kartě počítá běžící a čekající úlohy. Název úlohy vede na podrobnosti, například na výstup skriptu.</p>
+<p>Úlohy zařízení běží jedna po druhé. Pokud je zařízení offline, úloha čeká na připojení, až 24 hodin. Stránku můžete kdykoli opustit: rychlá úloha ukáže výsledek hned, delší běží dál a karta Aktivita se sama obnovuje. <b>Zrušit</b> odstraní čekající úlohu; <b>Zastavit</b> ukončí běžící: agent zastaví skript nebo instalátor, který pro ni spouští, včetně procesů, které spustily. Windows přesto může dokončit aktualizaci, kterou právě instaluje.</p>
 
 <h2 id="inventory">Inventář</h2>
 <p>Agent posílá inventář několik sekund po připojení a pak pravidelně: operační systém a sestavení, doména nebo pracovní skupina, model a sériové číslo, procesor, paměť, disky s volným místem a stavem BitLockeru, síťové adaptéry s adresami a branami, Microsoft Defender a jeho signatury, profily brány Windows Firewall, čekající restart a nainstalovaný software (programy ve Windows, balíčky v Linuxu). <b>Obnovit inventář</b> si okamžitě vyžádá nový.</p>

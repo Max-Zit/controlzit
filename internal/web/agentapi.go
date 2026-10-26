@@ -88,10 +88,24 @@ func (s *Server) call(ctx context.Context, deviceID int64, issuer, kind string, 
 		}
 		return nil
 	case <-tctx.Done():
+		if errors.Is(context.Cause(ctx), errTaskCancelled) {
+			// The task was cancelled: the agent stops the command too.
+			go s.cancelCommand(deviceID, issuer, cmd.ID) // #nosec G118 -- outlives the cancelled call; own timeout
+			return context.Cause(ctx)
+		}
 		if s.hub.get(deviceID) != c {
 			return ErrOffline
 		}
 		return errors.New("the device did not answer in time")
+	}
+}
+
+// cancelCommand asks an agent to stop a command it still runs.
+func (s *Server) cancelCommand(deviceID int64, issuer, id string) {
+	ctx, cancel := context.WithTimeout(context.Background(), actionTimeout)
+	defer cancel()
+	if err := s.call(ctx, deviceID, issuer, proto.KindCancel, proto.Cancel{ID: id}, nil, actionTimeout); err != nil {
+		s.log.Warn("cannot stop a command on the agent", "device", deviceID, "err", err)
 	}
 }
 
@@ -302,8 +316,9 @@ func (s *Server) agentMessage(ctx context.Context, c *agentConn, d *store.Device
 		if err := send(ctx, c.ws, proto.TypeWelcome, proto.Welcome{DeviceID: d.ID, HeartbeatSeconds: heartbeatSeconds, InventoryHours: inventoryHours, CommandKey: s.commandPub()}); err != nil {
 			return err
 		}
-		go s.autoUpdate(d, h.AgentVersion)      // #nosec G118 -- outlives the agent's message; own timeouts inside
-		go s.DispatchJobs(context.Background()) // #nosec G118 -- background work, not tied to this message
+		go s.autoUpdate(d, h.AgentVersion)       // #nosec G118 -- outlives the agent's message; own timeouts inside
+		go s.DispatchJobs(context.Background())  // #nosec G118 -- background work, not tied to this message
+		go s.DispatchTasks(context.Background()) // #nosec G118 -- background work, not tied to this message
 		return nil
 	case proto.TypeHeartbeat:
 		var hb proto.Heartbeat

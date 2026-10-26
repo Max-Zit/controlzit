@@ -345,6 +345,7 @@ func runScript(ctx context.Context, raw json.RawMessage) (any, error) {
 		cmd = exec.CommandContext(cctx, filepath.Join(os.Getenv("SystemRoot"), "System32", "cmd.exe"), "/d", "/c", name) // #nosec G702 G204 -- our own temp file
 	}
 	cmd.SysProcAttr = hiddenProc
+	killTree(cmd)
 	out := &capWriter{max: proto.MaxScriptOutput}
 	cmd.Stdout, cmd.Stderr = out, out
 	start := time.Now()

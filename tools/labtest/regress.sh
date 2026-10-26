@@ -93,6 +93,15 @@ $C -o /dev/null -d name=ControlZitAgent -d action=stop $S/devices/$DEV/services
 check "agent refuses to stop its own service" 'script cmd "sc query ControlZitAgent" | grep -q "RUNNING"'
 check "PowerShell script output, UTF-8 and exit code" 'script powershell "Write-Output \"lab čćž \$env:USERNAME\"; exit 5" | grep -q "lab čćž SYSTEM\|lab čćž DESKTOP" && $C "$S/audit?q=script.run" | grep -q "exit code 5"'
 check "cmd script output" 'script cmd "echo cmd-ok %COMPUTERNAME%" | grep -q "cmd-ok DESKTOP-NBB66OQ"'
+check "activity history lists the scripts" '$C "$S/devices/$DEV/activity" | grep -q "Run a cmd script"'
+# A long script goes to the activity; stopping it ends it within seconds.
+printf "Start-Sleep -Seconds 240" > .gotmp/r-script.txt
+$C -o /dev/null -d shell=powershell -d timeout=600 --data-urlencode "script@.gotmp/r-script.txt" $S/devices/$DEV/scripts
+TID=$($C "$S/devices/$DEV/activity" | grep -o "activity/[0-9]*/cancel" | head -1 | grep -o "[0-9]*")
+check "long script runs under Activity" '[ -n "$TID" ]'
+$C -o /dev/null -X POST "$S/devices/$DEV/activity/$TID/cancel"
+for i in 1 2 3 4 5 6 7 8 9 10; do $C "$S/devices/$DEV/activity" | grep -q data-autorefresh || break; sleep 2; done
+check "stopped script shows as stopped" '$C "$S/devices/$DEV/activity" | grep -q "stopped from the console"'
 check "script output in the audit log" '$C "$S/audit?q=script.run" | grep -q "lab čćž"'
 check "service actions audited" '$C "$S/audit?q=service.stop" | grep -q "W32Time"'
 check "unknown power action refused" '[ "$($C -o /dev/null -w %{http_code} -d action=hibernate -d delay=0 $S/devices/$DEV/power)" = 303 ] && ! $C "$S/audit?q=hibernate" | grep -q "hibernate of"'

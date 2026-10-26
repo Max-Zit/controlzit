@@ -243,15 +243,7 @@ func (s *Server) handleScriptRun(w http.ResponseWriter, r *http.Request) {
 		s.redirect(w, r, back, msg)
 		return
 	}
-	// The page waits for the script; lift the server's write timeout.
-	_ = http.NewResponseController(w).SetWriteDeadline(time.Time{})
-	run, err := s.runScript(r.Context(), d, s.issuer(r), shell, body, timeout, nil)
-	if err != nil {
-		s.serverError(w, r, err)
-		return
-	}
-	s.audit(r, "script.run", deviceTarget(d), "%s", scriptAudit(d, run))
-	s.redirect(w, r, s.deviceURL(d, "/scripts/"+strconv.FormatInt(run.ID, 10)), "")
+	s.startTask(w, r, d, "script", "Run a %s script", []string{shellName(shell)}, scriptTask{Shell: shell, Script: body, Timeout: timeout})
 }
 
 // checkScript validates a script typed in the console ("" when it is fine).
@@ -333,22 +325,13 @@ func (s *Server) handlePower(w http.ResponseWriter, r *http.Request) {
 		s.redirect(w, r, back, "Unknown action.")
 		return
 	}
-	if a.Action == "cancel" {
-		a.Delay, a.Message = 0, ""
-	}
-	if err := s.call(r.Context(), d.ID, s.issuer(r), proto.KindPower, a, nil, actionTimeout); err != nil {
-		s.audit(r, "power."+a.Action, deviceTarget(d), "%s of %q failed: %v", a.Action, d.Hostname, err)
-		s.redirect(w, r, back, err.Error())
-		return
-	}
-	s.audit(r, "power."+a.Action, deviceTarget(d), "%s of %q (in %d s)", a.Action, d.Hostname, a.Delay)
-	lang := s.lang(r, userFrom(r))
+	title, args := "Restart in %s seconds", []string{strconv.Itoa(a.Delay)}
 	switch a.Action {
-	case "restart":
-		s.redirect(w, r, back, translate(lang, "The computer restarts in %d seconds.", a.Delay))
 	case "shutdown":
-		s.redirect(w, r, back, translate(lang, "The computer shuts down in %d seconds.", a.Delay))
-	default:
-		s.redirect(w, r, back, "The scheduled restart or shutdown was cancelled.")
+		title = "Shut down in %s seconds"
+	case "cancel":
+		a.Delay, a.Message = 0, ""
+		title, args = "Cancel the scheduled restart or shutdown", nil
 	}
+	s.startTask(w, r, d, "power", title, args, a)
 }
