@@ -1,10 +1,12 @@
 package web
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -23,6 +25,12 @@ type softwareData struct {
 	Programs *proto.ProgramsResult // installed (the registry, not only what winget knows)
 	Err      string
 	Offline  bool
+	// Chocolatey (when switched on) and the software library.
+	Choco       bool
+	Source      string // winget or choco (search)
+	ChocoResult *proto.WingetResult
+	ChocoErr    string
+	Library     []store.SoftwarePackage
 }
 
 // Shown reports whether the installed program matches the filter.
@@ -36,7 +44,10 @@ func (s *Server) handleSoftware(w http.ResponseWriter, r *http.Request) {
 	if d == nil {
 		return
 	}
-	sd := &softwareData{D: d, View: r.FormValue("view"), Query: strings.TrimSpace(r.FormValue("q"))}
+	sd := &softwareData{D: d, View: r.FormValue("view"), Query: strings.TrimSpace(r.FormValue("q")), Choco: s.softwareSettings(r.Context()).Chocolatey, Source: "winget"}
+	if sd.Choco && r.FormValue("source") == "choco" {
+		sd.Source = "choco"
+	}
 	a := proto.Winget{Action: proto.WingetUpgrades}
 	switch sd.View {
 	case "list":
@@ -55,6 +66,10 @@ func (s *Server) handleSoftware(w http.ResponseWriter, r *http.Request) {
 		} else {
 			sd.Programs = &res
 		}
+	} else if sd.View == "search" && sd.Source == "choco" {
+		if sd.Query != "" {
+			sd.Result, sd.Err, sd.Offline = s.chocoCall(r, d, proto.Choco{Action: proto.ChocoSearch, Query: sd.Query}, 4*time.Minute)
+		}
 	} else if sd.View != "search" || sd.Query != "" {
 		var res proto.WingetResult
 		err := s.call(r.Context(), d.ID, s.issuer(r), proto.KindWinget, a, &res, 4*time.Minute)
@@ -65,6 +80,17 @@ func (s *Server) handleSoftware(w http.ResponseWriter, r *http.Request) {
 			sd.Result = &res
 		}
 	}
+	if sd.View == "upgrades" && sd.Choco && !sd.Offline {
+		sd.ChocoResult, sd.ChocoErr, _ = s.chocoCall(r, d, proto.Choco{Action: proto.ChocoOutdated}, 4*time.Minute)
+	}
+	if sd.View == "search" {
+		lib, err := s.store.SoftwarePackages(r.Context())
+		if err != nil {
+			s.serverError(w, r, err)
+			return
+		}
+		sd.Library = lib
+	}
 	s.render(w, r, http.StatusOK, "software", &Page{Title: d.Hostname, Nav: "devices", Data: sd})
 }
 
@@ -74,9 +100,17 @@ func (s *Server) handleSoftwareAction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	a := proto.Winget{Action: r.FormValue("action"), ID: strings.TrimSpace(r.FormValue("id"))}
-	back := s.deviceURL(d, "/software?view="+url.QueryEscape(r.FormValue("view"))+"&q="+url.QueryEscape(r.FormValue("q")))
+	back := s.deviceURL(d, "/software?view="+url.QueryEscape(r.FormValue("view"))+"&q="+url.QueryEscape(r.FormValue("q"))+"&source="+url.QueryEscape(r.FormValue("source")))
 	if a.Action == "remove" {
 		s.removeProgram(w, r, d, r.FormValue("key"), back)
+		return
+	}
+	switch a.Action {
+	case "library":
+		s.installFromLibrary(w, r, d, back)
+		return
+	case "choco-install", "choco-upgrade":
+		s.chocoAction(w, r, d, strings.TrimPrefix(a.Action, "choco-"), a.ID, back)
 		return
 	}
 	switch a.Action {
@@ -132,4 +166,75 @@ func (s *Server) removeProgram(w http.ResponseWriter, r *http.Request, d *store.
 	}
 	s.audit(r, "software.uninstall", deviceTarget(d), "uninstalled %s (%s, %s) on %q: exit code %d", name, key, res.Method, d.Hostname, res.ExitCode)
 	s.redirect(w, r, back, translate(s.lang(r, userFrom(r)), "%s uninstalled.", name))
+}
+
+// chocoCall runs a Chocolatey list action; it returns the error as text.
+func (s *Server) chocoCall(r *http.Request, d *store.Device, a proto.Choco, limit time.Duration) (*proto.WingetResult, string, bool) {
+	var res proto.WingetResult
+	if err := s.call(r.Context(), d.ID, s.issuer(r), proto.KindChoco, a, &res, limit); err != nil {
+		return nil, translate(s.lang(r, userFrom(r)), err.Error()), errors.Is(err, ErrOffline)
+	}
+	return &res, "", false
+}
+
+// chocoAction installs or updates a Chocolatey package (or all of them).
+func (s *Server) chocoAction(w http.ResponseWriter, r *http.Request, d *store.Device, action, id, back string) {
+	if !s.softwareSettings(r.Context()).Chocolatey {
+		s.redirect(w, r, back, "Chocolatey is off.")
+		return
+	}
+	if !proto.ValidChocoID(id) && !(action == proto.ChocoUpgrade && id == proto.WingetAll) {
+		s.redirect(w, r, back, "Unknown action.")
+		return
+	}
+	_ = http.NewResponseController(w).SetWriteDeadline(time.Time{}) // installers take a while
+	var res proto.WingetResult
+	err := s.call(r.Context(), d.ID, s.issuer(r), proto.KindChoco, proto.Choco{Action: action, ID: id}, &res, 27*time.Minute)
+	what := id
+	if id == proto.WingetAll {
+		what = "all packages"
+	}
+	if err != nil {
+		s.audit(r, "software."+action, deviceTarget(d), "choco %s %s on %q failed: %v", action, what, d.Hostname, err)
+		s.redirect(w, r, back, err.Error())
+		return
+	}
+	s.audit(r, "software."+action, deviceTarget(d), "choco %s %s on %q: exit code %d\n%s", action, what, d.Hostname, res.ExitCode, clip(res.Output, auditOutput))
+	lang := s.lang(r, userFrom(r))
+	if res.ExitCode != 0 {
+		s.redirect(w, r, back, translate(lang, "Chocolatey ended with code %d; the audit log has its output.", res.ExitCode))
+		return
+	}
+	if action == proto.ChocoInstall {
+		s.redirect(w, r, back, translate(lang, "%s installed.", what))
+		return
+	}
+	s.redirect(w, r, back, translate(lang, "%s updated.", what))
+}
+
+// installFromLibrary starts a job that installs a library package on this
+// device and shows the job.
+func (s *Server) installFromLibrary(w http.ResponseWriter, r *http.Request, d *store.Device, back string) {
+	id, err := strconv.ParseInt(r.FormValue("package"), 10, 64)
+	if err != nil || !d.IsWindows() {
+		s.redirect(w, r, back, "Unknown action.")
+		return
+	}
+	p, err := s.store.SoftwarePackage(r.Context(), id)
+	if errors.Is(err, store.ErrNotFound) {
+		s.redirect(w, r, back, "Unknown action.")
+		return
+	}
+	if err != nil {
+		s.serverError(w, r, err)
+		return
+	}
+	j, err := s.packageJob(r.Context(), s.issuer(r), p, []int64{d.ID})
+	if err != nil {
+		s.serverError(w, r, err)
+		return
+	}
+	s.audit(r, "job.create", "job:"+strconv.FormatInt(j.ID, 10), "install software package %q %s on %q", p.Name, p.Version, d.Hostname)
+	go s.DispatchJobs(context.Background()) // #nosec G118 -- the job runs after the page has answered
+	s.redirect(w, r, "/jobs/"+strconv.FormatInt(j.ID, 10), "")
 }

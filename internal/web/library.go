@@ -72,9 +72,28 @@ func (s *Server) runJob(jr store.JobRun) {
 		return
 	}
 	jobID := jr.JobID
-	run, err := s.runScript(ctx, d, jr.CreatedBy, jr.Shell, jr.Body, jr.Timeout, &jobID)
 	status := "failed"
 	var runID *int64
+	if jr.Shell == "package" {
+		run, ok, err := s.runPackage(ctx, d, jr.CreatedBy, jr.Body, &jobID)
+		if err == nil {
+			runID = &run.ID
+			if ok {
+				status = "done"
+			}
+			outcome := run.Error
+			if outcome == "" {
+				outcome = "exit code " + strconv.Itoa(*run.ExitCode)
+			}
+			_ = s.store.Audit(ctx, jr.CreatedBy, "", "package.install", deviceTarget(d), "job #"+strconv.FormatInt(jr.JobID, 10)+": install "+jr.Name+" on \""+d.Hostname+"\": "+status+" ("+outcome+")")
+		}
+		if err := s.store.FinishJobRun(ctx, jr.JobID, jr.DeviceID, status, runID); err != nil {
+			s.log.Warn("jobs: cannot store a result", "job", jr.JobID, "device", jr.DeviceID, "err", err)
+		}
+		s.DispatchJobs(ctx)
+		return
+	}
+	run, err := s.runScript(ctx, d, jr.CreatedBy, jr.Shell, jr.Body, jr.Timeout, &jobID)
 	if err == nil {
 		runID = &run.ID
 		if run.Error == "" && !run.TimedOut && run.ExitCode != nil && *run.ExitCode == 0 {
@@ -240,6 +259,7 @@ func (s *Server) handleLibScriptDelete(w http.ResponseWriter, r *http.Request) {
 
 type targetData struct {
 	S         *store.LibScript
+	P         *store.SoftwarePackage
 	Customers []store.Customer
 	Sites     []store.Site
 	Devices   []*store.Device
@@ -251,28 +271,12 @@ func (s *Server) handleJobNew(w http.ResponseWriter, r *http.Request) {
 	if x == nil {
 		return
 	}
-	u := userFrom(r)
-	td := &targetData{S: x, Online: map[int64]bool{}}
-	var err error
-	if td.Customers, err = s.store.Customers(r.Context(), u); err != nil {
+	td, err := s.targets(r, false)
+	if err != nil {
 		s.serverError(w, r, err)
 		return
 	}
-	for _, c := range td.Customers {
-		sites, err := s.store.Sites(r.Context(), c.ID)
-		if err != nil {
-			s.serverError(w, r, err)
-			return
-		}
-		td.Sites = append(td.Sites, sites...)
-	}
-	if td.Devices, err = s.store.Devices(r.Context(), u, store.DeviceFilter{Limit: 2000}); err != nil {
-		s.serverError(w, r, err)
-		return
-	}
-	for _, d := range td.Devices {
-		td.Online[d.ID] = s.Connected(d.ID)
-	}
+	td.S = x
 	s.render(w, r, http.StatusOK, "jobnew", &Page{Title: x.Name, Nav: "scripts", Data: td})
 }
 

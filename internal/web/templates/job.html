@@ -1,7 +1,7 @@
 {{template "app" .}}
 {{define "content"}}
 {{$j := .Data.J}}
-<p class="back"><a href="/scripts">{{.T "Script library"}}</a>{{with $j.ScriptID}} / <a href="/scripts/{{.}}">{{$j.Name}}</a>{{end}}</p>
+<p class="back">{{if eq $j.Shell "package"}}<a href="/software">{{.T "Software library"}}</a>{{else}}<a href="/scripts">{{.T "Script library"}}</a>{{end}}{{with $j.ScriptID}} / <a href="/scripts/{{.}}">{{$j.Name}}</a>{{end}}</p>
 <h1>{{template "icon" "terminal"}}{{.T "Job #%d" $j.ID}} <span class="muted h1-sub">{{$j.Name}}</span></h1>
 <p class="muted small">{{.Time $j.CreatedAt}} · {{$j.CreatedBy}}{{if $j.ScheduleID}} · {{.T "scheduled"}}{{end}} · {{.T "devices that are offline run it until"}} {{.Time $j.ExpiresAt}}</p>
 <div class="grid">

@@ -1,0 +1,50 @@
+{{template "app" .}}
+{{define "content"}}
+{{$p := .Data.P}}
+<p class="back"><a href="/software">{{.T "Software library"}}</a>{{if $p.ID}} / {{$p.Name}}{{end}}</p>
+{{if not $p.ID}}
+<h1>{{template "icon" "upload"}}{{.T "Add a package"}}</h1>
+<form method="post" action="/software/new" enctype="multipart/form-data" class="stack wide" data-busy="{{.T "Uploading… large installers take a while."}}">
+  <section class="panel">
+    {{template "swfields" .}}
+    <label>{{.T "Installer"}}<input type="file" name="file" accept=".msi,.exe" required><small>{{.T "A Windows Installer package (.msi) or a setup program (.exe), up to 2 GB."}}</small></label>
+  </section>
+  <div><button class="primary">{{template "icon" "upload"}}{{.T "Add"}}</button></div>
+</form>
+{{else}}
+<div class="pagehead">
+  <h1>{{template "icon" "package"}}{{$p.Name}} <span class="muted h1-sub">{{$p.Version}}</span></h1>
+  <a class="btn primary" href="/software/{{$p.ID}}/run">{{template "icon" "download"}}{{.T "Install on devices"}}</a>
+</div>
+<section class="panel">
+  <dl class="facts">
+    <dt>{{.T "File"}}</dt><dd class="mono">{{$p.FileName}} ({{.Bytes (u64 $p.Size)}})</dd>
+    <dt>SHA-256</dt><dd><code class="wrap">{{$p.SHA256}}</code></dd>
+    <dt>{{.T "Command"}}</dt><dd><code class="wrap">{{.Data.Command}}</code></dd>
+    <dt>{{.T "Success exit codes"}}</dt><dd>{{.Data.Codes}}</dd>
+    <dt>{{.T "Changed"}}</dt><dd>{{.Time $p.UpdatedAt}} · {{$p.UpdatedBy}}</dd>
+  </dl>
+</section>
+{{if .User.IsAdmin}}
+<form method="post" action="/software/{{$p.ID}}" class="stack wide">
+  <section class="panel">
+    <h2>{{.T "Details"}}</h2>
+    {{template "swfields" .}}
+  </section>
+  <div><button class="primary">{{.T "Save"}}</button></div>
+</form>
+<form method="post" action="/software/{{$p.ID}}/delete" data-confirm="{{.T "Delete %s from the library? Installed programs stay on the devices." $p.Name}}">
+  <button class="danger">{{template "icon" "trash"}}{{.T "Delete"}}</button>
+</form>
+{{end}}
+{{end}}
+{{end}}
+
+{{define "swfields"}}
+{{$p := .Data.P}}
+<label>{{.T "Name"}}<input name="name" value="{{$p.Name}}" required maxlength="120" placeholder="7-Zip"></label>
+<label>{{.T "Version"}} <small>{{.T "optional"}}</small><input name="version" value="{{$p.Version}}" maxlength="40" placeholder="25.01"></label>
+<label>{{.T "Description"}} <small>{{.T "optional"}}</small><input name="description" value="{{$p.Description}}" maxlength="1000"></label>
+<label>{{.T "Arguments"}}<input name="args" value="{{$p.Args}}" maxlength="1000" spellcheck="false" class="mono" placeholder="/qn /norestart"><small>{{.T "For an MSI, msiexec /i with a log runs first; empty means /qn /norestart. An EXE needs its own silent switch, for example /S (NSIS), /VERYSILENT /NORESTART (Inno Setup) or /quiet."}}</small></label>
+<label>{{.T "Success exit codes"}}<input name="codes" value="{{.Data.Codes}}" maxlength="200" spellcheck="false" class="mono"><small>{{.T "1641 and 3010 mean that a restart completes the installation."}}</small></label>
+{{end}}

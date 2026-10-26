@@ -15,11 +15,31 @@
 <section class="panel">
   <form method="get" action="/devices/{{$d.ID}}/software" class="row filter">
     <input type="hidden" name="view" value="search">
+    {{if .Data.Choco}}<select name="source" aria-label="{{.T "Source"}}">
+      <option value="winget" {{if eq .Data.Source "winget"}}selected{{end}}>winget</option>
+      <option value="choco" {{if eq .Data.Source "choco"}}selected{{end}}>Chocolatey</option>
+    </select>{{end}}
     <input type="search" name="q" value="{{.Data.Query}}" minlength="2" maxlength="80" required placeholder="{{.T "Program name, for example 7-Zip or Chrome"}}" aria-label="{{.T "Search"}}">
     <button class="primary">{{.T "Search"}}</button>
   </form>
-  <p class="small muted mt">{{.T "Programs come from the winget community repository and are installed silently for all users."}}</p>
+  <p class="small muted mt">{{if eq .Data.Source "choco"}}{{.T "Programs come from the Chocolatey community repository and are installed silently; the Chocolatey client is installed first if it is missing."}}{{else}}{{.T "Programs come from the winget community repository and are installed silently for all users."}}{{end}}</p>
 </section>
+{{if .Data.Library}}
+<section class="panel">
+  <h2>{{template "icon" "package"}}{{.T "From the software library"}}</h2>
+  <div class="table-wrap"><table>
+    <tbody>{{range .Data.Library}}<tr>
+      <td><b>{{.Name}}</b> <span class="small muted">{{.Version}}</span>{{with .Description}}<br><span class="small muted">{{.}}</span>{{end}}</td>
+      <td class="nowrap actions">
+        <form method="post" action="/devices/{{$d.ID}}/software" class="inline" data-confirm="{{$.T "Install %s on %s?" .Name $d.Hostname}}">
+          <input type="hidden" name="package" value="{{.ID}}"><input type="hidden" name="view" value="search">
+          <button class="secondary sm" name="action" value="library">{{$.T "Install"}}</button>
+        </form>
+      </td>
+    </tr>{{end}}</tbody>
+  </table></div>
+</section>
+{{end}}
 {{end}}
 
 {{if .Data.Err}}<div class="flash err" role="alert">{{template "icon" "alert"}}<span>{{.Data.Err}}</span></div>{{end}}
@@ -71,9 +91,9 @@
       <td class="nowrap actions">
         <form method="post" action="/devices/{{$d.ID}}/software" class="inline" data-busy="{{$.T "Working… installers can take several minutes."}}"
           {{if eq $.Data.View "list"}}data-confirm="{{$.T "Uninstall %s?" .Name}}"{{end}}>
-          <input type="hidden" name="id" value="{{.ID}}"><input type="hidden" name="view" value="{{$.Data.View}}"><input type="hidden" name="q" value="{{$.Data.Query}}">
+          <input type="hidden" name="id" value="{{.ID}}"><input type="hidden" name="view" value="{{$.Data.View}}"><input type="hidden" name="q" value="{{$.Data.Query}}"><input type="hidden" name="source" value="{{$.Data.Source}}">
           {{if eq $.Data.View "upgrades"}}<button class="secondary sm" name="action" value="upgrade">{{$.T "Update the program"}}</button>
-          {{else if eq $.Data.View "list"}}<button class="ghost sm" name="action" value="uninstall">{{$.T "Uninstall"}}</button>
+          {{else if eq $.Data.Source "choco"}}<button class="secondary sm" name="action" value="choco-install">{{$.T "Install"}}</button>
           {{else}}<button class="secondary sm" name="action" value="install">{{$.T "Install"}}</button>{{end}}
         </form>
       </td>
@@ -82,6 +102,32 @@
   {{else}}
   <p class="muted">{{if eq $.Data.View "upgrades"}}{{$.T "All programs that winget knows are up to date."}}{{else}}{{$.T "Nothing found."}}{{end}}</p>
   {{end}}
+</section>
+{{end}}
+
+{{if and (eq .Data.View "upgrades") .Data.Choco}}
+<section class="panel">
+  <h2>Chocolatey</h2>
+  {{if .Data.ChocoErr}}<p class="bad-text small">{{.Data.ChocoErr}}</p>
+  {{else if and .Data.ChocoResult .Data.ChocoResult.Packages}}
+  <form method="post" action="/devices/{{$d.ID}}/software" class="row" data-confirm="{{.T "Update all Chocolatey packages on %s?" $d.Hostname}}" data-busy="{{.T "Working… installers can take several minutes."}}">
+    <input type="hidden" name="action" value="choco-upgrade"><input type="hidden" name="id" value="--all"><input type="hidden" name="view" value="upgrades">
+    <span>{{.T "%d programs can be updated." (len .Data.ChocoResult.Packages)}}</span>
+    <button class="secondary sm">{{.T "Update all"}}</button>
+  </form>
+  <div class="table-wrap mt"><table>
+    <thead><tr><th>{{.T "Program"}}</th><th>{{.T "Version"}}</th><th>{{.T "Available"}}</th><th></th></tr></thead>
+    <tbody>{{range .Data.ChocoResult.Packages}}<tr>
+      <td><b>{{.Name}}</b></td><td class="small">{{.Version}}</td><td class="small">{{.Available}}</td>
+      <td class="nowrap actions">
+        <form method="post" action="/devices/{{$d.ID}}/software" class="inline" data-busy="{{$.T "Working… installers can take several minutes."}}">
+          <input type="hidden" name="id" value="{{.ID}}"><input type="hidden" name="view" value="upgrades">
+          <button class="secondary sm" name="action" value="choco-upgrade">{{$.T "Update the program"}}</button>
+        </form>
+      </td>
+    </tr>{{end}}</tbody>
+  </table></div>
+  {{else}}<p class="muted">{{.T "All programs installed through Chocolatey are up to date."}}</p>{{end}}
 </section>
 {{end}}
 {{end}}

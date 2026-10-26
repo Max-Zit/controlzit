@@ -42,7 +42,7 @@ func TestValidProgramKey(t *testing.T) {
 	for k, want := range map[string]bool{
 		"HKLM64:Winamp": true, "HKLM32:{11111111-1111-1111-1111-111111111111}": true,
 		"HKU:S-1-5-21-1-2-3-1001:Spotify": true,
-		`HKLM64:..\Run`: false, "HKLM64:": false, "HKCU:Winamp": false, "HKU:S-1-5-18:X": false,
+		`HKLM64:..\Run`:                   false, "HKLM64:": false, "HKCU:Winamp": false, "HKU:S-1-5-18:X": false,
 	} {
 		if proto.ValidProgramKey(k) != want {
 			t.Errorf("%q: want %v", k, want)

@@ -207,7 +207,7 @@ func (s *Server) handleScripts(w http.ResponseWriter, r *http.Request) {
 	}
 	// "Edit and run again" fills the editor with an earlier run.
 	if from, err := strconv.ParseInt(r.FormValue("from"), 10, 64); err == nil && from > 0 {
-		if run, err := s.store.ScriptRun(r.Context(), d.ID, from); err == nil {
+		if run, err := s.store.ScriptRun(r.Context(), d.ID, from); err == nil && run.Shell != "package" {
 			sd.Shell, sd.Script = run.Shell, run.Script
 		}
 	}

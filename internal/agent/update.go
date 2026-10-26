@@ -77,49 +77,54 @@ func selfUpdate(ctx context.Context, a proto.AgentUpdate) (*UpdateResult, error)
 // downloadPackage fetches the installer over the pinned channel identity and
 // checks it against the signed hash.
 func (a *Agent) downloadPackage(ctx context.Context, u proto.AgentUpdate, want []byte) (string, error) {
-	cert, err := clientCert(a.key)
-	if err != nil {
-		return "", err
-	}
-	hc := httpClient(pinnedTLS(a.Cfg.Fingerprint, cert))
-	hc.Timeout = 10 * time.Minute
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, a.Cfg.ServerURL+proto.PathPackage+"?platform="+proto.Platform(runtime.GOOS, runtime.GOARCH), nil)
-	if err != nil {
-		return "", err
-	}
-	req.Header.Set("User-Agent", "controlzit-agent/"+Version)
-	resp, err := hc.Do(req)
-	if err != nil {
-		return "", fmt.Errorf("download: %w", err)
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("download: server answered %s", resp.Status)
-	}
 	dir := filepath.Join(a.Dir, "updates")
 	_ = os.RemoveAll(dir) // older downloads
 	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return "", err
 	}
 	path := filepath.Join(dir, "controlzit-agent-"+u.Version+packageExt)
-	f, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o600) // #nosec G304 -- our own directory and a validated version
+	return path, a.fetchVerified(ctx, proto.PathPackage+"?platform="+proto.Platform(runtime.GOOS, runtime.GOARCH), path, u.Size, want, 10*time.Minute)
+}
+
+// fetchVerified downloads a file of the agent endpoint (pinned TLS identity,
+// client certificate) to path and checks its size and the signed SHA-256.
+func (a *Agent) fetchVerified(ctx context.Context, urlPath, path string, size int64, want []byte, limit time.Duration) error {
+	cert, err := clientCert(a.key)
 	if err != nil {
-		return "", err
+		return err
+	}
+	hc := httpClient(pinnedTLS(a.Cfg.Fingerprint, cert))
+	hc.Timeout = limit
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, a.Cfg.ServerURL+urlPath, nil)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("User-Agent", "controlzit-agent/"+Version)
+	resp, err := hc.Do(req)
+	if err != nil {
+		return fmt.Errorf("download: %w", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("download: server answered %s", resp.Status)
+	}
+	f, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o600) // #nosec G304 -- our own directory, validated names
+	if err != nil {
+		return err
 	}
 	h := sha256.New()
-	n, err := io.Copy(io.MultiWriter(f, h), io.LimitReader(resp.Body, u.Size+1))
+	n, err := io.Copy(io.MultiWriter(f, h), io.LimitReader(resp.Body, size+1))
 	if cerr := f.Close(); err == nil {
 		err = cerr
 	}
-	if err == nil && n != u.Size {
-		err = fmt.Errorf("the installer has %d bytes, expected %d", n, u.Size)
+	if err == nil && n != size {
+		err = fmt.Errorf("the file has %d bytes, expected %d", n, size)
 	}
 	if err == nil && subtle.ConstantTimeCompare(h.Sum(nil), want) != 1 {
-		err = errors.New("the installer does not match the signed update (SHA-256)")
+		err = errors.New("the file does not match the signed command (SHA-256)")
 	}
 	if err != nil {
 		_ = os.Remove(path)
-		return "", err
 	}
-	return path, nil
+	return err
 }

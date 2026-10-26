@@ -186,7 +186,7 @@ var funcs = template.FuncMap{
 		return out
 	},
 	"shellName": func(s string) string {
-		return map[string]string{"powershell": "PowerShell", "cmd": "cmd", "bash": "bash", "sh": "sh"}[s]
+		return map[string]string{"powershell": "PowerShell", "cmd": "cmd", "bash": "bash", "sh": "sh", "package": "MSI / EXE"}[s]
 	},
 	"weekday": func(d int) string { return time.Weekday(d).String() },
 	"wuResult": func(code int) string {

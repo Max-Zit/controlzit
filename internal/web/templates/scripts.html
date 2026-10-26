@@ -34,8 +34,9 @@
 </section>
 
 <section class="panel">
-  <div class="pagehead"><h2>{{template "icon" "file"}}{{$.T "Script that ran"}}</h2>
-    <a class="btn secondary sm" href="/devices/{{$d.ID}}/scripts?from={{.ID}}">{{template "icon" "terminal"}}{{$.T "Edit and run again"}}</a></div>
+  {{if eq .Shell "package"}}<h2>{{template "icon" "file"}}{{$.T "Installer that ran"}}</h2>
+  {{else}}<div class="pagehead"><h2>{{template "icon" "file"}}{{$.T "Script that ran"}}</h2>
+    <a class="btn secondary sm" href="/devices/{{$d.ID}}/scripts?from={{.ID}}">{{template "icon" "terminal"}}{{$.T "Edit and run again"}}</a></div>{{end}}
   <pre class="output script">{{.Script}}</pre>
 </section>
 

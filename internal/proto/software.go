@@ -1,6 +1,9 @@
 package proto
 
-import "regexp"
+import (
+	"regexp"
+	"strings"
+)
 
 // Software with winget (Windows Package Manager) as SYSTEM, machine scope,
 // from the winget community source only.
@@ -85,3 +88,86 @@ var programKeyRE = regexp.MustCompile(`^(HKLM64|HKLM32|HKU:S-1-5-21(-[0-9]{1,10}
 
 // ValidProgramKey reports whether s is a program key.
 func ValidProgramKey(s string) bool { return programKeyRE.MatchString(s) }
+
+// Software library: an installer from the server, installed silently.
+const (
+	KindPackageInstall = "sw.package"
+	PathLibrary        = "/agent/v1/library" // ?sha256=<hex>, the installer of a library package
+	MaxLibraryPackage  = 2 << 30
+)
+
+// PackageInstall is the argument of sw.package (signed, so the hash and the
+// command line are what the console sent).
+type PackageInstall struct {
+	Name     string `json:"name"`
+	Version  string `json:"version,omitempty"`
+	FileName string `json:"file_name"`
+	Kind     string `json:"kind"` // msi or exe
+	SHA256   string `json:"sha256"`
+	Size     int64  `json:"size"`
+	Args     string `json:"args,omitempty"`
+	Success  []int  `json:"success,omitempty"` // exit codes that mean success (default 0, 1641, 3010)
+}
+
+// PackageResult is the answer of sw.package.
+type PackageResult struct {
+	ExitCode int    `json:"exit_code"`
+	OK       bool   `json:"ok"`
+	Reboot   bool   `json:"reboot,omitempty"` // 1641 or 3010: a restart completes it
+	Output   string `json:"output,omitempty"` // end of the Windows Installer log
+}
+
+var (
+	sha256RE   = regexp.MustCompile(`^[0-9a-f]{64}$`)
+	fileNameRE = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9 ._()+\-]{0,150}\.(msi|exe)$`)
+)
+
+// Valid checks a package install before it is signed or run.
+func (p *PackageInstall) Valid() bool {
+	if !sha256RE.MatchString(p.SHA256) || !fileNameRE.MatchString(p.FileName) || p.Size <= 0 || p.Size > MaxLibraryPackage ||
+		(p.Kind != "msi" && p.Kind != "exe") || !ValidArgs(p.Args) || len(p.Name) > 200 || len(p.Success) > 20 {
+		return false
+	}
+	return strings.HasSuffix(strings.ToLower(p.FileName), "."+p.Kind)
+}
+
+// ValidArgs reports whether s can be the arguments of an installer: one
+// line, no control characters.
+func ValidArgs(s string) bool {
+	if len(s) > 1000 {
+		return false
+	}
+	for _, r := range s {
+		if r < 0x20 || r == 0x7f {
+			return false
+		}
+	}
+	return true
+}
+
+// ValidSHA256 reports whether s is a lower-case hex SHA-256.
+func ValidSHA256(s string) bool { return sha256RE.MatchString(s) }
+
+// Chocolatey (community repository), optional; the agent installs the
+// Chocolatey client through winget when it is needed.
+const KindChoco = "sw.choco"
+
+// Chocolatey actions.
+const (
+	ChocoSearch   = "search"
+	ChocoOutdated = "outdated"
+	ChocoInstall  = "install"
+	ChocoUpgrade  = "upgrade" // ID, or WingetAll
+)
+
+// Choco is the argument of sw.choco; the answer is a WingetResult.
+type Choco struct {
+	Action string `json:"action"`
+	ID     string `json:"id,omitempty"`
+	Query  string `json:"query,omitempty"`
+}
+
+var chocoIDRE = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._\-]{0,99}$`)
+
+// ValidChocoID reports whether s looks like a Chocolatey package ID.
+func ValidChocoID(s string) bool { return chocoIDRE.MatchString(s) }

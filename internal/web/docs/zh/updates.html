@@ -23,3 +23,8 @@
 
 <h2 id="programs">程序（winget）</h2>
 <p>Windows 设备的<b>程序</b>选项卡分为三部分。<b>可用更新</b>列出 winget 可以更新的程序；<b>全部更新</b>会更新它们，也可以单独更新程序。<b>已安装</b>列出 Windows 已安装程序列表中的每个程序，包括计算机级和已登录用户的程序，并可按名称或发布者筛选。<b>卸载</b>以静默方式删除程序：Windows Installer（MSI）包使用 <code>msiexec /x</code>，Inno Setup 和 NSIS 卸载程序使用其静默参数，或使用程序自带的静默命令。只有在程序确实被删除后才会报告结果；没有静默卸载程序的程序会被标记，需要在计算机上或通过脚本删除。<b>安装程序</b>在 winget 社区存储库中搜索（例如 <i>7-Zip</i> 或 <i>Chrome</i>），并为所有用户静默安装。安装和更新需要 winget（App Installer），当前的 Windows 10 和 11 已自带。</p>
+<p>可以在<a href="/software">软件 → 公共来源</a>中添加 <b>Chocolatey</b> 作为第二个公共来源。之后，<b>安装程序</b>会提供来源选择（winget 或 Chocolatey），<b>可用更新</b>也会列出通过 Chocolatey 安装且有更新版本的程序。Chocolatey 客户端会在设备上首次需要时通过 winget 安装。Chocolatey 软件包由其社区维护，通常从厂商网站下载程序。</p>
+
+<h2 id="library">软件库</h2>
+<p>管理员在<a href="/software">软件</a>中上传自己的安装程序：Windows Installer 包（.msi）或安装程序（.exe），最大 2 GB，并填写名称、版本、静默安装参数以及表示成功的退出代码（默认 0、1641 和 3010；后两个表示重启后即可完成安装）。对于 MSI，代理会运行带日志的 <code>msiexec /i</code>，默认参数为 <code>/qn /norestart</code>；EXE 需要其自身的静默参数，例如 <code>/S</code>（NSIS）、<code>/VERYSILENT /NORESTART</code>（Inno Setup）或 <code>/quiet</code>。</p>
+<p><b>安装到设备</b>可选择客户、站点或单个 Windows 设备，并像库脚本一样启动任务：在线设备立即安装，离线设备在 24 小时内连接时安装。代理从服务器的代理端口下载安装程序，并在以 SYSTEM 身份运行之前根据签名命令中的 SHA-256 进行校验。任务页面显示每台设备的结果；Windows Installer 包的日志随结果一起保存。技术人员可以在其客户的设备上安装软件包，也可以在设备“程序”选项卡的<b>安装程序</b>中安装。</p>

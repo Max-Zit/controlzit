@@ -1,0 +1,14 @@
+{{template "app" .}}
+{{define "content"}}
+{{$p := .Data.P}}
+<p class="back"><a href="/software">{{.T "Software library"}}</a> / <a href="/software/{{$p.ID}}">{{$p.Name}}</a></p>
+<h1>{{template "icon" "download"}}{{.T "Install %s" (printf "%s %s" $p.Name $p.Version)}}</h1>
+<form method="post" action="/software/{{$p.ID}}/run" class="stack wide" data-confirm="{{.T "Install %s on the selected devices?" $p.Name}}">
+  <section class="panel">
+    <h2>{{.T "Windows devices"}}</h2>
+    {{template "targets" .}}
+    <p class="small muted mt">{{.T "Devices that are offline install when they connect, within 24 hours. Linux devices are skipped."}}</p>
+  </section>
+  <div><button class="primary">{{template "icon" "download"}}{{.T "Install"}}</button></div>
+</form>
+{{end}}

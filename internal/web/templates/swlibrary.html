@@ -1,0 +1,54 @@
+{{template "app" .}}
+{{define "content"}}
+<div class="pagehead">
+  <h1>{{template "icon" "package"}}{{.T "Software library"}}</h1>
+  {{if .User.IsAdmin}}<a class="btn primary" href="/software/new">{{template "icon" "upload"}}{{.T "Add a package"}}</a>{{end}}
+</div>
+<p class="muted">{{.T "Your own installers (MSI or EXE) that are installed silently on Windows devices. Devices that are offline install when they connect, within 24 hours."}}</p>
+
+<section class="panel">
+  {{if .Data.Packages}}
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{.T "Package"}}</th><th>{{.T "Version"}}</th><th class="hide-sm">{{.T "File"}}</th><th class="hide-sm">{{.T "Size"}}</th><th></th></tr></thead>
+    <tbody>{{range .Data.Packages}}<tr>
+      <td><a href="/software/{{.ID}}"><b>{{.Name}}</b></a>{{with .Description}}<br><span class="small muted">{{.}}</span>{{end}}</td>
+      <td class="small">{{.Version}}</td>
+      <td class="hide-sm small mono">{{.FileName}}</td>
+      <td class="hide-sm small nowrap">{{$.Bytes (u64 .Size)}}</td>
+      <td class="nowrap actions"><a class="btn secondary sm" href="/software/{{.ID}}/run">{{template "icon" "download"}}{{$.T "Install on devices"}}</a></td>
+    </tr>{{end}}</tbody>
+  </table></div>
+  {{else}}
+  <p class="muted">{{.T "The library is empty."}}{{if .User.IsAdmin}} <a href="/software/new">{{.T "Add a package"}}</a>{{end}}</p>
+  {{end}}
+</section>
+
+{{if .Data.Jobs}}
+<section class="panel">
+  <h2>{{template "icon" "clock"}}{{.T "Recent installations"}}</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{.T "Job"}}</th><th>{{.T "Package"}}</th><th class="hide-sm">{{.T "Started"}}</th><th>{{.T "Result"}}</th></tr></thead>
+    <tbody>{{range .Data.Jobs}}<tr>
+      <td><a href="/jobs/{{.ID}}">#{{.ID}}</a></td>
+      <td>{{.Name}}</td>
+      <td class="hide-sm small">{{$.Time .CreatedAt}} · {{.CreatedBy}}</td>
+      <td class="small">{{$.T "%d of %d succeeded" .Done .Total}}{{if .Failed}} · <span class="bad-text">{{$.T "%d failed" .Failed}}</span>{{end}}{{if or .Pending .Running}} · {{$.T "%d waiting" (add .Pending .Running)}}{{end}}</td>
+    </tr>{{end}}</tbody>
+  </table></div>
+</section>
+{{end}}
+
+<section class="panel">
+  <h2>{{template "icon" "network"}}{{.T "Public sources"}}</h2>
+  <p class="muted">{{.T "On the Programs tab of a device, programs are searched and installed from the winget community repository. Chocolatey can be added as a second source: its community repository has many programs that winget does not have. Its packages are maintained by the community and usually download the program from the vendor's site."}}</p>
+  {{if .User.IsAdmin}}
+  <form method="post" action="/software/settings" class="row mt">
+    <label class="check"><input type="checkbox" name="chocolatey" value="1" {{if .Data.Settings.Chocolatey}}checked{{end}}>{{.T "Offer Chocolatey on the Programs tab"}}</label>
+    <button class="secondary sm">{{.T "Save"}}</button>
+  </form>
+  <p class="small muted mt">{{.T "The Chocolatey client is installed on a device (through winget) the first time it is used there."}}</p>
+  {{else}}
+  <p class="small">{{if .Data.Settings.Chocolatey}}{{.T "Chocolatey is on."}}{{else}}{{.T "Chocolatey is off."}}{{end}}</p>
+  {{end}}
+</section>
+{{end}}
