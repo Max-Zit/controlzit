@@ -23,6 +23,7 @@
   <tr><td><code>GET /api/v1/policies</code></td><td>zásady s přiřazeními (správce)</td></tr>
   <tr><td><code>POST /api/v1/policies/{id}/assign</code></td><td>přiřazení zásady k customer:ID, site:ID nebo device:ID (správce)</td></tr>
   <tr><td><code>POST /api/v1/policies/unassign</code></td><td>odebrání zásady zákazníka, lokality nebo zařízení (správce)</td></tr>
+  <tr><td><code>PUT /api/v1/devices/{id}/fields</code></td><td>nastaví vlastní pole zařízení podle názvu (objekt JSON; prázdná hodnota pole odebere) a vrátí je; zařízení v odpovědích nesou svá pole v <code>custom_fields</code></td></tr>
 </table>
 
 <h2 id="tasks">Úlohy</h2>

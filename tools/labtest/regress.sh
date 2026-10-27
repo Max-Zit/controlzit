@@ -138,6 +138,9 @@ check "System event log readable" '$C "$S/devices/$DEV/events?log=System&level=0
 check "installed programs listed from the registry" '$C "$S/devices/$DEV/software?view=list" | grep -q "name=\"name\" value=\"ControlZit Agent\""'
 check "software library page with the Chocolatey setting" '$C "$S/software" | grep -q "name=\"chocolatey\""'
 check "policies page" '$C "$S/policies" | grep -q "/policies/new"'
+check "vulnerabilities page" '$C "$S/vulnerabilities" | grep -q "name=\"enabled\""'
+check "device vulnerabilities tab" '$C "$S/devices/$DEV/vulnerabilities" | grep -q "devtabs"'
+check "custom fields settings" '$C "$S/settings/fields" | grep -q "name=\"kind\""'
 check "policy editor has program updates and maintenance windows" '$C "$S/policies/new" | grep -q "name=\"apps_set\"" && $C "$S/policies/new" | grep -q "maint-rows"'
 # network checks from the device, through a temporary device policy
 NPOL=$($C -o /dev/null -w '%{redirect_url}' -d "name=Regress+checks&customer=0&net_set=1&net_name=Gateway&net_kind=ping&net_target=192.168.101.254&net_port=&net_minutes=5&net_name=Agent+port&net_kind=tcp&net_target=192.168.101.179&net_port=8444&net_minutes=5" $S/policies/new | grep -o '[0-9]*$')

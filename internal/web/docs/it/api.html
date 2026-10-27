@@ -23,6 +23,7 @@
   <tr><td><code>GET /api/v1/policies</code></td><td>criteri con le loro assegnazioni (amministratore)</td></tr>
   <tr><td><code>POST /api/v1/policies/{id}/assign</code></td><td>assegnare un criterio a customer:ID, site:ID o device:ID (amministratore)</td></tr>
   <tr><td><code>POST /api/v1/policies/unassign</code></td><td>rimuovere il criterio di un cliente, una sede o un dispositivo (amministratore)</td></tr>
+  <tr><td><code>PUT /api/v1/devices/{id}/fields</code></td><td>imposta i campi personalizzati del dispositivo per nome (un oggetto JSON; un valore vuoto ne rimuove uno) e li restituisce; i dispositivi nelle risposte riportano i loro campi in <code>custom_fields</code></td></tr>
 </table>
 
 <h2 id="tasks">Attività</h2>

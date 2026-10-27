@@ -38,3 +38,6 @@
 
 <h2 id="diagnostics">Diagnostics</h2>
 <p><a href="/settings/diagnostics">Settings → Diagnostics</a> shows where ControlZit writes its logs, the newest lines of the server log (filter by level or text), the root helper's log and the versions. <b>Download diagnostics (ZIP)</b> creates a file for support with the logs, the versions and settings summary, the devices, the alerts and the audit log. Passwords, tokens, enrollment codes and keys are removed from everything shown and from the file; scripts and their output are not included.</p>
+
+<h2 id="fields">Custom fields</h2>
+<p>Under <a href="/settings/fields">Settings → Custom fields</a> administrators add their own fields for devices and customers — text, number or date — for example an asset number, the end of the warranty or a contract. Technicians fill them in on the device and customer pages; the API returns the device fields with each device and sets them with <code>PUT /api/v1/devices/{id}/fields</code>.</p>

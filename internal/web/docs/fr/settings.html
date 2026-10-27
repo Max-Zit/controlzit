@@ -38,3 +38,6 @@
 
 <h2 id="diagnostics">Diagnostic</h2>
 <p><a href="/settings/diagnostics">Paramètres → Diagnostic</a> montre où ControlZit écrit ses journaux, les dernières lignes du journal du serveur (filtre par niveau ou texte), le journal de l'assistant root et les versions. <b>Télécharger le diagnostic (ZIP)</b> crée un fichier pour le support avec les journaux, les versions et un résumé des paramètres, les appareils, les alertes et le journal d'audit. Les mots de passe, jetons, codes d'inscription et clés sont retirés de tout ce qui est affiché et du fichier ; les scripts et leur sortie ne sont pas inclus.</p>
+
+<h2 id="fields">Champs personnalisés</h2>
+<p>Sous <a href="/settings/fields">Paramètres → Champs personnalisés</a>, les administrateurs ajoutent leurs propres champs pour les appareils et les clients — texte, nombre ou date —, par exemple un numéro d'inventaire, la fin de garantie ou un contrat. Les techniciens les remplissent sur les pages des appareils et des clients ; l'API renvoie les champs avec chaque appareil et les définit avec <code>PUT /api/v1/devices/{id}/fields</code>.</p>

@@ -24,6 +24,7 @@
 
 <h2 id="software">Software obrigatório</h2>
 <p>Cada programa obrigatório tem uma origem — a <a href="/software">biblioteca de software</a>, winget ou Chocolatey — e um texto que o nome dele na lista do Windows de programas instalados contém (por exemplo <i>7-Zip</i>). A cada poucos minutos o servidor compara os programas obrigatórios com o inventário de cada dispositivo Windows online; um programa que falta é instalado como uma tarefa que você vê na <a href="/docs/devices#activity">Atividade</a> do dispositivo. Após uma instalação, o dispositivo envia um novo inventário. Se o programa continuar faltando, o servidor tenta de novo após 6 horas. Nada é instalado antes de o dispositivo enviar o primeiro inventário.</p>
+<p><b>Programas bloqueados</b> são programas que os dispositivos não podem ter, reconhecidos por uma parte do nome instalado (por exemplo <i>torrent</i>). Um dispositivo que tenha um abre um alerta; com <b>Alertar e remover</b> o servidor também o desinstala silenciosamente, de novo após 6 horas se ele continuar lá. Programas sem desinstalação silenciosa só alertam. A aba <b>Política</b> do dispositivo mostra o que foi encontrado.</p>
 
 <h2 id="alerts">Regras de alerta</h2>
 <p>Os limites de uma política valem para seus dispositivos. Os e-mails de alerta e os canais de chat são definidos para o servidor inteiro em <a href="/settings/monitoring">Monitoramento e alertas</a>.</p>

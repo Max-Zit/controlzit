@@ -23,6 +23,7 @@
   <tr><td><code>GET /api/v1/policies</code></td><td>atamalarıyla ilkeler (yönetici)</td></tr>
   <tr><td><code>POST /api/v1/policies/{id}/assign</code></td><td>bir ilkeyi customer:ID, site:ID veya device:ID'ye atama (yönetici)</td></tr>
   <tr><td><code>POST /api/v1/policies/unassign</code></td><td>bir müşterinin, konumun veya cihazın ilkesini kaldırma (yönetici)</td></tr>
+  <tr><td><code>PUT /api/v1/devices/{id}/fields</code></td><td>cihazın özel alanlarını ada göre ayarlar (bir JSON nesnesi; boş değer bir alanı kaldırır) ve döndürür; yanıtlardaki cihazlar alanlarını <code>custom_fields</code> içinde taşır</td></tr>
 </table>
 
 <h2 id="tasks">Görevler</h2>

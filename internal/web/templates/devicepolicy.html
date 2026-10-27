@@ -38,6 +38,8 @@
   </table></div>
   <p class="small muted mt">{{.T "The list of installed programs comes from the device's inventory; after an installation the device sends a new one."}}</p>
   {{else}}<p class="muted">{{.T "No program is required for this device."}}</p>{{end}}
+  {{if .Data.Blocked}}<h3 class="mt">{{.T "Blocked programs"}}</h3>
+  <ul>{{range .Data.Blocked}}<li>„{{.App.Match}}“ · {{if .App.Remove}}{{$.T "Alert and remove"}}{{else}}{{$.T "Alert only"}}{{end}} · {{if .Found}}<span class="badge bad"><i></i>{{$.T "installed"}}</span> <span class="small">{{join .Found ", "}}</span>{{else}}<span class="badge ok"><i></i>{{$.T "not installed"}}</span>{{end}}</li>{{end}}</ul>{{end}}
 </section>
 
 <section class="panel">

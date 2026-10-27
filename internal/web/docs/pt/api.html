@@ -23,6 +23,7 @@
   <tr><td><code>GET /api/v1/policies</code></td><td>políticas com suas atribuições (administrador)</td></tr>
   <tr><td><code>POST /api/v1/policies/{id}/assign</code></td><td>atribuir uma política a customer:ID, site:ID ou device:ID (administrador)</td></tr>
   <tr><td><code>POST /api/v1/policies/unassign</code></td><td>remover a política de um cliente, local ou dispositivo (administrador)</td></tr>
+  <tr><td><code>PUT /api/v1/devices/{id}/fields</code></td><td>define os campos personalizados do dispositivo por nome (um objeto JSON; um valor vazio remove um) e os retorna; os dispositivos nas respostas trazem seus campos em <code>custom_fields</code></td></tr>
 </table>
 
 <h2 id="tasks">Tarefas</h2>

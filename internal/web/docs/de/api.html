@@ -23,6 +23,7 @@
   <tr><td><code>GET /api/v1/policies</code></td><td>Richtlinien mit ihren Zuweisungen (Administrator)</td></tr>
   <tr><td><code>POST /api/v1/policies/{id}/assign</code></td><td>eine Richtlinie customer:ID, site:ID oder device:ID zuweisen (Administrator)</td></tr>
   <tr><td><code>POST /api/v1/policies/unassign</code></td><td>die Richtlinie eines Kunden, Standorts oder Geräts entfernen (Administrator)</td></tr>
+  <tr><td><code>PUT /api/v1/devices/{id}/fields</code></td><td>setzt eigene Felder des Geräts nach Namen (ein JSON-Objekt; ein leerer Wert entfernt eines) und gibt sie zurück; Geräte in den Antworten tragen ihre Felder als <code>custom_fields</code></td></tr>
 </table>
 
 <h2 id="tasks">Aufgaben</h2>

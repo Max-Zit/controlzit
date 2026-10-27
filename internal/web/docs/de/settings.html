@@ -38,3 +38,6 @@
 
 <h2 id="diagnostics">Diagnose</h2>
 <p><a href="/settings/diagnostics">Einstellungen → Diagnose</a> zeigt, wo ControlZit seine Protokolle schreibt, die neuesten Zeilen des Serverprotokolls (Filter nach Ebene oder Text), das Protokoll des Root-Helfers und die Versionen. <b>Diagnose herunterladen (ZIP)</b> erstellt eine Datei für den Support mit den Protokollen, den Versionen und einer Zusammenfassung der Einstellungen, den Geräten, den Alarmen und dem Prüfprotokoll. Passwörter, Tokens, Registrierungscodes und Schlüssel werden aus allem Angezeigten und aus der Datei entfernt; Skripte und ihre Ausgabe sind nicht enthalten.</p>
+
+<h2 id="fields">Eigene Felder</h2>
+<p>Unter <a href="/settings/fields">Einstellungen → Eigene Felder</a> legen Administratoren eigene Felder für Geräte und Kunden an — Text, Zahl oder Datum —, zum Beispiel eine Inventarnummer, das Garantieende oder einen Vertrag. Techniker füllen sie auf den Seiten der Geräte und Kunden aus; die API liefert die Gerätefelder mit jedem Gerät und setzt sie mit <code>PUT /api/v1/devices/{id}/fields</code>.</p>

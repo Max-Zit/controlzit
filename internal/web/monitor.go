@@ -28,6 +28,7 @@ func (s *Server) RunMonitor(ctx context.Context) {
 		s.RunRestarts(ctx)
 		s.RunNetChecks(ctx)
 		s.RunDiskHealth(ctx)
+		s.RunVulnScan(ctx)
 		if time.Since(required) >= requiredEvery {
 			required = time.Now()
 			s.RunRequiredSoftware(ctx)
@@ -188,6 +189,8 @@ func (s *Server) evaluatePolicies(ctx context.Context, m MonitoringSettings) ([]
 		}
 	}
 	conds = append(conds, s.healthConditions(ctx, pr, rules)...)
+	conds = append(conds, s.blockedConditions(ctx, pr)...)
+	conds = append(conds, s.vulnConditions(ctx, rules)...)
 	// Devices in a quiet maintenance window open no new alerts; their open
 	// alerts stay as they are.
 	now := s.now().Local()

@@ -146,6 +146,7 @@
 {{end}}
 
 {{if .User.CanWrite}}
+{{template "fieldspanel" (fieldsctx . (printf "/devices/%d/fields" .Data.D.ID) .Data.Fields)}}
 <section class="panel">
   <h2>{{.T "Remove device"}}</h2>
   <p class="small muted">{{.T "If the computer is online, its agent uninstalls itself and Windows Update gets its own settings back. An offline computer can no longer connect; uninstall the agent there by hand."}}</p>

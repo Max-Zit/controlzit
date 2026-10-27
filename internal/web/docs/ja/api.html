@@ -23,6 +23,7 @@
   <tr><td><code>GET /api/v1/policies</code></td><td>ポリシーとその割り当て（管理者）</td></tr>
   <tr><td><code>POST /api/v1/policies/{id}/assign</code></td><td>ポリシーを customer:ID、site:ID、device:ID に割り当て（管理者）</td></tr>
   <tr><td><code>POST /api/v1/policies/unassign</code></td><td>顧客、サイト、デバイスのポリシーを削除（管理者）</td></tr>
+  <tr><td><code>PUT /api/v1/devices/{id}/fields</code></td><td>デバイスのカスタム フィールドを名前で設定し (JSON オブジェクト。空の値で削除)、その内容を返します。応答内のデバイスには <code>custom_fields</code> としてフィールドが含まれます</td></tr>
 </table>
 
 <h2 id="tasks">タスク</h2>

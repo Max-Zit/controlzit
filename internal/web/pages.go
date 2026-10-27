@@ -120,6 +120,7 @@ type customerData struct {
 	Sites    []store.Site
 	SiteName string
 	Address  string
+	Fields   []store.CustomField
 }
 
 func (s *Server) handleCustomer(w http.ResponseWriter, r *http.Request) {
@@ -142,6 +143,7 @@ func (s *Server) showCustomer(w http.ResponseWriter, r *http.Request, status int
 		return
 	}
 	d.Sites = sites
+	d.Fields, _ = s.store.FieldValues(r.Context(), "customer", d.Customer.ID)
 	p := &Page{Title: d.Customer.Name, Nav: "customers", Data: d}
 	if errMsg != "" {
 		p.Error = translate(s.lang(r, userFrom(r)), errMsg)

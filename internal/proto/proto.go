@@ -176,6 +176,10 @@ type Software struct {
 	Version     string `json:"version"`
 	Publisher   string `json:"publisher"`
 	InstallDate string `json:"install_date"`
+	// Debian and Ubuntu: the source package and its version (vulnerability
+	// databases list source packages).
+	Source        string `json:"source,omitempty"`
+	SourceVersion string `json:"source_version,omitempty"`
 }
 
 // BitLocker is the encryption state of a volume.

@@ -24,6 +24,7 @@
 
 <h2 id="software">Logiciels requis</h2>
 <p>Chaque programme requis a une source — la <a href="/software">bibliothèque de logiciels</a>, winget ou Chocolatey — et un texte que contient son nom dans la liste Windows des programmes installés (par exemple <i>7-Zip</i>). Toutes les quelques minutes, le serveur compare les programmes requis à l'inventaire de chaque appareil Windows en ligne ; un programme manquant est installé comme une tâche visible dans l'<a href="/docs/devices#activity">Activité</a> de l'appareil. Après une installation, l'appareil envoie un nouvel inventaire. Si le programme manque toujours, le serveur réessaie au bout de 6 heures. Rien n'est installé avant qu'un appareil ait envoyé son premier inventaire.</p>
+<p>Les <b>programmes interdits</b> sont des programmes que les appareils ne doivent pas avoir, reconnus à une partie de leur nom installé (par exemple <i>torrent</i>). Un appareil qui en a un ouvre une alerte ; avec <b>Alerte et suppression</b>, le serveur le désinstalle aussi en silence, de nouveau après 6 heures s'il est toujours là. Les programmes sans désinstallation silencieuse ne font qu'alerter. L'onglet <b>Stratégie</b> de l'appareil montre ce qui a été trouvé.</p>
 
 <h2 id="alerts">Règles d'alerte</h2>
 <p>Les seuils d'une stratégie s'appliquent à ses appareils. Les e-mails d'alerte et les canaux de discussion se définissent pour tout le serveur dans <a href="/settings/monitoring">Surveillance et alertes</a>.</p>

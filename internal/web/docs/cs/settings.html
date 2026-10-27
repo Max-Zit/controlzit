@@ -38,3 +38,6 @@
 
 <h2 id="diagnostics">Diagnostika</h2>
 <p><a href="/settings/diagnostics">Nastavení → Diagnostika</a> ukazuje, kam ControlZit zapisuje protokoly, nejnovější řádky protokolu serveru (filtr podle úrovně nebo textu), protokol root pomocníka a verze. <b>Stáhnout diagnostiku (ZIP)</b> vytvoří soubor pro podporu s protokoly, verzemi a souhrnem nastavení, zařízeními, upozorněními a auditním protokolem. Hesla, tokeny, registrační kódy a klíče se odstraňují ze všeho zobrazeného i ze souboru; skripty a jejich výstup nejsou zahrnuty.</p>
+
+<h2 id="fields">Vlastní pole</h2>
+<p>V <a href="/settings/fields">Nastavení → Vlastní pole</a> správci přidávají vlastní pole pro zařízení a zákazníky — text, číslo nebo datum — například inventární číslo, konec záruky nebo smlouvu. Technici je vyplňují na stránkách zařízení a zákazníků; API vrací pole s každým zařízením a nastavuje je přes <code>PUT /api/v1/devices/{id}/fields</code>.</p>

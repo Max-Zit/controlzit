@@ -1,0 +1,29 @@
+{{template "app" .}}
+{{define "content"}}
+<h1>{{.T "Settings"}}</h1>
+<div class="settings">
+{{template "settingstabs" .}}
+<div class="settings-body">
+<section class="panel">
+  <h2>{{template "icon" "file"}}{{.T "Custom fields"}}</h2>
+  <p class="muted">{{.T "Your own fields, for example an asset number, the end of the warranty or a contract. Technicians fill them in on the device and customer pages; the API reads and sets the device fields."}}</p>
+  {{range $scope := .Data.Scopes}}
+  <h3 class="mt">{{if eq $scope.Name "device"}}{{$.T "Device fields"}}{{else}}{{$.T "Customer fields"}}{{end}}</h3>
+  {{if $scope.Fields}}<div class="table-wrap"><table>
+    <tbody>{{range $scope.Fields}}<tr>
+      <td><b>{{.Name}}</b></td>
+      <td class="small muted">{{if eq .Kind "number"}}{{$.T "number"}}{{else if eq .Kind "date"}}{{$.T "date"}}{{else}}{{$.T "text"}}{{end}}</td>
+      <td class="nowrap actions"><form method="post" action="/settings/fields" class="inline" data-confirm="{{$.T "Remove the field %s and all its values?" .Name}}"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="{{.ID}}"><button class="ghost sm">{{$.T "Remove"}}</button></form></td>
+    </tr>{{end}}</tbody>
+  </table></div>{{else}}<p class="muted small">{{$.T "none"}}</p>{{end}}
+  <form method="post" action="/settings/fields" class="row mt">
+    <input type="hidden" name="action" value="add"><input type="hidden" name="scope" value="{{$scope.Name}}">
+    <input name="name" required maxlength="60" placeholder="{{$.T "Name"}}" aria-label="{{$.T "Name"}}">
+    <select name="kind" aria-label="{{$.T "Type"}}"><option value="text">{{$.T "text"}}</option><option value="number">{{$.T "number"}}</option><option value="date">{{$.T "date"}}</option></select>
+    <button class="secondary">{{template "icon" "plus"}}{{$.T "Add a field"}}</button>
+  </form>
+  {{end}}
+</section>
+</div>
+</div>
+{{end}}

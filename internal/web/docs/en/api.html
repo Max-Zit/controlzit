@@ -23,6 +23,7 @@
   <tr><td><code>GET /api/v1/policies</code></td><td>policies with their assignments (administrator)</td></tr>
   <tr><td><code>POST /api/v1/policies/{id}/assign</code></td><td>assign a policy to customer:ID, site:ID or device:ID (administrator)</td></tr>
   <tr><td><code>POST /api/v1/policies/unassign</code></td><td>remove the policy of a customer, site or device (administrator)</td></tr>
+  <tr><td><code>PUT /api/v1/devices/{id}/fields</code></td><td>sets custom fields of the device by name (a JSON object; an empty value removes one) and returns them; devices in the answers carry their fields as <code>custom_fields</code></td></tr>
 </table>
 
 <h2 id="tasks">Tasks</h2>

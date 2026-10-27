@@ -24,6 +24,7 @@
 
 <h2 id="software">Erforderliche Software</h2>
 <p>Jedes erforderliche Programm hat eine Quelle — die <a href="/software">Softwarebibliothek</a>, winget oder Chocolatey — und einen Text, den sein Name in der Windows-Liste der installierten Programme enthält (zum Beispiel <i>7-Zip</i>). Alle paar Minuten vergleicht der Server die erforderlichen Programme mit dem Inventar jedes Windows-Geräts, das online ist; ein fehlendes Programm wird als Aufgabe installiert, die Sie unter <a href="/docs/devices#activity">Aktivität</a> des Geräts sehen. Nach einer Installation sendet das Gerät ein neues Inventar. Fehlt das Programm weiterhin, versucht es der Server nach 6 Stunden erneut. Bevor ein Gerät sein erstes Inventar gesendet hat, wird nichts installiert.</p>
+<p><b>Gesperrte Programme</b> sind Programme, die die Geräte nicht haben dürfen, erkannt an einem Teil ihres installierten Namens (zum Beispiel <i>torrent</i>). Ein Gerät, das eines hat, öffnet einen Alarm; mit <b>Alarm und entfernen</b> deinstalliert der Server es auch still, erneut nach 6 Stunden, solange es noch da ist. Programme ohne stille Deinstallation alarmieren nur. Der Reiter <b>Richtlinie</b> des Geräts zeigt, was gefunden wurde.</p>
 
 <h2 id="alerts">Alarmregeln</h2>
 <p>Die Schwellenwerte einer Richtlinie gelten für ihre Geräte. Alarm-E-Mails und Chat-Kanäle werden für den ganzen Server unter <a href="/settings/monitoring">Überwachung und Alarme</a> festgelegt.</p>

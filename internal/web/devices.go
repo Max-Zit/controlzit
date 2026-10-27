@@ -69,6 +69,7 @@ type deviceData struct {
 	Package   *Packages
 	Health    *store.DiskHealthState
 	NetChecks []store.NetCheckState
+	Fields    []store.CustomField
 }
 
 func (s *Server) handleDevice(w http.ResponseWriter, r *http.Request) {
@@ -85,6 +86,7 @@ func (s *Server) handleDevice(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	dd.NetChecks, _ = s.store.NetChecks(r.Context(), d.ID)
+	dd.Fields, _ = s.store.FieldValues(r.Context(), "device", d.ID)
 	if d.Inventory != nil {
 		q := strings.ToLower(strings.TrimSpace(r.FormValue("sw")))
 		dd.SwQuery = q

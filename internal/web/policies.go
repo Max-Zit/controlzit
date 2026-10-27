@@ -35,6 +35,14 @@ type PolicySettings struct {
 // installed by the server.
 type SoftwarePolicy struct {
 	Required []RequiredApp `json:"required"`
+	Blocked  []BlockedApp  `json:"blocked,omitempty"`
+}
+
+// BlockedApp is a program the devices must not have: it opens an alert and,
+// with Remove, is uninstalled silently.
+type BlockedApp struct {
+	Match  string `json:"match"` // part of the installed program's name
+	Remove bool   `json:"remove,omitempty"`
 }
 
 // RequiredApp is one required program: where it is installed from and how
@@ -63,19 +71,20 @@ type AlertRules struct {
 	FirewallOff    bool     `json:"firewall_off"`
 	WatchServices  []string `json:"watch_services"`
 	DiskHealthOff  bool     `json:"disk_health_off,omitempty"` // no alerts for disk and RAID problems
+	VulnAlerts     bool     `json:"vuln_alerts,omitempty"`     // alert on critical vulnerabilities
 }
 
 func alertRulesOf(m MonitoringSettings) AlertRules {
 	return AlertRules{CPUPercent: m.CPUPercent, CPUMinutes: m.CPUMinutes, MemPercent: m.MemPercent, MemMinutes: m.MemMinutes,
 		DiskPercent: m.DiskPercent, DiskMinFreeGB: m.DiskMinFreeGB, OfflineMinutes: m.OfflineMinutes, RebootDays: m.RebootDays,
-		DefenderOff: m.DefenderOff, FirewallOff: m.FirewallOff, WatchServices: m.WatchServices, DiskHealthOff: m.DiskHealthOff}
+		DefenderOff: m.DefenderOff, FirewallOff: m.FirewallOff, WatchServices: m.WatchServices, DiskHealthOff: m.DiskHealthOff, VulnAlerts: m.VulnAlerts}
 }
 
 // apply puts the thresholds into the server's monitoring settings.
 func (a AlertRules) apply(m MonitoringSettings) MonitoringSettings {
 	m.CPUPercent, m.CPUMinutes, m.MemPercent, m.MemMinutes = a.CPUPercent, a.CPUMinutes, a.MemPercent, a.MemMinutes
 	m.DiskPercent, m.DiskMinFreeGB, m.OfflineMinutes, m.RebootDays = a.DiskPercent, a.DiskMinFreeGB, a.OfflineMinutes, a.RebootDays
-	m.DefenderOff, m.FirewallOff, m.WatchServices, m.DiskHealthOff = a.DefenderOff, a.FirewallOff, a.WatchServices, a.DiskHealthOff
+	m.DefenderOff, m.FirewallOff, m.WatchServices, m.DiskHealthOff, m.VulnAlerts = a.DefenderOff, a.FirewallOff, a.WatchServices, a.DiskHealthOff, a.VulnAlerts
 	return m
 }
 
@@ -112,6 +121,14 @@ func (p *PolicySettings) Validate() error {
 		}
 	}
 	if sw := p.Software; sw != nil {
+		if len(sw.Blocked) > 50 {
+			return errors.New("at most 50 blocked programs")
+		}
+		for _, b := range sw.Blocked {
+			if n := len(strings.TrimSpace(b.Match)); n < 3 || n > 100 {
+				return errors.New("each blocked program needs 3–100 characters of its installed name")
+			}
+		}
 		if len(sw.Required) > 50 {
 			return errors.New("at most 50 required programs")
 		}
@@ -331,13 +348,14 @@ func (s *Server) RunRequiredSoftware(ctx context.Context) {
 	}
 	for id, sc := range pr.scopes {
 		sw, l := pr.software(id)
-		if sw == nil || len(sw.Required) == 0 || !s.Connected(id) || (sc.OS != "" && !strings.Contains(sc.OS, "Windows")) {
+		if sw == nil || len(sw.Required)+len(sw.Blocked) == 0 || !s.Connected(id) || (sc.OS != "" && !strings.Contains(sc.OS, "Windows")) {
 			continue
 		}
 		d, err := s.store.Device(ctx, id)
 		if err != nil || d.Inventory == nil {
 			continue
 		}
+		s.removeBlocked(ctx, d, sw, l.Policy.Name)
 		for _, a := range sw.Required {
 			if appInstalled(d.Inventory, a.Match) {
 				continue

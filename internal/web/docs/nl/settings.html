@@ -38,3 +38,6 @@
 
 <h2 id="diagnostics">Diagnose</h2>
 <p><a href="/settings/diagnostics">Instellingen → Diagnose</a> toont waar ControlZit zijn logboeken schrijft, de nieuwste regels van het serverlogboek (filter op niveau of tekst), het logboek van de root-helper en de versies. <b>Diagnose downloaden (ZIP)</b> maakt een bestand voor ondersteuning met de logboeken, de versies en een samenvatting van de instellingen, de apparaten, de waarschuwingen en het auditlogboek. Wachtwoorden, tokens, registratiecodes en sleutels worden verwijderd uit alles wat wordt getoond en uit het bestand; scripts en hun uitvoer zijn niet inbegrepen.</p>
+
+<h2 id="fields">Eigen velden</h2>
+<p>Onder <a href="/settings/fields">Instellingen → Eigen velden</a> voegen beheerders eigen velden toe voor apparaten en klanten — tekst, getal of datum —, bijvoorbeeld een inventarisnummer, het einde van de garantie of een contract. Technici vullen ze in op de pagina's van apparaten en klanten; de API geeft de velden mee met elk apparaat en zet ze met <code>PUT /api/v1/devices/{id}/fields</code>.</p>

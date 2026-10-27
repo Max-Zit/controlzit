@@ -24,6 +24,7 @@
 
 <h2 id="software">Required software</h2>
 <p>Each required program has a source — the <a href="/software">software library</a>, winget or Chocolatey — and a text that its name in the Windows list of installed programs contains (for example <i>7-Zip</i>). Every few minutes the server compares the required programs with the inventory of each online Windows device; a missing program is installed as a task you see under the device's <a href="/docs/devices#activity">Activity</a>. After an installation the device sends a new inventory. If the program is still missing, the server tries again after 6 hours. Nothing is installed before a device has sent its first inventory.</p>
+<p><b>Blocked programs</b> are programs the devices must not have, found by a part of their installed name (for example <i>torrent</i>). A device that has one opens an alert; with <b>Alert and remove</b> the server also uninstalls it silently, again after 6 hours while it is still there. Programs without a silent uninstall only alert. The device's <b>Policy</b> tab shows what was found.</p>
 
 <h2 id="alerts">Alert rules</h2>
 <p>The thresholds of a policy apply to its devices. Alert emails and chat channels are set for the whole server under <a href="/settings/monitoring">Monitoring and alerts</a>.</p>

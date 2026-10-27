@@ -38,3 +38,6 @@
 
 <h2 id="diagnostics">Diagnóstico</h2>
 <p><a href="/settings/diagnostics">Definições → Diagnóstico</a> mostra onde o ControlZit escreve os seus registos, as linhas mais recentes do registo do servidor (filtro por nível ou texto), o registo do auxiliar root e as versões. <b>Transferir diagnóstico (ZIP)</b> cria um ficheiro para suporte com os registos, as versões e um resumo das definições, os dispositivos, os alertas e a auditoria. As palavras-passe, tokens, códigos de registo e chaves são removidos de tudo o que é mostrado e do ficheiro; os scripts e a sua saída não são incluídos.</p>
+
+<h2 id="fields">Campos personalizados</h2>
+<p>Em <a href="/settings/fields">Configurações → Campos personalizados</a> os administradores adicionam seus próprios campos para dispositivos e clientes — texto, número ou data —, por exemplo um número de patrimônio, o fim da garantia ou um contrato. Os técnicos os preenchem nas páginas de dispositivos e clientes; a API retorna os campos com cada dispositivo e os define com <code>PUT /api/v1/devices/{id}/fields</code>.</p>

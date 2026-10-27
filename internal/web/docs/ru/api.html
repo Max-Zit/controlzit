@@ -23,6 +23,7 @@
   <tr><td><code>GET /api/v1/policies</code></td><td>политики с назначениями (администратор)</td></tr>
   <tr><td><code>POST /api/v1/policies/{id}/assign</code></td><td>назначение политики для customer:ID, site:ID или device:ID (администратор)</td></tr>
   <tr><td><code>POST /api/v1/policies/unassign</code></td><td>снятие политики клиента, площадки или устройства (администратор)</td></tr>
+  <tr><td><code>PUT /api/v1/devices/{id}/fields</code></td><td>задаёт собственные поля устройства по имени (объект JSON; пустое значение удаляет поле) и возвращает их; устройства в ответах содержат свои поля в <code>custom_fields</code></td></tr>
 </table>
 
 <h2 id="tasks">Задачи</h2>

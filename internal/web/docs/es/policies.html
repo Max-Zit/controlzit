@@ -24,6 +24,7 @@
 
 <h2 id="software">Software requerido</h2>
 <p>Cada programa requerido tiene un origen — la <a href="/software">biblioteca de software</a>, winget o Chocolatey — y un texto que contiene su nombre en la lista de Windows de programas instalados (por ejemplo <i>7-Zip</i>). Cada pocos minutos el servidor compara los programas requeridos con el inventario de cada dispositivo Windows en línea; un programa que falta se instala como una tarea que ve en la <a href="/docs/devices#activity">Actividad</a> del dispositivo. Tras una instalación, el dispositivo envía un inventario nuevo. Si el programa sigue faltando, el servidor lo intenta de nuevo a las 6 horas. No se instala nada antes de que un dispositivo envíe su primer inventario.</p>
+<p>Los <b>programas bloqueados</b> son programas que los dispositivos no deben tener, reconocidos por una parte de su nombre instalado (por ejemplo <i>torrent</i>). Un dispositivo que tenga uno abre una alerta; con <b>Alerta y eliminación</b> el servidor también lo desinstala en silencio, de nuevo tras 6 horas si sigue ahí. Los programas sin desinstalación silenciosa solo alertan. La pestaña <b>Directiva</b> del dispositivo muestra lo encontrado.</p>
 
 <h2 id="alerts">Reglas de alerta</h2>
 <p>Los umbrales de una directiva se aplican a sus dispositivos. Los correos de alerta y los canales de chat se definen para todo el servidor en <a href="/settings/monitoring">Supervisión y alertas</a>.</p>

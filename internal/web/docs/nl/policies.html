@@ -24,6 +24,7 @@
 
 <h2 id="software">Vereiste software</h2>
 <p>Elk vereist programma heeft een bron — de <a href="/software">softwarebibliotheek</a>, winget of Chocolatey — en een tekst die de naam in de Windows-lijst van geïnstalleerde programma's bevat (bijvoorbeeld <i>7-Zip</i>). Om de paar minuten vergelijkt de server de vereiste programma's met de inventaris van elk Windows-apparaat dat online is; een ontbrekend programma wordt geïnstalleerd als taak die u ziet onder <a href="/docs/devices#activity">Activiteit</a> van het apparaat. Na een installatie stuurt het apparaat een nieuwe inventaris. Ontbreekt het programma nog steeds, dan probeert de server het na 6 uur opnieuw. Er wordt niets geïnstalleerd voordat een apparaat zijn eerste inventaris heeft gestuurd.</p>
+<p><b>Geblokkeerde programma's</b> zijn programma's die de apparaten niet mogen hebben, herkend aan een deel van hun geïnstalleerde naam (bijvoorbeeld <i>torrent</i>). Een apparaat dat er een heeft, opent een waarschuwing; met <b>Waarschuwen en verwijderen</b> verwijdert de server het ook stil, opnieuw na 6 uur als het er nog is. Programma's zonder stille verwijdering geven alleen een waarschuwing. Het tabblad <b>Beleid</b> van het apparaat toont wat is gevonden.</p>
 
 <h2 id="alerts">Waarschuwingsregels</h2>
 <p>De drempels van een beleid gelden voor zijn apparaten. Waarschuwingsmails en chatkanalen stelt u voor de hele server in onder <a href="/settings/monitoring">Bewaking en waarschuwingen</a>.</p>

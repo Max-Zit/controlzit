@@ -51,6 +51,8 @@ type policyData struct {
 	NewMaint    MaintWindow   // the row "Add a window" adds
 	Quiet       bool
 	Nets        []NetCheckRule // with an empty row to add
+	Blocked     []BlockedApp   // with an empty row to add
+	NewBlocked  BlockedApp     // the row "Add a blocked program" adds
 	NewNet      NetCheckRule   // the row "Add a check" adds
 	Required    []RequiredApp  // with empty rows to add
 	NewApp      RequiredApp    // the row "Add a program" adds
@@ -145,6 +147,12 @@ func (s *Server) handlePolicy(w http.ResponseWriter, r *http.Request) {
 		d.Required = append(d.Required, RequiredApp{Source: "winget"})
 	}
 	d.NewApp = RequiredApp{Source: "winget"}
+	if d.S.Software != nil {
+		d.Blocked = append(d.Blocked, d.S.Software.Blocked...)
+	}
+	if len(d.Blocked) == 0 {
+		d.Blocked = append(d.Blocked, BlockedApp{})
+	}
 	if d.S.Automations != nil {
 		d.Runs = append(d.Runs, d.S.Automations.Runs...)
 	}
@@ -274,13 +282,20 @@ func policyForm(r *http.Request) (PolicySettings, string) {
 			}
 			sw.Required = append(sw.Required, a)
 		}
+		acts := r.Form["blk_action"]
+		for i, m := range r.Form["blk_match"] {
+			if m = strings.TrimSpace(m); m == "" {
+				continue
+			}
+			sw.Blocked = append(sw.Blocked, BlockedApp{Match: m, Remove: i < len(acts) && acts[i] == "remove"})
+		}
 		ps.Software = sw
 	}
 	if r.FormValue("alerts_set") == "1" {
 		ps.Alerts = &AlertRules{CPUPercent: formInt(r, "cpu_percent"), CPUMinutes: formInt(r, "cpu_minutes"), MemPercent: formInt(r, "mem_percent"),
 			MemMinutes: formInt(r, "mem_minutes"), DiskPercent: formInt(r, "disk_percent"), DiskMinFreeGB: formInt(r, "disk_min_free_gb"),
 			OfflineMinutes: formInt(r, "offline_minutes"), RebootDays: formInt(r, "reboot_days"), DefenderOff: r.FormValue("defender_off") == "1",
-			FirewallOff: r.FormValue("firewall_off") == "1", WatchServices: lines(r.FormValue("watch_services")), DiskHealthOff: r.FormValue("disk_health") != "1"}
+			FirewallOff: r.FormValue("firewall_off") == "1", WatchServices: lines(r.FormValue("watch_services")), DiskHealthOff: r.FormValue("disk_health") != "1", VulnAlerts: r.FormValue("vuln_alerts") == "1"}
 	}
 	if r.FormValue("automations_set") == "1" {
 		au := &AutomationPolicy{Runs: []Automation{}}
@@ -475,6 +490,7 @@ type devicePolicyData struct {
 	Maint       *MaintenancePolicy
 	InWindow    bool                  // a maintenance window is open now
 	Restart     *store.RestartRequest // a restart the policy asks for
+	Blocked     []blockedState
 	Policies    []store.Policy
 }
 
@@ -503,6 +519,9 @@ func (s *Server) handleDevicePolicy(w http.ResponseWriter, r *http.Request) {
 	dd.Parts = append(dd.Parts, policyPart{Name: "Required software", Source: src})
 	if sw != nil {
 		dd.Required = s.requiredStates(ctx, d, sw)
+		for _, b := range sw.Blocked {
+			dd.Blocked = append(dd.Blocked, blockedState{App: b, Found: matchingApps(d.Inventory, b.Match)})
+		}
 	}
 	dd.Alerts, src = pr.alerts(d.ID, builtinAlerts(s.Monitoring(ctx)))
 	dd.Parts = append(dd.Parts, policyPart{Name: "Alert rules", Source: src})

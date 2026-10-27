@@ -24,6 +24,7 @@
 
 <h2 id="software">Obavezni softver</h2>
 <p>Svaki obavezni program ima izvor — <a href="/software">biblioteku softvera</a>, winget ili Chocolatey — i tekst koji njegov naziv na Windows listi instaliranih programa sadrži (na primer <i>7-Zip</i>). Na nekoliko minuta server poredi obavezne programe sa inventarom svakog Windows uređaja na mreži; program koji nedostaje instalira se kao zadatak koji vidite u <a href="/docs/devices#activity">Aktivnostima</a> uređaja. Posle instalacije uređaj šalje novi inventar. Ako program i dalje nedostaje, server pokušava ponovo posle 6 sati. Ništa se ne instalira pre nego što uređaj pošalje prvi inventar.</p>
+<p><b>Zabranjeni programi</b> su programi koje uređaji ne smeju da imaju, prepoznati po delu instaliranog imena (na primer <i>torrent</i>). Uređaj koji ga ima otvara alarm; uz <b>Alarm i uklanjanje</b> server ga i tiho deinstalira, ponovo posle 6 sati ako je i dalje tu. Programi bez tihe deinstalacije samo alarmiraju. Kartica <b>Polisa</b> uređaja pokazuje šta je pronađeno.</p>
 
 <h2 id="alerts">Pravila alarma</h2>
 <p>Pragovi polise važe za njene uređaje. Mejlovi i chat kanali za alarme podešavaju se za ceo server u <a href="/settings/monitoring">Nadzor i upozorenja</a>.</p>

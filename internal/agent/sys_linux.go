@@ -238,7 +238,7 @@ func packages(ctx context.Context) ([]proto.Software, error) {
 	sep := "\t"
 	switch {
 	case have("dpkg-query"):
-		cmd = exec.CommandContext(ctx, "dpkg-query", "-W", "-f", "${db:Status-Abbrev}\t${Package}\t${Version}\t${Maintainer}\n")
+		cmd = exec.CommandContext(ctx, "dpkg-query", "-W", "-f", "${db:Status-Abbrev}\t${Package}\t${Version}\t${Maintainer}\t\t${source:Package}\t${source:Version}\n")
 	case have("rpm"):
 		cmd = exec.CommandContext(ctx, "rpm", "-qa", "--qf", "ii \t%{NAME}\t%{VERSION}-%{RELEASE}\t%{VENDOR}\t%{INSTALLTIME:date}\n")
 	default:
@@ -257,6 +257,9 @@ func packages(ctx context.Context) ([]proto.Software, error) {
 		s := proto.Software{Name: f[1], Version: f[2], Publisher: f[3]}
 		if len(f) > 4 {
 			s.InstallDate = f[4]
+		}
+		if len(f) > 6 {
+			s.Source, s.SourceVersion = f[5], f[6]
 		}
 		list = append(list, s)
 	}

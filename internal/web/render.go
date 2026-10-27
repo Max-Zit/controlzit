@@ -159,6 +159,9 @@ var funcs = template.FuncMap{
 	"join":        strings.Join,
 	"containsDay": containsInt,
 	"rowctx":      func(p *Page, row any) rowCtx { return rowCtx{P: p, Row: row} },
+	"fieldsctx": func(p *Page, action string, f []store.CustomField) fieldsCtx {
+		return fieldsCtx{P: p, Action: action, Fields: f}
+	},
 	"u64": func(n int64) uint64 {
 		if n < 0 {
 			return 0
@@ -392,4 +395,11 @@ func shellName(s string) string {
 type rowCtx struct {
 	P   *Page
 	Row any
+}
+
+// fieldsCtx is the custom fields panel of a device or customer.
+type fieldsCtx struct {
+	P      *Page
+	Action string
+	Fields []store.CustomField
 }

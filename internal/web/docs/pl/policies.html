@@ -24,6 +24,7 @@
 
 <h2 id="software">Wymagane oprogramowanie</h2>
 <p>Każdy wymagany program ma źródło — <a href="/software">bibliotekę oprogramowania</a>, winget lub Chocolatey — oraz tekst, który zawiera jego nazwa na liście zainstalowanych programów Windows (na przykład <i>7-Zip</i>). Co kilka minut serwer porównuje wymagane programy z inwentarzem każdego urządzenia z Windows, które jest online; brakujący program jest instalowany jako zadanie widoczne w <a href="/docs/devices#activity">Aktywności</a> urządzenia. Po instalacji urządzenie wysyła nowy inwentarz. Jeśli programu nadal brakuje, serwer ponawia próbę po 6 godzinach. Nic nie jest instalowane, zanim urządzenie wyśle pierwszy inwentarz.</p>
+<p><b>Zablokowane programy</b> to programy, których urządzenia nie mogą mieć, rozpoznawane po części zainstalowanej nazwy (na przykład <i>torrent</i>). Urządzenie, które go ma, otwiera alert; z opcją <b>Alert i usunięcie</b> serwer także odinstalowuje go po cichu, ponownie po 6 godzinach, jeśli nadal tam jest. Programy bez cichej dezinstalacji tylko alarmują. Karta <b>Zasada</b> urządzenia pokazuje, co znaleziono.</p>
 
 <h2 id="alerts">Reguły alertów</h2>
 <p>Progi zasady obowiązują jej urządzenia. E-maile alertów i kanały czatu ustawia się dla całego serwera w <a href="/settings/monitoring">Monitorowanie i alerty</a>.</p>

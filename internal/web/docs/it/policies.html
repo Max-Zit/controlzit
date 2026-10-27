@@ -24,6 +24,7 @@
 
 <h2 id="software">Software richiesto</h2>
 <p>Ogni programma richiesto ha una fonte — la <a href="/software">libreria software</a>, winget o Chocolatey — e un testo contenuto nel suo nome nell'elenco di Windows dei programmi installati (per esempio <i>7-Zip</i>). Ogni pochi minuti il server confronta i programmi richiesti con l'inventario di ogni dispositivo Windows online; un programma mancante viene installato come attività visibile nelle <a href="/docs/devices#activity">Attività</a> del dispositivo. Dopo un'installazione il dispositivo invia un nuovo inventario. Se il programma manca ancora, il server riprova dopo 6 ore. Non viene installato nulla prima che un dispositivo abbia inviato il primo inventario.</p>
+<p>I <b>programmi bloccati</b> sono programmi che i dispositivi non devono avere, riconosciuti da una parte del nome installato (ad esempio <i>torrent</i>). Un dispositivo che ne ha uno apre un avviso; con <b>Avviso e rimozione</b> il server lo disinstalla anche in modo silenzioso, di nuovo dopo 6 ore se è ancora presente. I programmi senza disinstallazione silenziosa generano solo l'avviso. La scheda <b>Criterio</b> del dispositivo mostra cosa è stato trovato.</p>
 
 <h2 id="alerts">Regole di avviso</h2>
 <p>Le soglie di un criterio valgono per i suoi dispositivi. Le email di avviso e i canali chat si impostano per tutto il server in <a href="/settings/monitoring">Monitoraggio e avvisi</a>.</p>

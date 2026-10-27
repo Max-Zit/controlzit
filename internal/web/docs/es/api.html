@@ -23,6 +23,7 @@
   <tr><td><code>GET /api/v1/policies</code></td><td>directivas con sus asignaciones (administrador)</td></tr>
   <tr><td><code>POST /api/v1/policies/{id}/assign</code></td><td>asignar una directiva a customer:ID, site:ID o device:ID (administrador)</td></tr>
   <tr><td><code>POST /api/v1/policies/unassign</code></td><td>quitar la directiva de un cliente, sede o dispositivo (administrador)</td></tr>
+  <tr><td><code>PUT /api/v1/devices/{id}/fields</code></td><td>establece los campos personalizados del dispositivo por nombre (un objeto JSON; un valor vacío elimina uno) y los devuelve; los dispositivos de las respuestas llevan sus campos en <code>custom_fields</code></td></tr>
 </table>
 
 <h2 id="tasks">Tareas</h2>

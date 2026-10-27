@@ -23,6 +23,7 @@
   <tr><td><code>GET /api/v1/policies</code></td><td>polise sa dodelama (administrator)</td></tr>
   <tr><td><code>POST /api/v1/policies/{id}/assign</code></td><td>dodela polise za customer:ID, site:ID ili device:ID (administrator)</td></tr>
   <tr><td><code>POST /api/v1/policies/unassign</code></td><td>uklanjanje polise klijenta, lokacije ili uređaja (administrator)</td></tr>
+  <tr><td><code>PUT /api/v1/devices/{id}/fields</code></td><td>postavlja prilagođena polja uređaja po imenu (JSON objekat; prazna vrednost briše polje) i vraća ih; uređaji u odgovorima nose svoja polja kao <code>custom_fields</code></td></tr>
 </table>
 
 <h2 id="tasks">Zadaci</h2>

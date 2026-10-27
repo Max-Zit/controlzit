@@ -486,3 +486,27 @@ func customerPolicy(t *testing.T, c *client, customerID int64, kv ...string) str
 	}
 	return pid
 }
+
+// device enrolls a device (without an agent) in the customer "Lab".
+func (e *env) device(t *testing.T, hostname, osName string) *store.Device {
+	t.Helper()
+	ctx := context.Background()
+	var cid int64
+	if cs, _ := e.st.AllCustomers(ctx); len(cs) > 0 {
+		cid = cs[0].ID
+	} else if cid, _ = e.st.CreateCustomer(ctx, "Lab", ""); cid == 0 {
+		t.Fatal("customer")
+	}
+	site, _ := e.st.CreateSite(ctx, cid, hostname+" site", "", "")
+	tok, err := e.st.CreateEnrollToken(ctx, site, "test", "admin", time.Hour, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	pub := bytes.Repeat([]byte{byte(len(hostname))}, 32)
+	copy(pub, hostname)
+	d, err := e.st.EnrollDevice(ctx, tok, pub, hostname, osName, "0.8.0", "127.0.0.1")
+	if err != nil {
+		t.Fatal(err)
+	}
+	return d
+}

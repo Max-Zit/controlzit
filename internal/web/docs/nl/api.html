@@ -23,6 +23,7 @@
   <tr><td><code>GET /api/v1/policies</code></td><td>beleid met de toewijzingen (beheerder)</td></tr>
   <tr><td><code>POST /api/v1/policies/{id}/assign</code></td><td>een beleid toewijzen aan customer:ID, site:ID of device:ID (beheerder)</td></tr>
   <tr><td><code>POST /api/v1/policies/unassign</code></td><td>het beleid van een klant, locatie of apparaat verwijderen (beheerder)</td></tr>
+  <tr><td><code>PUT /api/v1/devices/{id}/fields</code></td><td>zet eigen velden van het apparaat op naam (een JSON-object; een lege waarde verwijdert er een) en geeft ze terug; apparaten in de antwoorden hebben hun velden in <code>custom_fields</code></td></tr>
 </table>
 
 <h2 id="tasks">Taken</h2>

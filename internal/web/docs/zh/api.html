@@ -23,6 +23,7 @@
   <tr><td><code>GET /api/v1/policies</code></td><td>策略及其分配（管理员）</td></tr>
   <tr><td><code>POST /api/v1/policies/{id}/assign</code></td><td>将策略分配给 customer:ID、site:ID 或 device:ID（管理员）</td></tr>
   <tr><td><code>POST /api/v1/policies/unassign</code></td><td>移除客户、站点或设备的策略（管理员）</td></tr>
+  <tr><td><code>PUT /api/v1/devices/{id}/fields</code></td><td>按名称设置设备的自定义字段（JSON 对象；空值会删除字段）并返回；响应中的设备在 <code>custom_fields</code> 中包含其字段</td></tr>
 </table>
 
 <h2 id="tasks">任务</h2>

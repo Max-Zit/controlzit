@@ -1,0 +1,21 @@
+{{template "app" .}}
+{{define "content"}}
+{{$d := .Data.D}}
+<p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a> / <a href="/devices/{{$d.ID}}">{{$d.Hostname}}</a></p>
+<h1>{{template "icon" "shield"}}{{.T "Vulnerabilities"}} <span class="muted h1-sub">{{$d.Hostname}}</span></h1>
+{{template "devtabs" (devtabs . $d "vulns")}}
+<section class="panel">
+  {{if .Data.List}}
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{.T "Vulnerability"}}</th><th>{{.T "Program"}}</th><th>{{.T "Severity"}}</th><th class="hide-sm">{{.T "Description"}}</th></tr></thead>
+    <tbody>{{range .Data.List}}<tr>
+      <td class="nowrap"><a href="{{if eq .Source "nvd"}}https://nvd.nist.gov/vuln/detail/{{.ID}}{{else}}https://osv.dev/vulnerability/{{.ID}}{{end}}" target="_blank" rel="noopener noreferrer" class="mono">{{.ID}}</a></td>
+      <td>{{.Product}} <span class="muted small">{{.Version}}</span>{{if eq .Fix "none"}}<br><span class="small muted">{{$.T "no fix yet"}}</span>{{else if .Fix}}<br><span class="small">{{$.T "fixed in %s" .Fix}}</span>{{end}}</td>
+      <td class="nowrap"><span class="badge {{if eq .Severity "critical"}}bad{{else if eq .Severity "high"}}warn{{end}}"><i></i>{{$.T .Severity}}{{if .Score}} {{printf "%.1f" .Score}}{{end}}</span></td>
+      <td class="hide-sm small td-clip">{{.Summary}}</td>
+    </tr>{{end}}</tbody>
+  </table></div>
+  <p class="small muted mt">{{.T "Update the program to its newest version to fix them (Programs, or the Program updates part of a policy)."}}</p>
+  {{else}}<div class="empty">{{template "icon" "shield"}}<p>{{if .Data.Enabled}}{{.T "No known vulnerabilities in the installed programs that the scan covers."}}{{else}}{{.T "The vulnerability scan is off."}} <a href="/vulnerabilities">{{.T "Vulnerabilities"}}</a>{{end}}</p></div>{{end}}
+</section>
+{{end}}

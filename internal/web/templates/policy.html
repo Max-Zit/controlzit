@@ -83,6 +83,14 @@
       <button type="button" class="secondary sm mt" data-add-row="req-new" data-rows="req-rows">{{template "icon" "plus"}}{{.T "Add a program"}}</button>
       <datalist id="pol-packages">{{range .Data.Packages}}<option value="{{.ID}}">{{.Name}} {{.Version}}</option>{{end}}</datalist>
       <p class="small muted">{{.T "For the software library choose the package from the list (its number); for winget and Chocolatey enter the package ID."}}</p>
+      <h3 class="mt">{{.T "Blocked programs"}}</h3>
+      <p class="small muted">{{.T "Programs the devices must not have. A program counts when its installed name contains the text. It opens an alert; with Remove it is also uninstalled silently (programs without a silent uninstall only alert)."}}</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>{{.T "Installed name contains"}}</th><th>{{.T "Action"}}</th><th></th></tr></thead>
+        <tbody id="blk-rows">{{range .Data.Blocked}}{{template "blkrow" (rowctx $ .)}}{{end}}</tbody>
+      </table></div>
+      <template id="blk-new">{{template "blkrow" (rowctx $ .Data.NewBlocked)}}</template>
+      <button type="button" class="secondary sm mt" data-add-row="blk-new" data-rows="blk-rows">{{template "icon" "plus"}}{{.T "Add a blocked program"}}</button>
     </div>
   </section>
 
@@ -103,6 +111,7 @@
       <label class="check"><input type="checkbox" name="defender_off" value="1" {{if $m.DefenderOff}}checked{{end}}>{{.T "Alert when Microsoft Defender antivirus or real-time protection is off"}}</label>
       <label class="check"><input type="checkbox" name="firewall_off" value="1" {{if $m.FirewallOff}}checked{{end}}>{{.T "Alert when a Windows Firewall profile is off"}}</label>
       <label class="check"><input type="checkbox" name="disk_health" value="1" {{if not $m.DiskHealthOff}}checked{{end}}>{{.T "Alert when a disk reports a problem (SMART) or a RAID array is degraded"}}</label>
+      <label class="check"><input type="checkbox" name="vuln_alerts" value="1" {{if $m.VulnAlerts}}checked{{end}}>{{.T "Alert when a program has a critical vulnerability (CVSS 9 or more; the vulnerability scan must be on)"}}</label>
       <label>{{.T "Services that must run"}} <small>{{.T "optional"}}</small><textarea name="watch_services" rows="3" spellcheck="false" placeholder="Spooler&#10;MSSQLSERVER">{{.Data.Services}}</textarea></label>
       <p class="small muted">{{.T "Alert emails and chat channels stay those of Settings → Monitoring and alerts."}}</p>
     </div>
@@ -213,5 +222,14 @@
   <td><input name="net_target" value="{{$c.Target}}" maxlength="500" spellcheck="false" class="mono" placeholder="192.168.1.1"></td>
   <td><input type="number" name="net_port" value="{{if $c.Port}}{{$c.Port}}{{end}}" min="1" max="65535" class="narrow"></td>
   <td><input type="number" name="net_minutes" value="{{$c.FailMinutes}}" min="1" max="1440" class="narrow"></td>
+  <td class="nowrap actions"><button type="button" class="ghost sm" data-remove-row aria-label="{{$p.T "Remove"}}">{{template "icon" "trash"}}</button></td>
+</tr>{{end}}
+
+{{define "blkrow"}}{{$p := .P}}{{$b := .Row}}<tr data-row>
+  <td><input name="blk_match" value="{{$b.Match}}" maxlength="100" placeholder="uTorrent"></td>
+  <td><select name="blk_action">
+    <option value="alert" {{if not $b.Remove}}selected{{end}}>{{$p.T "Alert only"}}</option>
+    <option value="remove" {{if $b.Remove}}selected{{end}}>{{$p.T "Alert and remove"}}</option>
+  </select></td>
   <td class="nowrap actions"><button type="button" class="ghost sm" data-remove-row aria-label="{{$p.T "Remove"}}">{{template "icon" "trash"}}</button></td>
 </tr>{{end}}

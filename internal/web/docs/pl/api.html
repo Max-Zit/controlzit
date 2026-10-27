@@ -23,6 +23,7 @@
   <tr><td><code>GET /api/v1/policies</code></td><td>zasady z przypisaniami (administrator)</td></tr>
   <tr><td><code>POST /api/v1/policies/{id}/assign</code></td><td>przypisanie zasady do customer:ID, site:ID lub device:ID (administrator)</td></tr>
   <tr><td><code>POST /api/v1/policies/unassign</code></td><td>usunięcie zasady klienta, lokalizacji lub urządzenia (administrator)</td></tr>
+  <tr><td><code>PUT /api/v1/devices/{id}/fields</code></td><td>ustawia pola własne urządzenia według nazwy (obiekt JSON; pusta wartość usuwa pole) i je zwraca; urządzenia w odpowiedziach mają swoje pola w <code>custom_fields</code></td></tr>
 </table>
 
 <h2 id="tasks">Zadania</h2>

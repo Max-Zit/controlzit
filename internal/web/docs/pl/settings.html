@@ -38,3 +38,6 @@
 
 <h2 id="diagnostics">Diagnostyka</h2>
 <p><a href="/settings/diagnostics">Ustawienia → Diagnostyka</a> pokazuje, gdzie ControlZit zapisuje dzienniki, najnowsze wiersze dziennika serwera (filtr według poziomu lub tekstu), dziennik pomocnika root i wersje. <b>Pobierz diagnostykę (ZIP)</b> tworzy plik dla wsparcia z dziennikami, wersjami i podsumowaniem ustawień, urządzeniami, alertami i dziennikiem audytu. Hasła, tokeny, kody rejestracji i klucze są usuwane ze wszystkiego, co jest pokazywane, i z pliku; skrypty i ich wyniki nie są dołączane.</p>
+
+<h2 id="fields">Pola własne</h2>
+<p>W <a href="/settings/fields">Ustawienia → Pola własne</a> administratorzy dodają własne pola dla urządzeń i klientów — tekst, liczbę lub datę — na przykład numer inwentarzowy, koniec gwarancji lub umowę. Technicy wypełniają je na stronach urządzeń i klientów; API zwraca pola z każdym urządzeniem i ustawia je przez <code>PUT /api/v1/devices/{id}/fields</code>.</p>

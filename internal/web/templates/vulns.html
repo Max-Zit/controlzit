@@ -1,0 +1,43 @@
+{{template "app" .}}
+{{define "content"}}
+{{$d := .Data}}
+<h1>{{template "icon" "shield"}}{{.T "Vulnerabilities"}}</h1>
+<p class="muted">{{.T "Installed programs compared with public vulnerability databases: NVD for common Windows programs, OSV for the packages of Debian and Ubuntu. Only program names and versions are sent, never device data."}}</p>
+{{if $d.Settings.Enabled}}
+<div class="grid">
+  <a class="stat bad" href="?sev=critical"><span class="si">{{template "icon" "alert"}}</span><b>{{index $d.Totals "critical"}}</b><span>{{.T "critical"}}</span></a>
+  <a class="stat warn" href="?sev=high"><span class="si">{{template "icon" "alert"}}</span><b>{{index $d.Totals "high"}}</b><span>{{.T "high"}}</span></a>
+  <a class="stat" href="?sev=medium"><span class="si">{{template "icon" "shield"}}</span><b>{{index $d.Totals "medium"}}</b><span>{{.T "medium"}}</span></a>
+  <a class="stat" href="?sev=low"><span class="si">{{template "icon" "shield"}}</span><b>{{index $d.Totals "low"}}</b><span>{{.T "low"}}</span></a>
+</div>
+<section class="panel">
+  <nav class="tabs" aria-label="{{.T "Filter"}}">
+    {{range $k := $d.Levels}}<a href="?sev={{$k}}{{if $d.All}}&amp;fix=all{{end}}" class="{{if eq $d.Min $k}}on{{end}}">{{if eq $k "unknown"}}{{$.T "all"}}{{else if eq $k "critical"}}{{$.T "critical"}}{{else}}{{$.T (print $k " and worse")}}{{end}}</a>{{end}}
+  </nav>
+  {{if $d.Unfixed}}<p class="small muted">{{.T "%d vulnerabilities of Linux packages have no fix in their release yet and are hidden." $d.Unfixed}} <a href="?sev={{$d.Min}}&amp;fix=all">{{.T "Show them"}}</a></p>{{else if $d.All}}<p class="small muted"><a href="?sev={{$d.Min}}">{{.T "Only those with a fix"}}</a></p>{{end}}
+  {{if $d.Rows}}
+  <p class="small muted">{{.T "%d devices affected" $d.Devices}}</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{.T "Program"}}</th><th>{{.T "Vulnerabilities"}}</th><th>{{.T "Devices"}}</th></tr></thead>
+    <tbody>{{range $d.Rows}}<tr>
+      <td><b>{{.Product}}</b> <span class="muted">{{.Version}}</span><br><span class="small muted">{{range $i, $x := .IDs}}{{if $i}}, {{end}}{{$x}}{{end}}</span></td>
+      <td class="nowrap">{{range .Badges}}<span class="badge {{if eq .Severity "critical"}}bad{{else if eq .Severity "high"}}warn{{end}}"><i></i>{{.N}} {{$.T .Severity}}</span> {{end}}</td>
+      <td class="small">{{range $i, $x := .Shown}}{{if $i}}, {{end}}<a href="/devices/{{$x.ID}}/vulnerabilities">{{$x.Hostname}}</a>{{end}}{{if .More}} {{$.T "and %d more" .More}}{{end}}</td>
+    </tr>{{end}}</tbody>
+  </table></div>
+  {{else}}<div class="empty">{{template "icon" "shield"}}<p>{{if $d.Settings.LastScan.IsZero}}{{.T "The first scan is running; it can take several minutes."}}{{else}}{{.T "No vulnerabilities of this severity found."}}{{end}}</p></div>{{end}}
+</section>
+{{end}}
+{{if .User.IsAdmin}}<section class="panel">
+  <h2>{{template "icon" "settings"}}{{.T "Scan"}}</h2>
+  {{if $d.Settings.Enabled}}<p class="small">{{if $d.Scanning}}<span class="badge warn"><i></i>{{.T "scanning now"}}</span>{{else if $d.Settings.LastScan.IsZero}}{{.T "not scanned yet"}}{{else}}{{.T "Last scan"}}: {{.Time $d.Settings.LastScan}}{{end}} · {{.T "every 6 hours"}}</p>
+  {{with $d.Settings.LastError}}<p class="flash warn">{{template "icon" "alert"}}<span>{{.}}</span></p>{{end}}{{end}}
+  <form method="post" action="/vulnerabilities/settings" class="stack">
+    <label class="check"><input type="checkbox" name="enabled" value="1" {{if $d.Settings.Enabled}}checked{{end}}>{{.T "Scan the installed programs for vulnerabilities"}}</label>
+    <label>{{.T "NVD API key"}} <small>{{if $d.HasKey}}{{.T "stored; leave empty to keep it"}}{{else}}{{.T "optional"}}{{end}}</small><input type="password" name="nvd_key" autocomplete="off"><small>{{.T "Without a key NVD allows few requests, so the first scan takes longer. A free key: nvd.nist.gov/developers/request-an-api-key."}}</small></label>
+    {{if $d.HasKey}}<label class="check"><input type="checkbox" name="clear_key" value="1">{{.T "Remove the stored key"}}</label>{{end}}
+    <div class="row"><button class="primary">{{.T "Save"}}</button></div>
+  </form>
+  {{if $d.Settings.Enabled}}<form method="post" action="/vulnerabilities/scan" class="mt"><button class="secondary" {{if $d.Scanning}}disabled{{end}}>{{template "icon" "refresh"}}{{.T "Scan now"}}</button></form>{{end}}
+</section>{{else if not $d.Settings.Enabled}}<p class="muted">{{.T "An administrator can switch the vulnerability scan on here."}}</p>{{end}}
+{{end}}

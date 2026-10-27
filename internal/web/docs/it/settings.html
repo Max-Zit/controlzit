@@ -38,3 +38,6 @@
 
 <h2 id="diagnostics">Diagnostica</h2>
 <p><a href="/settings/diagnostics">Impostazioni → Diagnostica</a> mostra dove ControlZit scrive i suoi log, le righe più recenti del log del server (filtro per livello o testo), il log dell'helper root e le versioni. <b>Scarica la diagnostica (ZIP)</b> crea un file per l'assistenza con i log, le versioni e un riepilogo delle impostazioni, i dispositivi, gli avvisi e il log di audit. Password, token, codici di registrazione e chiavi vengono rimossi da tutto ciò che è mostrato e dal file; gli script e il loro output non sono inclusi.</p>
+
+<h2 id="fields">Campi personalizzati</h2>
+<p>In <a href="/settings/fields">Impostazioni → Campi personalizzati</a> gli amministratori aggiungono campi propri per dispositivi e clienti — testo, numero o data —, ad esempio un numero di inventario, la fine della garanzia o un contratto. I tecnici li compilano nelle pagine dei dispositivi e dei clienti; l'API restituisce i campi con ogni dispositivo e li imposta con <code>PUT /api/v1/devices/{id}/fields</code>.</p>

@@ -38,3 +38,6 @@
 
 <h2 id="diagnostics">Dijagnostika</h2>
 <p><a href="/settings/diagnostics">Podešavanja → Dijagnostika</a> pokazuje gde ControlZit piše dnevnike, najnovije redove dnevnika servera (filter po nivou ili tekstu), dnevnik root pomoćnika i verzije. <b>Preuzmi dijagnostiku (ZIP)</b> pravi fajl za podršku sa dnevnicima, verzijama i sažetkom podešavanja, uređajima, upozorenjima i dnevnikom izmena. Lozinke, tokeni, kodovi za prijavu i ključevi se uklanjaju iz svega što se prikazuje i iz fajla; skripte i njihov izlaz nisu uključeni.</p>
+
+<h2 id="fields">Prilagođena polja</h2>
+<p>U <a href="/settings/fields">Podešavanja → Prilagođena polja</a> administratori dodaju svoja polja za uređaje i klijente — tekst, broj ili datum — na primer inventarski broj, kraj garancije ili ugovor. Tehničari ih popunjavaju na stranicama uređaja i klijenata; API vraća polja uređaja uz svaki uređaj i menja ih sa <code>PUT /api/v1/devices/{id}/fields</code>.</p>

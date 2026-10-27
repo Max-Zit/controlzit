@@ -35,6 +35,7 @@ type Server struct {
 	alerts  sync.Mutex     // one alert check at a time
 	notices restartNotices // restart requests last sent to agents
 	collect collectors     // network checks and disk health in the background
+	vulns   vulnScanner    // one vulnerability scan at a time
 	log     *slog.Logger
 	tmpl    map[string]*template.Template
 	now     func() time.Time
@@ -44,6 +45,10 @@ type Server struct {
 
 	// TaskWait is how long a page waits for a new task (0: taskWait).
 	TaskWait time.Duration
+	// Vulnerability databases (empty: the public ones) and the pause
+	// between NVD requests (0: as NVD allows); tests set them.
+	NVDURL, OSVURL string
+	NVDWait        time.Duration
 
 	// MgmtACL guards the console listener, AgentACL the agent listener.
 	MgmtACL  *netacl.List
@@ -353,6 +358,14 @@ func (s *Server) Handler() http.Handler {
 	app("POST /devices/{id}/updates/scan", s.handlePatchScan)
 	app("POST /devices/{id}/updates/install", s.handlePatchInstall)
 	app("GET /updates", s.handlePatchOverview)
+	app("GET /vulnerabilities", s.handleVulns)
+	admin("POST /vulnerabilities/settings", s.handleVulnSettings)
+	admin("POST /vulnerabilities/scan", s.handleVulnScan)
+	app("GET /devices/{id}/vulnerabilities", s.handleDeviceVulns)
+	admin("GET /settings/fields", s.handleCustomFields)
+	admin("POST /settings/fields", s.handleCustomFieldsSave)
+	app("POST /devices/{id}/fields", s.handleDeviceFields)
+	app("POST /customers/{id}/fields", s.handleCustomerFields)
 	app("GET /reports", s.handleReports)
 	app("GET /reports/view", s.handleReportView)
 	app("GET /scripts", s.handleLibrary)

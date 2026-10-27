@@ -35,4 +35,5 @@
 {{else if .Data.Customer.Notes}}
 <section class="panel"><h2>{{.T "Notes"}}</h2><p class="pre">{{.Data.Customer.Notes}}</p></section>
 {{end}}
+{{template "fieldspanel" (fieldsctx . (printf "/customers/%d/fields" .Data.Customer.ID) .Data.Fields)}}
 {{end}}

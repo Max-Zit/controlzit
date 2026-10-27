@@ -23,6 +23,7 @@
   <tr><td><code>GET /api/v1/policies</code></td><td>stratégies avec leurs attributions (administrateur)</td></tr>
   <tr><td><code>POST /api/v1/policies/{id}/assign</code></td><td>attribuer une stratégie à customer:ID, site:ID ou device:ID (administrateur)</td></tr>
   <tr><td><code>POST /api/v1/policies/unassign</code></td><td>retirer la stratégie d'un client, d'un site ou d'un appareil (administrateur)</td></tr>
+  <tr><td><code>PUT /api/v1/devices/{id}/fields</code></td><td>définit les champs personnalisés de l'appareil par nom (un objet JSON ; une valeur vide en supprime un) et les renvoie ; les appareils des réponses portent leurs champs dans <code>custom_fields</code></td></tr>
 </table>
 
 <h2 id="tasks">Tâches</h2>

@@ -27,6 +27,7 @@ type MonitoringSettings struct {
 	FirewallOff    bool     `json:"firewall_off"`
 	WatchServices  []string `json:"watch_services"`
 	DiskHealthOff  bool     `json:"disk_health_off,omitempty"`
+	VulnAlerts     bool     `json:"vuln_alerts,omitempty"`
 	EmailOnOpen    bool     `json:"email_on_open"`
 	EmailOnResolve bool     `json:"email_on_resolve"`
 	Recipients     []string `json:"recipients"`

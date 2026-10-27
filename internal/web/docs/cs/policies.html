@@ -24,6 +24,7 @@
 
 <h2 id="software">Požadovaný software</h2>
 <p>Každý požadovaný program má zdroj — <a href="/software">knihovnu softwaru</a>, winget nebo Chocolatey — a text, který obsahuje jeho název v seznamu nainstalovaných programů Windows (například <i>7-Zip</i>). Každých pár minut server porovná požadované programy s inventářem každého zařízení s Windows, které je online; chybějící program se nainstaluje jako úloha, kterou uvidíte v <a href="/docs/devices#activity">Aktivitě</a> zařízení. Po instalaci zařízení pošle nový inventář. Pokud program stále chybí, server to zkusí znovu po 6 hodinách. Dokud zařízení nepošle první inventář, nic se neinstaluje.</p>
+<p><b>Blokované programy</b> jsou programy, které zařízení nesmějí mít, rozpoznané podle části nainstalovaného názvu (například <i>torrent</i>). Zařízení, které nějaký má, otevře upozornění; s volbou <b>Upozornit a odebrat</b> ho server také tiše odinstaluje, znovu po 6 hodinách, pokud tam stále je. Programy bez tiché odinstalace jen upozorní. Karta <b>Zásada</b> zařízení ukazuje, co bylo nalezeno.</p>
 
 <h2 id="alerts">Pravidla upozornění</h2>
 <p>Prahy zásady platí pro její zařízení. E-maily upozornění a chatovací kanály se nastavují pro celý server v <a href="/settings/monitoring">Monitorování a upozornění</a>.</p>

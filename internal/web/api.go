@@ -119,6 +119,7 @@ func (s *Server) APIHandler() http.Handler {
 	read("GET /api/v1/devices/{id}", s.apiDevice)
 	read("GET /api/v1/devices/{id}/tasks", s.apiDeviceTasks)
 	write("POST /api/v1/devices/{id}/tasks", s.apiTaskCreate)
+	write("PUT /api/v1/devices/{id}/fields", s.apiDeviceFields)
 	read("GET /api/v1/tasks/{id}", s.apiTask)
 	write("POST /api/v1/tasks/{id}/cancel", s.apiTaskCancel)
 	read("GET /api/v1/alerts", s.apiAlerts)
@@ -137,17 +138,18 @@ func (s *Server) APIHandler() http.Handler {
 // ---- JSON shapes
 
 type apiDeviceJSON struct {
-	ID           int64      `json:"id"`
-	Hostname     string     `json:"hostname"`
-	CustomerID   int64      `json:"customer_id"`
-	Customer     string     `json:"customer"`
-	SiteID       int64      `json:"site_id"`
-	Site         string     `json:"site"`
-	OS           string     `json:"os"`
-	OSVersion    string     `json:"os_version,omitempty"`
-	AgentVersion string     `json:"agent_version,omitempty"`
-	Online       bool       `json:"online"`
-	LastSeen     *time.Time `json:"last_seen,omitempty"`
+	ID           int64             `json:"id"`
+	Hostname     string            `json:"hostname"`
+	CustomerID   int64             `json:"customer_id"`
+	Customer     string            `json:"customer"`
+	SiteID       int64             `json:"site_id"`
+	Site         string            `json:"site"`
+	OS           string            `json:"os"`
+	OSVersion    string            `json:"os_version,omitempty"`
+	AgentVersion string            `json:"agent_version,omitempty"`
+	Online       bool              `json:"online"`
+	LastSeen     *time.Time        `json:"last_seen,omitempty"`
+	CustomFields map[string]string `json:"custom_fields,omitempty"`
 }
 
 func (s *Server) deviceJSON(d *store.Device) apiDeviceJSON {
@@ -220,8 +222,14 @@ func (s *Server) apiDevices(r *http.Request, u *store.User) (int, any, error) {
 		return 0, nil, err
 	}
 	out := []apiDeviceJSON{}
+	fields, err := s.store.AllFieldValues(r.Context(), "device")
+	if err != nil {
+		return 0, nil, err
+	}
 	for _, d := range list {
-		out = append(out, s.deviceJSON(d))
+		j := s.deviceJSON(d)
+		j.CustomFields = fields[d.ID]
+		out = append(out, j)
 	}
 	return http.StatusOK, out, nil
 }
@@ -247,7 +255,11 @@ func (s *Server) apiDevice(r *http.Request, u *store.User) (int, any, error) {
 	if err != nil {
 		return 0, nil, err
 	}
-	return http.StatusOK, map[string]any{"device": s.deviceJSON(d), "inventory": d.Inventory}, nil
+	j := s.deviceJSON(d)
+	if fields, err := s.store.AllFieldValues(r.Context(), "device"); err == nil {
+		j.CustomFields = fields[d.ID]
+	}
+	return http.StatusOK, map[string]any{"device": j, "inventory": d.Inventory}, nil
 }
 
 func (s *Server) apiDeviceTasks(r *http.Request, u *store.User) (int, any, error) {
