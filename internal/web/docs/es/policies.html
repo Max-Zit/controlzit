@@ -8,6 +8,8 @@
   <li><b>Reglas de alerta</b> — los umbrales de CPU, memoria, discos, dispositivos sin conexión y reinicios pendientes, Defender y el firewall, y los servicios que deben estar en ejecución.</li>
   <li><b>Automatizaciones</b> — scripts de la biblioteca que se ejecutan en los dispositivos de la directiva ciertos días a una hora fija.</li>
   <li><b>BitLocker</b> — cifrado de la unidad del sistema, con la clave de recuperación guardada en el servidor.</li>
+  <li><b>Actualizaciones de programas</b> — actualizar los programas instalados que conocen winget o Chocolatey, en días fijos o en la ventana de mantenimiento.</li>
+  <li><b>Ventanas de mantenimiento</b> — cuándo pueden estar ocupados los dispositivos: instalaciones, reinicios forzados y, si quiere, sin nuevas alertas.</li>
 </ul>
 <p>Cada parte se activa o desactiva en la directiva. Una parte desactivada no la define esta directiva: procede de una directiva menos específica o de los valores predeterminados integrados (sin actualizaciones automáticas, reglas de alerta estándar).</p>
 
@@ -31,6 +33,12 @@
 <h2 id="bitlocker">BitLocker y claves de recuperación</h2>
 <p>El servidor guarda las claves de recuperación de BitLocker de sus dispositivos Windows: una vez al día las lee de cada dispositivo con BitLocker activado, y <b>Leer las claves de recuperación ahora</b> en la página <b>BitLocker</b> del dispositivo (enlazada desde la línea BitLocker del resumen del dispositivo) las lee al instante. Las claves se guardan cifradas con la clave secreta del servidor. Solo los administradores pueden mostrar una clave, tras escribir su contraseña; cada clave mostrada y cada contraseña incorrecta quedan en el registro de actividad.</p>
 <p>Una directiva con <b>Exigir BitLocker en la unidad del sistema</b> lo activa en los dispositivos Windows cuya unidad del sistema no está cifrada. El agente comprueba primero el TPM y agrega una clave de recuperación; el servidor guarda la clave y solo entonces empieza el cifrado (protector TPM, XTS-AES 256, solo el espacio usado), en segundo plano mientras se usa el equipo. Los dispositivos sin un TPM listo o con una edición de Windows sin BitLocker (Home) muestran el motivo en Actividad, y el servidor lo intenta de nuevo a las 6 horas. Los administradores también pueden activarlo para un solo dispositivo desde su página BitLocker.</p>
+
+<h2 id="app-updates">Actualizaciones de programas</h2>
+<p>La parte <b>Actualizaciones de programas</b> actualiza los programas instalados que tienen una versión más reciente: los que conoce winget y, si lo elige, los instalados con Chocolatey. Se ejecuta una vez cada día elegido a la hora elegida, o en la ventana de mantenimiento. Los programas de la lista <b>No actualizar</b> (ID de paquetes o partes de nombres) no se tocan. Con un retraso de <b>anillo de actualización</b>, una versión nueva espera esos días desde que el servidor la vio por primera vez. Cada ejecución aparece en la <b>Actividad</b> del dispositivo.</p>
+
+<h2 id="maintenance">Ventanas de mantenimiento</h2>
+<p>Una ventana de mantenimiento es un periodo semanal, por ejemplo el sábado desde las 22:00 durante 4 horas (hora del servidor). Las actualizaciones de Windows y de programas configuradas <b>En la ventana de mantenimiento</b> se ejecutan entonces, y un reinicio pasado su plazo espera a la siguiente ventana. Con <b>Sin nuevas alertas durante una ventana de mantenimiento</b>, los dispositivos no abren alertas nuevas mientras haya una ventana abierta; las alertas ya abiertas siguen igual.</p>
 
 <h2 id="device">Qué se aplica a un dispositivo</h2>
 <p>La pestaña <b>Directiva</b> de un dispositivo muestra, para cada parte, qué directiva la define (y si está asignada al dispositivo, a su sede o a su cliente) o que se aplican los valores predeterminados integrados, el estado de cada programa requerido (instalado, falta, cuándo se inició una instalación), la configuración de Windows Update y de alertas que se aplica y las automatizaciones.</p>

@@ -8,6 +8,8 @@
   <li><b>Pravidla upozornění</b> — prahy pro procesor, paměť, disky, zařízení offline a čekající restarty, Defender a bránu firewall a služby, které musí běžet.</li>
   <li><b>Automatizace</b> — skripty z knihovny, které běží na zařízeních zásady ve stanovené dny ve stanovený čas.</li>
   <li><b>BitLocker</b> — šifrování systémové jednotky s klíčem pro obnovení uloženým na serveru.</li>
+  <li><b>Aktualizace programů</b> — aktualizace nainstalovaných programů, které zná winget nebo Chocolatey, ve zvolené dny nebo v okně údržby.</li>
+  <li><b>Okna údržby</b> — kdy smějí být zařízení zaneprázdněná: instalace, vynucené restarty a podle potřeby žádná nová upozornění.</li>
 </ul>
 <p>Každá část se v zásadě zapíná nebo vypíná. Vypnutou část tato zásada nenastavuje: pochází z méně konkrétní zásady nebo z vestavěných výchozích hodnot (žádné automatické aktualizace, standardní pravidla upozornění).</p>
 
@@ -31,6 +33,12 @@
 <h2 id="bitlocker">BitLocker a klíče pro obnovení</h2>
 <p>Server uchovává klíče pro obnovení BitLockeru svých zařízení s Windows: jednou denně je přečte z každého zařízení se zapnutým BitLockerem a <b>Přečíst klíče pro obnovení teď</b> na stránce <b>BitLocker</b> zařízení (odkaz je v řádku BitLocker v přehledu zařízení) je přečte hned. Klíče se ukládají zašifrované tajným klíčem serveru. Klíč mohou zobrazit jen správci po zadání svého hesla; každý zobrazený klíč a každé špatné heslo se zapíše do protokolu aktivit.</p>
 <p>Zásada s volbou <b>Vyžadovat BitLocker na systémové jednotce</b> ho zapne na zařízeních s Windows, jejichž systémová jednotka není zašifrovaná. Agent nejprve zkontroluje TPM a přidá klíč pro obnovení; server klíč uloží a teprve potom začne šifrování (ochrana TPM, XTS-AES 256, jen obsazené místo) na pozadí, zatímco se počítač používá. Zařízení bez připraveného TPM nebo s edicí Windows bez BitLockeru (Home) ukážou důvod v Aktivitě a server to zkusí znovu po 6 hodinách. Správci ho mohou zapnout i pro jedno zařízení na jeho stránce BitLocker.</p>
+
+<h2 id="app-updates">Aktualizace programů</h2>
+<p>Část <b>Aktualizace programů</b> aktualizuje nainstalované programy, které mají novější verzi: ty, které zná winget, a podle volby ty nainstalované přes Chocolatey. Spouští se jednou v každý zvolený den ve zvolenou hodinu nebo v okně údržby. Programy ze seznamu <b>Neaktualizovat</b> (ID balíčků nebo části názvů) zůstanou beze změny. S odkladem <b>kruhu aktualizací</b> čeká nová verze tolik dní od chvíle, kdy ji server poprvé viděl. Každé spuštění je vidět v <b>Aktivitě</b> zařízení.</p>
+
+<h2 id="maintenance">Okna údržby</h2>
+<p>Okno údržby je týdenní časový úsek, například sobota od 22:00 na 4 hodiny (čas serveru). Aktualizace Windows a programů nastavené na <b>V okně údržby</b> proběhnou tehdy a restart po termínu čeká na další okno. S volbou <b>Žádná nová upozornění během okna údržby</b> zařízení neotevírají nová upozornění, dokud je okno otevřené; již otevřená upozornění zůstávají.</p>
 
 <h2 id="device">Co platí pro zařízení</h2>
 <p>Karta <b>Zásada</b> zařízení ukazuje pro každou část, která zásada ji nastavuje (a zda je přiřazena zařízení, jeho lokalitě nebo zákazníkovi) nebo že platí vestavěné výchozí hodnoty, stav každého povinného programu (nainstalován, chybí, kdy byla spuštěna instalace), platná nastavení Windows Update a upozornění a automatizace.</p>

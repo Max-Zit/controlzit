@@ -8,6 +8,8 @@
   <li><b>Pravila alarma</b> — pragovi za procesor, memoriju, diskove, uređaje van mreže i restart na čekanju, Defender i zaštitni zid, i servisi koji moraju da rade.</li>
   <li><b>Automatizacije</b> — skripte iz biblioteke koje se pokreću na uređajima polise određenim danima i u određeno vreme.</li>
   <li><b>BitLocker</b> — šifrovanje sistemskog diska, uz ključ za oporavak sačuvan na serveru.</li>
+  <li><b>Ažuriranje programa</b> — ažuriranje instaliranih programa koje poznaju winget ili Chocolatey, zadatim danima ili u prozoru održavanja.</li>
+  <li><b>Prozori održavanja</b> — kada uređaji smeju da budu zauzeti: instalacije, prinudni restarti i, po želji, bez novih alarma.</li>
 </ul>
 <p>Svaki deo se u polisi uključuje ili isključuje. Isključen deo ova polisa ne podešava: dolazi iz manje konkretne polise ili iz ugrađenih podrazumevanih vrednosti (bez automatskih ažuriranja, standardna pravila alarma).</p>
 
@@ -31,6 +33,12 @@
 <h2 id="bitlocker">BitLocker i ključevi za oporavak</h2>
 <p>Server čuva BitLocker ključeve za oporavak svojih Windows uređaja: jednom dnevno ih čita sa svakog uređaja sa uključenim BitLocker-om, a <b>Pročitaj ključeve za oporavak sada</b> na stranici <b>BitLocker</b> uređaja (link je u redu BitLocker na pregledu uređaja) čita ih odmah. Ključevi se čuvaju šifrovani tajnim ključem servera. Samo administratori mogu da prikažu ključ, posle unosa lozinke; svaki prikazan ključ i svaka pogrešna lozinka beleže se u dnevnik aktivnosti.</p>
 <p>Polisa sa opcijom <b>Zahtevaj BitLocker na sistemskom disku</b> uključuje ga na Windows uređajima čiji sistemski disk nije šifrovan. Agent prvo proverava TPM i dodaje ključ za oporavak; server čuva ključ, pa tek onda počinje šifrovanje (TPM zaštita, XTS-AES 256, samo zauzeti prostor), u pozadini dok se računar koristi. Uređaji bez spremnog TPM-a ili sa izdanjem Windows-a bez BitLocker-a (Home) pokazuju razlog u Aktivnostima, a server pokušava ponovo posle 6 sati. Administratori ga mogu uključiti i za jedan uređaj sa njegove BitLocker stranice.</p>
+
+<h2 id="app-updates">Ažuriranje programa</h2>
+<p>Deo <b>Ažuriranje programa</b> ažurira instalirane programe koji imaju noviju verziju: one koje poznaje winget i, po izboru, one instalirane preko Chocolatey-ja. Pokreće se jednom svakog izabranog dana u izabranom satu ili u prozoru održavanja. Programi sa liste <b>Ne ažuriraj</b> (ID-jevi paketa ili delovi imena) se ne diraju. Uz odlaganje <b>prstena ažuriranja</b>, nova verzija čeka toliko dana od kada ju je server prvi put video. Svako pokretanje se vidi u <b>Aktivnosti</b> uređaja.</p>
+
+<h2 id="maintenance">Prozori održavanja</h2>
+<p>Prozor održavanja je nedeljni period, na primer subota od 22:00 u trajanju od 4 sata (vreme servera). Windows ažuriranja i ažuriranja programa podešena na <b>U prozoru održavanja</b> rade tada, a restart posle roka čeka sledeći prozor. Uz <b>Bez novih alarma tokom prozora održavanja</b> uređaji ne otvaraju nove alarme dok je prozor otvoren; već otvoreni alarmi ostaju kakvi jesu.</p>
 
 <h2 id="device">Šta važi za uređaj</h2>
 <p>Kartica <b>Polisa</b> uređaja za svaki deo pokazuje koja ga polisa podešava (i da li je dodeljena uređaju, lokaciji ili klijentu) ili da važe ugrađene podrazumevane vrednosti, stanje svakog obaveznog programa (instaliran, nedostaje, kada je instalacija pokrenuta), podešavanja Windows Update i alarma koja važe i automatizacije.</p>

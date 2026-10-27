@@ -3,6 +3,7 @@ package web
 import (
 	"context"
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
@@ -23,6 +24,8 @@ func (s *Server) RunMonitor(ctx context.Context) {
 		s.RunPatchSchedule(ctx)
 		s.RunSchedules(ctx)
 		s.RunPolicyAutomations(ctx)
+		s.RunAppUpdates(ctx)
+		s.RunRestarts(ctx)
 		if time.Since(required) >= requiredEvery {
 			required = time.Now()
 			s.RunRequiredSoftware(ctx)
@@ -181,6 +184,18 @@ func (s *Server) evaluatePolicies(ctx context.Context, m MonitoringSettings) ([]
 				keep[id] = true
 			}
 		}
+	}
+	// Devices in a quiet maintenance window open no new alerts; their open
+	// alerts stay as they are.
+	now := s.now().Local()
+	quiet := map[int64]bool{}
+	for id := range pr.scopes {
+		if mw, _ := pr.maintenance(id); mw != nil && mw.Quiet && mw.active(now) {
+			quiet[id], keep[id] = true, true
+		}
+	}
+	if len(quiet) > 0 {
+		conds = slices.DeleteFunc(conds, func(c store.Condition) bool { return quiet[c.DeviceID] })
 	}
 	return all, conds, keep, nil
 }

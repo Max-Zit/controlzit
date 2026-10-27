@@ -8,6 +8,8 @@
   <li><b>Alert rules</b> — the thresholds for CPU, memory, disks, offline devices and pending restarts, Defender and the firewall, and the services that must run.</li>
   <li><b>Automations</b> — library scripts that run on the policy's devices on set days and at a set time.</li>
   <li><b>BitLocker</b> — encryption of the system drive with the recovery key kept on the server.</li>
+  <li><b>Program updates</b> — updating the installed programs that winget or Chocolatey know, on set days or in the maintenance window.</li>
+  <li><b>Maintenance windows</b> — when the devices may be busy: installations, forced restarts and, if you want, no new alerts.</li>
 </ul>
 <p>Each part is switched on or off in the policy. A part that is off is not set by this policy: it comes from a less specific policy or from the built-in defaults (no automatic updates, standard alert rules).</p>
 
@@ -31,6 +33,12 @@
 <h2 id="bitlocker">BitLocker and recovery keys</h2>
 <p>The server keeps the BitLocker recovery keys of its Windows devices: once a day it reads them from every device with BitLocker on, and <b>Read the recovery keys now</b> on the device's <b>BitLocker</b> page (linked from the BitLocker line of the device overview) reads them at once. The keys are stored encrypted with the server's secret key. Only administrators can show a key, after entering their password; every key shown and every wrong password is recorded in the audit log.</p>
 <p>A policy with <b>Require BitLocker on the system drive</b> switches it on for Windows devices whose system drive is not encrypted. The agent first checks the TPM and adds a recovery key; the server stores the key, and only then does the encryption start (TPM protector, XTS-AES 256, used space only), in the background while the computer is in use. Devices without a ready TPM or with a Windows edition without BitLocker (Home) show the reason under Activity, and the server tries again after 6 hours. Administrators can also switch it on for one device from its BitLocker page.</p>
+
+<h2 id="app-updates">Program updates</h2>
+<p>The <b>Program updates</b> part updates the installed programs that have a newer version: those winget knows and, if you choose, those installed with Chocolatey. It runs once on each chosen day at the chosen hour, or in the maintenance window. Programs on the <b>Do not update</b> list (package IDs or parts of names) are left alone. With an <b>update ring</b> delay, a new version waits that many days after the server first saw it. Each run shows under the device's <b>Activity</b>.</p>
+
+<h2 id="maintenance">Maintenance windows</h2>
+<p>A maintenance window is a weekly time span, for example Saturday from 22:00 for 4 hours (server time). Windows updates and program updates set to <b>In the maintenance window</b> run then, and a restart past its deadline waits for the next window. With <b>No new alerts during a maintenance window</b>, the devices open no new alerts while a window is open; alerts already open stay as they are.</p>
 
 <h2 id="device">What applies to a device</h2>
 <p>The <b>Policy</b> tab of a device shows, for each part, which policy sets it (and whether it is assigned to the device, its site or its customer) or that the built-in defaults apply, the state of every required program (installed, missing, when an installation was started), the Windows Update and alert settings that apply and the automations.</p>

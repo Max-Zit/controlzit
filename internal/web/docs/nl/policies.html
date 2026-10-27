@@ -8,6 +8,8 @@
   <li><b>Waarschuwingsregels</b> — de drempels voor processor, geheugen, schijven, offline apparaten en wachtende herstarts, Defender en de firewall, en de services die moeten draaien.</li>
   <li><b>Automatiseringen</b> — bibliotheekscripts die op vaste dagen en een vast tijdstip op de apparaten van het beleid draaien.</li>
   <li><b>BitLocker</b> — versleuteling van het systeemstation, met de herstelsleutel bewaard op de server.</li>
+  <li><b>Programma-updates</b> — bijwerken van de geïnstalleerde programma's die winget of Chocolatey kennen, op vaste dagen of in het onderhoudsvenster.</li>
+  <li><b>Onderhoudsvensters</b> — wanneer de apparaten bezig mogen zijn: installaties, gedwongen herstarts en desgewenst geen nieuwe waarschuwingen.</li>
 </ul>
 <p>Elk onderdeel wordt in het beleid in- of uitgeschakeld. Een uitgeschakeld onderdeel wordt niet door dit beleid ingesteld: het komt uit minder specifiek beleid of uit de ingebouwde standaardwaarden (geen automatische updates, standaard waarschuwingsregels).</p>
 
@@ -31,6 +33,12 @@
 <h2 id="bitlocker">BitLocker en herstelsleutels</h2>
 <p>De server bewaart de BitLocker-herstelsleutels van zijn Windows-apparaten: eenmaal per dag leest hij ze van elk apparaat waarop BitLocker aan staat, en <b>Herstelsleutels nu lezen</b> op de <b>BitLocker</b>-pagina van het apparaat (gekoppeld vanuit de BitLocker-regel van het apparaatoverzicht) leest ze meteen. De sleutels worden versleuteld met de geheime sleutel van de server opgeslagen. Alleen beheerders kunnen een sleutel tonen, na het invoeren van hun wachtwoord; elke getoonde sleutel en elk fout wachtwoord wordt vastgelegd in het activiteitenlogboek.</p>
 <p>Een beleid met <b>BitLocker vereisen op het systeemstation</b> schakelt het in op Windows-apparaten waarvan het systeemstation niet versleuteld is. De agent controleert eerst het TPM en voegt een herstelsleutel toe; de server slaat de sleutel op en pas daarna begint de versleuteling (TPM-beveiliging, XTS-AES 256, alleen gebruikte ruimte), op de achtergrond terwijl de computer in gebruik is. Apparaten zonder gereed TPM of met een Windows-editie zonder BitLocker (Home) tonen de reden onder Activiteit, en de server probeert het na 6 uur opnieuw. Beheerders kunnen het ook voor één apparaat inschakelen vanaf de BitLocker-pagina ervan.</p>
+
+<h2 id="app-updates">Programma-updates</h2>
+<p>Het onderdeel <b>Programma-updates</b> werkt de geïnstalleerde programma's bij die een nieuwere versie hebben: die winget kent en, als u dat kiest, die met Chocolatey zijn geïnstalleerd. Het draait één keer op elke gekozen dag op het gekozen uur, of in het onderhoudsvenster. Programma's op de lijst <b>Niet bijwerken</b> (pakket-ID's of delen van namen) blijven ongemoeid. Met een vertraging in de <b>update-ring</b> wacht een nieuwe versie zoveel dagen nadat de server haar voor het eerst zag. Elke run staat bij de <b>Activiteit</b> van het apparaat.</p>
+
+<h2 id="maintenance">Onderhoudsvensters</h2>
+<p>Een onderhoudsvenster is een wekelijkse periode, bijvoorbeeld zaterdag vanaf 22:00 gedurende 4 uur (servertijd). Windows-updates en programma-updates met <b>In het onderhoudsvenster</b> lopen dan, en een herstart na de termijn wacht op het volgende venster. Met <b>Geen nieuwe waarschuwingen tijdens een onderhoudsvenster</b> openen de apparaten geen nieuwe waarschuwingen zolang een venster open is; al open waarschuwingen blijven zoals ze zijn.</p>
 
 <h2 id="device">Wat voor een apparaat geldt</h2>
 <p>Het tabblad <b>Beleid</b> van een apparaat toont voor elk onderdeel welk beleid het instelt (en of het aan het apparaat, zijn locatie of zijn klant is toegewezen) of dat de ingebouwde standaardwaarden gelden, de status van elk vereist programma (geïnstalleerd, ontbreekt, wanneer een installatie is gestart), de geldende instellingen voor Windows Update en waarschuwingen en de automatiseringen.</p>

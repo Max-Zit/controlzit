@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"sync"
 	"time"
+
+	"github.com/max-zit/controlzit/internal/proto"
 )
 
 // Status is what the service publishes for the tray icon. It holds no
@@ -26,6 +28,8 @@ type Status struct {
 	DeviceID int64          `json:"device_id"`
 	BootTime time.Time      `json:"boot_time,omitzero"`
 	Updates  *UpdateSummary `json:"updates,omitempty"`
+	// A restart the administrator asks for (the tray icon asks the user).
+	Restart *proto.RestartNotice `json:"restart,omitempty"`
 }
 
 // UpdateSummary is the Windows Update / package state for the window.

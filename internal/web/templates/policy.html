@@ -26,10 +26,48 @@
       </fieldset>
       <fieldset class="box">
         <legend>{{.T "When"}}</legend>
+        <label class="check"><input type="radio" name="when" value="days" {{if not .Data.Updates.InWindow}}checked{{end}}>{{.T "On these days, at this hour"}}</label>
         <div class="checks">{{range .Data.Days}}<label class="check"><input type="checkbox" name="day" value="{{.}}" {{if $.Data.Updates.Day .}}checked{{end}}>{{$.T (weekday .)}}</label>{{end}}</div>
         <label>{{.T "Starting at (server time)"}}<select name="hour" class="narrow">{{range .Data.Hours}}<option value="{{.}}" {{if eq . $.Data.Updates.Hour}}selected{{end}}>{{printf "%02d:00" .}}</option>{{end}}</select></label>
+        <label class="check"><input type="radio" name="when" value="window" {{if .Data.Updates.InWindow}}checked{{end}}>{{.T "In the maintenance window"}}</label>
       </fieldset>
-      <label class="check"><input type="checkbox" name="reboot" value="1" {{if .Data.Updates.Reboot}}checked{{end}}>{{.T "Restart automatically when an update needs it (in 5 minutes, with a notice to the signed-in user)"}}</label>
+      <label>{{.T "Update ring: wait after an update comes out (days)"}}<input type="number" name="delay_days" value="{{.Data.Updates.DelayDays}}" min="0" max="60" class="narrow"><small>{{.T "0 installs at once (test devices); for example 7 lets the test devices try new updates first. Defender definitions never wait."}}</small></label>
+      <fieldset class="box">
+        <legend>{{.T "Restart when an update needs it"}}</legend>
+        <label class="check"><input type="radio" name="restart_mode" value="never" {{if eq .Data.Updates.RestartMode "never"}}checked{{end}}>{{.T "Never automatically"}}</label>
+        <label class="check"><input type="radio" name="restart_mode" value="auto" {{if eq .Data.Updates.RestartMode "auto"}}checked{{end}}>{{.T "Automatically 5 minutes after the installation, with a notice to the signed-in user"}}</label>
+        <label class="check"><input type="radio" name="restart_mode" value="deadline" {{if eq .Data.Updates.RestartMode "deadline"}}checked{{end}}>{{.T "Ask the user; restart automatically after the deadline"}}</label>
+        <label>{{.T "Deadline (days the user may postpone)"}}<input type="number" name="deadline_days" value="{{.Data.Updates.DeadlineDays}}" min="0" max="30" class="narrow"><small>{{.T "The ControlZit icon asks the signed-in user to restart, again every 4 hours. At the deadline the server restarts the computer with a 10-minute notice, in the maintenance window if the device has one."}}</small></label>
+      </fieldset>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2><label class="check"><input type="checkbox" name="apps_set" value="1" {{if $s.AppUpdates}}checked{{end}} data-part="pol-apps">{{template "icon" "refresh"}}{{.T "Program updates"}}</label></h2>
+    <div id="pol-apps" class="policy-part">
+      <p class="small muted">{{.T "Updates the installed programs that have a newer version in winget or Chocolatey, once on each chosen day. Each run shows under the device's Activity."}}</p>
+      <label class="check"><input type="checkbox" name="apps_winget" value="1" {{if .Data.Apps.Winget}}checked{{end}}>{{.T "Programs winget knows"}}</label>
+      <label class="check"><input type="checkbox" name="apps_choco" value="1" {{if .Data.Apps.Choco}}checked{{end}}>{{.T "Programs installed with Chocolatey"}}</label>
+      <fieldset class="box">
+        <legend>{{.T "When"}}</legend>
+        <label class="check"><input type="radio" name="apps_when" value="days" {{if not .Data.Apps.InWindow}}checked{{end}}>{{.T "On these days, at this hour"}}</label>
+        <div class="checks">{{range .Data.Days}}<label class="check"><input type="checkbox" name="apps_day" value="{{.}}" {{if containsDay $.Data.Apps.Days .}}checked{{end}}>{{$.T (weekday .)}}</label>{{end}}</div>
+        <label>{{.T "Starting at (server time)"}}<select name="apps_hour" class="narrow">{{range .Data.Hours}}<option value="{{.}}" {{if eq . $.Data.Apps.Hour}}selected{{end}}>{{printf "%02d:00" .}}</option>{{end}}</select></label>
+        <label class="check"><input type="radio" name="apps_when" value="window" {{if .Data.Apps.InWindow}}checked{{end}}>{{.T "In the maintenance window"}}</label>
+      </fieldset>
+      <label>{{.T "Update ring: wait after a new version comes out (days)"}}<input type="number" name="apps_delay" value="{{.Data.Apps.DelayDays}}" min="0" max="60" class="narrow"></label>
+      <label>{{.T "Do not update"}} <small>{{.T "optional"}}</small><textarea name="apps_exclude" rows="3" spellcheck="false" placeholder="Microsoft.Office&#10;Java">{{.Data.Excludes}}</textarea><small>{{.T "Package IDs or parts of program names, one per line."}}</small></label>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2><label class="check"><input type="checkbox" name="maint_set" value="1" {{if $s.Maintenance}}checked{{end}} data-part="pol-maint">{{template "icon" "clock"}}{{.T "Maintenance windows"}}</label></h2>
+    <div id="pol-maint" class="policy-part">
+      <p class="small muted">{{.T "Times when the devices may be busy: installations set to the maintenance window run then, and restarts after the deadline wait for a window. Server time."}}</p>
+      <div id="maint-rows">{{range .Data.Maint}}{{template "maintrow" (rowctx $ .)}}{{end}}</div>
+      <template id="maint-new">{{template "maintrow" (rowctx $ .Data.NewMaint)}}</template>
+      <button type="button" class="secondary sm" data-add-row="maint-new" data-rows="maint-rows">{{template "icon" "plus"}}{{.T "Add a window"}}</button>
+      <label class="check mt"><input type="checkbox" name="maint_quiet" value="1" {{if .Data.Quiet}}checked{{end}}>{{.T "No new alerts during a maintenance window"}}</label>
     </div>
   </section>
 
@@ -139,4 +177,14 @@
     <button type="button" class="ghost sm" data-remove-row aria-label="{{$p.T "Remove"}}">{{template "icon" "trash"}}</button>
   </div>
   <div class="checks">{{range $p.Data.Days}}<label class="check"><input type="checkbox" name="auto_day" value="{{$a.Key}}:{{.}}" {{if containsDay $a.Days .}}checked{{end}}>{{$p.T (weekday .)}}</label>{{end}}</div>
+</fieldset>{{end}}
+
+{{define "maintrow"}}{{$p := .P}}{{$w := .Row}}<fieldset class="box" data-row>
+  <input type="hidden" name="maint_key" value="{{$w.Key}}">
+  <div class="row">
+    <label>{{$p.T "Starts at"}}<input type="time" name="maint_time" value="{{$w.Time}}"></label>
+    <label>{{$p.T "Hours"}}<input type="number" name="maint_hours" value="{{$w.Hours}}" min="1" max="24"></label>
+    <button type="button" class="ghost sm" data-remove-row aria-label="{{$p.T "Remove"}}">{{template "icon" "trash"}}</button>
+  </div>
+  <div class="checks">{{range $p.Data.Days}}<label class="check"><input type="checkbox" name="maint_day" value="{{$w.Key}}:{{.}}" {{if containsDay $w.Days .}}checked{{end}}>{{$p.T (weekday .)}}</label>{{end}}</div>
 </fieldset>{{end}}

@@ -8,6 +8,8 @@
   <li><b>Règles d'alerte</b> — les seuils pour le processeur, la mémoire, les disques, les appareils hors ligne et les redémarrages en attente, Defender et le pare-feu, ainsi que les services qui doivent fonctionner.</li>
   <li><b>Automatisations</b> — scripts de la bibliothèque exécutés sur les appareils de la stratégie certains jours, à une heure donnée.</li>
   <li><b>BitLocker</b> — chiffrement du lecteur système, avec la clé de récupération conservée sur le serveur.</li>
+  <li><b>Mises à jour des programmes</b> — mise à jour des programmes installés que winget ou Chocolatey connaissent, certains jours ou dans la fenêtre de maintenance.</li>
+  <li><b>Fenêtres de maintenance</b> — quand les appareils peuvent être occupés : installations, redémarrages forcés et, si vous le souhaitez, aucune nouvelle alerte.</li>
 </ul>
 <p>Chaque partie est activée ou désactivée dans la stratégie. Une partie désactivée n'est pas définie par cette stratégie : elle provient d'une stratégie moins précise ou des valeurs par défaut intégrées (pas de mises à jour automatiques, règles d'alerte standard).</p>
 
@@ -31,6 +33,12 @@
 <h2 id="bitlocker">BitLocker et clés de récupération</h2>
 <p>Le serveur conserve les clés de récupération BitLocker de ses appareils Windows : une fois par jour, il les lit sur chaque appareil où BitLocker est activé, et <b>Lire les clés de récupération maintenant</b> sur la page <b>BitLocker</b> de l'appareil (lien dans la ligne BitLocker de la vue d'ensemble de l'appareil) les lit immédiatement. Les clés sont enregistrées chiffrées avec la clé secrète du serveur. Seuls les administrateurs peuvent afficher une clé, après avoir saisi leur mot de passe ; chaque clé affichée et chaque mauvais mot de passe sont consignés dans le journal d'activité.</p>
 <p>Une stratégie avec <b>Exiger BitLocker sur le lecteur système</b> l'active sur les appareils Windows dont le lecteur système n'est pas chiffré. L'agent vérifie d'abord le TPM et ajoute une clé de récupération ; le serveur enregistre la clé, et seulement ensuite le chiffrement commence (protecteur TPM, XTS-AES 256, espace utilisé seulement), en arrière-plan pendant que l'ordinateur est utilisé. Les appareils sans TPM prêt ou avec une édition de Windows sans BitLocker (Famille) indiquent la raison dans l'Activité, et le serveur réessaie au bout de 6 heures. Les administrateurs peuvent aussi l'activer pour un seul appareil depuis sa page BitLocker.</p>
+
+<h2 id="app-updates">Mises à jour des programmes</h2>
+<p>La partie <b>Mises à jour des programmes</b> met à jour les programmes installés qui ont une version plus récente : ceux que winget connaît et, si vous le choisissez, ceux installés avec Chocolatey. Elle s'exécute une fois chaque jour choisi à l'heure choisie, ou dans la fenêtre de maintenance. Les programmes de la liste <b>Ne pas mettre à jour</b> (ID de paquets ou parties de noms) ne sont pas touchés. Avec un délai d'<b>anneau de mise à jour</b>, une nouvelle version attend autant de jours après que le serveur l'a vue pour la première fois. Chaque exécution apparaît dans l'<b>Activité</b> de l'appareil.</p>
+
+<h2 id="maintenance">Fenêtres de maintenance</h2>
+<p>Une fenêtre de maintenance est une plage hebdomadaire, par exemple le samedi à partir de 22:00 pendant 4 heures (heure du serveur). Les mises à jour Windows et des programmes réglées sur <b>Dans la fenêtre de maintenance</b> s'exécutent alors, et un redémarrage après l'échéance attend la fenêtre suivante. Avec <b>Aucune nouvelle alerte pendant une fenêtre de maintenance</b>, les appareils n'ouvrent pas de nouvelle alerte pendant qu'une fenêtre est ouverte ; les alertes déjà ouvertes restent telles quelles.</p>
 
 <h2 id="device">Ce qui s'applique à un appareil</h2>
 <p>L'onglet <b>Stratégie</b> d'un appareil indique, pour chaque partie, quelle stratégie la définit (et si elle est attribuée à l'appareil, à son site ou à son client) ou que les valeurs par défaut intégrées s'appliquent, l'état de chaque programme requis (installé, manquant, quand une installation a été lancée), les paramètres Windows Update et d'alerte appliqués et les automatisations.</p>

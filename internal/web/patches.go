@@ -30,7 +30,13 @@ type PatchPolicy struct {
 	Mode   string `json:"mode"`   // off, security, all (feature upgrades never)
 	Days   []int  `json:"days"`   // time.Weekday values
 	Hour   int    `json:"hour"`   // server time, 0–23
-	Reboot bool   `json:"reboot"` // restart when an installation needs it
+	Reboot bool   `json:"reboot"` // restart when an installation needs it (before restart modes)
+	// Policies: in the maintenance window instead of days and hour; an update
+	// ring delay; how the device restarts.
+	InWindow     bool   `json:"in_window,omitempty"`
+	DelayDays    int    `json:"delay_days,omitempty"`
+	RestartMode  string `json:"restart_mode,omitempty"`  // never, auto, deadline
+	DeadlineDays int    `json:"deadline_days,omitempty"` // deadline mode: days the user may postpone
 }
 
 func defaultPatchPolicy() PatchPolicy {
@@ -56,12 +62,17 @@ func (p PatchPolicy) Day(d int) bool {
 	return false
 }
 
-// pick selects the updates the policy installs.
-func (p PatchPolicy) pick(r *proto.PatchReport) []string {
+// pick selects the updates the policy installs; with an update ring, an
+// update waits DelayDays after the server first saw it (Defender
+// definitions never wait).
+func (p PatchPolicy) pick(r *proto.PatchReport, seen map[string]time.Time, now time.Time) []string {
 	var ids []string
 	for i := range r.Updates {
 		u := &r.Updates[i]
 		if u.Upgrade() || (p.Mode == PatchAutoSecurity && !u.Security()) {
+			continue
+		}
+		if !u.Definitions() && ringWaits(seen[u.ID+"\x00"], p.DelayDays, now) {
 			continue
 		}
 		ids = append(ids, u.ID)
@@ -269,7 +280,8 @@ func (s *Server) RunPatchSchedule(ctx context.Context) {
 	for _, dp := range list {
 		// The device's policy, or the built-in settings (off).
 		p, _ := pr.updates(dp.ID, def)
-		if p.Mode == PatchAutoOff || !p.Day(int(now.Weekday())) || now.Hour() != p.Hour {
+		mw, _ := pr.maintenance(dp.ID)
+		if p.Mode == PatchAutoOff || !scheduleDue(p.Days, p.Hour, p.InWindow, mw, now) {
 			continue
 		}
 		rep := dp.Report
@@ -277,7 +289,7 @@ func (s *Server) RunPatchSchedule(ctx context.Context) {
 			(dp.AutoInstallOn != nil && dp.AutoInstallOn.Format("2006-01-02") == today.Format("2006-01-02")) {
 			continue
 		}
-		ids := p.pick(rep)
+		ids := p.pick(rep, s.windowsUpdatesSeen(ctx, rep), s.now())
 		if err := s.store.MarkAutoInstall(ctx, dp.ID, today); err != nil {
 			s.log.Warn("patch schedule", "device", dp.ID, "err", err)
 			continue
@@ -285,7 +297,7 @@ func (s *Server) RunPatchSchedule(ctx context.Context) {
 		if len(ids) == 0 {
 			continue
 		}
-		in := proto.PatchInstall{IDs: ids, Reboot: p.Reboot, By: "automatic"}
+		in := proto.PatchInstall{IDs: ids, Reboot: p.restartMode() == RestartAuto, By: "automatic"}
 		d := &store.Device{ID: dp.ID, Hostname: dp.Hostname}
 		if _, err := s.queueTask(ctx, d, "system", "patch.install", "Install %s updates (automatic)", []string{strconv.Itoa(len(ids))}, patchInstallTask{PatchInstall: in}); err != nil {
 			s.log.Warn("patch schedule", "device", dp.ID, "err", err)

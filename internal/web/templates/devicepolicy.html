@@ -48,7 +48,25 @@
 <section class="panel">
   <h2>{{template "icon" "download"}}{{.T "Windows Update"}}</h2>
   {{$u := .Data.Updates}}
-  <p>{{if eq $u.Mode "off"}}{{.T "Off: updates are installed only from the console"}}{{else if eq $u.Mode "security"}}{{.T "Security and critical updates, Defender definitions"}}{{else}}{{.T "All updates except feature upgrades"}}{{end}}{{if ne $u.Mode "off"}} · {{range $i, $x := $u.Days}}{{if $i}}, {{end}}{{$.T (weekday $x)}}{{end}} {{printf "%02d:00" $u.Hour}}{{if $u.Reboot}} · {{.T "restart when needed"}}{{end}}{{end}}</p>
+  <p>{{if eq $u.Mode "off"}}{{.T "Off: updates are installed only from the console"}}{{else if eq $u.Mode "security"}}{{.T "Security and critical updates, Defender definitions"}}{{else}}{{.T "All updates except feature upgrades"}}{{end}}{{if ne $u.Mode "off"}} · {{if $u.InWindow}}{{.T "In the maintenance window"}}{{else}}{{range $i, $x := $u.Days}}{{if $i}}, {{end}}{{$.T (weekday $x)}}{{end}} {{printf "%02d:00" $u.Hour}}{{end}}{{if $u.DelayDays}} · {{.T "update ring: %d days" $u.DelayDays}}{{end}}{{end}}</p>
+  <p class="small">{{.T "Restart when an update needs it"}}: {{if eq $u.RestartMode "auto"}}{{.T "automatically after 5 minutes"}}{{else if eq $u.RestartMode "deadline"}}{{.T "the user is asked; automatically after %d days" $u.DeadlineDays}}{{else}}{{.T "never automatically"}}{{end}}</p>
+  {{with .Data.Restart}}<p class="flash warn">{{template "icon" "restart"}}<span>{{$.T "A restart is pending; the user was asked on %s. The computer restarts automatically after %s." ($.Time .RequestedAt) ($.Time .Deadline)}}</span></p>{{end}}
+</section>
+
+<section class="panel">
+  <h2>{{template "icon" "refresh"}}{{.T "Program updates"}}</h2>
+  {{with .Data.Apps}}{{if or .Winget .Choco}}
+  <p>{{if .Winget}}winget{{end}}{{if and .Winget .Choco}}, {{end}}{{if .Choco}}Chocolatey{{end}} · {{if .InWindow}}{{$.T "In the maintenance window"}}{{else}}{{range $i, $x := .Days}}{{if $i}}, {{end}}{{$.T (weekday $x)}}{{end}} {{printf "%02d:00" .Hour}}{{end}}{{if .DelayDays}} · {{$.T "update ring: %d days" .DelayDays}}{{end}}</p>
+  {{if .Exclude}}<p class="small muted">{{$.T "Do not update"}}: {{join .Exclude ", "}}</p>{{end}}
+  {{else}}<p class="muted">{{$.T "Off"}}</p>{{end}}{{else}}<p class="muted">{{.T "Off"}}</p>{{end}}
+</section>
+
+<section class="panel">
+  <h2>{{template "icon" "clock"}}{{.T "Maintenance windows"}}</h2>
+  {{with .Data.Maint}}{{if .Windows}}
+  <ul>{{range .Windows}}<li>{{range $i, $x := .Days}}{{if $i}}, {{end}}{{$.T (weekday $x)}}{{end}} {{.Time}} · {{$.T "%d hours" .Hours}}</li>{{end}}</ul>
+  <p class="small">{{if $.Data.InWindow}}<span class="badge warn"><i></i>{{$.T "in a maintenance window now"}}</span>{{end}} {{if .Quiet}}{{$.T "No new alerts during a maintenance window"}}{{end}}</p>
+  {{else}}<p class="muted">{{$.T "none"}}</p>{{end}}{{else}}<p class="muted">{{.T "none"}}</p>{{end}}
 </section>
 
 <section class="panel">

@@ -8,6 +8,8 @@
   <li><b>Regras de alerta</b> — os limites de CPU, memória, discos, dispositivos offline e reinicializações pendentes, Defender e firewall, e os serviços que devem estar em execução.</li>
   <li><b>Automações</b> — scripts da biblioteca executados nos dispositivos da política em dias definidos, a uma hora definida.</li>
   <li><b>BitLocker</b> — criptografia da unidade do sistema, com a chave de recuperação guardada no servidor.</li>
+  <li><b>Atualizações de programas</b> — atualizar os programas instalados que o winget ou o Chocolatey conhecem, em dias definidos ou na janela de manutenção.</li>
+  <li><b>Janelas de manutenção</b> — quando os dispositivos podem estar ocupados: instalações, reinicializações forçadas e, se quiser, sem novos alertas.</li>
 </ul>
 <p>Cada parte é ativada ou desativada na política. Uma parte desativada não é definida por esta política: vem de uma política menos específica ou dos padrões internos (sem atualizações automáticas, regras de alerta padrão).</p>
 
@@ -31,6 +33,12 @@
 <h2 id="bitlocker">BitLocker e chaves de recuperação</h2>
 <p>O servidor guarda as chaves de recuperação do BitLocker dos seus dispositivos Windows: uma vez por dia ele as lê de cada dispositivo com o BitLocker ativado, e <b>Ler as chaves de recuperação agora</b> na página <b>BitLocker</b> do dispositivo (com link na linha BitLocker da visão geral do dispositivo) as lê na hora. As chaves são guardadas criptografadas com a chave secreta do servidor. Só administradores podem mostrar uma chave, depois de digitar a senha; cada chave mostrada e cada senha errada ficam no registro de atividades.</p>
 <p>Uma política com <b>Exigir o BitLocker na unidade do sistema</b> o ativa em dispositivos Windows cuja unidade do sistema não está criptografada. O agente primeiro verifica o TPM e adiciona uma chave de recuperação; o servidor guarda a chave e só então a criptografia começa (protetor TPM, XTS-AES 256, só o espaço usado), em segundo plano enquanto o computador é usado. Dispositivos sem TPM pronto ou com uma edição do Windows sem BitLocker (Home) mostram o motivo em Atividade, e o servidor tenta de novo após 6 horas. Administradores também podem ativá-lo para um único dispositivo na página BitLocker dele.</p>
+
+<h2 id="app-updates">Atualizações de programas</h2>
+<p>A parte <b>Atualizações de programas</b> atualiza os programas instalados que têm versão mais nova: os que o winget conhece e, se escolher, os instalados com o Chocolatey. Ela roda uma vez em cada dia escolhido, na hora escolhida, ou na janela de manutenção. Os programas da lista <b>Não atualizar</b> (IDs de pacotes ou partes de nomes) não são tocados. Com um atraso de <b>anel de atualização</b>, uma versão nova espera esse número de dias desde que o servidor a viu pela primeira vez. Cada execução aparece na <b>Atividade</b> do dispositivo.</p>
+
+<h2 id="maintenance">Janelas de manutenção</h2>
+<p>Uma janela de manutenção é um período semanal, por exemplo sábado a partir das 22:00 por 4 horas (hora do servidor). As atualizações do Windows e de programas marcadas como <b>Na janela de manutenção</b> rodam então, e uma reinicialização após o prazo espera a próxima janela. Com <b>Sem novos alertas durante uma janela de manutenção</b>, os dispositivos não abrem novos alertas enquanto uma janela está aberta; os alertas já abertos continuam como estão.</p>
 
 <h2 id="device">O que vale para um dispositivo</h2>
 <p>A aba <b>Política</b> de um dispositivo mostra, para cada parte, qual política a define (e se está atribuída ao dispositivo, ao seu local ou ao seu cliente) ou que valem os padrões internos, o estado de cada programa obrigatório (instalado, ausente, quando uma instalação foi iniciada), as configurações de Windows Update e de alertas em vigor e as automações.</p>

@@ -90,7 +90,7 @@ func runWinget(ctx context.Context, raw json.RawMessage) (any, error) {
 		case proto.WingetInstall:
 			argv = append(append(append([]string{"install", "--scope", "machine"}, id...), quiet...), wingetCommon...)
 		case proto.WingetUpgrade:
-			argv = append(append(append([]string{"upgrade"}, id...), quiet...), wingetCommon...)
+			argv = append(append(append([]string{"upgrade", "--include-unknown"}, id...), quiet...), wingetCommon...)
 		default:
 			argv = append(append([]string{"uninstall", "--silent"}, id...), wingetCommon...)
 		}

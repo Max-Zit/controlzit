@@ -83,11 +83,18 @@ func (a *Agent) markPatchesUnsent() {
 	a.patch.mu.Unlock()
 }
 
-// scanDue reports whether the periodic scan should run.
+// scanDue reports whether the periodic scan should run: also at once after
+// the restart that a scan asked for, so the console sees it is done.
 func (a *Agent) scanDue() bool {
+	var boot time.Time
+	if a.Info != nil {
+		boot = a.Info().BootTime
+	}
 	a.patch.mu.Lock()
 	defer a.patch.mu.Unlock()
-	return !a.patch.busy && time.Since(a.patch.report.ScannedAt) > patchScanEvery
+	r := &a.patch.report
+	restarted := r.RebootRequired && boot.After(r.ScannedAt)
+	return !a.patch.busy && (restarted || time.Since(r.ScannedAt) > patchScanEvery)
 }
 
 // PatchScan and PatchInstall talk to Windows Update (tests replace them).

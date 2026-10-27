@@ -41,9 +41,14 @@ func (s *Server) handlePolicies(w http.ResponseWriter, r *http.Request) {
 type policyData struct {
 	P           *store.Policy
 	S           PolicySettings
-	Updates     PatchPolicy // shown values (the policy's or the server's)
+	Updates     PatchPolicy // shown values (the policy's or the built-in ones)
 	Alerts      AlertRules
 	Services    string
+	Apps        AppUpdatePolicy
+	Excludes    string
+	Maint       []MaintWindow // with an empty row to add
+	NewMaint    MaintWindow   // the row "Add a window" adds
+	Quiet       bool
 	Required    []RequiredApp // with empty rows to add
 	NewApp      RequiredApp   // the row "Add a program" adds
 	NewRun      Automation    // the row "Add an automation" adds
@@ -95,15 +100,34 @@ func (s *Server) handlePolicy(w http.ResponseWriter, r *http.Request) {
 		d.Hours = append(d.Hours, h)
 	}
 	_ = json.Unmarshal(p.Settings, &d.S)
-	d.Updates = s.Patches(ctx)
+	d.Updates = defaultPatchPolicy()
 	if d.S.Updates != nil {
 		d.Updates = *d.S.Updates
 	}
-	d.Alerts = alertRulesOf(s.Monitoring(ctx))
+	d.Updates.RestartMode = d.Updates.restartMode()
+	if d.Updates.DeadlineDays == 0 {
+		d.Updates.DeadlineDays = 3
+	}
+	d.Alerts = alertRulesOf(defaultMonitoring())
 	if d.S.Alerts != nil {
 		d.Alerts = *d.S.Alerts
 	}
 	d.Services = strings.Join(d.Alerts.WatchServices, "\n")
+	d.Apps = AppUpdatePolicy{Winget: true, Days: []int{3}, Hour: 12}
+	if d.S.AppUpdates != nil {
+		d.Apps = *d.S.AppUpdates
+	}
+	d.Excludes = strings.Join(d.Apps.Exclude, "\n")
+	if d.S.Maintenance != nil {
+		d.Maint, d.Quiet = append(d.Maint, d.S.Maintenance.Windows...), d.S.Maintenance.Quiet
+	}
+	if len(d.Maint) == 0 {
+		d.Maint = append(d.Maint, MaintWindow{Days: []int{6}, Start: 22 * 60, Hours: 4})
+	}
+	for i := range d.Maint {
+		d.Maint[i].Key = "w" + strconv.Itoa(i)
+	}
+	d.NewMaint = MaintWindow{Key: "__KEY__", Start: 22 * 60, Hours: 4}
 	if d.S.Software != nil {
 		d.Required = append(d.Required, d.S.Software.Required...)
 	}
@@ -174,18 +198,41 @@ func (s *Server) handlePolicy(w http.ResponseWriter, r *http.Request) {
 func policyForm(r *http.Request) (PolicySettings, string) {
 	var ps PolicySettings
 	if r.FormValue("updates_set") == "1" {
-		u := PatchPolicy{Mode: r.FormValue("mode"), Reboot: r.FormValue("reboot") == "1"}
+		u := PatchPolicy{Mode: r.FormValue("mode"), RestartMode: r.FormValue("restart_mode"), InWindow: r.FormValue("when") == "window",
+			DelayDays: formInt(r, "delay_days"), DeadlineDays: formInt(r, "deadline_days")}
+		u.Reboot = u.RestartMode == RestartAuto // for servers that read the older field
 		u.Hour, _ = strconv.Atoi(r.FormValue("hour"))
-		for _, v := range r.Form["day"] {
-			if n, err := strconv.Atoi(v); err == nil && n >= 0 && n <= 6 && !u.Day(n) {
-				u.Days = append(u.Days, n)
-			}
-		}
-		sort.Ints(u.Days)
-		if u.Mode != PatchAutoOff && len(u.Days) == 0 {
+		u.Days = formDays(r, "day")
+		if u.Mode != PatchAutoOff && !u.InWindow && len(u.Days) == 0 {
 			return ps, "Choose at least one day."
 		}
 		ps.Updates = &u
+	}
+	if r.FormValue("apps_set") == "1" {
+		a := &AppUpdatePolicy{Winget: r.FormValue("apps_winget") == "1", Choco: r.FormValue("apps_choco") == "1",
+			InWindow: r.FormValue("apps_when") == "window", DelayDays: formInt(r, "apps_delay"), Exclude: lines(r.FormValue("apps_exclude"))}
+		a.Hour, _ = strconv.Atoi(r.FormValue("apps_hour"))
+		a.Days = formDays(r, "apps_day")
+		ps.AppUpdates = a
+	}
+	if r.FormValue("maint_set") == "1" {
+		m := &MaintenancePolicy{Windows: []MaintWindow{}, Quiet: r.FormValue("maint_quiet") == "1"}
+		days := keyedDays(r, "maint_day")
+		keys, starts, hours := r.Form["maint_key"], r.Form["maint_time"], r.Form["maint_hours"]
+		for i, k := range keys {
+			if i >= len(starts) || i >= len(hours) {
+				break
+			}
+			t, err := time.Parse("15:04", starts[i])
+			if err != nil {
+				continue
+			}
+			w := MaintWindow{Days: days[k], Start: t.Hour()*60 + t.Minute()}
+			w.Hours, _ = strconv.Atoi(hours[i])
+			sort.Ints(w.Days)
+			m.Windows = append(m.Windows, w)
+		}
+		ps.Maintenance = m
 	}
 	if r.FormValue("software_set") == "1" {
 		sw := &SoftwarePolicy{Required: []RequiredApp{}}
@@ -210,13 +257,7 @@ func policyForm(r *http.Request) (PolicySettings, string) {
 	}
 	if r.FormValue("automations_set") == "1" {
 		au := &AutomationPolicy{Runs: []Automation{}}
-		days := map[string][]int{}
-		for _, v := range r.Form["auto_day"] {
-			k, d, ok := strings.Cut(v, ":")
-			if n, err := strconv.Atoi(d); ok && err == nil && n >= 0 && n <= 6 && !containsInt(days[k], n) {
-				days[k] = append(days[k], n)
-			}
-		}
+		days := keyedDays(r, "auto_day")
 		keys := r.Form["auto_key"]
 		for i, v := range r.Form["auto_script"] {
 			id, err := strconv.ParseInt(v, 10, 64)
@@ -403,6 +444,10 @@ type devicePolicyData struct {
 	ScriptNames map[int64]string
 	Assigned    *policyLevel // the device's own assignment
 	BitLocker   bool         // the policy requires BitLocker
+	Apps        *AppUpdatePolicy
+	Maint       *MaintenancePolicy
+	InWindow    bool                  // a maintenance window is open now
+	Restart     *store.RestartRequest // a restart the policy asks for
 	Policies    []store.Policy
 }
 
@@ -425,6 +470,7 @@ func (s *Server) handleDevicePolicy(w http.ResponseWriter, r *http.Request) {
 	}
 	var src *policyLevel
 	dd.Updates, src = pr.updates(d.ID, defaultPatchPolicy())
+	dd.Updates.RestartMode = dd.Updates.restartMode()
 	dd.Parts = append(dd.Parts, policyPart{Name: "Windows Update", Source: src})
 	sw, src := pr.software(d.ID)
 	dd.Parts = append(dd.Parts, policyPart{Name: "Required software", Source: src})
@@ -438,6 +484,16 @@ func (s *Server) handleDevicePolicy(w http.ResponseWriter, r *http.Request) {
 	dd.BitLocker = bl != nil && bl.Require
 	au, src := pr.automations(d.ID)
 	dd.Parts = append(dd.Parts, policyPart{Name: "Automations", Source: src})
+	dd.Apps, src = pr.appUpdates(d.ID)
+	dd.Parts = append(dd.Parts, policyPart{Name: "Program updates", Source: src})
+	dd.Maint, src = pr.maintenance(d.ID)
+	dd.Parts = append(dd.Parts, policyPart{Name: "Maintenance windows", Source: src})
+	dd.InWindow = dd.Maint.active(s.now().Local())
+	if reqs, err := s.store.RestartRequests(ctx); err == nil {
+		if q, ok := reqs[d.ID]; ok {
+			dd.Restart = &q
+		}
+	}
 	if au != nil {
 		dd.Runs = au.Runs
 		scripts, err := s.store.LibScripts(ctx)
@@ -551,4 +607,28 @@ func (s *Server) mayAssign(ctx context.Context, u *store.User, p *store.Policy, 
 // follow their own schedules.
 func (s *Server) policiesChanged() {
 	go s.CheckAlerts(context.Background()) // #nosec G118 -- runs after the response; own work
+}
+
+// formDays reads the checked weekdays of a field.
+func formDays(r *http.Request, name string) []int {
+	var out []int
+	for _, v := range r.Form[name] {
+		if n, err := strconv.Atoi(v); err == nil && n >= 0 && n <= 6 && !containsInt(out, n) {
+			out = append(out, n)
+		}
+	}
+	sort.Ints(out)
+	return out
+}
+
+// keyedDays reads weekdays checked per form row ("rowkey:day").
+func keyedDays(r *http.Request, name string) map[string][]int {
+	days := map[string][]int{}
+	for _, v := range r.Form[name] {
+		k, d, ok := strings.Cut(v, ":")
+		if n, err := strconv.Atoi(d); ok && err == nil && n >= 0 && n <= 6 && !containsInt(days[k], n) {
+			days[k] = append(days[k], n)
+		}
+	}
+	return days
 }

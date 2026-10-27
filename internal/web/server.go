@@ -28,17 +28,18 @@ import (
 
 // Server serves the console and the agent endpoint.
 type Server struct {
-	store  *store.Store
-	pkg    packageCache
-	jobs   jobRunner
-	tasks  taskRunner
-	alerts sync.Mutex // one alert check at a time
-	log    *slog.Logger
-	tmpl   map[string]*template.Template
-	now    func() time.Time
-	guard  *loginGuard
-	hub    *hub
-	rd     rdHub
+	store   *store.Store
+	pkg     packageCache
+	jobs    jobRunner
+	tasks   taskRunner
+	alerts  sync.Mutex     // one alert check at a time
+	notices restartNotices // restart requests last sent to agents
+	log     *slog.Logger
+	tmpl    map[string]*template.Template
+	now     func() time.Time
+	guard   *loginGuard
+	hub     *hub
+	rd      rdHub
 
 	// TaskWait is how long a page waits for a new task (0: taskWait).
 	TaskWait time.Duration

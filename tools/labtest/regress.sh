@@ -136,6 +136,7 @@ check "System event log readable" '$C "$S/devices/$DEV/events?log=System&level=0
 check "installed programs listed from the registry" '$C "$S/devices/$DEV/software?view=list" | grep -q "name=\"name\" value=\"ControlZit Agent\""'
 check "software library page with the Chocolatey setting" '$C "$S/software" | grep -q "name=\"chocolatey\""'
 check "policies page" '$C "$S/policies" | grep -q "/policies/new"'
+check "policy editor has program updates and maintenance windows" '$C "$S/policies/new" | grep -q "name=\"apps_set\"" && $C "$S/policies/new" | grep -q "maint-rows"'
 check "device policy tab" '$C "$S/devices/$DEV/policy" | grep -q "Where the settings come from"'
 # REST API with a short-lived read-only token, deleted afterwards.
 TOK=$($C -d name=regress -d role=readonly -d days=1 $S/account/tokens | grep -o 'czt_[A-Za-z0-9_-]\{30,\}' | head -1)

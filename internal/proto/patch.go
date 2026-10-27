@@ -134,3 +134,13 @@ func ValidUpdateID(s string) bool { return guidRE.MatchString(s) || packageRE.Ma
 
 // MaxPatchInstall limits the updates of one installation.
 const MaxPatchInstall = 200
+
+// Restart requests of a policy: the tray icon asks the signed-in user to
+// restart; the server restarts the computer itself at the deadline. A zero
+// deadline withdraws the request (the computer has restarted).
+const KindRestartNotice = "restart.notice"
+
+// RestartNotice is the argument of restart.notice.
+type RestartNotice struct {
+	Deadline time.Time `json:"deadline,omitzero"`
+}

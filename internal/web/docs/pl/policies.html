@@ -8,6 +8,8 @@
   <li><b>Reguły alertów</b> — progi dla procesora, pamięci, dysków, urządzeń offline i oczekujących ponownych uruchomień, Defendera i zapory oraz usługi, które muszą działać.</li>
   <li><b>Automatyzacje</b> — skrypty z biblioteki uruchamiane na urządzeniach zasady w wybrane dni o wybranej godzinie.</li>
   <li><b>BitLocker</b> — szyfrowanie dysku systemowego z kluczem odzyskiwania przechowywanym na serwerze.</li>
+  <li><b>Aktualizacje programów</b> — aktualizowanie zainstalowanych programów znanych winget lub Chocolatey, w wybrane dni lub w oknie serwisowym.</li>
+  <li><b>Okna serwisowe</b> — kiedy urządzenia mogą być zajęte: instalacje, wymuszone ponowne uruchomienia i, jeśli chcesz, brak nowych alertów.</li>
 </ul>
 <p>Każdą część włącza się lub wyłącza w zasadzie. Wyłączonej części ta zasada nie ustawia: pochodzi z mniej szczegółowej zasady lub z wbudowanych wartości domyślnych (bez automatycznych aktualizacji, standardowe reguły alertów).</p>
 
@@ -31,6 +33,12 @@
 <h2 id="bitlocker">BitLocker i klucze odzyskiwania</h2>
 <p>Serwer przechowuje klucze odzyskiwania BitLocker swoich urządzeń z Windows: raz dziennie odczytuje je z każdego urządzenia z włączoną funkcją BitLocker, a <b>Odczytaj klucze odzyskiwania teraz</b> na stronie <b>BitLocker</b> urządzenia (link w wierszu BitLocker przeglądu urządzenia) odczytuje je od razu. Klucze są zapisywane w postaci zaszyfrowanej tajnym kluczem serwera. Tylko administratorzy mogą pokazać klucz, po wpisaniu hasła; każdy pokazany klucz i każde błędne hasło trafia do dziennika aktywności.</p>
 <p>Zasada z opcją <b>Wymagaj funkcji BitLocker na dysku systemowym</b> włącza ją na urządzeniach z Windows, których dysk systemowy nie jest zaszyfrowany. Agent najpierw sprawdza moduł TPM i dodaje klucz odzyskiwania; serwer zapisuje klucz i dopiero wtedy rozpoczyna się szyfrowanie (ochrona TPM, XTS-AES 256, tylko zajęte miejsce) w tle, podczas używania komputera. Urządzenia bez gotowego modułu TPM lub z edycją Windows bez funkcji BitLocker (Home) pokazują przyczynę w Aktywności, a serwer ponawia próbę po 6 godzinach. Administratorzy mogą też włączyć ją dla jednego urządzenia na jego stronie BitLocker.</p>
+
+<h2 id="app-updates">Aktualizacje programów</h2>
+<p>Część <b>Aktualizacje programów</b> aktualizuje zainstalowane programy, które mają nowszą wersję: te znane winget i, jeśli wybierzesz, zainstalowane przez Chocolatey. Działa raz w każdy wybrany dzień o wybranej godzinie albo w oknie serwisowym. Programy z listy <b>Nie aktualizuj</b> (identyfikatory pakietów lub części nazw) pozostają nietknięte. Z opóźnieniem <b>pierścienia aktualizacji</b> nowa wersja czeka tyle dni od chwili, gdy serwer zobaczył ją po raz pierwszy. Każde uruchomienie widać w <b>Aktywności</b> urządzenia.</p>
+
+<h2 id="maintenance">Okna serwisowe</h2>
+<p>Okno serwisowe to cotygodniowy przedział czasu, na przykład sobota od 22:00 przez 4 godziny (czas serwera). Aktualizacje Windows i programów ustawione na <b>W oknie serwisowym</b> odbywają się wtedy, a ponowne uruchomienie po terminie czeka na następne okno. Z opcją <b>Bez nowych alertów w oknie serwisowym</b> urządzenia nie otwierają nowych alertów, gdy okno jest otwarte; już otwarte alerty pozostają bez zmian.</p>
 
 <h2 id="device">Co obowiązuje urządzenie</h2>
 <p>Karta <b>Zasada</b> urządzenia pokazuje dla każdej części, która zasada ją ustawia (i czy jest przypisana do urządzenia, jego lokalizacji czy klienta) lub że obowiązują wbudowane wartości domyślne, stan każdego wymaganego programu (zainstalowany, brak, kiedy rozpoczęto instalację), obowiązujące ustawienia Windows Update i alertów oraz automatyzacje.</p>

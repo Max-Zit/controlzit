@@ -260,6 +260,7 @@ func wndProc(hwnd uintptr, m uint32, wp, lp uintptr) uintptr {
 		return 0
 	case m == wmTimer:
 		setTip()
+		checkRestart()
 		return 0
 	case st.taskbarCreated != 0 && m == st.taskbarCreated:
 		_ = addIcon() // Explorer restarted

@@ -15,7 +15,9 @@
   <li><b>Security and critical updates, Defender definitions</b>.</li>
   <li><b>All updates except feature upgrades</b> — new Windows versions are never installed automatically.</li>
 </ul>
-<p>Choose the days and the hour (server time). Devices that are online during that hour install once that day; offline devices wait for the next scheduled day. Optionally the computer restarts by itself when an update needs it, 5 minutes after a notice to the signed-in user.</p>
+<p>Choose the days and the hour (server time), or <b>In the maintenance window</b>. Devices that are online then install once that day; offline devices wait for the next scheduled day.</p>
+<p><b>Update ring:</b> with a delay of, for example, 7 days, a device installs an update only 7 days after the server first saw it. Give the test computers a policy with 0 days and the others one with 7 days, and problems show on the test computers first. Defender definitions never wait.</p>
+<p><b>Restart when an update needs it:</b> never automatically; automatically 5 minutes after the installation, with a notice; or <b>Ask the user</b>: the ControlZit icon asks the signed-in user to restart, again every 4 hours, and after the deadline (the days the user may postpone) the server restarts the computer with a 10-minute notice, in the maintenance window if the device has one. The device's <b>Policy</b> tab shows a pending restart and its deadline.</p>
 <div class="callout"><p>So that updates do not arrive at random times, the agent switches off the automatic installation of Windows Update by policy. When the agent is removed, the earlier settings come back.</p></div>
 
 <h2 id="linux">Linux</h2>

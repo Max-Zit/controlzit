@@ -15,7 +15,9 @@
   <li><b>Sicherheits- und kritische Updates, Defender-Definitionen</b>.</li>
   <li><b>Alle Updates außer Funktionsupdates</b> — neue Windows-Versionen werden nie automatisch installiert.</li>
 </ul>
-<p>Wählen Sie die Tage und die Stunde (Serverzeit). Geräte, die in dieser Stunde online sind, installieren einmal an diesem Tag; Offline-Geräte warten auf den nächsten geplanten Tag. Optional startet der Computer selbst neu, wenn ein Update es erfordert, 5 Minuten nach einem Hinweis an den angemeldeten Benutzer.</p>
+<p>Wählen Sie die Tage und die Stunde (Serverzeit) oder <b>Im Wartungsfenster</b>. Geräte, die dann online sind, installieren einmal an diesem Tag; Geräte, die offline sind, warten auf den nächsten geplanten Tag.</p>
+<p><b>Update-Ring:</b> Mit einer Verzögerung von zum Beispiel 7 Tagen installiert ein Gerät ein Update erst 7 Tage, nachdem der Server es zuerst gesehen hat. Geben Sie den Testcomputern eine Richtlinie mit 0 Tagen und den anderen eine mit 7 Tagen, dann zeigen sich Probleme zuerst auf den Testcomputern. Defender-Definitionen warten nie.</p>
+<p><b>Neustart, wenn ein Update ihn braucht:</b> nie automatisch; automatisch 5 Minuten nach der Installation mit Hinweis; oder <b>Benutzer fragen</b>: Das ControlZit-Symbol bittet den angemeldeten Benutzer um einen Neustart, erneut alle 4 Stunden, und nach der Frist (die Tage, die der Benutzer verschieben darf) startet der Server den Computer mit 10 Minuten Vorwarnung neu, im Wartungsfenster, wenn das Gerät eines hat. Der Reiter <b>Richtlinie</b> des Geräts zeigt einen ausstehenden Neustart und seine Frist.</p>
 <div class="callout"><p>Damit Updates nicht zu beliebigen Zeiten kommen, schaltet der Agent die automatische Installation von Windows Update per Richtlinie ab. Wird der Agent entfernt, kehren die früheren Einstellungen zurück.</p></div>
 
 <h2 id="linux">Linux</h2>

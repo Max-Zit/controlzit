@@ -106,7 +106,7 @@ func TestPolicies(t *testing.T) {
 	if r := admin.post("/policies/" + pid + "/delete"); r.code != http.StatusSeeOther {
 		t.Fatalf("delete: %d", r.code)
 	}
-	if b := admin.get(base + "/policy").body; strings.Count(b, "built-in defaults") != 5 {
+	if b := admin.get(base + "/policy").body; strings.Count(b, "built-in defaults") != 7 {
 		t.Fatal("fallback to the built-in defaults")
 	}
 	if b := admin.get("/policies").body; !strings.Contains(b, "Empty") || strings.Contains(b, ">Office<") {

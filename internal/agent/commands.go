@@ -23,6 +23,14 @@ var handlers = map[string]handler{}
 // register adds a command kind (from init functions of the feature files).
 func register(kind string, h handler) { handlers[kind] = h }
 
+// SetHandler replaces the handler of a command kind and returns the old one
+// (tests of the server, before the agent starts).
+func SetHandler(kind string, h func(context.Context, json.RawMessage) (any, error)) func(context.Context, json.RawMessage) (any, error) {
+	old := handlers[kind]
+	handlers[kind] = h
+	return old
+}
+
 // replay remembers the IDs of accepted commands until they expire.
 type replay struct {
 	mu   sync.Mutex

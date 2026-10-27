@@ -21,11 +21,13 @@ import (
 
 // PolicySettings are the parts of a policy; nil means "not set here".
 type PolicySettings struct {
-	Updates     *PatchPolicy      `json:"updates,omitempty"`
-	Software    *SoftwarePolicy   `json:"software,omitempty"`
-	Alerts      *AlertRules       `json:"alerts,omitempty"`
-	Automations *AutomationPolicy `json:"automations,omitempty"`
-	BitLocker   *BitLockerPolicy  `json:"bitlocker,omitempty"`
+	Updates     *PatchPolicy       `json:"updates,omitempty"`
+	Software    *SoftwarePolicy    `json:"software,omitempty"`
+	Alerts      *AlertRules        `json:"alerts,omitempty"`
+	Automations *AutomationPolicy  `json:"automations,omitempty"`
+	BitLocker   *BitLockerPolicy   `json:"bitlocker,omitempty"`
+	AppUpdates  *AppUpdatePolicy   `json:"app_updates,omitempty"`
+	Maintenance *MaintenancePolicy `json:"maintenance,omitempty"`
 }
 
 // SoftwarePolicy lists the programs a device must have; missing ones are
@@ -100,6 +102,12 @@ func (p *PolicySettings) Validate() error {
 		if u.Hour < 0 || u.Hour > 23 || len(u.Days) > 7 {
 			return errors.New("choose the days and an hour 0–23")
 		}
+		if u.DelayDays < 0 || u.DelayDays > 60 || u.DeadlineDays < 0 || u.DeadlineDays > 30 {
+			return errors.New("the update ring delay must be 0–60 days and the restart deadline 0–30 days")
+		}
+		if m := u.RestartMode; m != "" && m != RestartNever && m != RestartAuto && m != RestartDeadline {
+			return errors.New("unknown restart mode")
+		}
 	}
 	if sw := p.Software; sw != nil {
 		if len(sw.Required) > 50 {
@@ -124,6 +132,16 @@ func (p *PolicySettings) Validate() error {
 	if a := p.Alerts; a != nil {
 		m := a.apply(defaultMonitoring())
 		if err := m.Validate(); err != nil {
+			return err
+		}
+	}
+	if a := p.AppUpdates; a != nil {
+		if err := a.validate(); err != nil {
+			return err
+		}
+	}
+	if m := p.Maintenance; m != nil {
+		if err := m.validate(); err != nil {
 			return err
 		}
 	}
