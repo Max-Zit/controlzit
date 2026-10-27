@@ -1406,5 +1406,7 @@
   "Delete policy %s? Its customers, sites and devices fall back to less specific policies or the built-in defaults.": "Supprimer la stratégie %s ? Ses clients, sites et appareils reviennent à des stratégies moins précises ou aux valeurs par défaut intégrées.",
   "Switch on the parts this policy sets. A part that is off comes from a less specific policy or from the built-in defaults.": "Activez les parties que définit cette stratégie. Une partie désactivée provient d'une stratégie moins précise ou des valeurs par défaut intégrées.",
   "built-in defaults": "valeurs par défaut intégrées",
-  "set by the policies": "défini par les stratégies"
+  "set by the policies": "défini par les stratégies",
+  "Contact support": "Contacter le support",
+  "Paid support by MaxZit: open a ticket in the customer portal": "Support payant de MaxZit : ouvrez un ticket dans le portail client"
 }

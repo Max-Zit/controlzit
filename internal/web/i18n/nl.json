@@ -1406,5 +1406,7 @@
   "Delete policy %s? Its customers, sites and devices fall back to less specific policies or the built-in defaults.": "Beleid %s verwijderen? De klanten, locaties en apparaten vallen terug op minder specifiek beleid of de ingebouwde standaardwaarden.",
   "Switch on the parts this policy sets. A part that is off comes from a less specific policy or from the built-in defaults.": "Schakel de onderdelen in die dit beleid instelt. Een uitgeschakeld onderdeel komt uit minder specifiek beleid of uit de ingebouwde standaardwaarden.",
   "built-in defaults": "ingebouwde standaardwaarden",
-  "set by the policies": "ingesteld door het beleid"
+  "set by the policies": "ingesteld door het beleid",
+  "Contact support": "Contact met support",
+  "Paid support by MaxZit: open a ticket in the customer portal": "Betaalde support van MaxZit: open een ticket in het klantenportaal"
 }

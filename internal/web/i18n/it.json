@@ -1406,5 +1406,7 @@
   "Delete policy %s? Its customers, sites and devices fall back to less specific policies or the built-in defaults.": "Eliminare il criterio %s? I suoi clienti, sedi e dispositivi passano a criteri meno specifici o ai valori predefiniti integrati.",
   "Switch on the parts this policy sets. A part that is off comes from a less specific policy or from the built-in defaults.": "Attiva le parti che questo criterio imposta. Una parte disattivata proviene da un criterio meno specifico o dai valori predefiniti integrati.",
   "built-in defaults": "valori predefiniti integrati",
-  "set by the policies": "impostato dai criteri"
+  "set by the policies": "impostato dai criteri",
+  "Contact support": "Contatta il supporto",
+  "Paid support by MaxZit: open a ticket in the customer portal": "Supporto a pagamento di MaxZit: apri un ticket nel portale clienti"
 }

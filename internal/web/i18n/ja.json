@@ -1406,5 +1406,7 @@
   "Delete policy %s? Its customers, sites and devices fall back to less specific policies or the built-in defaults.": "ポリシー %s を削除しますか? その顧客、サイト、デバイスは、より具体性の低いポリシーまたは組み込みの既定値に戻ります。",
   "Switch on the parts this policy sets. A part that is off comes from a less specific policy or from the built-in defaults.": "このポリシーが設定する部分をオンにします。オフの部分は、より具体性の低いポリシーまたは組み込みの既定値から適用されます。",
   "built-in defaults": "組み込みの既定値",
-  "set by the policies": "ポリシーで設定"
+  "set by the policies": "ポリシーで設定",
+  "Contact support": "サポートに問い合わせる",
+  "Paid support by MaxZit: open a ticket in the customer portal": "MaxZit の有償サポート：カスタマーポータルでチケットを作成"
 }

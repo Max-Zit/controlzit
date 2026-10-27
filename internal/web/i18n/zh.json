@@ -1406,5 +1406,7 @@
   "Delete policy %s? Its customers, sites and devices fall back to less specific policies or the built-in defaults.": "删除策略 %s？其客户、站点和设备将改用不太具体的策略或内置默认值。",
   "Switch on the parts this policy sets. A part that is off comes from a less specific policy or from the built-in defaults.": "开启此策略设置的部分。关闭的部分来自不太具体的策略或内置默认值。",
   "built-in defaults": "内置默认值",
-  "set by the policies": "由策略设置"
+  "set by the policies": "由策略设置",
+  "Contact support": "联系支持",
+  "Paid support by MaxZit: open a ticket in the customer portal": "MaxZit 付费支持：在客户门户中提交工单"
 }

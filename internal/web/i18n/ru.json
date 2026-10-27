@@ -1406,5 +1406,7 @@
   "Delete policy %s? Its customers, sites and devices fall back to less specific policies or the built-in defaults.": "Удалить политику %s? Её клиенты, площадки и устройства перейдут на менее конкретные политики или на встроенные значения по умолчанию.",
   "Switch on the parts this policy sets. A part that is off comes from a less specific policy or from the built-in defaults.": "Включите части, которые задаёт эта политика. Выключенная часть берётся из менее конкретной политики или из встроенных значений по умолчанию.",
   "built-in defaults": "встроенные значения по умолчанию",
-  "set by the policies": "задаётся политиками"
+  "set by the policies": "задаётся политиками",
+  "Contact support": "Связаться с поддержкой",
+  "Paid support by MaxZit: open a ticket in the customer portal": "Платная поддержка MaxZit: откройте заявку на клиентском портале"
 }

@@ -1406,5 +1406,7 @@
   "Delete policy %s? Its customers, sites and devices fall back to less specific policies or the built-in defaults.": "Usunąć zasadę %s? Jej klienci, lokalizacje i urządzenia przechodzą na mniej szczegółowe zasady lub wbudowane wartości domyślne.",
   "Switch on the parts this policy sets. A part that is off comes from a less specific policy or from the built-in defaults.": "Włącz części, które ustawia ta zasada. Wyłączona część pochodzi z mniej szczegółowej zasady lub z wbudowanych wartości domyślnych.",
   "built-in defaults": "wbudowane wartości domyślne",
-  "set by the policies": "ustawiane w zasadach"
+  "set by the policies": "ustawiane w zasadach",
+  "Contact support": "Kontakt z pomocą techniczną",
+  "Paid support by MaxZit: open a ticket in the customer portal": "Płatne wsparcie MaxZit: otwórz zgłoszenie w portalu klienta"
 }

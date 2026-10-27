@@ -1406,5 +1406,7 @@
   "Delete policy %s? Its customers, sites and devices fall back to less specific policies or the built-in defaults.": "¿Eliminar la directiva %s? Sus clientes, sedes y dispositivos pasan a directivas menos específicas o a los valores predeterminados integrados.",
   "Switch on the parts this policy sets. A part that is off comes from a less specific policy or from the built-in defaults.": "Active las partes que define esta directiva. Una parte desactivada procede de una directiva menos específica o de los valores predeterminados integrados.",
   "built-in defaults": "valores predeterminados integrados",
-  "set by the policies": "definido por las directivas"
+  "set by the policies": "definido por las directivas",
+  "Contact support": "Contactar con soporte",
+  "Paid support by MaxZit: open a ticket in the customer portal": "Soporte de pago de MaxZit: abra un ticket en el portal de clientes"
 }
