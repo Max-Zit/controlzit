@@ -1389,5 +1389,22 @@
   "the system drive has no recovery key; prepare first": "sistemski disk nema ključ za oporavak; prvo uradite pripremu",
   "the system drive has no recovery key; the encryption was not started": "sistemski disk nema ključ za oporavak; šifrovanje nije pokrenuto",
   "the validity must be 0 (no end) to 3650 days": "važenje mora biti od 0 (bez kraja) do 3650 dana",
-  "this computer has no TPM": "ovaj računar nema TPM"
+  "this computer has no TPM": "ovaj računar nema TPM",
+  "A customer's policy can only be assigned to that customer, its sites and devices, and its technicians manage it. Chosen once.": "Polisa klijenta može da se dodeli samo tom klijentu, njegovim lokacijama i uređajima, a vode je njegovi tehničari. Bira se jednom.",
+  "Add a program": "Dodaj program",
+  "Add an automation": "Dodaj automatizaciju",
+  "Applies to": "Važi za",
+  "Choose a customer, site or device of this policy.": "Izaberite klijenta, lokaciju ili uređaj ove polise.",
+  "Choose the customer": "Izaberite klijenta",
+  "Choose the customer of the policy.": "Izaberite klijenta polise.",
+  "For the software library choose the package from the list (its number); for winget and Chocolatey enter the package ID.": "Za biblioteku softvera izaberite paket sa liste (njegov broj); za winget i Chocolatey unesite ID paketa.",
+  "all customers": "svi klijenti",
+  "all customers (the whole server)": "svi klijenti (ceo server)",
+  "A policy sets Windows Update, required software, alert rules and automations for the customers, sites or devices it is assigned to. For each part, the most specific assignment that sets it applies (device, then site, then customer). Every customer gets its own policy Default when it is created; without any policy, the built-in defaults apply (no automatic updates, standard alert rules).": "Polisa podešava Windows Update, obavezni softver, pravila alarma i automatizacije za klijente, lokacije ili uređaje kojima je dodeljena. Za svaki deo važi najkonkretnija dodela koja ga podešava (uređaj, pa lokacija, pa klijent). Svaki klijent pri pravljenju dobija svoju polisu Default; bez ijedne polise važe ugrađene podrazumevane vrednosti (bez automatskih ažuriranja, standardna pravila alarma).",
+  "Alert emails and channels": "Mejlovi i kanali alarma",
+  "Alert rules are set in the policies of the customers, sites and devices.": "Pravila alarma se podešavaju u polisama klijenata, lokacija i uređaja.",
+  "Delete policy %s? Its customers, sites and devices fall back to less specific policies or the built-in defaults.": "Obrisati polisu %s? Njeni klijenti, lokacije i uređaji prelaze na manje konkretne polise ili na ugrađene podrazumevane vrednosti.",
+  "Switch on the parts this policy sets. A part that is off comes from a less specific policy or from the built-in defaults.": "Uključite delove koje ova polisa podešava. Isključen deo dolazi iz manje konkretne polise ili iz ugrađenih podrazumevanih vrednosti.",
+  "built-in defaults": "ugrađene podrazumevane vrednosti",
+  "set by the policies": "podešava se u polisama"
 }

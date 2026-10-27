@@ -2,7 +2,6 @@ package web
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 	"sort"
 	"strconv"
@@ -197,7 +196,6 @@ type patchRow struct {
 
 type patchOverviewData struct {
 	Rows     []patchRow
-	Policy   PatchPolicy
 	Missing  int // devices with missing updates
 	Reboot   int
 	NoReport int
@@ -210,7 +208,7 @@ func (s *Server) handlePatchOverview(w http.ResponseWriter, r *http.Request) {
 		s.serverError(w, r, err)
 		return
 	}
-	pd := &patchOverviewData{Policy: s.Patches(r.Context()), Filter: r.FormValue("show")}
+	pd := &patchOverviewData{Filter: r.FormValue("show")}
 	for _, dp := range list {
 		row := patchRow{DevicePatches: dp, Online: s.Connected(dp.ID)}
 		if rep := dp.Report; rep != nil {
@@ -252,54 +250,10 @@ func (s *Server) handlePatchOverview(w http.ResponseWriter, r *http.Request) {
 
 var weekdays = []int{1, 2, 3, 4, 5, 6, 0}
 
-type patchPolicyData struct {
-	P     PatchPolicy
-	Days  []int
-	Hours []int
-}
-
-func (s *Server) handlePatchPolicy(w http.ResponseWriter, r *http.Request) {
-	hours := make([]int, 24)
-	for i := range hours {
-		hours[i] = i
-	}
-	s.render(w, r, http.StatusOK, "patchpolicy", &Page{Title: "Windows updates", Nav: "settings", Data: &patchPolicyData{P: s.Patches(r.Context()), Days: weekdays, Hours: hours}})
-}
-
-func (s *Server) handlePatchPolicySave(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
-		s.redirect(w, r, "/settings/updates", "Unknown action.")
-		return
-	}
-	p := PatchPolicy{Mode: r.FormValue("mode"), Reboot: r.FormValue("reboot") == "1"}
-	p.Hour, _ = strconv.Atoi(r.FormValue("hour"))
-	for _, v := range r.Form["day"] {
-		if n, err := strconv.Atoi(v); err == nil && n >= 0 && n <= 6 && !p.Day(n) {
-			p.Days = append(p.Days, n)
-		}
-	}
-	if (p.Mode != PatchAutoOff && p.Mode != PatchAutoSecurity && p.Mode != PatchAutoAll) || p.Hour < 0 || p.Hour > 23 {
-		s.redirect(w, r, "/settings/updates", "Unknown action.")
-		return
-	}
-	if p.Mode != PatchAutoOff && len(p.Days) == 0 {
-		s.redirect(w, r, "/settings/updates", "Choose at least one day.")
-		return
-	}
-	sort.Ints(p.Days)
-	if err := s.store.SetSetting(r.Context(), settingPatchPolicy, p); err != nil {
-		s.serverError(w, r, err)
-		return
-	}
-	raw, _ := json.Marshal(p)
-	s.audit(r, "settings.patches", "settings", "Windows update policy: %s", raw)
-	s.redirect(w, r, "/settings/updates", "Saved.")
-}
-
 // RunPatchSchedule starts the automatic installations that are due (called
 // every minute by the monitor loop).
 func (s *Server) RunPatchSchedule(ctx context.Context) {
-	def := s.Patches(ctx)
+	def := defaultPatchPolicy()
 	pr, err := s.loadPolicies(ctx)
 	if err != nil {
 		s.log.Warn("patch schedule: cannot load policies", "err", err)
@@ -313,7 +267,7 @@ func (s *Server) RunPatchSchedule(ctx context.Context) {
 	}
 	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
 	for _, dp := range list {
-		// The device's policy, or the server's settings.
+		// The device's policy, or the built-in settings (off).
 		p, _ := pr.updates(dp.ID, def)
 		if p.Mode == PatchAutoOff || !p.Day(int(now.Weekday())) || now.Hour() != p.Hour {
 			continue

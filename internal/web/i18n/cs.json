@@ -1389,5 +1389,22 @@
   "the system drive has no recovery key; prepare first": "systémová jednotka nemá klíč pro obnovení; nejdřív proveďte přípravu",
   "the system drive has no recovery key; the encryption was not started": "systémová jednotka nemá klíč pro obnovení; šifrování nebylo spuštěno",
   "the validity must be 0 (no end) to 3650 days": "platnost musí být 0 (bez konce) až 3650 dní",
-  "this computer has no TPM": "tento počítač nemá TPM"
+  "this computer has no TPM": "tento počítač nemá TPM",
+  "A customer's policy can only be assigned to that customer, its sites and devices, and its technicians manage it. Chosen once.": "Zásadu zákazníka lze přiřadit jen tomuto zákazníkovi, jeho lokalitám a zařízením a spravují ji jeho technici. Volí se jednou.",
+  "Add a program": "Přidat program",
+  "Add an automation": "Přidat automatizaci",
+  "Applies to": "Platí pro",
+  "Choose a customer, site or device of this policy.": "Vyberte zákazníka, lokalitu nebo zařízení této zásady.",
+  "Choose the customer": "Vyberte zákazníka",
+  "Choose the customer of the policy.": "Vyberte zákazníka zásady.",
+  "For the software library choose the package from the list (its number); for winget and Chocolatey enter the package ID.": "U knihovny softwaru vyberte balíček ze seznamu (jeho číslo); u winget a Chocolatey zadejte ID balíčku.",
+  "all customers": "všichni zákazníci",
+  "all customers (the whole server)": "všichni zákazníci (celý server)",
+  "A policy sets Windows Update, required software, alert rules and automations for the customers, sites or devices it is assigned to. For each part, the most specific assignment that sets it applies (device, then site, then customer). Every customer gets its own policy Default when it is created; without any policy, the built-in defaults apply (no automatic updates, standard alert rules).": "Zásada nastavuje Windows Update, povinný software, pravidla upozornění a automatizace pro zákazníky, lokality nebo zařízení, ke kterým je přiřazena. Pro každou část platí nejkonkrétnější přiřazení, které ji nastavuje (zařízení, pak lokalita, pak zákazník). Každý zákazník při vytvoření dostane vlastní zásadu Default; bez zásady platí vestavěné výchozí hodnoty (žádné automatické aktualizace, standardní pravidla upozornění).",
+  "Alert emails and channels": "E-maily a kanály upozornění",
+  "Alert rules are set in the policies of the customers, sites and devices.": "Pravidla upozornění se nastavují v zásadách zákazníků, lokalit a zařízení.",
+  "Delete policy %s? Its customers, sites and devices fall back to less specific policies or the built-in defaults.": "Odstranit zásadu %s? Její zákazníci, lokality a zařízení přejdou na méně konkrétní zásady nebo na vestavěné výchozí hodnoty.",
+  "Switch on the parts this policy sets. A part that is off comes from a less specific policy or from the built-in defaults.": "Zapněte části, které tato zásada nastavuje. Vypnutá část pochází z méně konkrétní zásady nebo z vestavěných výchozích hodnot.",
+  "built-in defaults": "vestavěné výchozí hodnoty",
+  "set by the policies": "nastaveno v zásadách"
 }

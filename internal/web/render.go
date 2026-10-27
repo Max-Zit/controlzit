@@ -158,6 +158,7 @@ var funcs = template.FuncMap{
 	},
 	"join":        strings.Join,
 	"containsDay": containsInt,
+	"rowctx":      func(p *Page, row any) rowCtx { return rowCtx{P: p, Row: row} },
 	"u64": func(n int64) uint64 {
 		if n < 0 {
 			return 0
@@ -385,4 +386,10 @@ func (s *Server) renderString(name string, p *Page) (string, error) {
 
 func shellName(s string) string {
 	return map[string]string{"powershell": "PowerShell", "cmd": "cmd", "bash": "bash", "sh": "sh", "package": "MSI / EXE"}[s]
+}
+
+// rowCtx is a row of a form template together with its page.
+type rowCtx struct {
+	P   *Page
+	Row any
 }

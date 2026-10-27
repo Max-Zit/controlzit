@@ -82,9 +82,10 @@ type AutomationPolicy struct {
 
 // Automation is one scheduled script.
 type Automation struct {
-	ScriptID int64 `json:"script_id"`
-	Days     []int `json:"days"`   // time.Weekday values
-	Minute   int   `json:"minute"` // of the day, server time
+	ScriptID int64  `json:"script_id"`
+	Days     []int  `json:"days"`   // time.Weekday values
+	Minute   int    `json:"minute"` // of the day, server time
+	Key      string `json:"-"`      // the row of the form (days belong to it)
 }
 
 // Time is the time of day as HH:MM.

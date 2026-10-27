@@ -15,6 +15,9 @@ func (s *Server) RunMonitor(ctx context.Context) {
 	defer t.Stop()
 	purge := time.Now()
 	var required time.Time
+	if err := s.MigrateCustomerPolicies(ctx); err != nil {
+		s.log.Error("cannot add the Default policies of the customers", "err", err)
+	}
 	for {
 		s.CheckAlerts(ctx)
 		s.RunPatchSchedule(ctx)
@@ -43,6 +46,8 @@ func (s *Server) RunMonitor(ctx context.Context) {
 
 // CheckAlerts evaluates the rules once and sends the notifications.
 func (s *Server) CheckAlerts(ctx context.Context) {
+	s.alerts.Lock()
+	defer s.alerts.Unlock()
 	m := s.Monitoring(ctx)
 	states, conds, keep, err := s.evaluatePolicies(ctx, m)
 	if err != nil {
@@ -138,12 +143,13 @@ func alertEmail(alerts []store.Alert, devs map[int64]store.MonitorState) (subjec
 }
 
 // evaluatePolicies applies to each device the alert rules of its policy (or
-// the server's). The load averages are computed per rule window.
+// the built-in ones). The load averages are computed per rule window.
 func (s *Server) evaluatePolicies(ctx context.Context, m MonitoringSettings) ([]store.MonitorState, []store.Condition, map[int64]bool, error) {
 	pr, err := s.loadPolicies(ctx)
 	if err != nil {
 		return nil, nil, nil, err
 	}
+	m = builtinAlerts(m)
 	type window struct{ cpu, mem int }
 	rules := map[int64]MonitoringSettings{}
 	windows := map[window]bool{{m.CPUMinutes, m.MemMinutes}: true}

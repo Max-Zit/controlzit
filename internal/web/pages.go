@@ -91,6 +91,9 @@ func (s *Server) handleCustomerCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "customer.create", "customer:"+strconv.FormatInt(id, 10), "created customer %q", d.Name)
+	if err := s.createDefaultPolicy(r.Context(), id, newCustomerPolicy(), defaultPolicyNote, s.issuer(r)); err != nil {
+		s.log.Warn("cannot add the Default policy of a customer", "customer", id, "err", err)
+	}
 	s.redirect(w, r, "/customers/"+strconv.FormatInt(id, 10), "Customer created.")
 }
 

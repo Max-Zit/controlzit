@@ -1389,5 +1389,22 @@
   "the system drive has no recovery key; prepare first": "la unidad del sistema no tiene clave de recuperación; primero prepare",
   "the system drive has no recovery key; the encryption was not started": "la unidad del sistema no tiene clave de recuperación; no se inició el cifrado",
   "the validity must be 0 (no end) to 3650 days": "la validez debe ser de 0 (sin fin) a 3650 días",
-  "this computer has no TPM": "este equipo no tiene TPM"
+  "this computer has no TPM": "este equipo no tiene TPM",
+  "A customer's policy can only be assigned to that customer, its sites and devices, and its technicians manage it. Chosen once.": "La directiva de un cliente solo se puede asignar a ese cliente, sus sedes y dispositivos, y la administran sus técnicos. Se elige una vez.",
+  "Add a program": "Agregar un programa",
+  "Add an automation": "Agregar una automatización",
+  "Applies to": "Se aplica a",
+  "Choose a customer, site or device of this policy.": "Elija un cliente, sede o dispositivo de esta directiva.",
+  "Choose the customer": "Elija el cliente",
+  "Choose the customer of the policy.": "Elija el cliente de la directiva.",
+  "For the software library choose the package from the list (its number); for winget and Chocolatey enter the package ID.": "Para la biblioteca de software elija el paquete de la lista (su número); para winget y Chocolatey escriba el ID del paquete.",
+  "all customers": "todos los clientes",
+  "all customers (the whole server)": "todos los clientes (todo el servidor)",
+  "A policy sets Windows Update, required software, alert rules and automations for the customers, sites or devices it is assigned to. For each part, the most specific assignment that sets it applies (device, then site, then customer). Every customer gets its own policy Default when it is created; without any policy, the built-in defaults apply (no automatic updates, standard alert rules).": "Una directiva define Windows Update, el software requerido, las reglas de alerta y las automatizaciones de los clientes, sedes o dispositivos a los que se asigna. Para cada parte se aplica la asignación más específica que la define (dispositivo, luego sede, luego cliente). Cada cliente recibe su propia directiva Default al crearse; sin ninguna directiva se aplican los valores predeterminados integrados (sin actualizaciones automáticas, reglas de alerta estándar).",
+  "Alert emails and channels": "Correos y canales de alerta",
+  "Alert rules are set in the policies of the customers, sites and devices.": "Las reglas de alerta se definen en las directivas de los clientes, sedes y dispositivos.",
+  "Delete policy %s? Its customers, sites and devices fall back to less specific policies or the built-in defaults.": "¿Eliminar la directiva %s? Sus clientes, sedes y dispositivos pasan a directivas menos específicas o a los valores predeterminados integrados.",
+  "Switch on the parts this policy sets. A part that is off comes from a less specific policy or from the built-in defaults.": "Active las partes que define esta directiva. Una parte desactivada procede de una directiva menos específica o de los valores predeterminados integrados.",
+  "built-in defaults": "valores predeterminados integrados",
+  "set by the policies": "definido por las directivas"
 }

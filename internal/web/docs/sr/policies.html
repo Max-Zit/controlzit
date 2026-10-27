@@ -9,17 +9,21 @@
   <li><b>Automatizacije</b> — skripte iz biblioteke koje se pokreću na uređajima polise određenim danima i u određeno vreme.</li>
   <li><b>BitLocker</b> — šifrovanje sistemskog diska, uz ključ za oporavak sačuvan na serveru.</li>
 </ul>
-<p>Svaki deo se u polisi uključuje ili isključuje. Isključen deo ova polisa ne podešava: dolazi iz manje konkretne polise ili iz podešavanja servera (<a href="/settings/updates">Windows ažuriranja</a>, <a href="/settings/monitoring">Nadzor i alarmi</a>).</p>
+<p>Svaki deo se u polisi uključuje ili isključuje. Isključen deo ova polisa ne podešava: dolazi iz manje konkretne polise ili iz ugrađenih podrazumevanih vrednosti (bez automatskih ažuriranja, standardna pravila alarma).</p>
 
 <h2 id="assign">Dodela polise</h2>
-<p>Polise se prave u <a href="/policies">Polise</a> (administratori). Na stranici polise <b>Dodeli</b> je daje klijentu, lokaciji ili jednom uređaju; kartica <b>Polisa</b> uređaja podešava sopstvenu polisu uređaja. Klijent, lokacija ili uređaj ima jednu polisu; dodela druge je zamenjuje.</p>
-<p>Za svaki deo važi najkonkretnija dodela koja ga podešava: polisa uređaja, pa lokacije, pa klijenta, pa podešavanja servera. Primer: polisa klijenta podešava Windows Update i obavezni softver, a polisa jedne lokacije samo strožija pravila alarma — uređaji te lokacije dobijaju ažuriranja i softver klijenta i pravila alarma lokacije.</p>
+<p>Polise se prave u <a href="/policies">Polise</a>. Na stranici polise <b>Dodeli</b> je daje klijentu, lokaciji ili jednom uređaju; kartica <b>Polisa</b> uređaja podešava sopstvenu polisu uređaja. Klijent, lokacija ili uređaj ima jednu polisu; dodela druge je zamenjuje.</p>
+<p>Za svaki deo važi najkonkretnija dodela koja ga podešava: polisa uređaja, pa lokacije, pa klijenta, pa ugrađene podrazumevane vrednosti. Primer: polisa klijenta podešava Windows Update i obavezni softver, polisa jedne lokacije samo strožija pravila alarma — uređaji te lokacije dobijaju ažuriranja i softver klijenta i pravila alarma lokacije.</p>
+
+<p>Polisa pripada ili <b>jednom klijentu</b> ili <b>celom serveru</b>, što se bira pri pravljenju. Tehničari prave i menjaju polise svojih klijenata i dodeljuju ih tim klijentima, njihovim lokacijama i uređajima; administratori upravljaju svim polisama, i samo oni prave polise za ceo server i podešavaju deo BitLocker. Polisa klijenta nikad ne može da se dodeli van tog klijenta.</p>
+
+<p>Svaki novi klijent dobija svoju polisu <b>Default</b>, dodeljenu njemu, sa ugrađenim podešavanjima za Windows Update i alarme; promenite je ili dajte lokacijama i uređajima njihove polise. Pri nadogradnji na verziju 0.6.3 svaki postojeći klijent bez polise dobio je polisu Default sa dotadašnjim podešavanjima servera za Windows Update i alarme, kojih više nema u Podešavanjima.</p>
 
 <h2 id="software">Obavezni softver</h2>
 <p>Svaki obavezni program ima izvor — <a href="/software">biblioteku softvera</a>, winget ili Chocolatey — i tekst koji njegov naziv na Windows listi instaliranih programa sadrži (na primer <i>7-Zip</i>). Na nekoliko minuta server poredi obavezne programe sa inventarom svakog Windows uređaja na mreži; program koji nedostaje instalira se kao zadatak koji vidite u <a href="/docs/devices#activity">Aktivnostima</a> uređaja. Posle instalacije uređaj šalje novi inventar. Ako program i dalje nedostaje, server pokušava ponovo posle 6 sati. Ništa se ne instalira pre nego što uređaj pošalje prvi inventar.</p>
 
 <h2 id="alerts">Pravila alarma</h2>
-<p>Pragovi polise za njene uređaje zamenjuju pragove servera. Mejlovi i chat kanali za alarme ostaju oni iz <a href="/settings/monitoring">Nadzor i alarmi</a>.</p>
+<p>Pragovi polise važe za njene uređaje. Mejlovi i chat kanali za alarme podešavaju se za ceo server u <a href="/settings/monitoring">Nadzor i upozorenja</a>.</p>
 
 <h2 id="automations">Automatizacije</h2>
 <p>Automatizacija pokreće skriptu iz <a href="/scripts">biblioteke skripti</a> izabranim danima i u izabrano vreme (vreme servera) kao jedan posao za sve uređaje čije automatizacije dolaze iz ove polise. Uređaji van mreže je pokreću kada se povežu, u roku od 24 sata; rezultati su na stranici posla i u Aktivnostima svakog uređaja.</p>
@@ -29,4 +33,4 @@
 <p>Polisa sa opcijom <b>Zahtevaj BitLocker na sistemskom disku</b> uključuje ga na Windows uređajima čiji sistemski disk nije šifrovan. Agent prvo proverava TPM i dodaje ključ za oporavak; server čuva ključ, pa tek onda počinje šifrovanje (TPM zaštita, XTS-AES 256, samo zauzeti prostor), u pozadini dok se računar koristi. Uređaji bez spremnog TPM-a ili sa izdanjem Windows-a bez BitLocker-a (Home) pokazuju razlog u Aktivnostima, a server pokušava ponovo posle 6 sati. Administratori ga mogu uključiti i za jedan uređaj sa njegove BitLocker stranice.</p>
 
 <h2 id="device">Šta važi za uređaj</h2>
-<p>Kartica <b>Polisa</b> uređaja za svaki deo pokazuje koja ga polisa podešava (i da li je dodeljena uređaju, lokaciji ili klijentu) ili da važe podešavanja servera, stanje svakog obaveznog programa (instaliran, nedostaje, kada je pokrenuta instalacija), važeća podešavanja za Windows Update i alarme i automatizacije.</p>
+<p>Kartica <b>Polisa</b> uređaja za svaki deo pokazuje koja ga polisa podešava (i da li je dodeljena uređaju, lokaciji ili klijentu) ili da važe ugrađene podrazumevane vrednosti, stanje svakog obaveznog programa (instaliran, nedostaje, kada je instalacija pokrenuta), podešavanja Windows Update i alarma koja važe i automatizacije.</p>

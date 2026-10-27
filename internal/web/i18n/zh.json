@@ -1389,5 +1389,22 @@
   "the system drive has no recovery key; prepare first": "系统驱动器没有恢复密钥；请先准备",
   "the system drive has no recovery key; the encryption was not started": "系统驱动器没有恢复密钥；未开始加密",
   "the validity must be 0 (no end) to 3650 days": "有效期必须为 0（无期限）到 3650 天",
-  "this computer has no TPM": "此计算机没有 TPM"
+  "this computer has no TPM": "此计算机没有 TPM",
+  "A customer's policy can only be assigned to that customer, its sites and devices, and its technicians manage it. Chosen once.": "客户的策略只能分配给该客户及其站点和设备，并由其技术人员管理。只能选择一次。",
+  "Add a program": "添加程序",
+  "Add an automation": "添加自动化",
+  "Applies to": "适用于",
+  "Choose a customer, site or device of this policy.": "请选择此策略的客户、站点或设备。",
+  "Choose the customer": "选择客户",
+  "Choose the customer of the policy.": "请选择策略的客户。",
+  "For the software library choose the package from the list (its number); for winget and Chocolatey enter the package ID.": "软件库请从列表中选择软件包（其编号）；winget 和 Chocolatey 请输入软件包 ID。",
+  "all customers": "所有客户",
+  "all customers (the whole server)": "所有客户（整个服务器）",
+  "A policy sets Windows Update, required software, alert rules and automations for the customers, sites or devices it is assigned to. For each part, the most specific assignment that sets it applies (device, then site, then customer). Every customer gets its own policy Default when it is created; without any policy, the built-in defaults apply (no automatic updates, standard alert rules).": "策略为其分配到的客户、站点或设备设置 Windows Update、必需软件、警报规则和自动化。每个部分以设置了该部分的最具体分配为准（设备，然后站点，然后客户）。每个客户在创建时都会获得自己的策略 Default；没有任何策略时，使用内置默认值（不自动更新，标准警报规则）。",
+  "Alert emails and channels": "警报邮件和渠道",
+  "Alert rules are set in the policies of the customers, sites and devices.": "警报规则在客户、站点和设备的策略中设置。",
+  "Delete policy %s? Its customers, sites and devices fall back to less specific policies or the built-in defaults.": "删除策略 %s？其客户、站点和设备将改用不太具体的策略或内置默认值。",
+  "Switch on the parts this policy sets. A part that is off comes from a less specific policy or from the built-in defaults.": "开启此策略设置的部分。关闭的部分来自不太具体的策略或内置默认值。",
+  "built-in defaults": "内置默认值",
+  "set by the policies": "由策略设置"
 }

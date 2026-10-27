@@ -1389,5 +1389,22 @@
   "the system drive has no recovery key; prepare first": "het systeemstation heeft geen herstelsleutel; eerst voorbereiden",
   "the system drive has no recovery key; the encryption was not started": "het systeemstation heeft geen herstelsleutel; de versleuteling is niet gestart",
   "the validity must be 0 (no end) to 3650 days": "de geldigheid moet 0 (geen einde) tot 3650 dagen zijn",
-  "this computer has no TPM": "deze computer heeft geen TPM"
+  "this computer has no TPM": "deze computer heeft geen TPM",
+  "A customer's policy can only be assigned to that customer, its sites and devices, and its technicians manage it. Chosen once.": "Het beleid van een klant kan alleen aan die klant, zijn locaties en apparaten worden toegewezen, en zijn technici beheren het. Wordt één keer gekozen.",
+  "Add a program": "Programma toevoegen",
+  "Add an automation": "Automatisering toevoegen",
+  "Applies to": "Geldt voor",
+  "Choose a customer, site or device of this policy.": "Kies een klant, locatie of apparaat van dit beleid.",
+  "Choose the customer": "Kies de klant",
+  "Choose the customer of the policy.": "Kies de klant van het beleid.",
+  "For the software library choose the package from the list (its number); for winget and Chocolatey enter the package ID.": "Kies voor de softwarebibliotheek het pakket uit de lijst (het nummer); voer voor winget en Chocolatey de pakket-ID in.",
+  "all customers": "alle klanten",
+  "all customers (the whole server)": "alle klanten (de hele server)",
+  "A policy sets Windows Update, required software, alert rules and automations for the customers, sites or devices it is assigned to. For each part, the most specific assignment that sets it applies (device, then site, then customer). Every customer gets its own policy Default when it is created; without any policy, the built-in defaults apply (no automatic updates, standard alert rules).": "Een beleid stelt Windows Update, vereiste software, waarschuwingsregels en automatiseringen in voor de klanten, locaties of apparaten waaraan het is toegewezen. Voor elk onderdeel geldt de meest specifieke toewijzing die het instelt (apparaat, dan locatie, dan klant). Elke klant krijgt bij het aanmaken een eigen beleid Default; zonder beleid gelden de ingebouwde standaardwaarden (geen automatische updates, standaard waarschuwingsregels).",
+  "Alert emails and channels": "Waarschuwingsmails en kanalen",
+  "Alert rules are set in the policies of the customers, sites and devices.": "Waarschuwingsregels worden ingesteld in het beleid van de klanten, locaties en apparaten.",
+  "Delete policy %s? Its customers, sites and devices fall back to less specific policies or the built-in defaults.": "Beleid %s verwijderen? De klanten, locaties en apparaten vallen terug op minder specifiek beleid of de ingebouwde standaardwaarden.",
+  "Switch on the parts this policy sets. A part that is off comes from a less specific policy or from the built-in defaults.": "Schakel de onderdelen in die dit beleid instelt. Een uitgeschakeld onderdeel komt uit minder specifiek beleid of uit de ingebouwde standaardwaarden.",
+  "built-in defaults": "ingebouwde standaardwaarden",
+  "set by the policies": "ingesteld door het beleid"
 }

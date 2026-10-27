@@ -4,13 +4,14 @@
   <h1>{{template "icon" "policy"}}{{.T "Policies"}}</h1>
   <a class="btn primary" href="/policies/new">{{template "icon" "plus"}}{{.T "New policy"}}</a>
 </div>
-<p class="muted">{{.T "A policy sets Windows Update, required software, alert rules and automations for the customers, sites or devices it is assigned to. For each part, the most specific assignment that sets it applies (device, then site, then customer); without one, the server's own settings apply."}}</p>
+<p class="muted">{{.T "A policy sets Windows Update, required software, alert rules and automations for the customers, sites or devices it is assigned to. For each part, the most specific assignment that sets it applies (device, then site, then customer). Every customer gets its own policy Default when it is created; without any policy, the built-in defaults apply (no automatic updates, standard alert rules)."}}</p>
 <section class="panel">
   {{if .Data}}
   <div class="table-wrap"><table>
-    <thead><tr><th>{{.T "Policy"}}</th><th>{{.T "Assigned to"}}</th><th class="hide-sm">{{.T "Changed"}}</th></tr></thead>
+    <thead><tr><th>{{.T "Policy"}}</th><th>{{.T "Applies to"}}</th><th>{{.T "Assigned to"}}</th><th class="hide-sm">{{.T "Changed"}}</th></tr></thead>
     <tbody>{{range .Data}}<tr>
       <td><a href="/policies/{{.ID}}"><b>{{.Name}}</b></a>{{with .Description}}<br><span class="small muted">{{.}}</span>{{end}}</td>
+      <td class="small">{{if .CustomerID}}{{.Customer}}{{else}}{{$.T "all customers"}}{{end}}</td>
       <td>{{if .Assigned}}{{$.T "%d customers, sites or devices" .Assigned}}{{else}}<span class="muted">{{$.T "not assigned"}}</span>{{end}}</td>
       <td class="hide-sm small">{{$.Time .UpdatedAt}} · {{.UpdatedBy}}</td>
     </tr>{{end}}</tbody>

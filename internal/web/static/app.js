@@ -16,6 +16,30 @@
     return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   }
 
+  // Rows of a form: data-add-row clones a template into its rows (__KEY__
+  // becomes a new key), data-remove-row removes the row it is in.
+  var rowSeq = 0;
+  document.addEventListener("click", function (ev) {
+    var add = ev.target.closest("[data-add-row]");
+    if (add) {
+      var tpl = document.getElementById(add.getAttribute("data-add-row"));
+      var rows = document.getElementById(add.getAttribute("data-rows"));
+      if (!tpl || !rows) return;
+      var node = tpl.content.cloneNode(true);
+      var key = "n" + Date.now().toString(36) + (rowSeq++);
+      Array.prototype.forEach.call(node.querySelectorAll("[name],[value]"), function (el) {
+        if (el.value && el.value.indexOf("__KEY__") >= 0) el.value = el.value.replace("__KEY__", key);
+      });
+      rows.appendChild(node);
+      return;
+    }
+    var rm = ev.target.closest("[data-remove-row]");
+    if (rm) {
+      var row = rm.closest("[data-row]");
+      if (row) row.remove();
+    }
+  });
+
   // A checkbox with data-part shows the part of a form it switches on.
   Array.prototype.forEach.call(document.querySelectorAll("input[data-part]"), function (cb) {
     var part = document.getElementById(cb.getAttribute("data-part"));

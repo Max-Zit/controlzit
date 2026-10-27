@@ -9,6 +9,8 @@ import (
 // Policy is a named set of settings; Settings is decoded by the console.
 type Policy struct {
 	ID          int64
+	CustomerID  *int64 // nil: a policy of the whole server
+	Customer    string
 	Name        string
 	Description string
 	Settings    json.RawMessage
@@ -19,8 +21,8 @@ type Policy struct {
 
 // Policies lists all policies by name.
 func (s *Store) Policies(ctx context.Context) ([]Policy, error) {
-	rows, err := s.db.Query(ctx, `SELECT p.id, p.name, p.description, p.settings, p.updated_by, p.updated_at,
-		(SELECT count(*) FROM policy_assignments a WHERE a.policy_id=p.id) FROM policies p ORDER BY lower(p.name)`)
+	rows, err := s.db.Query(ctx, `SELECT p.id, p.customer_id, COALESCE(c.name, ''), p.name, p.description, p.settings, p.updated_by, p.updated_at,
+		(SELECT count(*) FROM policy_assignments a WHERE a.policy_id=p.id) FROM policies p LEFT JOIN customers c ON c.id=p.customer_id ORDER BY lower(p.name)`)
 	if err != nil {
 		return nil, err
 	}
@@ -28,7 +30,7 @@ func (s *Store) Policies(ctx context.Context) ([]Policy, error) {
 	var out []Policy
 	for rows.Next() {
 		var p Policy
-		if err := rows.Scan(&p.ID, &p.Name, &p.Description, &p.Settings, &p.UpdatedBy, &p.UpdatedAt, &p.Assigned); err != nil {
+		if err := rows.Scan(&p.ID, &p.CustomerID, &p.Customer, &p.Name, &p.Description, &p.Settings, &p.UpdatedBy, &p.UpdatedAt, &p.Assigned); err != nil {
 			return nil, err
 		}
 		out = append(out, p)
@@ -39,8 +41,8 @@ func (s *Store) Policies(ctx context.Context) ([]Policy, error) {
 // Policy loads one policy.
 func (s *Store) Policy(ctx context.Context, id int64) (*Policy, error) {
 	var p Policy
-	err := s.db.QueryRow(ctx, `SELECT id, name, description, settings, updated_by, updated_at FROM policies WHERE id=$1`, id).
-		Scan(&p.ID, &p.Name, &p.Description, &p.Settings, &p.UpdatedBy, &p.UpdatedAt)
+	err := s.db.QueryRow(ctx, `SELECT p.id, p.customer_id, COALESCE(c.name, ''), p.name, p.description, p.settings, p.updated_by, p.updated_at FROM policies p LEFT JOIN customers c ON c.id=p.customer_id WHERE p.id=$1`, id).
+		Scan(&p.ID, &p.CustomerID, &p.Customer, &p.Name, &p.Description, &p.Settings, &p.UpdatedBy, &p.UpdatedAt)
 	if err != nil {
 		return nil, notFound(err)
 	}
@@ -55,8 +57,8 @@ func (s *Store) SavePolicy(ctx context.Context, p *Policy) error {
 	}
 	var err error
 	if p.ID == 0 {
-		err = s.db.QueryRow(ctx, `INSERT INTO policies(name, description, settings, updated_by, updated_at) VALUES($1,$2,$3,$4,$5) RETURNING id`,
-			p.Name, p.Description, p.Settings, p.UpdatedBy, p.UpdatedAt).Scan(&p.ID)
+		err = s.db.QueryRow(ctx, `INSERT INTO policies(name, description, settings, updated_by, updated_at, customer_id) VALUES($1,$2,$3,$4,$5,$6) RETURNING id`,
+			p.Name, p.Description, p.Settings, p.UpdatedBy, p.UpdatedAt, p.CustomerID).Scan(&p.ID)
 	} else {
 		tag, e := s.db.Exec(ctx, `UPDATE policies SET name=$2, description=$3, settings=$4, updated_by=$5, updated_at=$6 WHERE id=$1`,
 			p.ID, p.Name, p.Description, p.Settings, p.UpdatedBy, p.UpdatedAt)

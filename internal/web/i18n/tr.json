@@ -1389,5 +1389,22 @@
   "the system drive has no recovery key; prepare first": "sistem sürücüsünün kurtarma anahtarı yok; önce hazırlayın",
   "the system drive has no recovery key; the encryption was not started": "sistem sürücüsünün kurtarma anahtarı yok; şifreleme başlatılmadı",
   "the validity must be 0 (no end) to 3650 days": "geçerlilik 0 (süresiz) ile 3650 gün arasında olmalı",
-  "this computer has no TPM": "bu bilgisayarda TPM yok"
+  "this computer has no TPM": "bu bilgisayarda TPM yok",
+  "A customer's policy can only be assigned to that customer, its sites and devices, and its technicians manage it. Chosen once.": "Bir müşterinin ilkesi yalnızca o müşteriye, konumlarına ve cihazlarına atanabilir ve onu müşterinin teknisyenleri yönetir. Bir kez seçilir.",
+  "Add a program": "Program ekle",
+  "Add an automation": "Otomasyon ekle",
+  "Applies to": "Geçerli olduğu yer",
+  "Choose a customer, site or device of this policy.": "Bu ilkenin bir müşterisini, konumunu veya cihazını seçin.",
+  "Choose the customer": "Müşteriyi seçin",
+  "Choose the customer of the policy.": "İlkenin müşterisini seçin.",
+  "For the software library choose the package from the list (its number); for winget and Chocolatey enter the package ID.": "Yazılım kitaplığı için listeden paketi (numarasını) seçin; winget ve Chocolatey için paket kimliğini girin.",
+  "all customers": "tüm müşteriler",
+  "all customers (the whole server)": "tüm müşteriler (tüm sunucu)",
+  "A policy sets Windows Update, required software, alert rules and automations for the customers, sites or devices it is assigned to. For each part, the most specific assignment that sets it applies (device, then site, then customer). Every customer gets its own policy Default when it is created; without any policy, the built-in defaults apply (no automatic updates, standard alert rules).": "Bir ilke, atandığı müşteriler, konumlar veya cihazlar için Windows Update, gerekli yazılım, uyarı kuralları ve otomasyonları ayarlar. Her bölüm için onu ayarlayan en özel atama geçerlidir (cihaz, sonra konum, sonra müşteri). Her müşteri oluşturulurken kendi Default ilkesini alır; hiç ilke yoksa yerleşik varsayılanlar geçerlidir (otomatik güncelleme yok, standart uyarı kuralları).",
+  "Alert emails and channels": "Uyarı e-postaları ve kanalları",
+  "Alert rules are set in the policies of the customers, sites and devices.": "Uyarı kuralları müşterilerin, konumların ve cihazların ilkelerinde ayarlanır.",
+  "Delete policy %s? Its customers, sites and devices fall back to less specific policies or the built-in defaults.": "%s ilkesi silinsin mi? Müşterileri, konumları ve cihazları daha az özel ilkelere veya yerleşik varsayılanlara döner.",
+  "Switch on the parts this policy sets. A part that is off comes from a less specific policy or from the built-in defaults.": "Bu ilkenin ayarladığı bölümleri açın. Kapalı bir bölüm daha az özel bir ilkeden veya yerleşik varsayılanlardan gelir.",
+  "built-in defaults": "yerleşik varsayılanlar",
+  "set by the policies": "ilkelerle ayarlanır"
 }

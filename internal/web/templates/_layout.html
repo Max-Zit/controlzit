@@ -22,11 +22,11 @@
     <a href="/updates" class="{{if eq .Nav "updates"}}on{{end}}">{{template "icon" "download"}}{{.T "Updates"}}</a>
     {{if .User.CanWrite}}<a href="/scripts" class="{{if eq .Nav "scripts"}}on{{end}}">{{template "icon" "terminal"}}{{.T "Scripts"}}</a>{{end}}
     {{if .User.CanWrite}}<a href="/software" class="{{if eq .Nav "software"}}on{{end}}">{{template "icon" "package"}}{{.T "Software"}}</a>{{end}}
+    {{if .User.CanWrite}}<a href="/policies" class="{{if eq .Nav "policies"}}on{{end}}">{{template "icon" "policy"}}{{.T "Policies"}}</a>{{end}}
     <a href="/reports" class="{{if eq .Nav "reports"}}on{{end}}">{{template "icon" "audit"}}{{.T "Reports"}}</a>
     <a href="/docs" class="{{if eq .Nav "docs"}}on{{end}}">{{template "icon" "book"}}{{.T "Documentation"}}</a>
     {{if .User.IsAdmin}}
     <span class="navlabel">{{.T "Administration"}}</span>
-    <a href="/policies" class="{{if eq .Nav "policies"}}on{{end}}">{{template "icon" "policy"}}{{.T "Policies"}}</a>
     <a href="/users" class="{{if eq .Nav "users"}}on{{end}}">{{template "icon" "users"}}{{.T "Users"}}</a>
     <a href="/audit" class="{{if eq .Nav "audit"}}on{{end}}">{{template "icon" "audit"}}{{.T "Audit log"}}</a>
     <a href="/settings/network" class="{{if eq .Nav "settings"}}on{{end}}">{{template "icon" "settings"}}{{.T "Settings"}}</a>
@@ -82,9 +82,8 @@
   <a href="/settings/security" class="{{if eq .Title "Sign-in and security"}}on{{end}}">{{template "icon" "lock"}}<span>{{.T "Sign-in and security"}}<small>{{.T "Session length, blocked addresses"}}</small></span></a>
   <a href="/settings/ldap" class="{{if eq .Title "Active Directory / LDAP"}}on{{end}}">{{template "icon" "users"}}<span>Active Directory / LDAP<small>{{.T "Sign-in with directory accounts"}}</small></span></a>
   <a href="/settings/sso" class="{{if eq .Title "Single sign-on"}}on{{end}}">{{template "icon" "key"}}<span>{{.T "Single sign-on"}}<small>OpenID Connect, SAML</small></span></a>
-  <a href="/settings/monitoring" class="{{if eq .Title "Monitoring and alerts"}}on{{end}}">{{template "icon" "online"}}<span>{{.T "Monitoring and alerts"}}<small>{{.T "Rules and alert emails"}}</small></span></a>
+  <a href="/settings/monitoring" class="{{if eq .Title "Monitoring and alerts"}}on{{end}}">{{template "icon" "online"}}<span>{{.T "Monitoring and alerts"}}<small>{{.T "Alert emails and channels"}}</small></span></a>
   <a href="/settings/remote" class="{{if eq .Title "Remote desktop"}}on{{end}}">{{template "icon" "screen"}}<span>{{.T "Remote desktop"}}<small>{{.T "Notice on the remote screen"}}</small></span></a>
-  <a href="/settings/updates" class="{{if eq .Title "Windows updates"}}on{{end}}">{{template "icon" "refresh"}}<span>{{.T "Windows updates"}}<small>{{.T "Automatic installation schedule"}}</small></span></a>
   <a href="/settings/reports" class="{{if eq .Title "Reports"}}on{{end}}">{{template "icon" "mail"}}<span>{{.T "Reports"}}<small>{{.T "Email reports to customers"}}</small></span></a>
   <a href="/settings/version" class="{{if eq .Title "ControlZit updates"}}on{{end}}">{{template "icon" "download"}}<span>{{.T "ControlZit updates"}}<small>{{.T "New versions of the server"}}</small></span></a>
   <a href="/settings/agents" class="{{if eq .Title "Agent updates"}}on{{end}}">{{template "icon" "download"}}<span>{{.T "Agent updates"}}<small>{{.T "Installer and automatic updates"}}</small></span></a>
@@ -140,6 +139,7 @@
   <a href="/devices/{{$id}}/software" class="{{if eq .Cur "software"}}on{{end}}">{{template "icon" "plus"}}{{.P.T "Programs"}}</a>{{end}}
   {{end}}
   <a href="/devices/{{$id}}/updates" class="{{if eq .Cur "updates"}}on{{end}}">{{template "icon" "download"}}{{.P.T "Updates"}}</a>
+  {{if and .P.User.CanWrite .D.IsWindows}}<a href="/devices/{{$id}}/bitlocker" class="{{if eq .Cur "bitlocker"}}on{{end}}">{{template "icon" "lock"}}BitLocker</a>{{end}}
   {{if .P.User.CanWrite}}<a href="/devices/{{$id}}/policy" class="{{if eq .Cur "policy"}}on{{end}}">{{template "icon" "policy"}}{{.P.T "Policy"}}</a>{{end}}
   {{if .P.User.CanWrite}}<a href="/devices/{{$id}}/activity" class="{{if eq .Cur "activity"}}on{{end}}">{{template "icon" "clock"}}{{.P.T "Activity"}}{{with .P.ActiveTasks $id}} <span class="navcount">{{.}}</span>{{end}}</a>{{end}}
 </nav>{{end}}

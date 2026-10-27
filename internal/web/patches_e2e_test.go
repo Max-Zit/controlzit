@@ -102,10 +102,8 @@ func TestWindowsUpdates(t *testing.T) {
 
 	// Automatic installation of security updates on today's schedule.
 	now := time.Now()
-	if r := admin.post("/settings/updates", "mode", "security", "day", strconv.Itoa(int(now.Weekday())), "hour", strconv.Itoa(now.Hour())); r.code != http.StatusSeeOther {
-		t.Fatalf("policy: %d", r.code)
-	}
-	if !strings.Contains(admin.get("/settings/updates").body, `value="security" checked`) {
+	pid := customerPolicy(t, admin, d.CustomerID, "name", "Updates", "updates_set", "1", "mode", "security", "day", strconv.Itoa(int(now.Weekday())), "hour", strconv.Itoa(now.Hour()))
+	if !strings.Contains(admin.get("/policies/"+pid).body, `value="security" checked`) {
 		t.Fatal("policy not saved")
 	}
 	e.srv.RunPatchSchedule(context.Background())
@@ -127,7 +125,7 @@ func TestWindowsUpdates(t *testing.T) {
 		t.Fatal("automatic installation ran twice on one day")
 	}
 	mu.Unlock()
-	if r := admin.post("/settings/updates", "mode", "security", "hour", "3"); !strings.Contains(admin.get("/settings/updates").body, "Choose at least one day.") || r.code != http.StatusSeeOther {
+	if r := admin.post("/policies/"+pid, "name", "Updates", "updates_set", "1", "mode", "security", "hour", "3"); !strings.Contains(r.body+admin.get(r.loc).body, "Choose at least one day.") {
 		t.Fatal("policy without days accepted")
 	}
 
@@ -146,7 +144,7 @@ func TestWindowsUpdates(t *testing.T) {
 			t.Errorf("read-only user posted to %s: %d", p, r.code)
 		}
 	}
-	if r := v.get("/settings/updates"); r.code != http.StatusForbidden {
+	if r := v.get("/policies/" + pid); r.code != http.StatusForbidden {
 		t.Errorf("read-only user opened the update policy: %d", r.code)
 	}
 }

@@ -414,6 +414,12 @@ func TestAlertsEndToEnd(t *testing.T) {
 		defer hookMu.Unlock()
 		return append([]string(nil), hooks[path]...)
 	}
+	// The customer's policy opens nothing before the channels exist (policy
+	// changes check the alerts at once); then its rules are tightened.
+	rules := []string{"alerts_set", "1", "cpu_percent", "90", "cpu_minutes", "15", "mem_percent", "90", "mem_minutes", "15", "offline_minutes", "15", "reboot_days", "7"}
+	pid := customerPolicy(t, admin, d.CustomerID, append([]string{"name", "Alerts", "disk_percent", "100", "disk_min_free_gb", "0"}, rules...)...)
+	time.Sleep(500 * time.Millisecond) // the checks started by the policy changes
+	e.srv.CheckAlerts(ctx)
 	admin.post("/settings/channels", "action", "add", "name", "Ops hook", "kind", "webhook", "url", hookSrv.URL+"/hook", "secret", "s3cret", "on_resolve", "1")
 	admin.post("/settings/channels", "action", "add", "name", "#it", "kind", "slack", "url", hookSrv.URL+"/slack", "critical", "1")
 	admin.post("/settings/channels", "action", "add", "name", "Teams", "kind", "teams", "url", hookSrv.URL+"/teams")
@@ -423,9 +429,8 @@ func TestAlertsEndToEnd(t *testing.T) {
 	if mp := admin.get("/settings/monitoring").body; !strings.Contains(mp, "Ops hook") || strings.Contains(mp, hookSrv.URL) || strings.Contains(mp, "bad</b>") {
 		t.Fatal("channels list (URLs must not be shown)")
 	}
-	if r := admin.post("/settings/monitoring", "cpu_percent", "90", "cpu_minutes", "15", "mem_percent", "90", "mem_minutes", "15", "disk_percent", "90",
-		"disk_min_free_gb", "5", "offline_minutes", "15", "reboot_days", "7", "watch_services", "Spooler"); r.code != http.StatusSeeOther {
-		t.Fatalf("save monitoring: %d %s", r.code, r.body)
+	if r := admin.post("/policies/"+pid, append([]string{"name", "Alerts", "disk_percent", "90", "disk_min_free_gb", "5", "watch_services", "Spooler"}, rules...)...); r.code != http.StatusSeeOther {
+		t.Fatalf("policy: %d", r.code)
 	}
 	e.srv.CheckAlerts(ctx)
 	r := admin.get("/alerts")

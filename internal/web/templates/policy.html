@@ -7,7 +7,12 @@
   <section class="panel">
     <label>{{.T "Name"}}<input name="name" value="{{$p.Name}}" required maxlength="120" placeholder="{{.T "Office computers"}}"></label>
     <label>{{.T "Description"}} <small>{{.T "optional"}}</small><input name="description" value="{{$p.Description}}" maxlength="1000"></label>
-    <p class="small muted">{{.T "Switch on the parts this policy sets. A part that is off comes from a less specific policy or from the server's settings."}}</p>
+    {{if $p.ID}}<p class="small">{{.T "Applies to"}}: <b>{{if $p.CustomerID}}{{$p.Customer}}{{else}}{{.T "all customers (the whole server)"}}{{end}}</b></p>
+    {{else}}<label>{{.T "Applies to"}}<select name="customer" required>
+      {{if .User.IsAdmin}}<option value="0">{{.T "all customers (the whole server)"}}</option>{{else}}<option value="">{{.T "Choose the customer"}}</option>{{end}}
+      {{range .Data.Customers}}<option value="{{.ID}}">{{.Name}}</option>{{end}}
+    </select><small>{{.T "A customer's policy can only be assigned to that customer, its sites and devices, and its technicians manage it. Chosen once."}}</small></label>{{end}}
+    <p class="small muted">{{.T "Switch on the parts this policy sets. A part that is off comes from a less specific policy or from the built-in defaults."}}</p>
   </section>
 
   <section class="panel">
@@ -33,19 +38,13 @@
     <div id="pol-software" class="policy-part">
       <p class="small muted">{{.T "Programs every Windows device of this policy must have. A program counts as installed when its name in the Windows list of installed programs contains the text you enter. The server checks every few minutes and installs a missing program; if it is still missing, it tries again after 6 hours. Each installation shows under the device's Activity."}}</p>
       <div class="table-wrap"><table>
-        <thead><tr><th>{{.T "Source"}}</th><th>{{.T "Package"}}</th><th>{{.T "Installed name contains"}}</th></tr></thead>
-        <tbody>{{range .Data.Required}}<tr>
-          <td><select name="req_source">
-            <option value="library" {{if eq .Source "library"}}selected{{end}}>{{$.T "Software library"}}</option>
-            <option value="winget" {{if eq .Source "winget"}}selected{{end}}>winget</option>
-            {{if or $.Data.Chocolatey (eq .Source "choco")}}<option value="choco" {{if eq .Source "choco"}}selected{{end}}>Chocolatey</option>{{end}}
-          </select></td>
-          <td><input name="req_id" value="{{.ID}}" list="pol-packages" maxlength="128" spellcheck="false" class="mono" placeholder="7zip.7zip"></td>
-          <td><input name="req_match" value="{{.Match}}" maxlength="100" placeholder="7-Zip"></td>
-        </tr>{{end}}</tbody>
+        <thead><tr><th>{{.T "Source"}}</th><th>{{.T "Package"}}</th><th>{{.T "Installed name contains"}}</th><th></th></tr></thead>
+        <tbody id="req-rows">{{range .Data.Required}}{{template "reqrow" (rowctx $ .)}}{{end}}</tbody>
       </table></div>
+      <template id="req-new">{{template "reqrow" (rowctx $ .Data.NewApp)}}</template>
+      <button type="button" class="secondary sm mt" data-add-row="req-new" data-rows="req-rows">{{template "icon" "plus"}}{{.T "Add a program"}}</button>
       <datalist id="pol-packages">{{range .Data.Packages}}<option value="{{.ID}}">{{.Name}} {{.Version}}</option>{{end}}</datalist>
-      <p class="small muted">{{.T "For the software library enter the number of the package (the list offers them); for winget and Chocolatey the package ID. Empty rows are ignored; clear a row to remove it."}}</p>
+      <p class="small muted">{{.T "For the software library choose the package from the list (its number); for winget and Chocolatey enter the package ID."}}</p>
     </div>
   </section>
 
@@ -74,25 +73,20 @@
     <h2><label class="check"><input type="checkbox" name="automations_set" value="1" {{if $s.Automations}}checked{{end}} data-part="pol-auto">{{template "icon" "clock"}}{{.T "Automations"}}</label></h2>
     <div id="pol-auto" class="policy-part">
       <p class="small muted">{{.T "Library scripts that run on the devices of this policy on the chosen days and time (server time). Offline devices run them when they connect, within 24 hours."}}</p>
-      {{range $i, $a := .Data.Runs}}
-      <fieldset class="box">
-        <div class="row">
-          <label>{{$.T "Script"}}<select name="auto_script"><option value="">—</option>{{range $.Data.Scripts}}<option value="{{.ID}}" {{if eq .ID $a.ScriptID}}selected{{end}}>{{.Name}}</option>{{end}}</select></label>
-          <label>{{$.T "Time"}}<input type="time" name="auto_time" value="{{$a.Time}}"></label>
-        </div>
-        <div class="checks">{{range $.Data.Days}}<label class="check"><input type="checkbox" name="auto_day_{{$i}}" value="{{.}}" {{if containsDay $a.Days .}}checked{{end}}>{{$.T (weekday .)}}</label>{{end}}</div>
-      </fieldset>
-      {{end}}
+      <div id="auto-rows">{{range .Data.Runs}}{{template "autorow" (rowctx $ .)}}{{end}}</div>
+      <template id="auto-new">{{template "autorow" (rowctx $ .Data.NewRun)}}</template>
+      <button type="button" class="secondary sm" data-add-row="auto-new" data-rows="auto-rows">{{template "icon" "plus"}}{{.T "Add an automation"}}</button>
       {{if not .Data.Scripts}}<p class="small muted">{{.T "The script library is empty."}} <a href="/scripts/new">{{.T "New script"}}</a></p>{{end}}
     </div>
   </section>
-  <section class="panel">
+  {{if .User.IsAdmin}}<section class="panel">
     <h2><label class="check"><input type="checkbox" name="bitlocker_set" value="1" {{if $s.BitLocker}}checked{{end}} data-part="pol-bitlocker">{{template "icon" "lock"}}BitLocker</label></h2>
     <div id="pol-bitlocker" class="policy-part">
       <label class="check"><input type="checkbox" name="bitlocker_require" value="1" {{if $s.BitLocker}}{{if $s.BitLocker.Require}}checked{{end}}{{end}}>{{.T "Require BitLocker on the system drive"}}</label>
       <p class="small muted">{{.T "On Windows devices with a ready TPM whose system drive is not encrypted, the server first has a recovery key added and stores it, and only then starts the encryption (TPM, XTS-AES 256, used space only). Devices without a TPM or with a Windows edition without BitLocker show the reason under Activity. Recovery keys of all devices with BitLocker are collected once a day."}}</p>
     </div>
   </section>
+  {{end}}
   <div><button class="primary">{{.T "Save"}}</button></div>
 </form>
 
@@ -120,8 +114,29 @@
   </form>
   <p class="small muted mt">{{.T "A customer, site or device has one policy; assigning this one replaces the one it had."}}</p>
 </section>
-<form method="post" action="/policies/{{$p.ID}}/delete" data-confirm="{{.T "Delete policy %s? Its customers, sites and devices fall back to less specific policies or the server's settings." $p.Name}}">
+<form method="post" action="/policies/{{$p.ID}}/delete" data-confirm="{{.T "Delete policy %s? Its customers, sites and devices fall back to less specific policies or the built-in defaults." $p.Name}}">
   <button class="danger">{{template "icon" "trash"}}{{.T "Delete"}}</button>
 </form>
 {{end}}
 {{end}}
+
+{{define "reqrow"}}{{$p := .P}}{{$a := .Row}}<tr data-row>
+  <td><select name="req_source">
+    <option value="library" {{if eq $a.Source "library"}}selected{{end}}>{{$p.T "Software library"}}</option>
+    <option value="winget" {{if eq $a.Source "winget"}}selected{{end}}>winget</option>
+    {{if or $p.Data.Chocolatey (eq $a.Source "choco")}}<option value="choco" {{if eq $a.Source "choco"}}selected{{end}}>Chocolatey</option>{{end}}
+  </select></td>
+  <td><input name="req_id" value="{{$a.ID}}" list="pol-packages" maxlength="128" spellcheck="false" class="mono" placeholder="7zip.7zip"></td>
+  <td><input name="req_match" value="{{$a.Match}}" maxlength="100" placeholder="7-Zip"></td>
+  <td class="nowrap actions"><button type="button" class="ghost sm" data-remove-row aria-label="{{$p.T "Remove"}}">{{template "icon" "trash"}}</button></td>
+</tr>{{end}}
+
+{{define "autorow"}}{{$p := .P}}{{$a := .Row}}<fieldset class="box" data-row>
+  <input type="hidden" name="auto_key" value="{{$a.Key}}">
+  <div class="row">
+    <label>{{$p.T "Script"}}<select name="auto_script"><option value="">—</option>{{range $p.Data.Scripts}}<option value="{{.ID}}" {{if eq .ID $a.ScriptID}}selected{{end}}>{{.Name}}</option>{{end}}</select></label>
+    <label>{{$p.T "Time"}}<input type="time" name="auto_time" value="{{$a.Time}}"></label>
+    <button type="button" class="ghost sm" data-remove-row aria-label="{{$p.T "Remove"}}">{{template "icon" "trash"}}</button>
+  </div>
+  <div class="checks">{{range $p.Data.Days}}<label class="check"><input type="checkbox" name="auto_day" value="{{$a.Key}}:{{.}}" {{if containsDay $a.Days .}}checked{{end}}>{{$p.T (weekday .)}}</label>{{end}}</div>
+</fieldset>{{end}}

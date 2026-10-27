@@ -5,27 +5,8 @@
 {{template "settingstabs" .}}
 <div class="settings-body">
 {{$m := .Data.M}}
+<p class="muted">{{.T "Alert rules are set in the policies of the customers, sites and devices."}} <a href="/policies">{{.T "Policies"}}</a></p>
 <form method="post" action="/settings/monitoring" class="stack wide">
-  <section class="panel">
-    <h2>{{template "icon" "online"}}{{.T "Alert rules"}}</h2>
-    <p class="small muted"><a href="/policies">{{.T "Policies"}}</a>: {{.T "these settings apply to devices whose policies do not set this part."}}</p>
-    <p class="muted">{{.T "The server checks every device once a minute. An alert opens while its condition holds and closes by itself when it is gone."}}</p>
-    <div class="cols">
-      <label>{{.T "CPU load above (%)"}}<input type="number" name="cpu_percent" value="{{$m.CPUPercent}}" min="50" max="100" required></label>
-      <label>{{.T "for (minutes)"}}<input type="number" name="cpu_minutes" value="{{$m.CPUMinutes}}" min="2" max="240" required></label>
-      <label>{{.T "Memory use above (%)"}}<input type="number" name="mem_percent" value="{{$m.MemPercent}}" min="50" max="100" required></label>
-      <label>{{.T "for (minutes)"}}<input type="number" name="mem_minutes" value="{{$m.MemMinutes}}" min="2" max="240" required></label>
-    </div>
-    <div class="cols">
-      <label>{{.T "Disk used above (%)"}}<input type="number" name="disk_percent" value="{{$m.DiskPercent}}" min="50" max="100" required></label>
-      <label>{{.T "or less free than (GB, disks larger than twice this)"}}<input type="number" name="disk_min_free_gb" value="{{$m.DiskMinFreeGB}}" min="0" max="10000" required></label>
-      <label>{{.T "Offline longer than (minutes)"}}<input type="number" name="offline_minutes" value="{{$m.OfflineMinutes}}" min="3" max="10080" required></label>
-      <label>{{.T "Restart pending and up longer than (days)"}}<input type="number" name="reboot_days" value="{{$m.RebootDays}}" min="0" max="365" required></label>
-    </div>
-    <label class="check"><input type="checkbox" name="defender_off" value="1" {{if $m.DefenderOff}}checked{{end}}>{{.T "Alert when Microsoft Defender antivirus or real-time protection is off"}}</label>
-    <label class="check"><input type="checkbox" name="firewall_off" value="1" {{if $m.FirewallOff}}checked{{end}}>{{.T "Alert when a Windows Firewall profile is off"}}</label>
-    <label>{{.T "Services that must run"}} <small>{{.T "optional"}}</small><textarea name="watch_services" rows="4" spellcheck="false" placeholder="Spooler&#10;MSSQLSERVER">{{.Data.Services}}</textarea><small>{{.T "Service names (not display names), one per line. An alert opens when one of them is set to start automatically but is not running."}}</small></label>
-  </section>
   <section class="panel">
     <h2>{{template "icon" "mail"}}{{.T "Alert emails"}}</h2>
     <label class="check"><input type="checkbox" name="email_on_open" value="1" {{if $m.EmailOnOpen}}checked{{end}}>{{.T "Send an email when an alert opens"}}</label>

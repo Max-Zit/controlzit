@@ -9,5 +9,5 @@
   {{if .Data.Alerts}}{{template "alerttable" .}}
   {{else}}<div class="empty">{{template "icon" "check"}}<p>{{.T "No open alerts. All monitored devices are fine."}}</p></div>{{end}}
 </section>
-{{if .User.IsAdmin}}<p class="small muted">{{.T "The rules and alert emails are in"}} <a href="/settings/monitoring">{{.T "Settings"}} → {{.T "Monitoring and alerts"}}</a>.</p>{{end}}
+<p class="small muted">{{.T "Alert rules are set in the policies of the customers, sites and devices."}}{{if .User.CanWrite}} <a href="/policies">{{.T "Policies"}}</a>{{end}}{{if .User.IsAdmin}} · <a href="/settings/monitoring">{{.T "Alert emails"}}</a>{{end}}</p>
 {{end}}

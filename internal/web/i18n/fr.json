@@ -1389,5 +1389,22 @@
   "the system drive has no recovery key; prepare first": "le lecteur système n'a pas de clé de récupération ; préparez d'abord",
   "the system drive has no recovery key; the encryption was not started": "le lecteur système n'a pas de clé de récupération ; le chiffrement n'a pas été lancé",
   "the validity must be 0 (no end) to 3650 days": "la validité doit être de 0 (sans fin) à 3650 jours",
-  "this computer has no TPM": "cet ordinateur n'a pas de TPM"
+  "this computer has no TPM": "cet ordinateur n'a pas de TPM",
+  "A customer's policy can only be assigned to that customer, its sites and devices, and its technicians manage it. Chosen once.": "La stratégie d'un client ne peut être attribuée qu'à ce client, ses sites et ses appareils, et ses techniciens la gèrent. Choisi une seule fois.",
+  "Add a program": "Ajouter un programme",
+  "Add an automation": "Ajouter une automatisation",
+  "Applies to": "S'applique à",
+  "Choose a customer, site or device of this policy.": "Choisissez un client, un site ou un appareil de cette stratégie.",
+  "Choose the customer": "Choisir le client",
+  "Choose the customer of the policy.": "Choisissez le client de la stratégie.",
+  "For the software library choose the package from the list (its number); for winget and Chocolatey enter the package ID.": "Pour la bibliothèque de logiciels, choisissez le paquet dans la liste (son numéro) ; pour winget et Chocolatey, saisissez l'ID du paquet.",
+  "all customers": "tous les clients",
+  "all customers (the whole server)": "tous les clients (tout le serveur)",
+  "A policy sets Windows Update, required software, alert rules and automations for the customers, sites or devices it is assigned to. For each part, the most specific assignment that sets it applies (device, then site, then customer). Every customer gets its own policy Default when it is created; without any policy, the built-in defaults apply (no automatic updates, standard alert rules).": "Une stratégie définit Windows Update, les logiciels requis, les règles d'alerte et les automatisations des clients, sites ou appareils auxquels elle est attribuée. Pour chaque partie, l'attribution la plus précise qui la définit s'applique (appareil, puis site, puis client). Chaque client reçoit sa propre stratégie Default à sa création ; sans stratégie, les valeurs par défaut intégrées s'appliquent (pas de mises à jour automatiques, règles d'alerte standard).",
+  "Alert emails and channels": "E-mails et canaux d'alerte",
+  "Alert rules are set in the policies of the customers, sites and devices.": "Les règles d'alerte se définissent dans les stratégies des clients, des sites et des appareils.",
+  "Delete policy %s? Its customers, sites and devices fall back to less specific policies or the built-in defaults.": "Supprimer la stratégie %s ? Ses clients, sites et appareils reviennent à des stratégies moins précises ou aux valeurs par défaut intégrées.",
+  "Switch on the parts this policy sets. A part that is off comes from a less specific policy or from the built-in defaults.": "Activez les parties que définit cette stratégie. Une partie désactivée provient d'une stratégie moins précise ou des valeurs par défaut intégrées.",
+  "built-in defaults": "valeurs par défaut intégrées",
+  "set by the policies": "défini par les stratégies"
 }

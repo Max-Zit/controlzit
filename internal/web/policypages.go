@@ -1,9 +1,11 @@
 package web
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -15,10 +17,21 @@ import (
 // ---- the list
 
 func (s *Server) handlePolicies(w http.ResponseWriter, r *http.Request) {
-	list, err := s.store.Policies(r.Context())
+	u := userFrom(r)
+	if !u.CanWrite() {
+		s.forbidden(w, r)
+		return
+	}
+	all, err := s.store.Policies(r.Context())
 	if err != nil {
 		s.serverError(w, r, err)
 		return
+	}
+	list := []store.Policy{}
+	for i := range all {
+		if canManagePolicy(u, &all[i]) {
+			list = append(list, all[i])
+		}
 	}
 	s.render(w, r, http.StatusOK, "policies", &Page{Title: "Policies", Nav: "policies", Data: list})
 }
@@ -32,6 +45,8 @@ type policyData struct {
 	Alerts      AlertRules
 	Services    string
 	Required    []RequiredApp // with empty rows to add
+	NewApp      RequiredApp   // the row "Add a program" adds
+	NewRun      Automation    // the row "Add an automation" adds
 	Runs        []Automation  // with empty rows to add
 	Days        []int
 	Hours       []int
@@ -52,7 +67,7 @@ func (s *Server) policyFor(w http.ResponseWriter, r *http.Request) *store.Policy
 		return nil
 	}
 	p, err := s.store.Policy(r.Context(), id)
-	if errors.Is(err, store.ErrNotFound) {
+	if errors.Is(err, store.ErrNotFound) || err == nil && !canManagePolicy(userFrom(r), p) {
 		s.notFound(w, r)
 		return nil
 	}
@@ -64,6 +79,10 @@ func (s *Server) policyFor(w http.ResponseWriter, r *http.Request) *store.Policy
 }
 
 func (s *Server) handlePolicy(w http.ResponseWriter, r *http.Request) {
+	if !userFrom(r).CanWrite() {
+		s.forbidden(w, r)
+		return
+	}
 	p := &store.Policy{}
 	if r.PathValue("pid") != "" {
 		if p = s.policyFor(w, r); p == nil {
@@ -88,15 +107,20 @@ func (s *Server) handlePolicy(w http.ResponseWriter, r *http.Request) {
 	if d.S.Software != nil {
 		d.Required = append(d.Required, d.S.Software.Required...)
 	}
-	for i := 0; i < 3; i++ {
-		d.Required = append(d.Required, RequiredApp{})
+	if len(d.Required) == 0 {
+		d.Required = append(d.Required, RequiredApp{Source: "winget"})
 	}
+	d.NewApp = RequiredApp{Source: "winget"}
 	if d.S.Automations != nil {
 		d.Runs = append(d.Runs, d.S.Automations.Runs...)
 	}
-	for i := 0; i < 2; i++ {
+	if len(d.Runs) == 0 {
 		d.Runs = append(d.Runs, Automation{Minute: 22 * 60})
 	}
+	for i := range d.Runs {
+		d.Runs[i].Key = "r" + strconv.Itoa(i)
+	}
+	d.NewRun = Automation{Key: "__KEY__", Minute: 22 * 60}
 	var err error
 	if p.ID != 0 {
 		if d.Assigned, err = s.store.PolicyAssignments(ctx, p.ID); err != nil {
@@ -120,6 +144,13 @@ func (s *Server) handlePolicy(w http.ResponseWriter, r *http.Request) {
 	if d.Devices, err = s.store.Devices(ctx, u, store.DeviceFilter{Limit: 2000}); err != nil {
 		s.serverError(w, r, err)
 		return
+	}
+	// A customer's policy is assigned only within that customer.
+	if p.CustomerID != nil {
+		cid := *p.CustomerID
+		d.Customers = slices.DeleteFunc(d.Customers, func(c store.Customer) bool { return c.ID != cid })
+		d.Sites = slices.DeleteFunc(d.Sites, func(x store.Site) bool { return x.CustomerID != cid })
+		d.Devices = slices.DeleteFunc(d.Devices, func(x *store.Device) bool { return x.CustomerID != cid })
 	}
 	if d.Packages, err = s.store.SoftwarePackages(ctx); err != nil {
 		s.serverError(w, r, err)
@@ -179,21 +210,27 @@ func policyForm(r *http.Request) (PolicySettings, string) {
 	}
 	if r.FormValue("automations_set") == "1" {
 		au := &AutomationPolicy{Runs: []Automation{}}
+		days := map[string][]int{}
+		for _, v := range r.Form["auto_day"] {
+			k, d, ok := strings.Cut(v, ":")
+			if n, err := strconv.Atoi(d); ok && err == nil && n >= 0 && n <= 6 && !containsInt(days[k], n) {
+				days[k] = append(days[k], n)
+			}
+		}
+		keys := r.Form["auto_key"]
 		for i, v := range r.Form["auto_script"] {
 			id, err := strconv.ParseInt(v, 10, 64)
 			if err != nil || id <= 0 {
 				continue
 			}
 			a := Automation{ScriptID: id}
+			if i < len(keys) {
+				a.Days = days[keys[i]]
+			}
 			times := r.Form["auto_time"]
 			if i < len(times) {
 				if t, err := time.Parse("15:04", times[i]); err == nil {
 					a.Minute = t.Hour()*60 + t.Minute()
-				}
-			}
-			for _, d := range r.Form["auto_day_"+strconv.Itoa(i)] {
-				if n, err := strconv.Atoi(d); err == nil && n >= 0 && n <= 6 && !containsInt(a.Days, n) {
-					a.Days = append(a.Days, n)
 				}
 			}
 			sort.Ints(a.Days)
@@ -211,6 +248,11 @@ func policyForm(r *http.Request) (PolicySettings, string) {
 }
 
 func (s *Server) handlePolicySave(w http.ResponseWriter, r *http.Request) {
+	u := userFrom(r)
+	if !u.CanWrite() {
+		s.forbidden(w, r)
+		return
+	}
 	p := &store.Policy{}
 	back := "/policies/new"
 	if r.PathValue("pid") != "" {
@@ -223,6 +265,21 @@ func (s *Server) handlePolicySave(w http.ResponseWriter, r *http.Request) {
 		s.redirect(w, r, back, "Unknown action.")
 		return
 	}
+	if p.ID == 0 {
+		// The owner is chosen once: a customer, or (administrators) the whole server.
+		if cid, _ := strconv.ParseInt(r.FormValue("customer"), 10, 64); cid > 0 {
+			if _, err := s.store.Customer(r.Context(), cid); err != nil || !u.SeesCustomer(cid) {
+				s.redirect(w, r, back, "Choose the customer of the policy.")
+				return
+			}
+			p.CustomerID = &cid
+		} else if !u.IsAdmin() {
+			s.redirect(w, r, back, "Choose the customer of the policy.")
+			return
+		}
+	}
+	var old PolicySettings
+	_ = json.Unmarshal(p.Settings, &old)
 	p.Name, p.Description = strings.TrimSpace(r.FormValue("name")), strings.TrimSpace(r.FormValue("description"))
 	if p.Name == "" || len(p.Name) > 120 || len(p.Description) > 1000 {
 		s.redirect(w, r, back, "Enter a name (up to 120 characters).")
@@ -232,6 +289,9 @@ func (s *Server) handlePolicySave(w http.ResponseWriter, r *http.Request) {
 	if msg != "" {
 		s.redirect(w, r, back, msg)
 		return
+	}
+	if !u.IsAdmin() {
+		ps.BitLocker = old.BitLocker // BitLocker is for administrators
 	}
 	raw, err := json.Marshal(ps)
 	if err != nil {
@@ -247,6 +307,7 @@ func (s *Server) handlePolicySave(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "policy.save", "policy:"+strconv.FormatInt(p.ID, 10), "saved policy %q: %s", p.Name, clip(string(raw), 4000))
+	s.policiesChanged()
 	s.redirect(w, r, "/policies/"+strconv.FormatInt(p.ID, 10), "Saved.")
 }
 
@@ -260,6 +321,7 @@ func (s *Server) handlePolicyDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "policy.delete", "policy:"+strconv.FormatInt(p.ID, 10), "deleted policy %q and its assignments", p.Name)
+	s.policiesChanged()
 	s.redirect(w, r, "/policies", translate(s.lang(r, userFrom(r)), "Policy %s deleted.", p.Name))
 }
 
@@ -284,8 +346,8 @@ func (s *Server) handlePolicyAssign(w http.ResponseWriter, r *http.Request) {
 		s.redirect(w, r, back, "Choose a customer, site or device.")
 		return
 	}
-	if !s.targetExists(r, kind, id) {
-		s.redirect(w, r, back, "Choose a customer, site or device.")
+	if !s.mayAssign(r.Context(), userFrom(r), p, kind, id) {
+		s.redirect(w, r, back, "Choose a customer, site or device of this policy.")
 		return
 	}
 	if err := s.store.Assign(r.Context(), kind, id, p.ID, s.issuer(r)); err != nil {
@@ -293,24 +355,8 @@ func (s *Server) handlePolicyAssign(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "policy.assign", kind+":"+strconv.FormatInt(id, 10), "assigned policy %q to %s #%d", p.Name, kind, id)
+	s.policiesChanged()
 	s.redirect(w, r, back, "Saved.")
-}
-
-// targetExists checks that the user may see the customer, site or device.
-func (s *Server) targetExists(r *http.Request, kind string, id int64) bool {
-	ctx := r.Context()
-	switch kind {
-	case "customer":
-		_, err := s.store.Customer(ctx, id)
-		return err == nil && userFrom(r).SeesCustomer(id)
-	case "site":
-		x, err := s.store.Site(ctx, id)
-		return err == nil && userFrom(r).SeesCustomer(x.CustomerID)
-	case "device":
-		d, err := s.store.Device(ctx, id)
-		return err == nil && userFrom(r).SeesCustomer(d.CustomerID)
-	}
-	return false
 }
 
 func (s *Server) handlePolicyUnassign(w http.ResponseWriter, r *http.Request) {
@@ -324,11 +370,16 @@ func (s *Server) handlePolicyUnassign(w http.ResponseWriter, r *http.Request) {
 		s.redirect(w, r, back, "Unknown action.")
 		return
 	}
+	if !s.mayAssign(r.Context(), userFrom(r), p, kind, id) {
+		s.redirect(w, r, back, "Unknown action.")
+		return
+	}
 	if err := s.store.Unassign(r.Context(), kind, id); err != nil {
 		s.serverError(w, r, err)
 		return
 	}
 	s.audit(r, "policy.unassign", kind+":"+strconv.FormatInt(id, 10), "removed policy %q from %s #%d", p.Name, kind, id)
+	s.policiesChanged()
 	s.redirect(w, r, back, "Saved.")
 }
 
@@ -341,6 +392,7 @@ type policyPart struct {
 }
 
 type devicePolicyData struct {
+	CanChange   bool // the user may set the device's own policy
 	D           *store.Device
 	Chain       []*policyLevel
 	Parts       []policyPart
@@ -372,14 +424,14 @@ func (s *Server) handleDevicePolicy(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	var src *policyLevel
-	dd.Updates, src = pr.updates(d.ID, s.Patches(ctx))
+	dd.Updates, src = pr.updates(d.ID, defaultPatchPolicy())
 	dd.Parts = append(dd.Parts, policyPart{Name: "Windows Update", Source: src})
 	sw, src := pr.software(d.ID)
 	dd.Parts = append(dd.Parts, policyPart{Name: "Required software", Source: src})
 	if sw != nil {
 		dd.Required = s.requiredStates(ctx, d, sw)
 	}
-	dd.Alerts, src = pr.alerts(d.ID, s.Monitoring(ctx))
+	dd.Alerts, src = pr.alerts(d.ID, builtinAlerts(s.Monitoring(ctx)))
 	dd.Parts = append(dd.Parts, policyPart{Name: "Alert rules", Source: src})
 	bl, src := pr.bitlocker(d.ID)
 	dd.Parts = append(dd.Parts, policyPart{Name: "BitLocker", Source: src})
@@ -395,34 +447,54 @@ func (s *Server) handleDevicePolicy(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	if userFrom(r).IsAdmin() {
-		if dd.Policies, err = s.store.Policies(ctx); err != nil {
+	if u := userFrom(r); u.CanWrite() {
+		all, err := s.store.Policies(ctx)
+		if err != nil {
 			s.serverError(w, r, err)
 			return
 		}
+		// The policies this user may give this device.
+		for i := range all {
+			p := &all[i]
+			if canManagePolicy(u, p) && (p.CustomerID == nil || *p.CustomerID == d.CustomerID) {
+				dd.Policies = append(dd.Policies, *p)
+			}
+		}
+		dd.CanChange = dd.Assigned == nil || canManagePolicy(u, dd.Assigned.Policy)
 	}
 	s.render(w, r, http.StatusOK, "devicepolicy", &Page{Title: d.Hostname, Nav: "devices", Data: dd})
 }
 
 // handleDevicePolicyAssign sets or removes the device's own policy.
 func (s *Server) handleDevicePolicyAssign(w http.ResponseWriter, r *http.Request) {
-	d := s.deviceFor(w, r)
+	d := s.deviceForFiles(w, r) // technicians and administrators
 	if d == nil {
 		return
 	}
+	u := userFrom(r)
 	back := s.deviceURL(d, "/policy")
 	id, err := strconv.ParseInt(r.FormValue("policy"), 10, 64)
 	if err != nil || id == 0 {
+		// Removing needs the right to manage the policy the device has.
+		if pr, err := s.loadPolicies(r.Context()); err == nil {
+			for _, l := range pr.chain(d.ID) {
+				if l.Level == "device" && !canManagePolicy(u, l.Policy) {
+					s.redirect(w, r, back, "Unknown action.")
+					return
+				}
+			}
+		}
 		if err := s.store.Unassign(r.Context(), "device", d.ID); err != nil {
 			s.serverError(w, r, err)
 			return
 		}
 		s.audit(r, "policy.unassign", deviceTarget(d), "removed the device policy of %q", d.Hostname)
+		s.policiesChanged()
 		s.redirect(w, r, back, "Saved.")
 		return
 	}
 	p, err := s.store.Policy(r.Context(), id)
-	if err != nil {
+	if err != nil || !s.mayAssign(r.Context(), u, p, "device", d.ID) {
 		s.redirect(w, r, back, "Unknown action.")
 		return
 	}
@@ -431,5 +503,52 @@ func (s *Server) handleDevicePolicyAssign(w http.ResponseWriter, r *http.Request
 		return
 	}
 	s.audit(r, "policy.assign", deviceTarget(d), "assigned policy %q to %q", p.Name, d.Hostname)
+	s.policiesChanged()
 	s.redirect(w, r, back, "Saved.")
+}
+
+// ---- who may manage which policy
+
+// canManagePolicy: administrators manage every policy; technicians the
+// policies of their customers.
+func canManagePolicy(u *store.User, p *store.Policy) bool {
+	if u.IsAdmin() {
+		return true
+	}
+	return u.CanWrite() && p.CustomerID != nil && u.SeesCustomer(*p.CustomerID)
+}
+
+// targetCustomer is the customer of a customer, site or device.
+func (s *Server) targetCustomer(ctx context.Context, kind string, id int64) (int64, bool) {
+	switch kind {
+	case "customer":
+		if _, err := s.store.Customer(ctx, id); err == nil {
+			return id, true
+		}
+	case "site":
+		if x, err := s.store.Site(ctx, id); err == nil {
+			return x.CustomerID, true
+		}
+	case "device":
+		if d, err := s.store.Device(ctx, id); err == nil {
+			return d.CustomerID, true
+		}
+	}
+	return 0, false
+}
+
+// mayAssign reports whether the user may give policy p to the target: the
+// user sees the target, and a customer's policy stays within its customer.
+func (s *Server) mayAssign(ctx context.Context, u *store.User, p *store.Policy, kind string, id int64) bool {
+	cid, ok := s.targetCustomer(ctx, kind, id)
+	if !ok || !u.SeesCustomer(cid) || !canManagePolicy(u, p) {
+		return false
+	}
+	return p.CustomerID == nil || *p.CustomerID == cid
+}
+
+// policiesChanged applies changed alert rules at once; the other parts
+// follow their own schedules.
+func (s *Server) policiesChanged() {
+	go s.CheckAlerts(context.Background()) // #nosec G118 -- runs after the response; own work
 }

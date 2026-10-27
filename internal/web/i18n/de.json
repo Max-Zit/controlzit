@@ -1389,5 +1389,22 @@
   "the system drive has no recovery key; prepare first": "das Systemlaufwerk hat keinen Wiederherstellungsschlüssel; zuerst vorbereiten",
   "the system drive has no recovery key; the encryption was not started": "das Systemlaufwerk hat keinen Wiederherstellungsschlüssel; die Verschlüsselung wurde nicht gestartet",
   "the validity must be 0 (no end) to 3650 days": "die Gültigkeit muss 0 (kein Ende) bis 3650 Tage betragen",
-  "this computer has no TPM": "dieser Computer hat kein TPM"
+  "this computer has no TPM": "dieser Computer hat kein TPM",
+  "A customer's policy can only be assigned to that customer, its sites and devices, and its technicians manage it. Chosen once.": "Die Richtlinie eines Kunden kann nur diesem Kunden, seinen Standorten und Geräten zugewiesen werden, und seine Techniker verwalten sie. Wird einmal gewählt.",
+  "Add a program": "Programm hinzufügen",
+  "Add an automation": "Automatisierung hinzufügen",
+  "Applies to": "Gilt für",
+  "Choose a customer, site or device of this policy.": "Wählen Sie einen Kunden, Standort oder ein Gerät dieser Richtlinie.",
+  "Choose the customer": "Kunden wählen",
+  "Choose the customer of the policy.": "Wählen Sie den Kunden der Richtlinie.",
+  "For the software library choose the package from the list (its number); for winget and Chocolatey enter the package ID.": "Für die Softwarebibliothek wählen Sie das Paket aus der Liste (seine Nummer); für winget und Chocolatey geben Sie die Paket-ID ein.",
+  "all customers": "alle Kunden",
+  "all customers (the whole server)": "alle Kunden (der ganze Server)",
+  "A policy sets Windows Update, required software, alert rules and automations for the customers, sites or devices it is assigned to. For each part, the most specific assignment that sets it applies (device, then site, then customer). Every customer gets its own policy Default when it is created; without any policy, the built-in defaults apply (no automatic updates, standard alert rules).": "Eine Richtlinie legt Windows Update, erforderliche Software, Alarmregeln und Automatisierungen für die Kunden, Standorte oder Geräte fest, denen sie zugewiesen ist. Für jeden Teil gilt die spezifischste Zuweisung, die ihn festlegt (Gerät, dann Standort, dann Kunde). Jeder Kunde erhält beim Anlegen eine eigene Richtlinie Default; ohne Richtlinie gelten die eingebauten Standardwerte (keine automatischen Updates, Standard-Alarmregeln).",
+  "Alert emails and channels": "Alarm-E-Mails und Kanäle",
+  "Alert rules are set in the policies of the customers, sites and devices.": "Alarmregeln werden in den Richtlinien der Kunden, Standorte und Geräte festgelegt.",
+  "Delete policy %s? Its customers, sites and devices fall back to less specific policies or the built-in defaults.": "Richtlinie %s löschen? Ihre Kunden, Standorte und Geräte fallen auf weniger spezifische Richtlinien oder die eingebauten Standardwerte zurück.",
+  "Switch on the parts this policy sets. A part that is off comes from a less specific policy or from the built-in defaults.": "Schalten Sie die Teile ein, die diese Richtlinie festlegt. Ein ausgeschalteter Teil kommt aus einer weniger spezifischen Richtlinie oder aus den eingebauten Standardwerten.",
+  "built-in defaults": "eingebaute Standardwerte",
+  "set by the policies": "in den Richtlinien festgelegt"
 }

@@ -66,15 +66,19 @@ check "remote desktop audited" '$C "$S/audit?q=rd.start" | grep -q "rd.start"'
 # --- alerts and email (watch a service that is already stopped)
 STOPPED=$(echo "$D" | sed 's/<[^>]*>/ /g' | grep -o "Automatic services that are not running: [A-Za-z0-9_.,-]*" | sed 's/.*running: //; s/,.*//')
 before=$(curl -s "http://192.168.101.102:8025/api/v1/messages?limit=1" | grep -o '"total":[0-9]*' | cut -d: -f2)
-form="cpu_percent=90&cpu_minutes=15&mem_percent=90&mem_minutes=15&disk_percent=90&disk_min_free_gb=5&offline_minutes=15&reboot_days=7&defender_off=1&firewall_off=1&email_on_open=1&email_on_resolve=1&recipients=stefan-test@maxzit.test"
-$C -o /dev/null -d "$form&watch_services=$STOPPED" $S/settings/monitoring
+rules="alerts_set=1&cpu_percent=90&cpu_minutes=15&mem_percent=90&mem_minutes=15&disk_percent=90&disk_min_free_gb=5&offline_minutes=15&reboot_days=7&defender_off=1&firewall_off=1"
+$C -o /dev/null -d "email_on_open=1&email_on_resolve=1&recipients=stefan-test@maxzit.test" $S/settings/monitoring
+# the alert rules come from a policy of the device, removed afterwards
+APOL=$($C -o /dev/null -w '%{redirect_url}' -d "name=Regress+alerts&$rules&watch_services=$STOPPED" $S/policies/new | grep -o '[0-9]*$')
+$C -o /dev/null -d "target=device:$DEV" $S/policies/$APOL/assign
 sleep 4
 check "alert opens for watched service $STOPPED" '$C $S/alerts | grep -q "$STOPPED"'
 after=$(curl -s "http://192.168.101.102:8025/api/v1/messages?limit=1" | grep -o '"total":[0-9]*' | cut -d: -f2)
 check "alert email sent" '[ "$after" -gt "$before" ]'
-$C -o /dev/null -d "$form&watch_services=Spooler" $S/settings/monitoring
+$C -o /dev/null -d "name=Regress+alerts&$rules&watch_services=Spooler" $S/policies/$APOL
 sleep 4
 check "alert resolves when the rule changes" '! $C $S/alerts | grep -q "$STOPPED"'
+$C -o /dev/null -X POST $S/policies/$APOL/delete
 
 # --- remote actions: services, processes, scripts, power
 script() { # shell, script → body of the result page
@@ -145,7 +149,7 @@ check "BitLocker page lists the recovery keys" '$C "$S/devices/$DEV/bitlocker" |
 # --- Windows updates
 check "device reports Windows updates" '$C $S/devices/$DEV/updates | grep -q "Searched"'
 check "updates overview lists the device" '$C $S/updates | grep -q "/devices/$DEV/updates"'
-check "update policy page" '$C $S/settings/updates | grep -q "name=\"mode\""'
+check "Windows Update part on the policy page" '$C $S/policies/new | grep -q "name=\"mode\""'
 
 # --- script library and jobs
 LIBNAME="regress-$RANDOM"

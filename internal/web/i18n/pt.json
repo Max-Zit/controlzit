@@ -1389,5 +1389,22 @@
   "the system drive has no recovery key; prepare first": "a unidade do sistema não tem chave de recuperação; prepare primeiro",
   "the system drive has no recovery key; the encryption was not started": "a unidade do sistema não tem chave de recuperação; a criptografia não foi iniciada",
   "the validity must be 0 (no end) to 3650 days": "a validade deve ser de 0 (sem fim) a 3650 dias",
-  "this computer has no TPM": "este computador não tem TPM"
+  "this computer has no TPM": "este computador não tem TPM",
+  "A customer's policy can only be assigned to that customer, its sites and devices, and its technicians manage it. Chosen once.": "A política de um cliente só pode ser atribuída a esse cliente, seus locais e dispositivos, e seus técnicos a gerenciam. Escolhido uma vez.",
+  "Add a program": "Adicionar um programa",
+  "Add an automation": "Adicionar uma automação",
+  "Applies to": "Vale para",
+  "Choose a customer, site or device of this policy.": "Escolha um cliente, local ou dispositivo desta política.",
+  "Choose the customer": "Escolha o cliente",
+  "Choose the customer of the policy.": "Escolha o cliente da política.",
+  "For the software library choose the package from the list (its number); for winget and Chocolatey enter the package ID.": "Para a biblioteca de software, escolha o pacote na lista (o número dele); para winget e Chocolatey, informe o ID do pacote.",
+  "all customers": "todos os clientes",
+  "all customers (the whole server)": "todos os clientes (o servidor inteiro)",
+  "A policy sets Windows Update, required software, alert rules and automations for the customers, sites or devices it is assigned to. For each part, the most specific assignment that sets it applies (device, then site, then customer). Every customer gets its own policy Default when it is created; without any policy, the built-in defaults apply (no automatic updates, standard alert rules).": "Uma política define o Windows Update, o software obrigatório, as regras de alerta e as automações dos clientes, locais ou dispositivos aos quais é atribuída. Para cada parte vale a atribuição mais específica que a define (dispositivo, depois local, depois cliente). Cada cliente recebe sua própria política Default ao ser criado; sem nenhuma política valem os padrões internos (sem atualizações automáticas, regras de alerta padrão).",
+  "Alert emails and channels": "E-mails e canais de alerta",
+  "Alert rules are set in the policies of the customers, sites and devices.": "As regras de alerta são definidas nas políticas dos clientes, locais e dispositivos.",
+  "Delete policy %s? Its customers, sites and devices fall back to less specific policies or the built-in defaults.": "Excluir a política %s? Seus clientes, locais e dispositivos passam para políticas menos específicas ou para os padrões internos.",
+  "Switch on the parts this policy sets. A part that is off comes from a less specific policy or from the built-in defaults.": "Ative as partes que esta política define. Uma parte desativada vem de uma política menos específica ou dos padrões internos.",
+  "built-in defaults": "padrões internos",
+  "set by the policies": "definido pelas políticas"
 }

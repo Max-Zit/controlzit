@@ -109,13 +109,9 @@ func lines(s string) []string {
 }
 
 func (s *Server) handleMonitoringSave(w http.ResponseWriter, r *http.Request) {
-	m := MonitoringSettings{
-		CPUPercent: formInt(r, "cpu_percent"), CPUMinutes: formInt(r, "cpu_minutes"), MemPercent: formInt(r, "mem_percent"), MemMinutes: formInt(r, "mem_minutes"),
-		DiskPercent: formInt(r, "disk_percent"), DiskMinFreeGB: formInt(r, "disk_min_free_gb"), OfflineMinutes: formInt(r, "offline_minutes"),
-		RebootDays: formInt(r, "reboot_days"), DefenderOff: r.FormValue("defender_off") == "1", FirewallOff: r.FormValue("firewall_off") == "1",
-		WatchServices: lines(r.FormValue("watch_services")), EmailOnOpen: r.FormValue("email_on_open") == "1",
-		EmailOnResolve: r.FormValue("email_on_resolve") == "1", Recipients: lines(r.FormValue("recipients")),
-	}
+	// The alert rules are in the policies; here only the alert emails.
+	m := s.Monitoring(r.Context())
+	m.EmailOnOpen, m.EmailOnResolve, m.Recipients = r.FormValue("email_on_open") == "1", r.FormValue("email_on_resolve") == "1", lines(r.FormValue("recipients"))
 	if err := m.Validate(); err != nil {
 		s.showMonitoring(w, r, http.StatusBadRequest, m, s.Email(r.Context()), err.Error())
 		return
@@ -124,9 +120,7 @@ func (s *Server) handleMonitoringSave(w http.ResponseWriter, r *http.Request) {
 		s.serverError(w, r, err)
 		return
 	}
-	s.audit(r, "settings.monitoring", "settings", "cpu %d%%/%dmin, memory %d%%/%dmin, disk %d%% or <%d GB, offline %dmin, restart %dd, defender %v, firewall %v, services %v, email %v/%v to %v",
-		m.CPUPercent, m.CPUMinutes, m.MemPercent, m.MemMinutes, m.DiskPercent, m.DiskMinFreeGB, m.OfflineMinutes, m.RebootDays, m.DefenderOff, m.FirewallOff,
-		m.WatchServices, m.EmailOnOpen, m.EmailOnResolve, m.Recipients)
+	s.audit(r, "settings.monitoring", "settings", "alert emails %v/%v to %v", m.EmailOnOpen, m.EmailOnResolve, m.Recipients)
 	go s.CheckAlerts(context.Background()) // #nosec G118 -- runs after the response; own work
 	s.redirect(w, r, "/settings/monitoring", "Saved.")
 }

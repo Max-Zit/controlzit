@@ -3,7 +3,7 @@
 {{$d := .Data.D}}
 <p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a> / <a href="/devices/{{$d.ID}}">{{$d.Hostname}}</a></p>
 <h1>{{template "icon" "lock"}}BitLocker <span class="muted h1-sub">{{$d.Hostname}}</span></h1>
-{{template "devtabs" (devtabs . $d "")}}
+{{template "devtabs" (devtabs . $d "bitlocker")}}
 
 <section class="panel">
   <h2>{{.T "State"}}</h2>

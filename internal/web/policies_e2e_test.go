@@ -6,6 +6,7 @@ import (
 	"context"
 	"crypto/ed25519"
 	"crypto/rand"
+	"encoding/json"
 	"net/http"
 	"net/url"
 	"os"
@@ -15,12 +16,15 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/controlzit/internal/web"
 )
 
 // A policy made in the console, assigned to a customer: the device page
 // shows where each part comes from, a missing required program is installed
 // once (not again while it is retried later), a device policy overrides the
-// customer's, and removing assignments falls back to the server settings.
+// customer's, and removing assignments falls back to the built-in defaults.
 func TestPolicies(t *testing.T) {
 	e := newEnv(t)
 	e.useRealClock()
@@ -98,12 +102,12 @@ func TestPolicies(t *testing.T) {
 	if b := admin.get(base + "/policy").body; strings.Count(b, `href="/policies/`+pid+`"`) != 3 {
 		t.Fatal("parts not set by the device policy must come from the customer")
 	}
-	// Deleting the customer's policy: the server settings apply.
+	// Deleting the customer's policy: the built-in defaults apply.
 	if r := admin.post("/policies/" + pid + "/delete"); r.code != http.StatusSeeOther {
 		t.Fatalf("delete: %d", r.code)
 	}
-	if b := admin.get(base + "/policy").body; strings.Count(b, "server settings") != 5 {
-		t.Fatal("fallback to the server settings")
+	if b := admin.get(base + "/policy").body; strings.Count(b, "built-in defaults") != 5 {
+		t.Fatal("fallback to the built-in defaults")
 	}
 	if b := admin.get("/policies").body; !strings.Contains(b, "Empty") || strings.Contains(b, ">Office<") {
 		t.Fatal("policy list")
@@ -126,7 +130,7 @@ func TestPolicyAutomations(t *testing.T) {
 	sid := strings.TrimPrefix(r.loc, "/scripts/")
 	now := time.Now()
 	r = admin.do(http.MethodPost, "/policies/new", url.Values{"name": {"Auto"}, "automations_set": {"1"},
-		"auto_script": {sid, ""}, "auto_time": {now.Format("15:04"), "22:00"}, "auto_day_0": {strconv.Itoa(int(now.Weekday()))}}, nil)
+		"auto_key": {"a", "b"}, "auto_script": {sid, ""}, "auto_time": {now.Format("15:04"), "22:00"}, "auto_day": {"a:" + strconv.Itoa(int(now.Weekday())), "b:1"}}, nil)
 	pid := strings.TrimPrefix(r.loc, "/policies/")
 	if _, err := strconv.Atoi(pid); err != nil {
 		t.Fatalf("new policy: %s", r.loc)
@@ -142,4 +146,164 @@ func TestPolicyAutomations(t *testing.T) {
 		j, err := e.st.Job(ctx, jobs[0].ID)
 		return err == nil && j.Done == 1
 	})
+}
+
+// A technician limited to one customer manages only that customer's
+// policies, assigns them only within it, and cannot set BitLocker; a policy
+// of the whole server is for administrators.
+func TestPolicyOwners(t *testing.T) {
+	e := newEnv(t)
+	e.useRealClock()
+	_, key, _ := ed25519.GenerateKey(rand.Reader)
+	e.srv.CommandKey = key
+	d, stop := startAgent(t, e) // customer "Files Inc"
+	defer stop()
+	admin, _ := e.setupAdmin("192.168.1.10")
+	ctx := context.Background()
+	other, _ := e.st.CreateCustomer(ctx, "Other Ltd", "")
+	mine := d.CustomerID
+
+	admin.post("/users", "username", "tech", "password", "tech password 123", "role", "technician", "customers", itoa(mine))
+	tc := e.client("192.168.1.40")
+	tc.post("/login", "username", "tech", "password", "tech password 123")
+	sec := secretRE.FindStringSubmatch(tc.get("/login/enroll").body)[1]
+	tc.post("/login/enroll", "code", e.code(sec))
+	tc.post("/account/password", "current", "tech password 123", "password", "tech password 1234", "password2", "tech password 1234")
+
+	// A server-wide policy (administrator) is invisible to the technician.
+	r := admin.do(http.MethodPost, "/policies/new", url.Values{"name": {"Global"}, "customer": {"0"}}, nil)
+	global := strings.TrimPrefix(r.loc, "/policies/")
+	if c := tc.get("/policies/" + global).code; c != http.StatusNotFound {
+		t.Fatalf("technician sees a server-wide policy: %d", c)
+	}
+	// The technician cannot make a server-wide policy or one of another customer.
+	for _, cust := range []string{"0", itoa(other)} {
+		if r := tc.do(http.MethodPost, "/policies/new", url.Values{"name": {"Mine " + cust}, "customer": {cust}}, nil); r.loc != "/policies/new" {
+			t.Fatalf("technician policy for customer %s: %s", cust, r.loc)
+		}
+	}
+	// A policy of the technician's customer; BitLocker in the form is ignored.
+	r = tc.do(http.MethodPost, "/policies/new", url.Values{"name": {"Files policy"}, "customer": {itoa(mine)}, "bitlocker_set": {"1"}, "bitlocker_require": {"1"}}, nil)
+	pid := strings.TrimPrefix(r.loc, "/policies/")
+	if _, err := strconv.Atoi(pid); err != nil {
+		t.Fatalf("technician policy: %s", r.loc)
+	}
+	if p, err := e.st.Policy(ctx, int64(atoi(pid))); err != nil || strings.Contains(string(p.Settings), "bitlocker") || p.CustomerID == nil || *p.CustomerID != mine {
+		t.Fatalf("stored policy: %+v %v", p, err)
+	}
+	// Assign within the customer only.
+	if r := tc.post("/policies/"+pid+"/assign", "target", "customer:"+itoa(other)); !strings.Contains(r.loc, "/policies/"+pid) || len(mustAssignments(t, e, pid)) != 0 {
+		t.Fatal("assigned to another customer")
+	}
+	tc.post("/policies/"+pid+"/assign", "target", "device:"+itoa(d.ID))
+	if len(mustAssignments(t, e, pid)) != 1 {
+		t.Fatal("assigning to the technician's device failed")
+	}
+	// The administrator cannot give a customer's policy to another customer either.
+	admin.post("/policies/"+pid+"/assign", "target", "customer:"+itoa(other))
+	if len(mustAssignments(t, e, pid)) != 1 {
+		t.Fatal("a customer's policy left its customer")
+	}
+	if b := tc.get("/policies").body; !strings.Contains(b, "Files policy") || strings.Contains(b, "Global") {
+		t.Fatal("technician's policy list")
+	}
+}
+
+func mustAssignments(t *testing.T, e *env, pid string) []store.Assignment {
+	t.Helper()
+	as, err := e.st.PolicyAssignments(context.Background(), int64(atoi(pid)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return as
+}
+
+func atoi(s string) int {
+	n, _ := strconv.Atoi(s)
+	return n
+}
+
+// customerPolicy makes a policy from the form fields and assigns it to a
+// customer.
+func customerPolicy(t *testing.T, c *client, customerID int64, kv ...string) string {
+	t.Helper()
+	r := c.post("/policies/new", kv...)
+	pid := strings.TrimPrefix(r.loc, "/policies/")
+	if _, err := strconv.Atoi(pid); err != nil {
+		t.Fatalf("new policy: %d %s", r.code, r.loc)
+	}
+	if r := c.post("/policies/"+pid+"/assign", "target", "customer:"+itoa(customerID)); r.code != http.StatusSeeOther {
+		t.Fatalf("assign: %d", r.code)
+	}
+	return pid
+}
+
+// A new customer gets its own Default policy with the built-in settings; on
+// the upgrade, existing customers get one once, with the server's former
+// Windows Update and alert settings.
+func TestDefaultPolicies(t *testing.T) {
+	e := newEnv(t)
+	admin, _ := e.setupAdmin("192.168.1.10")
+	ctx := context.Background()
+
+	old, _ := e.st.CreateCustomer(ctx, "Old Ltd", "")
+	if err := e.st.SetSetting(ctx, "patch_policy", web.PatchPolicy{Mode: web.PatchAutoAll, Days: []int{5}, Hour: 2}); err != nil {
+		t.Fatal(err)
+	}
+	m := map[string]any{"cpu_percent": 80, "cpu_minutes": 15, "mem_percent": 90, "mem_minutes": 15, "disk_percent": 90, "disk_min_free_gb": 5,
+		"offline_minutes": 15, "reboot_days": 7, "recipients": []string{"it@example.com"}}
+	if err := e.st.SetSetting(ctx, "monitoring", m); err != nil {
+		t.Fatal(err)
+	}
+	defaultOf := func(customer int64) (*store.Policy, web.PolicySettings) {
+		t.Helper()
+		as, err := e.st.Assignments(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, a := range as {
+			if a.TargetType == "customer" && a.TargetID == customer {
+				p, err := e.st.Policy(ctx, a.PolicyID)
+				if err != nil {
+					t.Fatal(err)
+				}
+				var ps web.PolicySettings
+				_ = json.Unmarshal(p.Settings, &ps)
+				return p, ps
+			}
+		}
+		return nil, web.PolicySettings{}
+	}
+	if err := e.srv.MigrateCustomerPolicies(ctx); err != nil {
+		t.Fatal(err)
+	}
+	p, ps := defaultOf(old)
+	if p == nil || p.Name != "Default" || p.CustomerID == nil || *p.CustomerID != old ||
+		ps.Updates == nil || ps.Updates.Mode != web.PatchAutoAll || ps.Alerts == nil || ps.Alerts.CPUPercent != 80 {
+		t.Fatalf("migrated policy: %+v %+v", p, ps)
+	}
+	// Once only: a removed assignment stays removed.
+	if r := admin.post("/policies/"+itoa(p.ID)+"/unassign", "target", "customer:"+itoa(old)); r.code != http.StatusSeeOther {
+		t.Fatalf("unassign: %d", r.code)
+	}
+	if err := e.srv.MigrateCustomerPolicies(ctx); err != nil {
+		t.Fatal(err)
+	}
+	if p, _ := defaultOf(old); p != nil {
+		t.Fatal("migration ran twice")
+	}
+
+	r := admin.post("/customers", "name", "New Ltd")
+	id := int64(atoi(strings.TrimPrefix(r.loc, "/customers/")))
+	p, ps = defaultOf(id)
+	if p == nil || p.Name != "Default" || ps.Updates == nil || ps.Updates.Mode != web.PatchAutoOff || ps.Alerts == nil || ps.Alerts.CPUPercent != 90 {
+		t.Fatalf("new customer's policy: %+v %+v", p, ps)
+	}
+	// The settings page keeps only the alert emails.
+	if b := admin.get("/settings/monitoring").body; strings.Contains(b, `name="cpu_percent"`) || !strings.Contains(b, "it@example.com") {
+		t.Fatal("monitoring settings page")
+	}
+	if r := admin.get("/settings/updates"); r.code != http.StatusNotFound {
+		t.Fatalf("old update settings page: %d", r.code)
+	}
 }

@@ -1389,5 +1389,22 @@
   "the system drive has no recovery key; prepare first": "dysk systemowy nie ma klucza odzyskiwania; najpierw przygotuj",
   "the system drive has no recovery key; the encryption was not started": "dysk systemowy nie ma klucza odzyskiwania; szyfrowanie nie zostało uruchomione",
   "the validity must be 0 (no end) to 3650 days": "ważność musi wynosić od 0 (bez końca) do 3650 dni",
-  "this computer has no TPM": "ten komputer nie ma modułu TPM"
+  "this computer has no TPM": "ten komputer nie ma modułu TPM",
+  "A customer's policy can only be assigned to that customer, its sites and devices, and its technicians manage it. Chosen once.": "Zasadę klienta można przypisać tylko temu klientowi, jego lokalizacjom i urządzeniom, a zarządzają nią jego technicy. Wybierana raz.",
+  "Add a program": "Dodaj program",
+  "Add an automation": "Dodaj automatyzację",
+  "Applies to": "Dotyczy",
+  "Choose a customer, site or device of this policy.": "Wybierz klienta, lokalizację lub urządzenie tej zasady.",
+  "Choose the customer": "Wybierz klienta",
+  "Choose the customer of the policy.": "Wybierz klienta zasady.",
+  "For the software library choose the package from the list (its number); for winget and Chocolatey enter the package ID.": "Dla biblioteki oprogramowania wybierz pakiet z listy (jego numer); dla winget i Chocolatey wpisz identyfikator pakietu.",
+  "all customers": "wszyscy klienci",
+  "all customers (the whole server)": "wszyscy klienci (cały serwer)",
+  "A policy sets Windows Update, required software, alert rules and automations for the customers, sites or devices it is assigned to. For each part, the most specific assignment that sets it applies (device, then site, then customer). Every customer gets its own policy Default when it is created; without any policy, the built-in defaults apply (no automatic updates, standard alert rules).": "Zasada ustawia Windows Update, wymagane oprogramowanie, reguły alertów i automatyzacje dla klientów, lokalizacji lub urządzeń, do których jest przypisana. Dla każdej części obowiązuje najbardziej szczegółowe przypisanie, które ją ustawia (urządzenie, potem lokalizacja, potem klient). Każdy klient przy utworzeniu dostaje własną zasadę Default; bez żadnej zasady obowiązują wbudowane wartości domyślne (bez automatycznych aktualizacji, standardowe reguły alertów).",
+  "Alert emails and channels": "E-maile i kanały alertów",
+  "Alert rules are set in the policies of the customers, sites and devices.": "Reguły alertów ustawia się w zasadach klientów, lokalizacji i urządzeń.",
+  "Delete policy %s? Its customers, sites and devices fall back to less specific policies or the built-in defaults.": "Usunąć zasadę %s? Jej klienci, lokalizacje i urządzenia przechodzą na mniej szczegółowe zasady lub wbudowane wartości domyślne.",
+  "Switch on the parts this policy sets. A part that is off comes from a less specific policy or from the built-in defaults.": "Włącz części, które ustawia ta zasada. Wyłączona część pochodzi z mniej szczegółowej zasady lub z wbudowanych wartości domyślnych.",
+  "built-in defaults": "wbudowane wartości domyślne",
+  "set by the policies": "ustawiane w zasadach"
 }

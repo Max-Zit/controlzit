@@ -554,7 +554,7 @@ func (s *Server) apiPolicyAssign(r *http.Request, u *store.User) (int, any, erro
 		return 0, nil, err
 	}
 	kind, tid, ok := parseTargetRef(q.Target)
-	if !ok || !s.targetExists(r, kind, tid) {
+	if !ok || !s.mayAssign(r.Context(), u, p, kind, tid) {
 		return 0, nil, apiErr(http.StatusBadRequest, "target must be customer:ID, site:ID or device:ID")
 	}
 	if err := s.store.Assign(r.Context(), kind, tid, p.ID, u.Username); err != nil {

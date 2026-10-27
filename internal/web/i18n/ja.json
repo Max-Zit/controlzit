@@ -1389,5 +1389,22 @@
   "the system drive has no recovery key; prepare first": "システム ドライブに回復キーがありません。先に準備を実行してください",
   "the system drive has no recovery key; the encryption was not started": "システム ドライブに回復キーがないため、暗号化は開始されていません",
   "the validity must be 0 (no end) to 3650 days": "有効期間は 0（無期限）～3650 日にしてください",
-  "this computer has no TPM": "このコンピューターには TPM がありません"
+  "this computer has no TPM": "このコンピューターには TPM がありません",
+  "A customer's policy can only be assigned to that customer, its sites and devices, and its technicians manage it. Chosen once.": "顧客のポリシーは、その顧客とそのサイト、デバイスにのみ割り当てられ、その顧客の技術者が管理します。一度だけ選択します。",
+  "Add a program": "プログラムを追加",
+  "Add an automation": "自動化を追加",
+  "Applies to": "適用対象",
+  "Choose a customer, site or device of this policy.": "このポリシーの顧客、サイト、またはデバイスを選択してください。",
+  "Choose the customer": "顧客を選択",
+  "Choose the customer of the policy.": "ポリシーの顧客を選択してください。",
+  "For the software library choose the package from the list (its number); for winget and Chocolatey enter the package ID.": "ソフトウェア ライブラリの場合は一覧からパッケージ（番号）を選択し、winget と Chocolatey の場合はパッケージ ID を入力します。",
+  "all customers": "すべての顧客",
+  "all customers (the whole server)": "すべての顧客（サーバー全体）",
+  "A policy sets Windows Update, required software, alert rules and automations for the customers, sites or devices it is assigned to. For each part, the most specific assignment that sets it applies (device, then site, then customer). Every customer gets its own policy Default when it is created; without any policy, the built-in defaults apply (no automatic updates, standard alert rules).": "ポリシーは、割り当てられた顧客、サイト、デバイスの Windows Update、必須ソフトウェア、アラート ルール、自動化を設定します。各部分には、それを設定している最も具体的な割り当てが適用されます (デバイス、サイト、顧客の順)。各顧客は作成時に独自のポリシー Default を受け取ります。ポリシーがない場合は組み込みの既定値が適用されます (自動更新なし、標準のアラート ルール)。",
+  "Alert emails and channels": "アラート メールとチャネル",
+  "Alert rules are set in the policies of the customers, sites and devices.": "アラート ルールは顧客、サイト、デバイスのポリシーで設定します。",
+  "Delete policy %s? Its customers, sites and devices fall back to less specific policies or the built-in defaults.": "ポリシー %s を削除しますか? その顧客、サイト、デバイスは、より具体性の低いポリシーまたは組み込みの既定値に戻ります。",
+  "Switch on the parts this policy sets. A part that is off comes from a less specific policy or from the built-in defaults.": "このポリシーが設定する部分をオンにします。オフの部分は、より具体性の低いポリシーまたは組み込みの既定値から適用されます。",
+  "built-in defaults": "組み込みの既定値",
+  "set by the policies": "ポリシーで設定"
 }

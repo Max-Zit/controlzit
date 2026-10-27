@@ -4,7 +4,7 @@
 <div class="grid">
   <a class="stat" href="/updates?show=missing"><span class="si">{{template "icon" "download"}}</span><b>{{.Data.Missing}}</b><span>{{.T "devices with missing updates"}}</span></a>
   <a class="stat" href="/updates?show=reboot"><span class="si">{{template "icon" "refresh"}}</span><b>{{.Data.Reboot}}</b><span>{{.T "devices waiting for a restart"}}</span></a>
-  <div class="stat"><span class="si">{{template "icon" "clock"}}</span><b class="sm">{{if eq .Data.Policy.Mode "off"}}{{.T "off"}}{{else}}{{.T (print "auto-" .Data.Policy.Mode)}}{{end}}</b><span>{{.T "Automatic installation"}}{{if .User.IsAdmin}} · <a href="/settings/updates">{{.T "change"}}</a>{{end}}</span></div>
+  <div class="stat"><span class="si">{{template "icon" "policy"}}</span><b class="sm">{{.T "Policies"}}</b><span>{{.T "Automatic installation"}}: {{.T "set by the policies"}}{{if .User.CanWrite}} · <a href="/policies">{{.T "change"}}</a>{{end}}</span></div>
 </div>
 <section class="panel">
   <nav class="tabs" aria-label="{{.T "Filter"}}">

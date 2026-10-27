@@ -18,6 +18,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/max-zit/controlzit/internal/netacl"
@@ -27,16 +28,17 @@ import (
 
 // Server serves the console and the agent endpoint.
 type Server struct {
-	store *store.Store
-	pkg   packageCache
-	jobs  jobRunner
-	tasks taskRunner
-	log   *slog.Logger
-	tmpl  map[string]*template.Template
-	now   func() time.Time
-	guard *loginGuard
-	hub   *hub
-	rd    rdHub
+	store  *store.Store
+	pkg    packageCache
+	jobs   jobRunner
+	tasks  taskRunner
+	alerts sync.Mutex // one alert check at a time
+	log    *slog.Logger
+	tmpl   map[string]*template.Template
+	now    func() time.Time
+	guard  *loginGuard
+	hub    *hub
+	rd     rdHub
 
 	// TaskWait is how long a page waits for a new task (0: taskWait).
 	TaskWait time.Duration
@@ -356,20 +358,20 @@ func (s *Server) Handler() http.Handler {
 	app("GET /scripts/{sid}/run", s.handleJobNew)
 	app("POST /scripts/{sid}/run", s.handleJobCreate)
 	app("GET /jobs/{jid}", s.handleJob)
-	admin("GET /policies", s.handlePolicies)
-	admin("GET /policies/new", s.handlePolicy)
-	admin("POST /policies/new", s.handlePolicySave)
-	admin("GET /policies/{pid}", s.handlePolicy)
-	admin("POST /policies/{pid}", s.handlePolicySave)
-	admin("POST /policies/{pid}/delete", s.handlePolicyDelete)
-	admin("POST /policies/{pid}/assign", s.handlePolicyAssign)
-	admin("POST /policies/{pid}/unassign", s.handlePolicyUnassign)
+	app("GET /policies", s.handlePolicies)
+	app("GET /policies/new", s.handlePolicy)
+	app("POST /policies/new", s.handlePolicySave)
+	app("GET /policies/{pid}", s.handlePolicy)
+	app("POST /policies/{pid}", s.handlePolicySave)
+	app("POST /policies/{pid}/delete", s.handlePolicyDelete)
+	app("POST /policies/{pid}/assign", s.handlePolicyAssign)
+	app("POST /policies/{pid}/unassign", s.handlePolicyUnassign)
 	app("GET /devices/{id}/policy", s.handleDevicePolicy)
 	app("GET /devices/{id}/bitlocker", s.handleBitLocker)
 	app("POST /devices/{id}/bitlocker/collect", s.handleBitLockerCollect)
 	admin("POST /devices/{id}/bitlocker/enable", s.handleBitLockerEnable)
 	admin("POST /devices/{id}/bitlocker/reveal", s.handleBitLockerReveal)
-	admin("POST /devices/{id}/policy", s.handleDevicePolicyAssign)
+	app("POST /devices/{id}/policy", s.handleDevicePolicyAssign)
 	app("GET /software", s.handleSwLibrary)
 	app("GET /software/{pid}", s.handleSwPackage)
 	app("GET /software/{pid}/run", s.handleSwRunNew)
@@ -435,8 +437,6 @@ func (s *Server) Handler() http.Handler {
 	admin("GET /settings/security", s.handleSecurity)
 	admin("POST /settings/security", s.handleSecuritySave)
 	admin("POST /settings/security/unblock", s.handleUnblock)
-	admin("GET /settings/updates", s.handlePatchPolicy)
-	admin("POST /settings/updates", s.handlePatchPolicySave)
 	admin("GET /settings/reports", s.handleReportSettings)
 	admin("POST /settings/reports", s.handleReportSettingsSave)
 	admin("POST /settings/reports/send", s.handleReportSend)

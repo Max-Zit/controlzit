@@ -1389,5 +1389,22 @@
   "the system drive has no recovery key; prepare first": "у системного диска нет ключа восстановления; сначала выполните подготовку",
   "the system drive has no recovery key; the encryption was not started": "у системного диска нет ключа восстановления; шифрование не запущено",
   "the validity must be 0 (no end) to 3650 days": "срок действия должен быть от 0 (бессрочно) до 3650 дней",
-  "this computer has no TPM": "на этом компьютере нет TPM"
+  "this computer has no TPM": "на этом компьютере нет TPM",
+  "A customer's policy can only be assigned to that customer, its sites and devices, and its technicians manage it. Chosen once.": "Политику клиента можно назначить только этому клиенту, его площадкам и устройствам, и ею управляют его техники. Выбирается один раз.",
+  "Add a program": "Добавить программу",
+  "Add an automation": "Добавить автоматизацию",
+  "Applies to": "Действует для",
+  "Choose a customer, site or device of this policy.": "Выберите клиента, площадку или устройство этой политики.",
+  "Choose the customer": "Выберите клиента",
+  "Choose the customer of the policy.": "Выберите клиента политики.",
+  "For the software library choose the package from the list (its number); for winget and Chocolatey enter the package ID.": "Для библиотеки программ выберите пакет из списка (его номер); для winget и Chocolatey укажите ID пакета.",
+  "all customers": "все клиенты",
+  "all customers (the whole server)": "все клиенты (весь сервер)",
+  "A policy sets Windows Update, required software, alert rules and automations for the customers, sites or devices it is assigned to. For each part, the most specific assignment that sets it applies (device, then site, then customer). Every customer gets its own policy Default when it is created; without any policy, the built-in defaults apply (no automatic updates, standard alert rules).": "Политика задаёт Windows Update, обязательные программы, правила оповещений и автоматизации для клиентов, площадок или устройств, которым она назначена. Для каждой части действует самое конкретное назначение, которое её задаёт (устройство, затем площадка, затем клиент). Каждый клиент при создании получает собственную политику Default; без политики действуют встроенные значения по умолчанию (без автоматических обновлений, стандартные правила оповещений).",
+  "Alert emails and channels": "Письма и каналы оповещений",
+  "Alert rules are set in the policies of the customers, sites and devices.": "Правила оповещений задаются в политиках клиентов, площадок и устройств.",
+  "Delete policy %s? Its customers, sites and devices fall back to less specific policies or the built-in defaults.": "Удалить политику %s? Её клиенты, площадки и устройства перейдут на менее конкретные политики или на встроенные значения по умолчанию.",
+  "Switch on the parts this policy sets. A part that is off comes from a less specific policy or from the built-in defaults.": "Включите части, которые задаёт эта политика. Выключенная часть берётся из менее конкретной политики или из встроенных значений по умолчанию.",
+  "built-in defaults": "встроенные значения по умолчанию",
+  "set by the policies": "задаётся политиками"
 }

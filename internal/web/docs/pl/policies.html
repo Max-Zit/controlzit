@@ -9,17 +9,21 @@
   <li><b>Automatyzacje</b> — skrypty z biblioteki uruchamiane na urządzeniach zasady w wybrane dni o wybranej godzinie.</li>
   <li><b>BitLocker</b> — szyfrowanie dysku systemowego z kluczem odzyskiwania przechowywanym na serwerze.</li>
 </ul>
-<p>Każdą część włącza się lub wyłącza w zasadzie. Wyłączonej części ta zasada nie ustawia: pochodzi ona z mniej szczegółowej zasady lub z ustawień serwera (<a href="/settings/updates">Aktualizacje Windows</a>, <a href="/settings/monitoring">Monitorowanie i alerty</a>).</p>
+<p>Każdą część włącza się lub wyłącza w zasadzie. Wyłączonej części ta zasada nie ustawia: pochodzi z mniej szczegółowej zasady lub z wbudowanych wartości domyślnych (bez automatycznych aktualizacji, standardowe reguły alertów).</p>
 
 <h2 id="assign">Przypisywanie zasady</h2>
-<p>Zasady tworzy się w <a href="/policies">Zasady</a> (administratorzy). Na stronie zasady <b>Przypisz do</b> przypisuje ją klientowi, lokalizacji lub pojedynczemu urządzeniu; karta <b>Zasada</b> urządzenia ustawia własną zasadę urządzenia. Klient, lokalizacja lub urządzenie ma jedną zasadę; przypisanie innej ją zastępuje.</p>
-<p>Dla każdej części obowiązuje najbardziej szczegółowe przypisanie, które ją ustawia: zasada urządzenia, potem lokalizacji, potem klienta, a na końcu ustawienia serwera. Przykład: zasada klienta ustawia Windows Update i wymagane oprogramowanie, a zasada jednej lokalizacji tylko surowsze reguły alertów — urządzenia tej lokalizacji dostają aktualizacje i oprogramowanie klienta oraz reguły alertów lokalizacji.</p>
+<p>Zasady tworzy się w <a href="/policies">Zasady</a>. Na stronie zasady <b>Przypisz do</b> przypisuje ją klientowi, lokalizacji lub pojedynczemu urządzeniu; karta <b>Zasada</b> urządzenia ustawia własną zasadę urządzenia. Klient, lokalizacja lub urządzenie ma jedną zasadę; przypisanie innej ją zastępuje.</p>
+<p>Dla każdej części obowiązuje najbardziej szczegółowe przypisanie, które ją ustawia: zasada urządzenia, potem lokalizacji, potem klienta, potem wbudowane wartości domyślne. Przykład: zasada klienta ustawia Windows Update i wymagane oprogramowanie, zasada lokalizacji tylko ostrzejsze reguły alertów — urządzenia tej lokalizacji dostają aktualizacje i oprogramowanie klienta oraz reguły alertów lokalizacji.</p>
+
+<p>Zasada należy albo do <b>jednego klienta</b>, albo do <b>całego serwera</b>, co wybiera się przy jej tworzeniu. Technicy tworzą i zmieniają zasady swoich klientów oraz przypisują je tym klientom, ich lokalizacjom i urządzeniom; administratorzy zarządzają wszystkimi zasadami i tylko oni tworzą zasady dla całego serwera i ustawiają część BitLocker. Zasady klienta nigdy nie można przypisać poza tego klienta.</p>
+
+<p>Każdy nowy klient dostaje własną zasadę <b>Default</b>, przypisaną do niego, z wbudowanymi ustawieniami Windows Update i alertów; zmień ją albo nadaj lokalizacjom i urządzeniom własne zasady. Przy aktualizacji do wersji 0.6.3 każdy istniejący klient bez zasady dostał zasadę Default z dotychczasowymi ustawieniami serwera dla Windows Update i alertów, których nie ma już w Ustawieniach.</p>
 
 <h2 id="software">Wymagane oprogramowanie</h2>
 <p>Każdy wymagany program ma źródło — <a href="/software">bibliotekę oprogramowania</a>, winget lub Chocolatey — oraz tekst, który zawiera jego nazwa na liście zainstalowanych programów Windows (na przykład <i>7-Zip</i>). Co kilka minut serwer porównuje wymagane programy z inwentarzem każdego urządzenia z Windows, które jest online; brakujący program jest instalowany jako zadanie widoczne w <a href="/docs/devices#activity">Aktywności</a> urządzenia. Po instalacji urządzenie wysyła nowy inwentarz. Jeśli programu nadal brakuje, serwer ponawia próbę po 6 godzinach. Nic nie jest instalowane, zanim urządzenie wyśle pierwszy inwentarz.</p>
 
 <h2 id="alerts">Reguły alertów</h2>
-<p>Progi zasady zastępują dla jej urządzeń progi serwera. E-maile i kanały czatu dla alertów pozostają te z <a href="/settings/monitoring">Monitorowanie i alerty</a>.</p>
+<p>Progi zasady obowiązują jej urządzenia. E-maile alertów i kanały czatu ustawia się dla całego serwera w <a href="/settings/monitoring">Monitorowanie i alerty</a>.</p>
 
 <h2 id="automations">Automatyzacje</h2>
 <p>Automatyzacja uruchamia skrypt z <a href="/scripts">biblioteki skryptów</a> w wybrane dni o wybranej godzinie (czas serwera) jako jedno zadanie dla wszystkich urządzeń, których automatyzacje pochodzą z tej zasady. Urządzenia offline uruchamiają go po połączeniu, w ciągu 24 godzin; wyniki są na stronie zadania i w Aktywności każdego urządzenia.</p>
@@ -29,4 +33,4 @@
 <p>Zasada z opcją <b>Wymagaj funkcji BitLocker na dysku systemowym</b> włącza ją na urządzeniach z Windows, których dysk systemowy nie jest zaszyfrowany. Agent najpierw sprawdza moduł TPM i dodaje klucz odzyskiwania; serwer zapisuje klucz i dopiero wtedy rozpoczyna się szyfrowanie (ochrona TPM, XTS-AES 256, tylko zajęte miejsce) w tle, podczas używania komputera. Urządzenia bez gotowego modułu TPM lub z edycją Windows bez funkcji BitLocker (Home) pokazują przyczynę w Aktywności, a serwer ponawia próbę po 6 godzinach. Administratorzy mogą też włączyć ją dla jednego urządzenia na jego stronie BitLocker.</p>
 
 <h2 id="device">Co obowiązuje urządzenie</h2>
-<p>Karta <b>Zasada</b> urządzenia pokazuje dla każdej części, która zasada ją ustawia (i czy jest przypisana do urządzenia, jego lokalizacji czy klienta) albo że obowiązują ustawienia serwera, stan każdego wymaganego programu (zainstalowany, brak, kiedy uruchomiono instalację), obowiązujące ustawienia Windows Update i alertów oraz automatyzacje.</p>
+<p>Karta <b>Zasada</b> urządzenia pokazuje dla każdej części, która zasada ją ustawia (i czy jest przypisana do urządzenia, jego lokalizacji czy klienta) lub że obowiązują wbudowane wartości domyślne, stan każdego wymaganego programu (zainstalowany, brak, kiedy rozpoczęto instalację), obowiązujące ustawienia Windows Update i alertów oraz automatyzacje.</p>

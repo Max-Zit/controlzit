@@ -9,17 +9,21 @@
   <li><b>Otomasyonlar</b> — ilkenin cihazlarında belirli günlerde belirli bir saatte çalışan kitaplık betikleri.</li>
   <li><b>BitLocker</b> — kurtarma anahtarı sunucuda tutulan sistem sürücüsü şifrelemesi.</li>
 </ul>
-<p>Her bölüm ilkede açılır veya kapatılır. Kapalı bir bölümü bu ilke belirlemez: daha az özel bir ilkeden veya sunucunun ayarlarından gelir (<a href="/settings/updates">Windows güncelleştirmeleri</a>, <a href="/settings/monitoring">İzleme ve uyarılar</a>).</p>
+<p>Her bölüm ilkede açılır veya kapatılır. Kapalı bir bölümü bu ilke ayarlamaz: daha az özel bir ilkeden veya yerleşik varsayılanlardan gelir (otomatik güncelleme yok, standart uyarı kuralları).</p>
 
 <h2 id="assign">İlke atama</h2>
-<p>İlkeler <a href="/policies">İlkeler</a> altında oluşturulur (yöneticiler). Bir ilkenin sayfasında <b>Şuna ata</b> onu bir müşteriye, bir konuma veya tek bir cihaza atar; bir cihazın <b>İlke</b> sekmesi cihazın kendi ilkesini belirler. Bir müşterinin, konumun veya cihazın tek bir ilkesi olur; başkasını atamak onun yerini alır.</p>
-<p>Her bölüm için onu belirleyen en özel atama geçerlidir: cihazın ilkesi, sonra konumun, sonra müşterinin, en son sunucu ayarları. Örnek: müşterinin ilkesi Windows Update'i ve gerekli yazılımı, bir konumun ilkesi yalnızca daha sıkı uyarı kurallarını belirler — o konumun cihazları müşterinin güncelleştirmelerini ve yazılımını, konumun uyarı kurallarını alır.</p>
+<p>İlkeler <a href="/policies">İlkeler</a> altında oluşturulur. Bir ilkenin sayfasında <b>Şuna ata</b> onu bir müşteriye, bir konuma veya tek bir cihaza atar; bir cihazın <b>İlke</b> sekmesi cihazın kendi ilkesini belirler. Bir müşterinin, konumun veya cihazın tek bir ilkesi olur; başkasını atamak onun yerini alır.</p>
+<p>Her bölüm için onu ayarlayan en özel atama geçerlidir: cihazın ilkesi, sonra konumun, sonra müşterinin, sonra yerleşik varsayılanlar. Örnek: müşterinin ilkesi Windows Update ve gerekli yazılımı, bir konumun ilkesi yalnızca daha sıkı uyarı kurallarını ayarlar — o konumun cihazları müşterinin güncellemelerini ve yazılımını, konumun uyarı kurallarını alır.</p>
+
+<p>Bir ilke ya <b>tek bir müşteriye</b> ya da <b>tüm sunucuya</b> aittir; bu, oluşturulurken seçilir. Teknisyenler müşterilerinin ilkelerini oluşturur, değiştirir ve bunları o müşterilere, konumlarına ve cihazlarına atar; yöneticiler tüm ilkeleri yönetir ve yalnızca onlar tüm sunucu için ilke oluşturur ve BitLocker bölümünü ayarlar. Bir müşterinin ilkesi hiçbir zaman o müşterinin dışına atanamaz.</p>
+
+<p>Her yeni müşteri, kendisine atanmış, yerleşik Windows Update ve uyarı ayarlarına sahip kendi <b>Default</b> ilkesini alır; bunu değiştirin veya konumlara ve cihazlara kendi ilkelerini verin. Sürüm 0.6.3'e yükseltmede, ilkesi olmayan her mevcut müşteri, sunucunun Ayarlar'da artık bulunmayan önceki Windows Update ve uyarı ayarlarıyla bir Default ilkesi aldı.</p>
 
 <h2 id="software">Gerekli yazılım</h2>
 <p>Her gerekli programın bir kaynağı — <a href="/software">yazılım kitaplığı</a>, winget veya Chocolatey — ve Windows'un yüklü programlar listesindeki adının içerdiği bir metin vardır (örneğin <i>7-Zip</i>). Sunucu birkaç dakikada bir gerekli programları çevrimiçi her Windows cihazının envanteriyle karşılaştırır; eksik bir program, cihazın <a href="/docs/devices#activity">Etkinlik</a> bölümünde gördüğünüz bir görev olarak yüklenir. Yüklemeden sonra cihaz yeni bir envanter gönderir. Program hâlâ eksikse sunucu 6 saat sonra yeniden dener. Bir cihaz ilk envanterini göndermeden hiçbir şey yüklenmez.</p>
 
 <h2 id="alerts">Uyarı kuralları</h2>
-<p>Bir ilkenin eşikleri, cihazları için sunucunun eşiklerinin yerini alır. Uyarı e-postaları ve sohbet kanalları <a href="/settings/monitoring">İzleme ve uyarılar</a>'dakiler olarak kalır.</p>
+<p>Bir ilkenin eşikleri cihazlarına uygulanır. Uyarı e-postaları ve sohbet kanalları tüm sunucu için <a href="/settings/monitoring">İzleme ve uyarılar</a> altında ayarlanır.</p>
 
 <h2 id="automations">Otomasyonlar</h2>
 <p>Bir otomasyon, <a href="/scripts">betik kitaplığındaki</a> bir betiği seçilen günlerde ve saatte (sunucu saati), otomasyonları bu ilkeden gelen tüm cihazlar için tek bir görev olarak çalıştırır. Çevrimdışı cihazlar bunu bağlandıklarında, 24 saat içinde çalıştırır; sonuçlar görevin sayfasında ve her cihazın Etkinlik bölümündedir.</p>
@@ -29,4 +33,4 @@
 <p><b>Sistem sürücüsünde BitLocker gerektir</b> seçeneği olan bir ilke, sistem sürücüsü şifrelenmemiş Windows cihazlarında onu açar. Aracı önce TPM'yi denetler ve bir kurtarma anahtarı ekler; sunucu anahtarı kaydeder ve ancak ondan sonra şifreleme başlar (TPM koruyucusu, XTS-AES 256, yalnızca kullanılan alan), bilgisayar kullanılırken arka planda. TPM'si hazır olmayan veya BitLocker'sız bir Windows sürümündeki (Home) cihazlar nedeni Etkinlik bölümünde gösterir ve sunucu 6 saat sonra yeniden dener. Yöneticiler bunu tek bir cihaz için de cihazın BitLocker sayfasından açabilir.</p>
 
 <h2 id="device">Bir cihaz için ne geçerli</h2>
-<p>Bir cihazın <b>İlke</b> sekmesi her bölüm için onu hangi ilkenin belirlediğini (ve ilkenin cihaza, konumuna veya müşterisine atanıp atanmadığını) ya da sunucu ayarlarının geçerli olduğunu, her gerekli programın durumunu (yüklü, eksik, yüklemenin ne zaman başlatıldığı), geçerli Windows Update ve uyarı ayarlarını ve otomasyonları gösterir.</p>
+<p>Bir cihazın <b>İlke</b> sekmesi her bölüm için hangi ilkenin onu ayarladığını (ve cihaza, konumuna veya müşterisine mi atandığını) ya da yerleşik varsayılanların geçerli olduğunu, her gerekli programın durumunu (yüklü, eksik, kurulumun ne zaman başlatıldığı), geçerli Windows Update ve uyarı ayarlarını ve otomasyonları gösterir.</p>

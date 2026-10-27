@@ -9,17 +9,21 @@
   <li><b>Automações</b> — scripts da biblioteca executados nos dispositivos da política em dias definidos, a uma hora definida.</li>
   <li><b>BitLocker</b> — criptografia da unidade do sistema, com a chave de recuperação guardada no servidor.</li>
 </ul>
-<p>Cada parte é ativada ou desativada na política. Uma parte desativada não é definida por esta política: vem de uma política menos específica ou das configurações do servidor (<a href="/settings/updates">Atualizações do Windows</a>, <a href="/settings/monitoring">Monitoramento e alertas</a>).</p>
+<p>Cada parte é ativada ou desativada na política. Uma parte desativada não é definida por esta política: vem de uma política menos específica ou dos padrões internos (sem atualizações automáticas, regras de alerta padrão).</p>
 
 <h2 id="assign">Atribuir uma política</h2>
-<p>As políticas são criadas em <a href="/policies">Políticas</a> (administradores). Na página de uma política, <b>Atribuir a</b> a atribui a um cliente, um local ou um único dispositivo; a guia <b>Política</b> de um dispositivo define a política própria do dispositivo. Um cliente, local ou dispositivo tem uma política; atribuir outra a substitui.</p>
-<p>Para cada parte vale a atribuição mais específica que a define: a política do dispositivo, depois a do local, depois a do cliente e, por fim, as configurações do servidor. Exemplo: a política do cliente define o Windows Update e o software obrigatório, a política de um local só define regras de alerta mais rígidas — os dispositivos desse local recebem as atualizações e o software do cliente e as regras de alerta do local.</p>
+<p>As políticas são criadas em <a href="/policies">Políticas</a>. Na página de uma política, <b>Atribuir a</b> a atribui a um cliente, um local ou um único dispositivo; a guia <b>Política</b> de um dispositivo define a política própria do dispositivo. Um cliente, local ou dispositivo tem uma política; atribuir outra a substitui.</p>
+<p>Para cada parte vale a atribuição mais específica que a define: a política do dispositivo, depois a do local, depois a do cliente, depois os padrões internos. Exemplo: a política do cliente define o Windows Update e o software obrigatório, a de um local só regras de alerta mais rígidas — os dispositivos desse local recebem as atualizações e o software do cliente e as regras de alerta do local.</p>
+
+<p>Uma política pertence a <b>um cliente</b> ou ao <b>servidor inteiro</b>, escolha feita na criação. Os técnicos criam e alteram as políticas dos seus clientes e as atribuem a esses clientes, seus locais e dispositivos; os administradores gerenciam todas as políticas, e só eles criam políticas para o servidor inteiro e definem a parte BitLocker. A política de um cliente nunca pode ser atribuída fora desse cliente.</p>
+
+<p>Cada cliente novo recebe sua própria política <b>Default</b>, atribuída a ele, com as configurações internas de Windows Update e alertas; altere-a ou dê aos locais e dispositivos suas próprias políticas. Na atualização para a versão 0.6.3, cada cliente existente sem política recebeu uma política Default com as configurações anteriores do servidor para Windows Update e alertas, que não estão mais em Configurações.</p>
 
 <h2 id="software">Software obrigatório</h2>
 <p>Cada programa obrigatório tem uma origem — a <a href="/software">biblioteca de software</a>, winget ou Chocolatey — e um texto que o nome dele na lista do Windows de programas instalados contém (por exemplo <i>7-Zip</i>). A cada poucos minutos o servidor compara os programas obrigatórios com o inventário de cada dispositivo Windows online; um programa que falta é instalado como uma tarefa que você vê na <a href="/docs/devices#activity">Atividade</a> do dispositivo. Após uma instalação, o dispositivo envia um novo inventário. Se o programa continuar faltando, o servidor tenta de novo após 6 horas. Nada é instalado antes de o dispositivo enviar o primeiro inventário.</p>
 
 <h2 id="alerts">Regras de alerta</h2>
-<p>Os limites de uma política substituem os do servidor para os seus dispositivos. Os e-mails e canais de chat dos alertas continuam os de <a href="/settings/monitoring">Monitoramento e alertas</a>.</p>
+<p>Os limites de uma política valem para seus dispositivos. Os e-mails de alerta e os canais de chat são definidos para o servidor inteiro em <a href="/settings/monitoring">Monitoramento e alertas</a>.</p>
 
 <h2 id="automations">Automações</h2>
 <p>Uma automação executa um script da <a href="/scripts">biblioteca de scripts</a> nos dias e horário escolhidos (horário do servidor) como uma única tarefa para todos os dispositivos cujas automações vêm desta política. Dispositivos offline a executam quando se conectam, dentro de 24 horas; os resultados ficam na página da tarefa e na Atividade de cada dispositivo.</p>
@@ -29,4 +33,4 @@
 <p>Uma política com <b>Exigir o BitLocker na unidade do sistema</b> o ativa em dispositivos Windows cuja unidade do sistema não está criptografada. O agente primeiro verifica o TPM e adiciona uma chave de recuperação; o servidor guarda a chave e só então a criptografia começa (protetor TPM, XTS-AES 256, só o espaço usado), em segundo plano enquanto o computador é usado. Dispositivos sem TPM pronto ou com uma edição do Windows sem BitLocker (Home) mostram o motivo em Atividade, e o servidor tenta de novo após 6 horas. Administradores também podem ativá-lo para um único dispositivo na página BitLocker dele.</p>
 
 <h2 id="device">O que vale para um dispositivo</h2>
-<p>A guia <b>Política</b> de um dispositivo mostra, para cada parte, qual política a define (e se ela está atribuída ao dispositivo, ao local ou ao cliente) ou que valem as configurações do servidor, o estado de cada programa obrigatório (instalado, faltando, quando uma instalação foi iniciada), as configurações de Windows Update e de alertas em vigor e as automações.</p>
+<p>A aba <b>Política</b> de um dispositivo mostra, para cada parte, qual política a define (e se está atribuída ao dispositivo, ao seu local ou ao seu cliente) ou que valem os padrões internos, o estado de cada programa obrigatório (instalado, ausente, quando uma instalação foi iniciada), as configurações de Windows Update e de alertas em vigor e as automações.</p>
