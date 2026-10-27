@@ -1,0 +1,42 @@
+{{template "app" .}}
+{{define "content"}}
+{{$d := .Data.D}}
+<p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a> / <a href="/devices/{{$d.ID}}">{{$d.Hostname}}</a></p>
+<h1>{{template "icon" "lock"}}BitLocker <span class="muted h1-sub">{{$d.Hostname}}</span></h1>
+{{template "devtabs" (devtabs . $d "")}}
+
+<section class="panel">
+  <h2>{{.T "State"}}</h2>
+  {{with $d.Inventory}}{{if .BitLocker}}
+  <p>{{range .BitLocker}}<span class="badge {{if eq .Protection "on"}}ok{{end}}"><i></i>{{.Drive}} {{$.T .Status}}</span> {{end}}</p>
+  {{else}}<p class="muted">{{$.T "no information"}}</p>{{end}}{{else}}<p class="muted">{{$.T "no information"}}</p>{{end}}
+  <p class="small muted">{{if .Data.Require}}{{.T "A policy requires BitLocker on the system drive:"}} <b>{{.Data.Policy.Policy.Name}}</b>{{else}}{{.T "Not required by a policy."}}{{end}}</p>
+  <div class="row mt">
+    <form method="post" action="/devices/{{$d.ID}}/bitlocker/collect" class="inline"><button class="secondary">{{template "icon" "refresh"}}{{.T "Read the recovery keys now"}}</button></form>
+    {{if .User.IsAdmin}}<form method="post" action="/devices/{{$d.ID}}/bitlocker/enable" class="inline" data-confirm="{{.T "Switch on BitLocker on the system drive of %s? A recovery key is added and stored first; then the encryption starts in the background." $d.Hostname}}"><button class="secondary">{{template "icon" "lock"}}{{.T "Switch on BitLocker"}}</button></form>{{end}}
+  </div>
+</section>
+
+<section class="panel">
+  <h2>{{template "icon" "key"}}{{.T "Recovery keys"}}</h2>
+  {{if .Data.Keys}}
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{.T "Drive"}}</th><th>{{.T "Key ID"}}</th><th class="hide-sm">{{.T "Last seen"}}</th><th>{{.T "Recovery key"}}</th></tr></thead>
+    <tbody>{{range .Data.Keys}}<tr>
+      <td><b>{{.Volume}}</b></td>
+      <td class="small mono">{{.ProtectorID}}</td>
+      <td class="hide-sm small">{{$.Time .LastSeen}}</td>
+      <td>{{with index $.Data.Revealed .ProtectorID}}<code class="mono recovery-key">{{.}}</code>
+        {{else}}{{if $.User.IsAdmin}}<form method="post" action="/devices/{{$d.ID}}/bitlocker/reveal" class="row">
+          <input type="hidden" name="protector" value="{{.ProtectorID}}">
+          <input type="password" name="password" required autocomplete="current-password" placeholder="{{$.T "Your password"}}" aria-label="{{$.T "Your password"}}">
+          <button class="secondary sm">{{$.T "Show"}}</button>
+        </form>{{else}}<span class="small muted">{{$.T "administrators only"}}</span>{{end}}{{end}}</td>
+    </tr>{{end}}</tbody>
+  </table></div>
+  <p class="small muted mt">{{.T "Showing a key needs your password and is recorded in the audit log. Keys are stored encrypted on the server; old keys stay until the device is removed."}}</p>
+  {{else}}
+  <p class="muted">{{.T "No recovery keys stored yet. They are read once a day from devices with BitLocker, or now with the button above."}}</p>
+  {{end}}
+</section>
+{{end}}

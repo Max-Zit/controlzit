@@ -23,6 +23,7 @@ func (s *Server) RunMonitor(ctx context.Context) {
 		if time.Since(required) >= requiredEvery {
 			required = time.Now()
 			s.RunRequiredSoftware(ctx)
+			s.RunBitLocker(ctx)
 		}
 		s.DispatchTasks(ctx)
 		s.RunReports(ctx)

@@ -25,6 +25,7 @@ type PolicySettings struct {
 	Software    *SoftwarePolicy   `json:"software,omitempty"`
 	Alerts      *AlertRules       `json:"alerts,omitempty"`
 	Automations *AutomationPolicy `json:"automations,omitempty"`
+	BitLocker   *BitLockerPolicy  `json:"bitlocker,omitempty"`
 }
 
 // SoftwarePolicy lists the programs a device must have; missing ones are

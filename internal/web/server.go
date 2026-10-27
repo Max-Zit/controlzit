@@ -365,6 +365,10 @@ func (s *Server) Handler() http.Handler {
 	admin("POST /policies/{pid}/assign", s.handlePolicyAssign)
 	admin("POST /policies/{pid}/unassign", s.handlePolicyUnassign)
 	app("GET /devices/{id}/policy", s.handleDevicePolicy)
+	app("GET /devices/{id}/bitlocker", s.handleBitLocker)
+	app("POST /devices/{id}/bitlocker/collect", s.handleBitLockerCollect)
+	admin("POST /devices/{id}/bitlocker/enable", s.handleBitLockerEnable)
+	admin("POST /devices/{id}/bitlocker/reveal", s.handleBitLockerReveal)
 	admin("POST /devices/{id}/policy", s.handleDevicePolicyAssign)
 	app("GET /software", s.handleSwLibrary)
 	app("GET /software/{pid}", s.handleSwPackage)
@@ -387,6 +391,8 @@ func (s *Server) Handler() http.Handler {
 	app("POST /account/password", s.handleAccountPassword)
 	app("POST /account/recovery", s.handleAccountRecovery)
 	app("POST /account/sessions/signout", s.handleAccountSignout)
+	app("POST /account/tokens", s.handleAPITokenCreate)
+	app("POST /account/tokens/{tid}/delete", s.handleAPITokenDelete)
 	admin("GET /users", s.handleUsers)
 	admin("POST /users", s.handleUserCreate)
 	admin("GET /users/{id}", s.handleUser)
@@ -439,7 +445,16 @@ func (s *Server) Handler() http.Handler {
 	admin("POST /settings/agents/package", s.handlePackageUpload)
 	admin("POST /settings/agents/update-all", s.handleUpdateAll)
 
-	return s.secure(s.aclCheck(s.MgmtACL, s.csrf(s.loadSession(mux))))
+	// /api/ takes only API tokens (no session cookies), so it needs no CSRF check.
+	api := s.APIHandler()
+	console := s.csrf(s.loadSession(mux))
+	return s.secure(s.aclCheck(s.MgmtACL, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasPrefix(r.URL.Path, "/api/") {
+			api.ServeHTTP(w, r)
+			return
+		}
+		console.ServeHTTP(w, r)
+	})))
 }
 
 // AgentHandler is the agent endpoint: enrollment, the agent channel and a

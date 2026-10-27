@@ -133,6 +133,14 @@ check "installed programs listed from the registry" '$C "$S/devices/$DEV/softwar
 check "software library page with the Chocolatey setting" '$C "$S/software" | grep -q "name=\"chocolatey\""'
 check "policies page" '$C "$S/policies" | grep -q "/policies/new"'
 check "device policy tab" '$C "$S/devices/$DEV/policy" | grep -q "Where the settings come from"'
+# REST API with a short-lived read-only token, deleted afterwards.
+TOK=$($C -d name=regress -d role=readonly -d days=1 $S/account/tokens | grep -o 'czt_[A-Za-z0-9_-]\{30,\}' | head -1)
+check "API token reads the devices" 'curl -sk -H "Authorization: Bearer $TOK" "$S/api/v1/devices" | grep -q "\"id\": $DEV,"'
+check "API refuses a read-only token for tasks" '[ "$(curl -sk -o /dev/null -w %{http_code} -H "Authorization: Bearer $TOK" -d "{\"kind\":\"patch.scan\"}" "$S/api/v1/devices/$DEV/tasks")" = 403 ]'
+TDEL=$($C $S/account | grep -o "/account/tokens/[0-9]*/delete" | tail -1)
+$C -o /dev/null -X POST "$S$TDEL"
+check "deleted API token is refused" '[ "$(curl -sk -o /dev/null -w %{http_code} -H "Authorization: Bearer $TOK" "$S/api/v1/me")" = 401 ]'
+check "BitLocker page lists the recovery keys" '$C "$S/devices/$DEV/bitlocker" | grep -q "{[0-9A-F-]\{36\}}"'
 
 # --- Windows updates
 check "device reports Windows updates" '$C $S/devices/$DEV/updates | grep -q "Searched"'

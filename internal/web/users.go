@@ -170,6 +170,8 @@ type accountData struct {
 	Sessions []store.Session
 	Current  string
 	Codes    []string
+	Tokens   []store.APIToken
+	NewToken string // shown once, right after it was made
 }
 
 func (s *Server) handleAccount(w http.ResponseWriter, r *http.Request) {
@@ -184,6 +186,10 @@ func (s *Server) showAccount(w http.ResponseWriter, r *http.Request, status int,
 		return
 	}
 	d.Sessions, d.Current = list, sessionFrom(r).Hash
+	if d.Tokens, err = s.store.APITokens(r.Context(), u.ID); err != nil {
+		s.serverError(w, r, err)
+		return
+	}
 	p := &Page{Title: "My account", Nav: "account", Data: d}
 	if errMsg != "" {
 		p.Error = translate(s.lang(r, u), errMsg)
@@ -268,4 +274,33 @@ func (s *Server) handleAccountSignout(w http.ResponseWriter, r *http.Request) {
 type userTable struct {
 	P     *Page
 	Users []*store.User
+}
+
+// handleAPITokenCreate makes an API token and shows it once.
+func (s *Server) handleAPITokenCreate(w http.ResponseWriter, r *http.Request) {
+	u := userFrom(r)
+	days, _ := strconv.Atoi(r.FormValue("days"))
+	secret, t, err := s.store.CreateAPIToken(r.Context(), u, r.FormValue("name"), r.FormValue("role"), days)
+	if err != nil {
+		s.showAccount(w, r, http.StatusBadRequest, &accountData{}, err.Error())
+		return
+	}
+	s.audit(r, "token.create", "user:"+strconv.FormatInt(u.ID, 10), "created API token %q (role %s, %d days)", t.Name, t.Role, days)
+	w.Header().Set("Cache-Control", "no-store")
+	s.showAccount(w, r, http.StatusOK, &accountData{NewToken: secret}, "")
+}
+
+func (s *Server) handleAPITokenDelete(w http.ResponseWriter, r *http.Request) {
+	u := userFrom(r)
+	id, ok := pathID(r, "tid")
+	if !ok {
+		s.redirect(w, r, "/account", "Unknown action.")
+		return
+	}
+	if err := s.store.DeleteAPIToken(r.Context(), u.ID, id); err != nil {
+		s.redirect(w, r, "/account", "Unknown action.")
+		return
+	}
+	s.audit(r, "token.delete", "user:"+strconv.FormatInt(u.ID, 10), "deleted API token #%d", id)
+	s.redirect(w, r, "/account", "Saved.")
 }

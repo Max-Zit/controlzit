@@ -1,0 +1,50 @@
+<h1>API</h1>
+<p class="lead">Met de REST-API lezen scripts en andere tools apparaten, waarschuwingen en taken en starten ze werk op apparaten, met dezelfde rechten als in de console.</p>
+
+<h2 id="tokens">Tokens</h2>
+<p>Maak een token onder <a href="/account#tokens">Mijn account → API-tokens</a>: een naam, een rol die niet hoger is dan de uwe (alleen lezen, technicus of beheerder) en hoe lang het geldig is. Het token wordt één keer getoond; bewaar het als een wachtwoord. Het handelt als u, met uw klanten. Stuur het in elke aanvraag als <code>Authorization: Bearer czt_…</code> naar het consoleadres (poort 8443), dat alleen verbindingen uit de toegestane netwerken aanneemt. Sessiecookies van de browser werken niet op de API. Het token verwijderen op de accountpagina beëindigt de toegang meteen.</p>
+
+<h2 id="calls">Aanroepen</h2>
+<table>
+  <tr><th>Aanroep</th><th>Wat het doet</th></tr>
+  <tr><td><code>GET /api/v1/me</code></td><td>als wie het token handelt, de rol en de klanten</td></tr>
+  <tr><td><code>GET /api/v1/customers</code></td><td>klanten</td></tr>
+  <tr><td><code>GET /api/v1/customers/{id}/sites</code></td><td>locaties van een klant</td></tr>
+  <tr><td><code>GET /api/v1/devices?customer=&amp;site=&amp;q=</code></td><td>apparaten, eventueel gefilterd op klant, locatie of zoektekst</td></tr>
+  <tr><td><code>GET /api/v1/devices/{id}</code></td><td>één apparaat met zijn inventaris</td></tr>
+  <tr><td><code>GET /api/v1/devices/{id}/tasks</code></td><td>de taken van een apparaat (lopend, wachtend en de nieuwste 100 beëindigde)</td></tr>
+  <tr><td><code>POST /api/v1/devices/{id}/tasks</code></td><td>een taak op een apparaat starten (technicus)</td></tr>
+  <tr><td><code>GET /api/v1/tasks/{id}</code></td><td>één taak, om die te volgen tot het einde</td></tr>
+  <tr><td><code>POST /api/v1/tasks/{id}/cancel</code></td><td>een lopende taak stoppen of een wachtende annuleren (technicus)</td></tr>
+  <tr><td><code>GET /api/v1/alerts?state=open</code></td><td>open waarschuwingen (state=all ook opgeloste)</td></tr>
+  <tr><td><code>GET /api/v1/software</code></td><td>pakketten van de softwarebibliotheek (technicus)</td></tr>
+  <tr><td><code>POST /api/v1/software/{id}/install</code></td><td>een bibliotheekpakket op apparaten installeren, als taak (technicus)</td></tr>
+  <tr><td><code>GET /api/v1/jobs/{id}</code></td><td>het resultaat van een taak per apparaat (technicus)</td></tr>
+  <tr><td><code>GET /api/v1/policies</code></td><td>beleid met de toewijzingen (beheerder)</td></tr>
+  <tr><td><code>POST /api/v1/policies/{id}/assign</code></td><td>een beleid toewijzen aan customer:ID, site:ID of device:ID (beheerder)</td></tr>
+  <tr><td><code>POST /api/v1/policies/unassign</code></td><td>het beleid van een klant, locatie of apparaat verwijderen (beheerder)</td></tr>
+</table>
+
+<h2 id="tasks">Taken</h2>
+<p>Een taak wacht tot het apparaat online is en loopt na de eerdere taken van het apparaat, net als de acties in de console; ze verschijnt onder Activiteit van het apparaat. Het antwoord is <code>202</code> met de taak; volg die met <code>GET /api/v1/tasks/{id}</code> tot de status <code>done</code>, <code>failed</code>, <code>cancelled</code> of <code>expired</code> is. De soorten en hun velden:</p>
+<pre><code>{"kind": "script", "shell": "powershell", "script": "Get-Service Spooler", "timeout": 120}
+{"kind": "patch.scan"}
+{"kind": "patch.install", "updates": [], "reboot": false}
+{"kind": "winget", "action": "install", "id": "7zip.7zip"}
+{"kind": "choco", "action": "upgrade", "id": "firefox"}
+{"kind": "power", "action": "restart", "delay": 300, "message": "Restart for updates"}
+{"kind": "agent.update"}
+{"kind": "bitlocker.keys"}</code></pre>
+
+<h2 id="examples">Voorbeelden</h2>
+<p>Een PowerShell-script op apparaat 9, daarna het resultaat:</p>
+<pre><code>curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"kind":"script","shell":"powershell","script":"Get-Date","timeout":60}' \
+  https://rmm.example.com:8443/api/v1/devices/9/tasks
+curl -s -H "Authorization: Bearer $TOKEN" https://rmm.example.com:8443/api/v1/tasks/42
+
+$h = @{ Authorization = "Bearer $env:CZ_TOKEN" }
+Invoke-RestMethod -Headers $h https://rmm.example.com:8443/api/v1/alerts</code></pre>
+
+<h2 id="errors">Fouten</h2>
+<p>Fouten komen als JSON <code>{"error": "…"}</code> met de HTTP-status: 400 voor een foutieve aanvraag, 401 voor een ontbrekend, onjuist of verlopen token, 403 als de rol van het token de aanroep niet toestaat, 404 voor iets dat niet bestaat of dat het token niet mag zien, 409 als een taak al beëindigd is, 429 na te veel mislukte aanmeldingen vanaf het adres. Elke wijziging via de API wordt met de naam van het token in het activiteitenlogboek vastgelegd.</p>

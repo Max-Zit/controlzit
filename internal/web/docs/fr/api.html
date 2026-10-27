@@ -1,0 +1,50 @@
+<h1>API</h1>
+<p class="lead">L'API REST permet aux scripts et autres outils de lire les appareils, alertes et tâches et de lancer du travail sur les appareils, avec les mêmes droits que dans la console.</p>
+
+<h2 id="tokens">Jetons</h2>
+<p>Créez un jeton dans <a href="/account#tokens">Mon compte → Jetons d'API</a> : un nom, un rôle qui ne dépasse pas le vôtre (lecture seule, technicien ou administrateur) et sa durée de validité. Le jeton n'est affiché qu'une fois ; conservez-le comme un mot de passe. Il agit en votre nom, avec vos clients. Envoyez-le dans chaque requête sous la forme <code>Authorization: Bearer czt_…</code> à l'adresse de la console (port 8443), qui n'accepte que les connexions des réseaux autorisés. Les cookies de session du navigateur ne fonctionnent pas sur l'API. Supprimer le jeton sur la page du compte met fin à son accès immédiatement.</p>
+
+<h2 id="calls">Appels</h2>
+<table>
+  <tr><th>Appel</th><th>Ce qu'il fait</th></tr>
+  <tr><td><code>GET /api/v1/me</code></td><td>au nom de qui agit le jeton, son rôle et ses clients</td></tr>
+  <tr><td><code>GET /api/v1/customers</code></td><td>clients</td></tr>
+  <tr><td><code>GET /api/v1/customers/{id}/sites</code></td><td>sites d'un client</td></tr>
+  <tr><td><code>GET /api/v1/devices?customer=&amp;site=&amp;q=</code></td><td>appareils, filtrés au besoin par client, site ou texte de recherche</td></tr>
+  <tr><td><code>GET /api/v1/devices/{id}</code></td><td>un appareil avec son inventaire</td></tr>
+  <tr><td><code>GET /api/v1/devices/{id}/tasks</code></td><td>les tâches d'un appareil (en cours, en attente et les 100 dernières terminées)</td></tr>
+  <tr><td><code>POST /api/v1/devices/{id}/tasks</code></td><td>lancer une tâche sur un appareil (technicien)</td></tr>
+  <tr><td><code>GET /api/v1/tasks/{id}</code></td><td>une tâche, pour la suivre jusqu'à la fin</td></tr>
+  <tr><td><code>POST /api/v1/tasks/{id}/cancel</code></td><td>arrêter une tâche en cours ou annuler une tâche en attente (technicien)</td></tr>
+  <tr><td><code>GET /api/v1/alerts?state=open</code></td><td>alertes ouvertes (state=all inclut les résolues)</td></tr>
+  <tr><td><code>GET /api/v1/software</code></td><td>paquets de la bibliothèque de logiciels (technicien)</td></tr>
+  <tr><td><code>POST /api/v1/software/{id}/install</code></td><td>installer un paquet de la bibliothèque sur des appareils, comme une tâche (technicien)</td></tr>
+  <tr><td><code>GET /api/v1/jobs/{id}</code></td><td>le résultat d'une tâche par appareil (technicien)</td></tr>
+  <tr><td><code>GET /api/v1/policies</code></td><td>stratégies avec leurs attributions (administrateur)</td></tr>
+  <tr><td><code>POST /api/v1/policies/{id}/assign</code></td><td>attribuer une stratégie à customer:ID, site:ID ou device:ID (administrateur)</td></tr>
+  <tr><td><code>POST /api/v1/policies/unassign</code></td><td>retirer la stratégie d'un client, d'un site ou d'un appareil (administrateur)</td></tr>
+</table>
+
+<h2 id="tasks">Tâches</h2>
+<p>Une tâche attend que l'appareil soit en ligne et s'exécute après les tâches précédentes de l'appareil, comme les actions de la console ; elle apparaît dans l'Activité de l'appareil. La réponse est <code>202</code> avec la tâche ; suivez-la avec <code>GET /api/v1/tasks/{id}</code> jusqu'à ce que son statut soit <code>done</code>, <code>failed</code>, <code>cancelled</code> ou <code>expired</code>. Les types et leurs champs :</p>
+<pre><code>{"kind": "script", "shell": "powershell", "script": "Get-Service Spooler", "timeout": 120}
+{"kind": "patch.scan"}
+{"kind": "patch.install", "updates": [], "reboot": false}
+{"kind": "winget", "action": "install", "id": "7zip.7zip"}
+{"kind": "choco", "action": "upgrade", "id": "firefox"}
+{"kind": "power", "action": "restart", "delay": 300, "message": "Restart for updates"}
+{"kind": "agent.update"}
+{"kind": "bitlocker.keys"}</code></pre>
+
+<h2 id="examples">Exemples</h2>
+<p>Un script PowerShell sur l'appareil 9, puis son résultat :</p>
+<pre><code>curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"kind":"script","shell":"powershell","script":"Get-Date","timeout":60}' \
+  https://rmm.example.com:8443/api/v1/devices/9/tasks
+curl -s -H "Authorization: Bearer $TOKEN" https://rmm.example.com:8443/api/v1/tasks/42
+
+$h = @{ Authorization = "Bearer $env:CZ_TOKEN" }
+Invoke-RestMethod -Headers $h https://rmm.example.com:8443/api/v1/alerts</code></pre>
+
+<h2 id="errors">Erreurs</h2>
+<p>Les erreurs arrivent en JSON <code>{"error": "…"}</code> avec le statut HTTP : 400 pour une requête invalide, 401 pour un jeton absent, faux ou expiré, 403 quand le rôle du jeton n'autorise pas l'appel, 404 pour quelque chose qui n'existe pas ou que le jeton ne peut pas voir, 409 quand une tâche est déjà terminée, 429 après trop de connexions échouées depuis l'adresse. Chaque modification via l'API est consignée dans le journal d'activité avec le nom du jeton.</p>

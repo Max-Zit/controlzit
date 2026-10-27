@@ -1,0 +1,50 @@
+<h1>API</h1>
+<p class="lead">REST API omogućava skriptama i drugim alatima da čitaju uređaje, alarme i zadatke i da pokreću poslove na uređajima, sa istim pravima kao u konzoli.</p>
+
+<h2 id="tokens">Tokeni</h2>
+<p>Token se pravi u <a href="/account#tokens">Moj nalog → API tokeni</a>: naziv, uloga koja nije veća od vaše (samo čitanje, tehničar ili administrator) i koliko dugo važi. Token se prikazuje jednom; čuvajte ga kao lozinku. Radi kao vi, sa vašim klijentima. Šaljite ga u svakom zahtevu kao <code>Authorization: Bearer czt_…</code> na adresu konzole (port 8443), koja prima veze samo iz dozvoljenih mreža. Kolačići sesije iz pregledača ne rade na API-ju. Brisanje tokena na stranici naloga odmah prekida njegov pristup.</p>
+
+<h2 id="calls">Pozivi</h2>
+<table>
+  <tr><th>Poziv</th><th>Šta radi</th></tr>
+  <tr><td><code>GET /api/v1/me</code></td><td>kao ko token radi, njegova uloga i klijenti</td></tr>
+  <tr><td><code>GET /api/v1/customers</code></td><td>klijenti</td></tr>
+  <tr><td><code>GET /api/v1/customers/{id}/sites</code></td><td>lokacije klijenta</td></tr>
+  <tr><td><code>GET /api/v1/devices?customer=&amp;site=&amp;q=</code></td><td>uređaji, po želji filtrirani po klijentu, lokaciji ili tekstu pretrage</td></tr>
+  <tr><td><code>GET /api/v1/devices/{id}</code></td><td>jedan uređaj sa inventarom</td></tr>
+  <tr><td><code>GET /api/v1/devices/{id}/tasks</code></td><td>zadaci uređaja (u toku, na čekanju i najnovijih 100 završenih)</td></tr>
+  <tr><td><code>POST /api/v1/devices/{id}/tasks</code></td><td>pokretanje zadatka na uređaju (tehničar)</td></tr>
+  <tr><td><code>GET /api/v1/tasks/{id}</code></td><td>jedan zadatak, da se prati do kraja</td></tr>
+  <tr><td><code>POST /api/v1/tasks/{id}/cancel</code></td><td>zaustavljanje zadatka u toku ili otkazivanje zadatka na čekanju (tehničar)</td></tr>
+  <tr><td><code>GET /api/v1/alerts?state=open</code></td><td>otvoreni alarmi (state=all i razrešeni)</td></tr>
+  <tr><td><code>GET /api/v1/software</code></td><td>paketi iz biblioteke softvera (tehničar)</td></tr>
+  <tr><td><code>POST /api/v1/software/{id}/install</code></td><td>instalacija paketa iz biblioteke na uređaje, kao posao (tehničar)</td></tr>
+  <tr><td><code>GET /api/v1/jobs/{id}</code></td><td>rezultat posla po uređaju (tehničar)</td></tr>
+  <tr><td><code>GET /api/v1/policies</code></td><td>polise sa dodelama (administrator)</td></tr>
+  <tr><td><code>POST /api/v1/policies/{id}/assign</code></td><td>dodela polise za customer:ID, site:ID ili device:ID (administrator)</td></tr>
+  <tr><td><code>POST /api/v1/policies/unassign</code></td><td>uklanjanje polise klijenta, lokacije ili uređaja (administrator)</td></tr>
+</table>
+
+<h2 id="tasks">Zadaci</h2>
+<p>Zadatak čeka dok uređaj ne bude na mreži i izvršava se posle ranijih zadataka uređaja, isto kao akcije u konzoli; vidi se u Aktivnostima uređaja. Odgovor je <code>202</code> sa zadatkom; pratite ga sa <code>GET /api/v1/tasks/{id}</code> dok mu status ne bude <code>done</code>, <code>failed</code>, <code>cancelled</code> ili <code>expired</code>. Vrste i njihova polja:</p>
+<pre><code>{"kind": "script", "shell": "powershell", "script": "Get-Service Spooler", "timeout": 120}
+{"kind": "patch.scan"}
+{"kind": "patch.install", "updates": [], "reboot": false}
+{"kind": "winget", "action": "install", "id": "7zip.7zip"}
+{"kind": "choco", "action": "upgrade", "id": "firefox"}
+{"kind": "power", "action": "restart", "delay": 300, "message": "Restart for updates"}
+{"kind": "agent.update"}
+{"kind": "bitlocker.keys"}</code></pre>
+
+<h2 id="examples">Primeri</h2>
+<p>PowerShell skripta na uređaju 9, pa njen rezultat:</p>
+<pre><code>curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"kind":"script","shell":"powershell","script":"Get-Date","timeout":60}' \
+  https://rmm.example.com:8443/api/v1/devices/9/tasks
+curl -s -H "Authorization: Bearer $TOKEN" https://rmm.example.com:8443/api/v1/tasks/42
+
+$h = @{ Authorization = "Bearer $env:CZ_TOKEN" }
+Invoke-RestMethod -Headers $h https://rmm.example.com:8443/api/v1/alerts</code></pre>
+
+<h2 id="errors">Greške</h2>
+<p>Greške stižu kao JSON <code>{"error": "…"}</code> sa HTTP statusom: 400 za neispravan zahtev, 401 za token koji nedostaje, nije tačan ili je istekao, 403 kada uloga tokena ne dozvoljava poziv, 404 za nešto što ne postoji ili što token ne sme da vidi, 409 kada je zadatak već završen, 429 posle previše neuspelih prijava sa te adrese. Svaka promena kroz API beleži se u dnevnik aktivnosti sa nazivom tokena.</p>

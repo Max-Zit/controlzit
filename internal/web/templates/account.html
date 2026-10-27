@@ -37,5 +37,28 @@
   </table></div>
   <form method="post" action="/account/sessions/signout" class="mt"><button class="secondary">{{.T "Sign out all other sessions"}}</button></form>
 </section>
+
+<section class="panel" id="tokens">
+  <h2>{{template "icon" "key"}}{{.T "API tokens"}}</h2>
+  <p class="muted">{{.T "A token lets scripts and other tools use the ControlZit API as you (with your customers), with a role no higher than yours. Send it as: Authorization: Bearer czt_…"}} <a href="/docs/api">{{.T "API reference"}}</a></p>
+  {{with .Data.NewToken}}<div class="flash ok" role="status">{{template "icon" "check"}}<span>{{$.T "Copy the token now; it is not shown again:"}}<br><code class="wrap" id="new-token">{{.}}</code> <button type="button" class="ghost sm" data-copy="#new-token">{{template "icon" "copy"}}{{$.T "Copy"}}</button></span></div>{{end}}
+  {{if .Data.Tokens}}
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{.T "Name"}}</th><th>{{.T "Role"}}</th><th class="hide-sm">{{.T "Valid until"}}</th><th class="hide-sm">{{.T "Last used"}}</th><th></th></tr></thead>
+    <tbody>{{range .Data.Tokens}}<tr>
+      <td><b>{{.Name}}</b></td><td>{{$.RoleName .Role}}</td>
+      <td class="hide-sm small">{{if .ExpiresAt}}{{$.Time .ExpiresAt}}{{else}}{{$.T "no end"}}{{end}}</td>
+      <td class="hide-sm small">{{$.Ago .LastUsedAt}}</td>
+      <td class="nowrap actions"><form method="post" action="/account/tokens/{{.ID}}/delete" class="inline" data-confirm="{{$.T "Delete token %s? Tools that use it stop working." .Name}}"><button class="ghost sm">{{$.T "Delete"}}</button></form></td>
+    </tr>{{end}}</tbody>
+  </table></div>
+  {{end}}
+  <form method="post" action="/account/tokens" class="row mt">
+    <input name="name" required maxlength="100" placeholder="{{.T "Name, for example the tool that uses it"}}" aria-label="{{.T "Name"}}">
+    <select name="role" aria-label="{{.T "Role"}}">{{if .User.IsAdmin}}<option value="admin">{{.RoleName "admin"}}</option>{{end}}{{if .User.CanWrite}}<option value="technician">{{.RoleName "technician"}}</option>{{end}}<option value="readonly" selected>{{.RoleName "readonly"}}</option></select>
+    <select name="days" aria-label="{{.T "Valid for"}}"><option value="30">{{.T "30 days"}}</option><option value="90">{{.T "90 days"}}</option><option value="365" selected>{{.T "1 year"}}</option><option value="0">{{.T "no end"}}</option></select>
+    <button class="secondary">{{template "icon" "plus"}}{{.T "Create a token"}}</button>
+  </form>
+</section>
 {{end}}
 {{end}}

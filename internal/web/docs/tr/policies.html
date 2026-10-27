@@ -7,6 +7,7 @@
   <li><b>Gerekli yazılım</b> — ilkedeki her Windows cihazında olması gereken programlar; eksik olanları sunucu yükler.</li>
   <li><b>Uyarı kuralları</b> — işlemci, bellek, diskler, çevrimdışı cihazlar ve bekleyen yeniden başlatmalar, Defender ve güvenlik duvarı için eşikler ile çalışması gereken hizmetler.</li>
   <li><b>Otomasyonlar</b> — ilkenin cihazlarında belirli günlerde belirli bir saatte çalışan kitaplık betikleri.</li>
+  <li><b>BitLocker</b> — kurtarma anahtarı sunucuda tutulan sistem sürücüsü şifrelemesi.</li>
 </ul>
 <p>Her bölüm ilkede açılır veya kapatılır. Kapalı bir bölümü bu ilke belirlemez: daha az özel bir ilkeden veya sunucunun ayarlarından gelir (<a href="/settings/updates">Windows güncelleştirmeleri</a>, <a href="/settings/monitoring">İzleme ve uyarılar</a>).</p>
 
@@ -22,6 +23,10 @@
 
 <h2 id="automations">Otomasyonlar</h2>
 <p>Bir otomasyon, <a href="/scripts">betik kitaplığındaki</a> bir betiği seçilen günlerde ve saatte (sunucu saati), otomasyonları bu ilkeden gelen tüm cihazlar için tek bir görev olarak çalıştırır. Çevrimdışı cihazlar bunu bağlandıklarında, 24 saat içinde çalıştırır; sonuçlar görevin sayfasında ve her cihazın Etkinlik bölümündedir.</p>
+
+<h2 id="bitlocker">BitLocker ve kurtarma anahtarları</h2>
+<p>Sunucu, Windows cihazlarının BitLocker kurtarma anahtarlarını saklar: BitLocker'ı açık olan her cihazdan günde bir kez okur; cihazın <b>BitLocker</b> sayfasındaki (cihaz özetinin BitLocker satırından bağlantılı) <b>Kurtarma anahtarlarını şimdi oku</b> düğmesi onları hemen okur. Anahtarlar sunucunun gizli anahtarıyla şifrelenerek saklanır. Bir anahtarı yalnızca yöneticiler, parolalarını girdikten sonra gösterebilir; gösterilen her anahtar ve her yanlış parola etkinlik günlüğüne kaydedilir.</p>
+<p><b>Sistem sürücüsünde BitLocker gerektir</b> seçeneği olan bir ilke, sistem sürücüsü şifrelenmemiş Windows cihazlarında onu açar. Aracı önce TPM'yi denetler ve bir kurtarma anahtarı ekler; sunucu anahtarı kaydeder ve ancak ondan sonra şifreleme başlar (TPM koruyucusu, XTS-AES 256, yalnızca kullanılan alan), bilgisayar kullanılırken arka planda. TPM'si hazır olmayan veya BitLocker'sız bir Windows sürümündeki (Home) cihazlar nedeni Etkinlik bölümünde gösterir ve sunucu 6 saat sonra yeniden dener. Yöneticiler bunu tek bir cihaz için de cihazın BitLocker sayfasından açabilir.</p>
 
 <h2 id="device">Bir cihaz için ne geçerli</h2>
 <p>Bir cihazın <b>İlke</b> sekmesi her bölüm için onu hangi ilkenin belirlediğini (ve ilkenin cihaza, konumuna veya müşterisine atanıp atanmadığını) ya da sunucu ayarlarının geçerli olduğunu, her gerekli programın durumunu (yüklü, eksik, yüklemenin ne zaman başlatıldığı), geçerli Windows Update ve uyarı ayarlarını ve otomasyonları gösterir.</p>

@@ -1,0 +1,50 @@
+<h1>API</h1>
+<p class="lead">REST API, betiklerin ve diğer araçların cihazları, uyarıları ve görevleri okumasını ve cihazlarda iş başlatmasını konsoldakiyle aynı haklarla sağlar.</p>
+
+<h2 id="tokens">Belirteçler</h2>
+<p>Belirteci <a href="/account#tokens">Hesabım → API belirteçleri</a> altında oluşturun: bir ad, sizinkinden yüksek olmayan bir rol (salt okunur, teknisyen veya yönetici) ve ne kadar geçerli olacağı. Belirteç bir kez gösterilir; onu bir parola gibi saklayın. Sizin adınıza, müşterilerinizle çalışır. Her istekte <code>Authorization: Bearer czt_…</code> olarak, yalnızca izin verilen ağlardan bağlantı kabul eden konsol adresine (bağlantı noktası 8443) gönderin. Tarayıcının oturum çerezleri API'de çalışmaz. Belirteci hesap sayfasında silmek erişimini hemen sona erdirir.</p>
+
+<h2 id="calls">Çağrılar</h2>
+<table>
+  <tr><th>Çağrı</th><th>Ne yapar</th></tr>
+  <tr><td><code>GET /api/v1/me</code></td><td>belirtecin kimin adına çalıştığı, rolü ve müşterileri</td></tr>
+  <tr><td><code>GET /api/v1/customers</code></td><td>müşteriler</td></tr>
+  <tr><td><code>GET /api/v1/customers/{id}/sites</code></td><td>bir müşterinin konumları</td></tr>
+  <tr><td><code>GET /api/v1/devices?customer=&amp;site=&amp;q=</code></td><td>cihazlar, isteğe bağlı olarak müşteriye, konuma veya arama metnine göre süzülür</td></tr>
+  <tr><td><code>GET /api/v1/devices/{id}</code></td><td>envanteriyle bir cihaz</td></tr>
+  <tr><td><code>GET /api/v1/devices/{id}/tasks</code></td><td>bir cihazın görevleri (çalışan, bekleyen ve bitmiş en yeni 100 görev)</td></tr>
+  <tr><td><code>POST /api/v1/devices/{id}/tasks</code></td><td>bir cihazda görev başlatma (teknisyen)</td></tr>
+  <tr><td><code>GET /api/v1/tasks/{id}</code></td><td>bitene kadar izlemek için tek bir görev</td></tr>
+  <tr><td><code>POST /api/v1/tasks/{id}/cancel</code></td><td>çalışan bir görevi durdurma veya bekleyen bir görevi iptal etme (teknisyen)</td></tr>
+  <tr><td><code>GET /api/v1/alerts?state=open</code></td><td>açık uyarılar (state=all çözülenleri de)</td></tr>
+  <tr><td><code>GET /api/v1/software</code></td><td>yazılım kitaplığı paketleri (teknisyen)</td></tr>
+  <tr><td><code>POST /api/v1/software/{id}/install</code></td><td>bir kitaplık paketini görev olarak cihazlara yükleme (teknisyen)</td></tr>
+  <tr><td><code>GET /api/v1/jobs/{id}</code></td><td>bir görevin cihaz başına sonucu (teknisyen)</td></tr>
+  <tr><td><code>GET /api/v1/policies</code></td><td>atamalarıyla ilkeler (yönetici)</td></tr>
+  <tr><td><code>POST /api/v1/policies/{id}/assign</code></td><td>bir ilkeyi customer:ID, site:ID veya device:ID'ye atama (yönetici)</td></tr>
+  <tr><td><code>POST /api/v1/policies/unassign</code></td><td>bir müşterinin, konumun veya cihazın ilkesini kaldırma (yönetici)</td></tr>
+</table>
+
+<h2 id="tasks">Görevler</h2>
+<p>Bir görev cihaz çevrimiçi olana kadar bekler ve cihazın önceki görevlerinden sonra çalışır, tıpkı konsoldaki eylemler gibi; cihazın Etkinlik bölümünde görünür. Yanıt, görevle birlikte <code>202</code> olur; durumu <code>done</code>, <code>failed</code>, <code>cancelled</code> veya <code>expired</code> olana kadar <code>GET /api/v1/tasks/{id}</code> ile izleyin. Türler ve alanları:</p>
+<pre><code>{"kind": "script", "shell": "powershell", "script": "Get-Service Spooler", "timeout": 120}
+{"kind": "patch.scan"}
+{"kind": "patch.install", "updates": [], "reboot": false}
+{"kind": "winget", "action": "install", "id": "7zip.7zip"}
+{"kind": "choco", "action": "upgrade", "id": "firefox"}
+{"kind": "power", "action": "restart", "delay": 300, "message": "Restart for updates"}
+{"kind": "agent.update"}
+{"kind": "bitlocker.keys"}</code></pre>
+
+<h2 id="examples">Örnekler</h2>
+<p>9 numaralı cihazda bir PowerShell betiği ve ardından sonucu:</p>
+<pre><code>curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"kind":"script","shell":"powershell","script":"Get-Date","timeout":60}' \
+  https://rmm.example.com:8443/api/v1/devices/9/tasks
+curl -s -H "Authorization: Bearer $TOKEN" https://rmm.example.com:8443/api/v1/tasks/42
+
+$h = @{ Authorization = "Bearer $env:CZ_TOKEN" }
+Invoke-RestMethod -Headers $h https://rmm.example.com:8443/api/v1/alerts</code></pre>
+
+<h2 id="errors">Hatalar</h2>
+<p>Hatalar HTTP durumuyla birlikte JSON <code>{"error": "…"}</code> olarak gelir: hatalı istek için 400, eksik, yanlış veya süresi dolmuş belirteç için 401, belirtecin rolü çağrıya izin vermediğinde 403, var olmayan veya belirtecin göremeyeceği bir şey için 404, görev zaten bittiğinde 409, adresten çok fazla başarısız oturum açma denemesinden sonra 429. API üzerinden yapılan her değişiklik, belirtecin adıyla etkinlik günlüğüne kaydedilir.</p>

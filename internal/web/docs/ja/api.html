@@ -1,0 +1,50 @@
+<h1>API</h1>
+<p class="lead">REST API を使うと、スクリプトやその他のツールがコンソールと同じ権限で、デバイス、アラート、タスクを読み取り、デバイスで作業を開始できます。</p>
+
+<h2 id="tokens">トークン</h2>
+<p><a href="/account#tokens">アカウント → API トークン</a>でトークンを作成します。名前、あなたのロールを超えないロール（読み取り専用、技術者、管理者）、有効期間を指定します。トークンは 1 回だけ表示されるので、パスワードと同じように保管してください。トークンはあなたとして、あなたの顧客の範囲で動作します。すべての要求で <code>Authorization: Bearer czt_…</code> としてコンソールのアドレス（ポート 8443）に送信します。このアドレスは許可されたネットワークからの接続だけを受け付けます。ブラウザーのセッション Cookie は API では使えません。アカウント ページでトークンを削除すると、すぐにアクセスできなくなります。</p>
+
+<h2 id="calls">呼び出し</h2>
+<table>
+  <tr><th>呼び出し</th><th>内容</th></tr>
+  <tr><td><code>GET /api/v1/me</code></td><td>トークンが誰として動作するか、そのロールと顧客</td></tr>
+  <tr><td><code>GET /api/v1/customers</code></td><td>顧客</td></tr>
+  <tr><td><code>GET /api/v1/customers/{id}/sites</code></td><td>顧客のサイト</td></tr>
+  <tr><td><code>GET /api/v1/devices?customer=&amp;site=&amp;q=</code></td><td>デバイス（顧客、サイト、検索文字で絞り込み可能）</td></tr>
+  <tr><td><code>GET /api/v1/devices/{id}</code></td><td>インベントリ付きの 1 台のデバイス</td></tr>
+  <tr><td><code>GET /api/v1/devices/{id}/tasks</code></td><td>デバイスのタスク（実行中、待機中、最近完了した 100 件）</td></tr>
+  <tr><td><code>POST /api/v1/devices/{id}/tasks</code></td><td>デバイスでタスクを開始（技術者）</td></tr>
+  <tr><td><code>GET /api/v1/tasks/{id}</code></td><td>終了まで追跡するための 1 件のタスク</td></tr>
+  <tr><td><code>POST /api/v1/tasks/{id}/cancel</code></td><td>実行中のタスクの停止または待機中のタスクのキャンセル（技術者）</td></tr>
+  <tr><td><code>GET /api/v1/alerts?state=open</code></td><td>未解決のアラート（state=all で解決済みも含む）</td></tr>
+  <tr><td><code>GET /api/v1/software</code></td><td>ソフトウェア ライブラリのパッケージ（技術者）</td></tr>
+  <tr><td><code>POST /api/v1/software/{id}/install</code></td><td>ライブラリのパッケージをジョブとしてデバイスにインストール（技術者）</td></tr>
+  <tr><td><code>GET /api/v1/jobs/{id}</code></td><td>ジョブのデバイスごとの結果（技術者）</td></tr>
+  <tr><td><code>GET /api/v1/policies</code></td><td>ポリシーとその割り当て（管理者）</td></tr>
+  <tr><td><code>POST /api/v1/policies/{id}/assign</code></td><td>ポリシーを customer:ID、site:ID、device:ID に割り当て（管理者）</td></tr>
+  <tr><td><code>POST /api/v1/policies/unassign</code></td><td>顧客、サイト、デバイスのポリシーを削除（管理者）</td></tr>
+</table>
+
+<h2 id="tasks">タスク</h2>
+<p>タスクはデバイスがオンラインになるまで待機し、コンソールの操作と同じようにデバイスの以前のタスクの後に実行されます。デバイスのアクティビティに表示されます。応答はタスクを含む <code>202</code> です。ステータスが <code>done</code>、<code>failed</code>、<code>cancelled</code>、<code>expired</code> のいずれかになるまで <code>GET /api/v1/tasks/{id}</code> で追跡します。種類とフィールド:</p>
+<pre><code>{"kind": "script", "shell": "powershell", "script": "Get-Service Spooler", "timeout": 120}
+{"kind": "patch.scan"}
+{"kind": "patch.install", "updates": [], "reboot": false}
+{"kind": "winget", "action": "install", "id": "7zip.7zip"}
+{"kind": "choco", "action": "upgrade", "id": "firefox"}
+{"kind": "power", "action": "restart", "delay": 300, "message": "Restart for updates"}
+{"kind": "agent.update"}
+{"kind": "bitlocker.keys"}</code></pre>
+
+<h2 id="examples">例</h2>
+<p>デバイス 9 で PowerShell スクリプトを実行し、その結果を取得します:</p>
+<pre><code>curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"kind":"script","shell":"powershell","script":"Get-Date","timeout":60}' \
+  https://rmm.example.com:8443/api/v1/devices/9/tasks
+curl -s -H "Authorization: Bearer $TOKEN" https://rmm.example.com:8443/api/v1/tasks/42
+
+$h = @{ Authorization = "Bearer $env:CZ_TOKEN" }
+Invoke-RestMethod -Headers $h https://rmm.example.com:8443/api/v1/alerts</code></pre>
+
+<h2 id="errors">エラー</h2>
+<p>エラーは HTTP ステータスとともに JSON <code>{"error": "…"}</code> で返されます。400 は不正な要求、401 はトークンがない・誤っている・期限切れ、403 はトークンのロールで呼び出しが許可されていない、404 は存在しないかトークンで参照できない、409 はタスクがすでに終了している、429 はそのアドレスからのサインイン失敗が多すぎる場合です。API による変更はすべて、トークン名とともに監査ログに記録されます。</p>

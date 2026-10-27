@@ -86,6 +86,13 @@
       {{if not .Data.Scripts}}<p class="small muted">{{.T "The script library is empty."}} <a href="/scripts/new">{{.T "New script"}}</a></p>{{end}}
     </div>
   </section>
+  <section class="panel">
+    <h2><label class="check"><input type="checkbox" name="bitlocker_set" value="1" {{if $s.BitLocker}}checked{{end}} data-part="pol-bitlocker">{{template "icon" "lock"}}BitLocker</label></h2>
+    <div id="pol-bitlocker" class="policy-part">
+      <label class="check"><input type="checkbox" name="bitlocker_require" value="1" {{if $s.BitLocker}}{{if $s.BitLocker.Require}}checked{{end}}{{end}}>{{.T "Require BitLocker on the system drive"}}</label>
+      <p class="small muted">{{.T "On Windows devices with a ready TPM whose system drive is not encrypted, the server first has a recovery key added and stores it, and only then starts the encryption (TPM, XTS-AES 256, used space only). Devices without a TPM or with a Windows edition without BitLocker show the reason under Activity. Recovery keys of all devices with BitLocker are collected once a day."}}</p>
+    </div>
+  </section>
   <div><button class="primary">{{.T "Save"}}</button></div>
 </form>
 

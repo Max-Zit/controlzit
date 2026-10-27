@@ -83,7 +83,7 @@
   <dl class="facts">
     <dt>Microsoft Defender</dt><dd>{{with $i.Defender}}{{if .Antivirus}}<span class="badge ok"><i></i>{{$.T "On"}}</span>{{else}}<span class="badge bad"><i></i>{{$.T "Off"}}</span>{{end}} {{$.T "real-time"}}: {{if .RealTime}}{{$.T "on"}}{{else}}<b class="bad-text">{{$.T "off"}}</b>{{end}} · {{$.T "signatures"}} {{.SignatureVersion}} ({{$.Ago .SignatureUpdated}}){{else}}<span class="muted">{{.T "not present"}}</span>{{end}}</dd>
     <dt>{{.T "Firewall"}}</dt><dd>{{range $i.Firewall}}<span class="badge {{if .Enabled}}ok{{else}}bad{{end}}"><i></i>{{.Profile}}</span> {{else}}<span class="muted">—</span>{{end}}</dd>
-    <dt>BitLocker</dt><dd>{{range $i.BitLocker}}<span class="badge {{if eq .Protection "on"}}ok{{end}}">{{.Drive}} {{$.T .Status}}</span> {{else}}<span class="muted">{{.T "no information"}}</span>{{end}}</dd>
+    <dt>BitLocker</dt><dd>{{range $i.BitLocker}}<span class="badge {{if eq .Protection "on"}}ok{{end}}">{{.Drive}} {{$.T .Status}}</span> {{else}}<span class="muted">{{.T "no information"}}</span>{{end}}{{if $.User.CanWrite}} <a class="small" href="/devices/{{$d.ID}}/bitlocker">{{$.T "Recovery keys"}}</a>{{end}}</dd>
     <dt>{{.T "Restart pending"}}</dt><dd>{{if $i.PendingReboot}}<span class="badge warn">{{.T "Yes"}}</span>{{else}}{{.T "No"}}{{end}}</dd>
   </dl>
 </section>

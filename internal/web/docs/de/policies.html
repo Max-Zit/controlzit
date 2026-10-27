@@ -7,6 +7,7 @@
   <li><b>Erforderliche Software</b> — Programme, die jedes Windows-Gerät der Richtlinie haben muss; fehlende installiert der Server.</li>
   <li><b>Alarmregeln</b> — die Schwellen für CPU, Speicher, Datenträger, Offline-Geräte und ausstehende Neustarts, Defender und Firewall sowie die Dienste, die laufen müssen.</li>
   <li><b>Automatisierungen</b> — Bibliotheksskripte, die an festgelegten Tagen zu einer festgelegten Zeit auf den Geräten der Richtlinie laufen.</li>
+  <li><b>BitLocker</b> — Verschlüsselung des Systemlaufwerks, der Wiederherstellungsschlüssel bleibt auf dem Server.</li>
 </ul>
 <p>Jeder Teil wird in der Richtlinie ein- oder ausgeschaltet. Einen ausgeschalteten Teil legt diese Richtlinie nicht fest: Er kommt aus einer weniger spezifischen Richtlinie oder aus den Einstellungen des Servers (<a href="/settings/updates">Windows-Updates</a>, <a href="/settings/monitoring">Überwachung und Alarme</a>).</p>
 
@@ -22,6 +23,10 @@
 
 <h2 id="automations">Automatisierungen</h2>
 <p>Eine Automatisierung führt ein Skript der <a href="/scripts">Skriptbibliothek</a> an den gewählten Tagen und zur gewählten Zeit (Serverzeit) als einen Auftrag für alle Geräte aus, deren Automatisierungen aus dieser Richtlinie kommen. Offline-Geräte führen es aus, wenn sie sich verbinden, innerhalb von 24 Stunden; die Ergebnisse stehen auf der Seite des Auftrags und unter Aktivität jedes Geräts.</p>
+
+<h2 id="bitlocker">BitLocker und Wiederherstellungsschlüssel</h2>
+<p>Der Server bewahrt die BitLocker-Wiederherstellungsschlüssel seiner Windows-Geräte auf: Einmal täglich liest er sie von jedem Gerät mit eingeschaltetem BitLocker, und <b>Wiederherstellungsschlüssel jetzt lesen</b> auf der <b>BitLocker</b>-Seite des Geräts (verlinkt in der BitLocker-Zeile der Geräteübersicht) liest sie sofort. Die Schlüssel werden mit dem geheimen Schlüssel des Servers verschlüsselt gespeichert. Nur Administratoren können einen Schlüssel anzeigen, nach Eingabe ihres Kennworts; jeder angezeigte Schlüssel und jedes falsche Kennwort wird im Aktivitätsprotokoll festgehalten.</p>
+<p>Eine Richtlinie mit <b>BitLocker auf dem Systemlaufwerk verlangen</b> schaltet es auf Windows-Geräten ein, deren Systemlaufwerk nicht verschlüsselt ist. Der Agent prüft zuerst das TPM und fügt einen Wiederherstellungsschlüssel hinzu; der Server speichert den Schlüssel, und erst dann beginnt die Verschlüsselung (TPM-Schutz, XTS-AES 256, nur belegter Speicher) im Hintergrund, während der Computer genutzt wird. Geräte ohne bereites TPM oder mit einer Windows-Edition ohne BitLocker (Home) zeigen den Grund unter Aktivität, und der Server versucht es nach 6 Stunden erneut. Administratoren können es auch für ein einzelnes Gerät auf dessen BitLocker-Seite einschalten.</p>
 
 <h2 id="device">Was für ein Gerät gilt</h2>
 <p>Die Registerkarte <b>Richtlinie</b> eines Geräts zeigt für jeden Teil, welche Richtlinie ihn festlegt (und ob sie dem Gerät, seinem Standort oder seinem Kunden zugewiesen ist) oder dass die Servereinstellungen gelten, den Stand jedes erforderlichen Programms (installiert, fehlt, wann eine Installation gestartet wurde), die geltenden Einstellungen für Windows Update und Alarme sowie die Automatisierungen.</p>

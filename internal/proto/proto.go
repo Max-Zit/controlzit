@@ -250,3 +250,44 @@ type SecurityState struct {
 	PendingReboot    bool       `json:"pending_reboot"`
 	CheckedAt        time.Time  `json:"checked_at"`
 }
+
+// BitLocker on Windows: reading the volumes with their recovery keys, and
+// switching it on for the system drive in two steps (the server stores the
+// recovery key before the encryption starts).
+const KindBitLocker = "bitlocker"
+
+// BitLocker actions.
+const (
+	BitLockerKeys    = "keys"    // volumes and recovery keys
+	BitLockerPrepare = "prepare" // check the system drive can be encrypted, add a recovery key
+	BitLockerEnable  = "enable"  // start encrypting the system drive (TPM)
+)
+
+// BitLockerArgs is the argument of bitlocker.
+type BitLockerArgs struct {
+	Action string `json:"action"`
+}
+
+// BitLockerReport is the answer of bitlocker.
+type BitLockerReport struct {
+	TPMPresent bool              `json:"tpm_present"`
+	TPMReady   bool              `json:"tpm_ready"`
+	Volumes    []BitLockerVolume `json:"volumes"`
+	Started    bool              `json:"started,omitempty"` // enable: the encryption started
+}
+
+// BitLockerVolume is one volume.
+type BitLockerVolume struct {
+	Mount      string        `json:"mount"`
+	Type       string        `json:"type"`       // OperatingSystem, Data
+	Protection string        `json:"protection"` // On, Off
+	Status     string        `json:"status"`     // FullyEncrypted, FullyDecrypted, EncryptionInProgress …
+	Percent    float64       `json:"percent"`
+	Keys       []RecoveryKey `json:"keys,omitempty"`
+}
+
+// RecoveryKey is a recovery password protector of a volume.
+type RecoveryKey struct {
+	ID       string `json:"id"`
+	Password string `json:"password"`
+}

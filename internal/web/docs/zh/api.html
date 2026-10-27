@@ -1,0 +1,50 @@
+<h1>API</h1>
+<p class="lead">REST API 让脚本和其他工具可以读取设备、警报和任务，并在设备上启动工作，权限与控制台相同。</p>
+
+<h2 id="tokens">令牌</h2>
+<p>在<a href="/account#tokens">我的帐户 → API 令牌</a>中创建令牌：名称、不高于您的角色（只读、技术人员或管理员）以及有效期。令牌只显示一次；请像密码一样保存。它以您的身份（使用您的客户）操作。每次请求都以 <code>Authorization: Bearer czt_…</code> 的形式发送到控制台地址（端口 8443），该地址只接受来自允许网络的连接。浏览器的会话 Cookie 对 API 无效。在帐户页面删除令牌会立即终止其访问。</p>
+
+<h2 id="calls">调用</h2>
+<table>
+  <tr><th>调用</th><th>作用</th></tr>
+  <tr><td><code>GET /api/v1/me</code></td><td>令牌以谁的身份操作、其角色和客户</td></tr>
+  <tr><td><code>GET /api/v1/customers</code></td><td>客户</td></tr>
+  <tr><td><code>GET /api/v1/customers/{id}/sites</code></td><td>客户的站点</td></tr>
+  <tr><td><code>GET /api/v1/devices?customer=&amp;site=&amp;q=</code></td><td>设备，可按客户、站点或搜索文字筛选</td></tr>
+  <tr><td><code>GET /api/v1/devices/{id}</code></td><td>单台设备及其清单</td></tr>
+  <tr><td><code>GET /api/v1/devices/{id}/tasks</code></td><td>设备的任务（运行中、等待中以及最近完成的 100 个）</td></tr>
+  <tr><td><code>POST /api/v1/devices/{id}/tasks</code></td><td>在设备上启动任务（技术人员）</td></tr>
+  <tr><td><code>GET /api/v1/tasks/{id}</code></td><td>单个任务，用于跟踪直到结束</td></tr>
+  <tr><td><code>POST /api/v1/tasks/{id}/cancel</code></td><td>停止运行中的任务或取消等待中的任务（技术人员）</td></tr>
+  <tr><td><code>GET /api/v1/alerts?state=open</code></td><td>未解决的警报（state=all 也包括已解决的）</td></tr>
+  <tr><td><code>GET /api/v1/software</code></td><td>软件库中的软件包（技术人员）</td></tr>
+  <tr><td><code>POST /api/v1/software/{id}/install</code></td><td>以任务方式将库中的软件包安装到设备（技术人员）</td></tr>
+  <tr><td><code>GET /api/v1/jobs/{id}</code></td><td>任务在每台设备上的结果（技术人员）</td></tr>
+  <tr><td><code>GET /api/v1/policies</code></td><td>策略及其分配（管理员）</td></tr>
+  <tr><td><code>POST /api/v1/policies/{id}/assign</code></td><td>将策略分配给 customer:ID、site:ID 或 device:ID（管理员）</td></tr>
+  <tr><td><code>POST /api/v1/policies/unassign</code></td><td>移除客户、站点或设备的策略（管理员）</td></tr>
+</table>
+
+<h2 id="tasks">任务</h2>
+<p>任务会等待设备上线，并在设备之前的任务之后运行，与控制台中的操作相同；它显示在设备的活动中。响应为带有任务的 <code>202</code>；使用 <code>GET /api/v1/tasks/{id}</code> 跟踪，直到其状态为 <code>done</code>、<code>failed</code>、<code>cancelled</code> 或 <code>expired</code>。任务类型及其字段：</p>
+<pre><code>{"kind": "script", "shell": "powershell", "script": "Get-Service Spooler", "timeout": 120}
+{"kind": "patch.scan"}
+{"kind": "patch.install", "updates": [], "reboot": false}
+{"kind": "winget", "action": "install", "id": "7zip.7zip"}
+{"kind": "choco", "action": "upgrade", "id": "firefox"}
+{"kind": "power", "action": "restart", "delay": 300, "message": "Restart for updates"}
+{"kind": "agent.update"}
+{"kind": "bitlocker.keys"}</code></pre>
+
+<h2 id="examples">示例</h2>
+<p>在设备 9 上运行 PowerShell 脚本，然后查看结果：</p>
+<pre><code>curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"kind":"script","shell":"powershell","script":"Get-Date","timeout":60}' \
+  https://rmm.example.com:8443/api/v1/devices/9/tasks
+curl -s -H "Authorization: Bearer $TOKEN" https://rmm.example.com:8443/api/v1/tasks/42
+
+$h = @{ Authorization = "Bearer $env:CZ_TOKEN" }
+Invoke-RestMethod -Headers $h https://rmm.example.com:8443/api/v1/alerts</code></pre>
+
+<h2 id="errors">错误</h2>
+<p>错误以 JSON <code>{"error": "…"}</code> 和 HTTP 状态返回：400 表示请求错误，401 表示令牌缺失、错误或已过期，403 表示令牌的角色不允许此调用，404 表示对象不存在或令牌无权查看，409 表示任务已结束，429 表示该地址登录失败次数过多。通过 API 进行的每项更改都会连同令牌名称记录到审核日志中。</p>

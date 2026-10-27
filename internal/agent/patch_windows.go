@@ -20,11 +20,14 @@ import (
 
 // The Windows Update Agent API (COM) from PowerShell, which every Windows has.
 
-const patchCommon = `$ErrorActionPreference = 'Stop'
+// patchCommonOut writes one JSON result as UTF-8 (shared with BitLocker).
+const patchCommonOut = `$ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 $stdout = New-Object IO.StreamWriter([Console]::OpenStandardOutput(), (New-Object Text.UTF8Encoding $false))
-function Write-Result($o) { $stdout.Write(($o | ConvertTo-Json -Depth 4 -Compress)); $stdout.Flush() }
-$session = New-Object -ComObject Microsoft.Update.Session
+function Write-Result($o) { $stdout.Write(($o | ConvertTo-Json -Depth 6 -Compress)); $stdout.Flush() }
+`
+
+const patchCommon = patchCommonOut + `$session = New-Object -ComObject Microsoft.Update.Session
 $session.ClientApplicationID = 'ControlZit'
 $searcher = $session.CreateUpdateSearcher()
 `
@@ -73,8 +76,14 @@ $results = @(for ($i = 0; $i -lt $todo.Count; $i++) {
 Write-Result ([pscustomobject]@{ result = [int]$res.ResultCode; reboot = [bool]$res.RebootRequired; results = $results })
 `
 
-// runPatchScript runs a script and decodes its JSON output into v.
+// runPatchScript runs a Windows Update script and decodes its JSON output into v.
 func runPatchScript(ctx context.Context, script string, v any) error {
+	return runPSJSON(ctx, script, v, "update service")
+}
+
+// runPSJSON runs an embedded PowerShell script and decodes its JSON output
+// into v; what names it in errors.
+func runPSJSON(ctx context.Context, script string, v any, what string) error {
 	cmd := exec.CommandContext(ctx, powershell(), "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-EncodedCommand", encodeCommand(script)) // #nosec G204 -- embedded script, validated IDs
 	cmd.SysProcAttr = hiddenProc
 	killTree(cmd)
@@ -82,13 +91,16 @@ func runPatchScript(ctx context.Context, script string, v any) error {
 	cmd.Stdout, cmd.Stderr = &out, &errb
 	if err := cmd.Run(); err != nil {
 		if ctx.Err() != nil {
-			return errors.New("the update service did not answer in time")
+			if what == "update service" {
+				return errors.New("the update service did not answer in time")
+			}
+			return fmt.Errorf("%s: no answer in time", what)
 		}
-		return fmt.Errorf("update service: %s", psError(errb.String(), err))
+		return fmt.Errorf("%s: %s", what, psError(errb.String(), err))
 	}
 	b := bytes.TrimSpace(bytes.TrimPrefix(out.Bytes(), []byte("\xef\xbb\xbf")))
 	if err := json.Unmarshal(b, v); err != nil {
-		return fmt.Errorf("update service output: %v: %s", err, trim(string(b), 200))
+		return fmt.Errorf("%s output: %v: %s", what, err, trim(string(b), 200))
 	}
 	return nil
 }

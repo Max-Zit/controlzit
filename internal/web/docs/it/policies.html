@@ -7,6 +7,7 @@
   <li><b>Software richiesto</b> — programmi che ogni dispositivo Windows del criterio deve avere; quelli mancanti vengono installati dal server.</li>
   <li><b>Regole di avviso</b> — le soglie per CPU, memoria, dischi, dispositivi offline e riavvii in sospeso, Defender e firewall, e i servizi che devono essere in esecuzione.</li>
   <li><b>Automazioni</b> — script della libreria eseguiti sui dispositivi del criterio in giorni stabiliti a un'ora stabilita.</li>
+  <li><b>BitLocker</b> — crittografia dell'unità di sistema, con la chiave di ripristino conservata sul server.</li>
 </ul>
 <p>Ogni parte viene attivata o disattivata nel criterio. Una parte disattivata non è impostata da questo criterio: viene da un criterio meno specifico o dalle impostazioni del server (<a href="/settings/updates">Aggiornamenti di Windows</a>, <a href="/settings/monitoring">Monitoraggio e avvisi</a>).</p>
 
@@ -22,6 +23,10 @@
 
 <h2 id="automations">Automazioni</h2>
 <p>Un'automazione esegue uno script della <a href="/scripts">libreria di script</a> nei giorni e all'ora scelti (ora del server) come un'unica attività per tutti i dispositivi le cui automazioni vengono da questo criterio. I dispositivi offline lo eseguono quando si connettono, entro 24 ore; i risultati sono nella pagina dell'attività e nelle Attività di ogni dispositivo.</p>
+
+<h2 id="bitlocker">BitLocker e chiavi di ripristino</h2>
+<p>Il server conserva le chiavi di ripristino BitLocker dei suoi dispositivi Windows: una volta al giorno le legge da ogni dispositivo con BitLocker attivo, e <b>Leggi subito le chiavi di ripristino</b> nella pagina <b>BitLocker</b> del dispositivo (collegata dalla riga BitLocker della panoramica del dispositivo) le legge subito. Le chiavi sono salvate crittografate con la chiave segreta del server. Solo gli amministratori possono mostrare una chiave, dopo aver inserito la propria password; ogni chiave mostrata e ogni password errata vengono registrate nel registro attività.</p>
+<p>Un criterio con <b>Richiedi BitLocker sull'unità di sistema</b> lo attiva sui dispositivi Windows la cui unità di sistema non è crittografata. L'agent controlla prima il TPM e aggiunge una chiave di ripristino; il server salva la chiave e solo dopo inizia la crittografia (protezione TPM, XTS-AES 256, solo spazio usato), in background mentre il computer è in uso. I dispositivi senza TPM pronto o con un'edizione di Windows senza BitLocker (Home) mostrano il motivo nelle Attività, e il server riprova dopo 6 ore. Gli amministratori possono attivarlo anche per un singolo dispositivo dalla sua pagina BitLocker.</p>
 
 <h2 id="device">Cosa vale per un dispositivo</h2>
 <p>La scheda <b>Criterio</b> di un dispositivo mostra, per ogni parte, quale criterio la imposta (e se è assegnato al dispositivo, alla sua sede o al suo cliente) o che valgono le impostazioni del server, lo stato di ogni programma richiesto (installato, mancante, quando è stata avviata un'installazione), le impostazioni di Windows Update e di avviso in vigore e le automazioni.</p>

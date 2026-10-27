@@ -38,6 +38,10 @@ ControlZit keeps an inventory of every computer, watches it and raises alerts, l
 | **Scripts** | PowerShell, cmd, bash and sh on one device, many at once or on a schedule, from a script library; results per device |
 | **Updates and software** | missing Windows updates and Linux packages (apt, dnf), installed by hand or on a schedule; programs through winget and optionally Chocolatey; your own MSI/EXE library deployed silently to many devices; every installed program listed and silently uninstalled; Windows event logs |
 | **Reports** | per customer: devices, updates, alerts and technician work; printable or emailed every week or month |
+| **Policies** | Windows Update, required software (installed automatically when missing), alert rules, automations and BitLocker per customer, site or device; the most specific assignment wins |
+| **Activity** | every action on a device is a task: running, waiting (offline devices) and history, with cancel and stop |
+| **BitLocker** | recovery keys collected and kept encrypted on the server, shown to administrators after a password check; switched on by policy |
+| **API** | REST API with personal tokens (role no higher than the user's), documented in the console |
 | **Users** | roles (administrator, technician, read-only) and per-customer access; two-factor sign-in; Active Directory / LDAP and single sign-on (OpenID Connect, SAML) |
 | **Server** | Let's Encrypt or your own certificate, signed self-update, network and time zone from the console, diagnostics without secrets, tamper-evident audit log |
 

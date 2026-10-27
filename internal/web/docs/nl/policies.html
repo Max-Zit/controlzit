@@ -7,6 +7,7 @@
   <li><b>Vereiste software</b> — programma's die elk Windows-apparaat van het beleid moet hebben; ontbrekende installeert de server.</li>
   <li><b>Waarschuwingsregels</b> — de drempels voor processor, geheugen, schijven, offline apparaten en wachtende herstarts, Defender en de firewall, en de services die moeten draaien.</li>
   <li><b>Automatiseringen</b> — bibliotheekscripts die op vaste dagen en een vast tijdstip op de apparaten van het beleid draaien.</li>
+  <li><b>BitLocker</b> — versleuteling van het systeemstation, met de herstelsleutel bewaard op de server.</li>
 </ul>
 <p>Elk onderdeel wordt in het beleid in- of uitgeschakeld. Een uitgeschakeld onderdeel stelt dit beleid niet in: het komt van een minder specifiek beleid of van de instellingen van de server (<a href="/settings/updates">Windows-updates</a>, <a href="/settings/monitoring">Bewaking en waarschuwingen</a>).</p>
 
@@ -22,6 +23,10 @@
 
 <h2 id="automations">Automatiseringen</h2>
 <p>Een automatisering voert een script uit de <a href="/scripts">scriptbibliotheek</a> uit op de gekozen dagen en tijd (servertijd), als één taak voor alle apparaten waarvan de automatiseringen uit dit beleid komen. Offline apparaten voeren het uit wanneer ze verbinding maken, binnen 24 uur; de resultaten staan op de pagina van de taak en onder Activiteit van elk apparaat.</p>
+
+<h2 id="bitlocker">BitLocker en herstelsleutels</h2>
+<p>De server bewaart de BitLocker-herstelsleutels van zijn Windows-apparaten: eenmaal per dag leest hij ze van elk apparaat waarop BitLocker aan staat, en <b>Herstelsleutels nu lezen</b> op de <b>BitLocker</b>-pagina van het apparaat (gekoppeld vanuit de BitLocker-regel van het apparaatoverzicht) leest ze meteen. De sleutels worden versleuteld met de geheime sleutel van de server opgeslagen. Alleen beheerders kunnen een sleutel tonen, na het invoeren van hun wachtwoord; elke getoonde sleutel en elk fout wachtwoord wordt vastgelegd in het activiteitenlogboek.</p>
+<p>Een beleid met <b>BitLocker vereisen op het systeemstation</b> schakelt het in op Windows-apparaten waarvan het systeemstation niet versleuteld is. De agent controleert eerst het TPM en voegt een herstelsleutel toe; de server slaat de sleutel op en pas daarna begint de versleuteling (TPM-beveiliging, XTS-AES 256, alleen gebruikte ruimte), op de achtergrond terwijl de computer in gebruik is. Apparaten zonder gereed TPM of met een Windows-editie zonder BitLocker (Home) tonen de reden onder Activiteit, en de server probeert het na 6 uur opnieuw. Beheerders kunnen het ook voor één apparaat inschakelen vanaf de BitLocker-pagina ervan.</p>
 
 <h2 id="device">Wat voor een apparaat geldt</h2>
 <p>Het tabblad <b>Beleid</b> van een apparaat toont voor elk onderdeel welk beleid het instelt (en of het is toegewezen aan het apparaat, de locatie of de klant) of dat de serverinstellingen gelden, de staat van elk vereist programma (geïnstalleerd, ontbreekt, wanneer een installatie is gestart), de geldende instellingen voor Windows Update en waarschuwingen en de automatiseringen.</p>

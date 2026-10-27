@@ -7,6 +7,7 @@
   <li><b>Obavezni softver</b> — programi koje svaki Windows uređaj polise mora da ima; server sam instalira one koji nedostaju.</li>
   <li><b>Pravila alarma</b> — pragovi za procesor, memoriju, diskove, uređaje van mreže i restart na čekanju, Defender i zaštitni zid, i servisi koji moraju da rade.</li>
   <li><b>Automatizacije</b> — skripte iz biblioteke koje se pokreću na uređajima polise određenim danima i u određeno vreme.</li>
+  <li><b>BitLocker</b> — šifrovanje sistemskog diska, uz ključ za oporavak sačuvan na serveru.</li>
 </ul>
 <p>Svaki deo se u polisi uključuje ili isključuje. Isključen deo ova polisa ne podešava: dolazi iz manje konkretne polise ili iz podešavanja servera (<a href="/settings/updates">Windows ažuriranja</a>, <a href="/settings/monitoring">Nadzor i alarmi</a>).</p>
 
@@ -22,6 +23,10 @@
 
 <h2 id="automations">Automatizacije</h2>
 <p>Automatizacija pokreće skriptu iz <a href="/scripts">biblioteke skripti</a> izabranim danima i u izabrano vreme (vreme servera) kao jedan posao za sve uređaje čije automatizacije dolaze iz ove polise. Uređaji van mreže je pokreću kada se povežu, u roku od 24 sata; rezultati su na stranici posla i u Aktivnostima svakog uređaja.</p>
+
+<h2 id="bitlocker">BitLocker i ključevi za oporavak</h2>
+<p>Server čuva BitLocker ključeve za oporavak svojih Windows uređaja: jednom dnevno ih čita sa svakog uređaja sa uključenim BitLocker-om, a <b>Pročitaj ključeve za oporavak sada</b> na stranici <b>BitLocker</b> uređaja (link je u redu BitLocker na pregledu uređaja) čita ih odmah. Ključevi se čuvaju šifrovani tajnim ključem servera. Samo administratori mogu da prikažu ključ, posle unosa lozinke; svaki prikazan ključ i svaka pogrešna lozinka beleže se u dnevnik aktivnosti.</p>
+<p>Polisa sa opcijom <b>Zahtevaj BitLocker na sistemskom disku</b> uključuje ga na Windows uređajima čiji sistemski disk nije šifrovan. Agent prvo proverava TPM i dodaje ključ za oporavak; server čuva ključ, pa tek onda počinje šifrovanje (TPM zaštita, XTS-AES 256, samo zauzeti prostor), u pozadini dok se računar koristi. Uređaji bez spremnog TPM-a ili sa izdanjem Windows-a bez BitLocker-a (Home) pokazuju razlog u Aktivnostima, a server pokušava ponovo posle 6 sati. Administratori ga mogu uključiti i za jedan uređaj sa njegove BitLocker stranice.</p>
 
 <h2 id="device">Šta važi za uređaj</h2>
 <p>Kartica <b>Polisa</b> uređaja za svaki deo pokazuje koja ga polisa podešava (i da li je dodeljena uređaju, lokaciji ili klijentu) ili da važe podešavanja servera, stanje svakog obaveznog programa (instaliran, nedostaje, kada je pokrenuta instalacija), važeća podešavanja za Windows Update i alarme i automatizacije.</p>

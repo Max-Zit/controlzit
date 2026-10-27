@@ -201,6 +201,9 @@ func policyForm(r *http.Request) (PolicySettings, string) {
 		}
 		ps.Automations = au
 	}
+	if r.FormValue("bitlocker_set") == "1" {
+		ps.BitLocker = &BitLockerPolicy{Require: r.FormValue("bitlocker_require") == "1"}
+	}
 	if err := ps.Validate(); err != nil {
 		return ps, err.Error()
 	}
@@ -347,6 +350,7 @@ type devicePolicyData struct {
 	Runs        []Automation
 	ScriptNames map[int64]string
 	Assigned    *policyLevel // the device's own assignment
+	BitLocker   bool         // the policy requires BitLocker
 	Policies    []store.Policy
 }
 
@@ -377,6 +381,9 @@ func (s *Server) handleDevicePolicy(w http.ResponseWriter, r *http.Request) {
 	}
 	dd.Alerts, src = pr.alerts(d.ID, s.Monitoring(ctx))
 	dd.Parts = append(dd.Parts, policyPart{Name: "Alert rules", Source: src})
+	bl, src := pr.bitlocker(d.ID)
+	dd.Parts = append(dd.Parts, policyPart{Name: "BitLocker", Source: src})
+	dd.BitLocker = bl != nil && bl.Require
 	au, src := pr.automations(d.ID)
 	dd.Parts = append(dd.Parts, policyPart{Name: "Automations", Source: src})
 	if au != nil {

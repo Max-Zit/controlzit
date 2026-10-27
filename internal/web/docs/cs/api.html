@@ -1,0 +1,50 @@
+<h1>API</h1>
+<p class="lead">REST API umožňuje skriptům a dalším nástrojům číst zařízení, upozornění a úlohy a spouštět práci na zařízeních, se stejnými právy jako v konzoli.</p>
+
+<h2 id="tokens">Tokeny</h2>
+<p>Token vytvoříte v <a href="/account#tokens">Můj účet → Tokeny API</a>: název, roli, která není vyšší než vaše (jen čtení, technik nebo správce), a dobu platnosti. Token se zobrazí jen jednou; uchovávejte ho jako heslo. Jedná vaším jménem, s vašimi zákazníky. Posílejte ho v každém požadavku jako <code>Authorization: Bearer czt_…</code> na adresu konzole (port 8443), která přijímá spojení jen z povolených sítí. Soubory cookie relace prohlížeče na API nefungují. Odstraněním tokenu na stránce účtu jeho přístup okamžitě skončí.</p>
+
+<h2 id="calls">Volání</h2>
+<table>
+  <tr><th>Volání</th><th>Co dělá</th></tr>
+  <tr><td><code>GET /api/v1/me</code></td><td>za koho token jedná, jeho role a zákazníci</td></tr>
+  <tr><td><code>GET /api/v1/customers</code></td><td>zákazníci</td></tr>
+  <tr><td><code>GET /api/v1/customers/{id}/sites</code></td><td>lokality zákazníka</td></tr>
+  <tr><td><code>GET /api/v1/devices?customer=&amp;site=&amp;q=</code></td><td>zařízení, volitelně filtrovaná podle zákazníka, lokality nebo hledaného textu</td></tr>
+  <tr><td><code>GET /api/v1/devices/{id}</code></td><td>jedno zařízení s inventářem</td></tr>
+  <tr><td><code>GET /api/v1/devices/{id}/tasks</code></td><td>úlohy zařízení (běžící, čekající a 100 nejnovějších dokončených)</td></tr>
+  <tr><td><code>POST /api/v1/devices/{id}/tasks</code></td><td>spuštění úlohy na zařízení (technik)</td></tr>
+  <tr><td><code>GET /api/v1/tasks/{id}</code></td><td>jedna úloha, aby šla sledovat až do konce</td></tr>
+  <tr><td><code>POST /api/v1/tasks/{id}/cancel</code></td><td>zastavení běžící nebo zrušení čekající úlohy (technik)</td></tr>
+  <tr><td><code>GET /api/v1/alerts?state=open</code></td><td>otevřená upozornění (state=all i vyřešená)</td></tr>
+  <tr><td><code>GET /api/v1/software</code></td><td>balíčky knihovny softwaru (technik)</td></tr>
+  <tr><td><code>POST /api/v1/software/{id}/install</code></td><td>instalace balíčku z knihovny na zařízení jako úloha (technik)</td></tr>
+  <tr><td><code>GET /api/v1/jobs/{id}</code></td><td>výsledek úlohy pro každé zařízení (technik)</td></tr>
+  <tr><td><code>GET /api/v1/policies</code></td><td>zásady s přiřazeními (správce)</td></tr>
+  <tr><td><code>POST /api/v1/policies/{id}/assign</code></td><td>přiřazení zásady k customer:ID, site:ID nebo device:ID (správce)</td></tr>
+  <tr><td><code>POST /api/v1/policies/unassign</code></td><td>odebrání zásady zákazníka, lokality nebo zařízení (správce)</td></tr>
+</table>
+
+<h2 id="tasks">Úlohy</h2>
+<p>Úloha čeká, až bude zařízení online, a běží po dřívějších úlohách zařízení, stejně jako akce v konzoli; zobrazí se v Aktivitě zařízení. Odpověď je <code>202</code> s úlohou; sledujte ji pomocí <code>GET /api/v1/tasks/{id}</code>, dokud její stav není <code>done</code>, <code>failed</code>, <code>cancelled</code> nebo <code>expired</code>. Druhy a jejich pole:</p>
+<pre><code>{"kind": "script", "shell": "powershell", "script": "Get-Service Spooler", "timeout": 120}
+{"kind": "patch.scan"}
+{"kind": "patch.install", "updates": [], "reboot": false}
+{"kind": "winget", "action": "install", "id": "7zip.7zip"}
+{"kind": "choco", "action": "upgrade", "id": "firefox"}
+{"kind": "power", "action": "restart", "delay": 300, "message": "Restart for updates"}
+{"kind": "agent.update"}
+{"kind": "bitlocker.keys"}</code></pre>
+
+<h2 id="examples">Příklady</h2>
+<p>Skript PowerShell na zařízení 9 a potom jeho výsledek:</p>
+<pre><code>curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"kind":"script","shell":"powershell","script":"Get-Date","timeout":60}' \
+  https://rmm.example.com:8443/api/v1/devices/9/tasks
+curl -s -H "Authorization: Bearer $TOKEN" https://rmm.example.com:8443/api/v1/tasks/42
+
+$h = @{ Authorization = "Bearer $env:CZ_TOKEN" }
+Invoke-RestMethod -Headers $h https://rmm.example.com:8443/api/v1/alerts</code></pre>
+
+<h2 id="errors">Chyby</h2>
+<p>Chyby přicházejí jako JSON <code>{"error": "…"}</code> se stavem HTTP: 400 pro chybný požadavek, 401 pro chybějící, nesprávný nebo prošlý token, 403, když role tokenu volání nedovoluje, 404 pro něco, co neexistuje nebo co token nesmí vidět, 409, když úloha už skončila, 429 po příliš mnoha neúspěšných přihlášeních z adresy. Každá změna přes API se zapíše do protokolu aktivit s názvem tokenu.</p>

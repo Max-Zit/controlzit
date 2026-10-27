@@ -1,0 +1,50 @@
+<h1>API</h1>
+<p class="lead">Mit der REST-API lesen Skripte und andere Werkzeuge Geräte, Alarme und Aufgaben und starten Arbeiten auf Geräten, mit denselben Rechten wie in der Konsole.</p>
+
+<h2 id="tokens">Tokens</h2>
+<p>Erstellen Sie ein Token unter <a href="/account#tokens">Mein Konto → API-Tokens</a>: einen Namen, eine Rolle, die nicht höher als Ihre ist (nur lesen, Techniker oder Administrator), und wie lange es gilt. Das Token wird einmal angezeigt; bewahren Sie es wie ein Kennwort auf. Es handelt als Sie, mit Ihren Kunden. Senden Sie es in jeder Anfrage als <code>Authorization: Bearer czt_…</code> an die Konsolenadresse (Port 8443), die nur Verbindungen aus den erlaubten Netzen annimmt. Sitzungscookies des Browsers funktionieren bei der API nicht. Das Token auf der Kontoseite zu löschen, beendet seinen Zugriff sofort.</p>
+
+<h2 id="calls">Aufrufe</h2>
+<table>
+  <tr><th>Aufruf</th><th>Was er tut</th></tr>
+  <tr><td><code>GET /api/v1/me</code></td><td>als wer das Token handelt, seine Rolle und Kunden</td></tr>
+  <tr><td><code>GET /api/v1/customers</code></td><td>Kunden</td></tr>
+  <tr><td><code>GET /api/v1/customers/{id}/sites</code></td><td>Standorte eines Kunden</td></tr>
+  <tr><td><code>GET /api/v1/devices?customer=&amp;site=&amp;q=</code></td><td>Geräte, wahlweise gefiltert nach Kunde, Standort oder Suchtext</td></tr>
+  <tr><td><code>GET /api/v1/devices/{id}</code></td><td>ein Gerät mit seinem Inventar</td></tr>
+  <tr><td><code>GET /api/v1/devices/{id}/tasks</code></td><td>die Aufgaben eines Geräts (laufend, wartend und die neuesten 100 beendeten)</td></tr>
+  <tr><td><code>POST /api/v1/devices/{id}/tasks</code></td><td>eine Aufgabe auf einem Gerät starten (Techniker)</td></tr>
+  <tr><td><code>GET /api/v1/tasks/{id}</code></td><td>eine Aufgabe, um sie bis zum Ende zu verfolgen</td></tr>
+  <tr><td><code>POST /api/v1/tasks/{id}/cancel</code></td><td>eine laufende Aufgabe anhalten oder eine wartende abbrechen (Techniker)</td></tr>
+  <tr><td><code>GET /api/v1/alerts?state=open</code></td><td>offene Alarme (state=all auch behobene)</td></tr>
+  <tr><td><code>GET /api/v1/software</code></td><td>Pakete der Softwarebibliothek (Techniker)</td></tr>
+  <tr><td><code>POST /api/v1/software/{id}/install</code></td><td>ein Bibliothekspaket als Auftrag auf Geräten installieren (Techniker)</td></tr>
+  <tr><td><code>GET /api/v1/jobs/{id}</code></td><td>das Ergebnis eines Auftrags je Gerät (Techniker)</td></tr>
+  <tr><td><code>GET /api/v1/policies</code></td><td>Richtlinien mit ihren Zuweisungen (Administrator)</td></tr>
+  <tr><td><code>POST /api/v1/policies/{id}/assign</code></td><td>eine Richtlinie customer:ID, site:ID oder device:ID zuweisen (Administrator)</td></tr>
+  <tr><td><code>POST /api/v1/policies/unassign</code></td><td>die Richtlinie eines Kunden, Standorts oder Geräts entfernen (Administrator)</td></tr>
+</table>
+
+<h2 id="tasks">Aufgaben</h2>
+<p>Eine Aufgabe wartet, bis das Gerät online ist, und läuft nach den früheren Aufgaben des Geräts, genau wie die Aktionen in der Konsole; sie erscheint unter Aktivität des Geräts. Die Antwort ist <code>202</code> mit der Aufgabe; verfolgen Sie sie mit <code>GET /api/v1/tasks/{id}</code>, bis ihr Status <code>done</code>, <code>failed</code>, <code>cancelled</code> oder <code>expired</code> ist. Die Arten und ihre Felder:</p>
+<pre><code>{"kind": "script", "shell": "powershell", "script": "Get-Service Spooler", "timeout": 120}
+{"kind": "patch.scan"}
+{"kind": "patch.install", "updates": [], "reboot": false}
+{"kind": "winget", "action": "install", "id": "7zip.7zip"}
+{"kind": "choco", "action": "upgrade", "id": "firefox"}
+{"kind": "power", "action": "restart", "delay": 300, "message": "Restart for updates"}
+{"kind": "agent.update"}
+{"kind": "bitlocker.keys"}</code></pre>
+
+<h2 id="examples">Beispiele</h2>
+<p>Ein PowerShell-Skript auf Gerät 9, dann sein Ergebnis:</p>
+<pre><code>curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"kind":"script","shell":"powershell","script":"Get-Date","timeout":60}' \
+  https://rmm.example.com:8443/api/v1/devices/9/tasks
+curl -s -H "Authorization: Bearer $TOKEN" https://rmm.example.com:8443/api/v1/tasks/42
+
+$h = @{ Authorization = "Bearer $env:CZ_TOKEN" }
+Invoke-RestMethod -Headers $h https://rmm.example.com:8443/api/v1/alerts</code></pre>
+
+<h2 id="errors">Fehler</h2>
+<p>Fehler kommen als JSON <code>{"error": "…"}</code> mit dem HTTP-Status: 400 für eine fehlerhafte Anfrage, 401 für ein fehlendes, falsches oder abgelaufenes Token, 403, wenn die Rolle des Tokens den Aufruf nicht erlaubt, 404 für etwas, das nicht existiert oder das das Token nicht sehen darf, 409, wenn eine Aufgabe bereits beendet ist, 429 nach zu vielen fehlgeschlagenen Anmeldungen von der Adresse. Jede Änderung über die API wird mit dem Namen des Tokens im Aktivitätsprotokoll festgehalten.</p>

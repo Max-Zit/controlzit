@@ -1,0 +1,50 @@
+<h1>API</h1>
+<p class="lead">The REST API lets scripts and other tools read devices, alerts and tasks and start work on devices, with the same rights as in the console.</p>
+
+<h2 id="tokens">Tokens</h2>
+<p>Create a token under <a href="/account#tokens">My account → API tokens</a>: a name, a role no higher than yours (read-only, technician or administrator) and how long it is valid. The token is shown once; store it like a password. It acts as you, with your customers. Send it in every request as <code>Authorization: Bearer czt_…</code> to the console address (port 8443), which accepts connections only from the allowed networks. Session cookies of the browser do not work on the API. Deleting the token on the account page ends its access at once.</p>
+
+<h2 id="calls">Calls</h2>
+<table>
+  <tr><th>Call</th><th>What it does</th></tr>
+  <tr><td><code>GET /api/v1/me</code></td><td>who the token acts as, its role and customers</td></tr>
+  <tr><td><code>GET /api/v1/customers</code></td><td>customers</td></tr>
+  <tr><td><code>GET /api/v1/customers/{id}/sites</code></td><td>sites of a customer</td></tr>
+  <tr><td><code>GET /api/v1/devices?customer=&amp;site=&amp;q=</code></td><td>devices, optionally filtered by customer, site or a search text</td></tr>
+  <tr><td><code>GET /api/v1/devices/{id}</code></td><td>one device with its inventory</td></tr>
+  <tr><td><code>GET /api/v1/devices/{id}/tasks</code></td><td>the tasks of a device (running, waiting and the newest 100 finished)</td></tr>
+  <tr><td><code>POST /api/v1/devices/{id}/tasks</code></td><td>start a task on a device (technician)</td></tr>
+  <tr><td><code>GET /api/v1/tasks/{id}</code></td><td>one task, to follow it until it ends</td></tr>
+  <tr><td><code>POST /api/v1/tasks/{id}/cancel</code></td><td>stop a running or cancel a waiting task (technician)</td></tr>
+  <tr><td><code>GET /api/v1/alerts?state=open</code></td><td>open alerts (state=all also resolved ones)</td></tr>
+  <tr><td><code>GET /api/v1/software</code></td><td>packages of the software library (technician)</td></tr>
+  <tr><td><code>POST /api/v1/software/{id}/install</code></td><td>install a library package on devices, as a job (technician)</td></tr>
+  <tr><td><code>GET /api/v1/jobs/{id}</code></td><td>the result of a job per device (technician)</td></tr>
+  <tr><td><code>GET /api/v1/policies</code></td><td>policies with their assignments (administrator)</td></tr>
+  <tr><td><code>POST /api/v1/policies/{id}/assign</code></td><td>assign a policy to customer:ID, site:ID or device:ID (administrator)</td></tr>
+  <tr><td><code>POST /api/v1/policies/unassign</code></td><td>remove the policy of a customer, site or device (administrator)</td></tr>
+</table>
+
+<h2 id="tasks">Tasks</h2>
+<p>A task waits until the device is online and runs after the device's earlier tasks, just like the actions in the console; it shows under the device's Activity. The answer is <code>202</code> with the task; follow it with <code>GET /api/v1/tasks/{id}</code> until its status is <code>done</code>, <code>failed</code>, <code>cancelled</code> or <code>expired</code>. The kinds and their fields:</p>
+<pre><code>{"kind": "script", "shell": "powershell", "script": "Get-Service Spooler", "timeout": 120}
+{"kind": "patch.scan"}
+{"kind": "patch.install", "updates": [], "reboot": false}
+{"kind": "winget", "action": "install", "id": "7zip.7zip"}
+{"kind": "choco", "action": "upgrade", "id": "firefox"}
+{"kind": "power", "action": "restart", "delay": 300, "message": "Restart for updates"}
+{"kind": "agent.update"}
+{"kind": "bitlocker.keys"}</code></pre>
+
+<h2 id="examples">Examples</h2>
+<p>A PowerShell script on device 9, then its result:</p>
+<pre><code>curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"kind":"script","shell":"powershell","script":"Get-Date","timeout":60}' \
+  https://rmm.example.com:8443/api/v1/devices/9/tasks
+curl -s -H "Authorization: Bearer $TOKEN" https://rmm.example.com:8443/api/v1/tasks/42
+
+$h = @{ Authorization = "Bearer $env:CZ_TOKEN" }
+Invoke-RestMethod -Headers $h https://rmm.example.com:8443/api/v1/alerts</code></pre>
+
+<h2 id="errors">Errors</h2>
+<p>Errors come as JSON <code>{"error": "…"}</code> with the HTTP status: 400 for a bad request, 401 for a missing, wrong or expired token, 403 when the token's role does not allow the call, 404 for something that does not exist or that the token may not see, 409 when a task has already ended, 429 after too many failed sign-ins from the address. Every change through the API is recorded in the audit log with the token's name.</p>

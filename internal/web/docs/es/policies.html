@@ -7,6 +7,7 @@
   <li><b>Software requerido</b> — programas que todo dispositivo Windows de la directiva debe tener; el servidor instala los que faltan.</li>
   <li><b>Reglas de alerta</b> — los umbrales de CPU, memoria, discos, dispositivos sin conexión y reinicios pendientes, Defender y el firewall, y los servicios que deben estar en ejecución.</li>
   <li><b>Automatizaciones</b> — scripts de la biblioteca que se ejecutan en los dispositivos de la directiva ciertos días a una hora fija.</li>
+  <li><b>BitLocker</b> — cifrado de la unidad del sistema, con la clave de recuperación guardada en el servidor.</li>
 </ul>
 <p>Cada parte se activa o desactiva en la directiva. Una parte desactivada no la define esta directiva: viene de una directiva menos específica o de la configuración del servidor (<a href="/settings/updates">Actualizaciones de Windows</a>, <a href="/settings/monitoring">Supervisión y alertas</a>).</p>
 
@@ -22,6 +23,10 @@
 
 <h2 id="automations">Automatizaciones</h2>
 <p>Una automatización ejecuta un script de la <a href="/scripts">biblioteca de scripts</a> los días y a la hora elegidos (hora del servidor) como un solo trabajo para todos los dispositivos cuyas automatizaciones vienen de esta directiva. Los dispositivos sin conexión lo ejecutan al conectarse, dentro de 24 horas; los resultados están en la página del trabajo y en la Actividad de cada dispositivo.</p>
+
+<h2 id="bitlocker">BitLocker y claves de recuperación</h2>
+<p>El servidor guarda las claves de recuperación de BitLocker de sus dispositivos Windows: una vez al día las lee de cada dispositivo con BitLocker activado, y <b>Leer las claves de recuperación ahora</b> en la página <b>BitLocker</b> del dispositivo (enlazada desde la línea BitLocker del resumen del dispositivo) las lee al instante. Las claves se guardan cifradas con la clave secreta del servidor. Solo los administradores pueden mostrar una clave, tras escribir su contraseña; cada clave mostrada y cada contraseña incorrecta quedan en el registro de actividad.</p>
+<p>Una directiva con <b>Exigir BitLocker en la unidad del sistema</b> lo activa en los dispositivos Windows cuya unidad del sistema no está cifrada. El agente comprueba primero el TPM y agrega una clave de recuperación; el servidor guarda la clave y solo entonces empieza el cifrado (protector TPM, XTS-AES 256, solo el espacio usado), en segundo plano mientras se usa el equipo. Los dispositivos sin un TPM listo o con una edición de Windows sin BitLocker (Home) muestran el motivo en Actividad, y el servidor lo intenta de nuevo a las 6 horas. Los administradores también pueden activarlo para un solo dispositivo desde su página BitLocker.</p>
 
 <h2 id="device">Qué se aplica a un dispositivo</h2>
 <p>La pestaña <b>Directiva</b> de un dispositivo muestra, para cada parte, qué directiva la define (y si está asignada al dispositivo, a su sede o a su cliente) o que se aplica la configuración del servidor, el estado de cada programa requerido (instalado, falta, cuándo se inició una instalación), la configuración de Windows Update y de alertas que se aplica y las automatizaciones.</p>

@@ -41,6 +41,11 @@
 </section>
 
 <section class="panel">
+  <h2>{{template "icon" "lock"}}BitLocker</h2>
+  <p>{{if .Data.BitLocker}}{{.T "Required on the system drive."}}{{else}}{{.T "Not required by a policy."}}{{end}} <a href="/devices/{{$d.ID}}/bitlocker">{{.T "Recovery keys"}}</a></p>
+</section>
+
+<section class="panel">
   <h2>{{template "icon" "download"}}{{.T "Windows Update"}}</h2>
   {{$u := .Data.Updates}}
   <p>{{if eq $u.Mode "off"}}{{.T "Off: updates are installed only from the console"}}{{else if eq $u.Mode "security"}}{{.T "Security and critical updates, Defender definitions"}}{{else}}{{.T "All updates except feature upgrades"}}{{end}}{{if ne $u.Mode "off"}} · {{range $i, $x := $u.Days}}{{if $i}}, {{end}}{{$.T (weekday $x)}}{{end}} {{printf "%02d:00" $u.Hour}}{{if $u.Reboot}} · {{.T "restart when needed"}}{{end}}{{end}}</p>

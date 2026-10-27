@@ -35,6 +35,7 @@ var DocPages = []DocPage{
 	{"updates", "Windows updates and software"},
 	{"monitoring", "Monitoring, alerts and notifications"},
 	{"policies", "Policies"},
+	{"api", "API"},
 	{"reports", "Reports"},
 	{"users", "Users, roles and sign-in"},
 	{"settings", "Server settings and updates"},
