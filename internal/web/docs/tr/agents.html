@@ -14,6 +14,7 @@
 <p>MSI'yı konum sayfasından indirin (<b>Ajanı indir (MSI, 64 bit)</b>) ve çift tıklayıp kodu yapıştırın ya da örneğin Grup İlkesi, Intune veya bir betikle sessiz kurun:</p>
 <pre>msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="CZ1-…"</pre>
 <p>Ajan <i>ControlZit Agent</i> Windows hizmeti olarak çalışır. Saatin yanındaki küçük bir simge bağlı olup olmadığını (yeşil) gösterir ve sunucuyu ve bilgisayarı kimin yönettiğini gösteren bir pencere açar.</p>
+<p>Simge, penceresi ve yeniden başlatma sorusu kullanıcının Windows görüntüleme dilini kullanır (konsolun 14 dilinden biri, aksi halde İngilizce).</p>
 <p>MSI olmadan (yönetici olarak PowerShell):</p>
 <pre>.\controlzit-agent.exe enroll --code "CZ1-…"
 .\controlzit-agent.exe install</pre>

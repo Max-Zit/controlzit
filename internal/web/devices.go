@@ -14,28 +14,6 @@ import (
 	"github.com/max-zit/controlzit/internal/store"
 )
 
-type devicesData struct {
-	Devices []*store.Device
-	Q       string
-	Now     time.Time
-}
-
-// Online is used by the device lists.
-func (d *devicesData) Online(x *store.Device) bool { return x.Online(d.Now, onlineWindow) }
-
-func (s *Server) handleDevices(w http.ResponseWriter, r *http.Request) {
-	q := strings.TrimSpace(r.FormValue("q"))
-	if len(q) > 100 {
-		q = q[:100]
-	}
-	list, err := s.store.Devices(r.Context(), userFrom(r), store.DeviceFilter{Query: q})
-	if err != nil {
-		s.serverError(w, r, err)
-		return
-	}
-	s.render(w, r, http.StatusOK, "devices", &Page{Title: "Devices", Nav: "devices", Data: &devicesData{Devices: list, Q: q, Now: s.now()}})
-}
-
 // deviceFor loads a device whose customer the user may see.
 func (s *Server) deviceFor(w http.ResponseWriter, r *http.Request) *store.Device {
 	id, ok := pathID(r, "id")

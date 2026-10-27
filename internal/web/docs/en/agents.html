@@ -14,6 +14,7 @@
 <p>Download the MSI on the site page (<b>Download the agent (MSI, 64-bit)</b>) and either double-click it and paste the code, or install it silently, for example with Group Policy, Intune or a script:</p>
 <pre>msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="CZ1-…"</pre>
 <p>The agent runs as the Windows service <i>ControlZit Agent</i>. A small icon next to the clock shows whether it is connected (green) and opens a window with the server and who manages the computer.</p>
+<p>The icon, its window and the restart question speak the display language of the user's Windows (one of the 14 languages of the console, otherwise English).</p>
 <p>Without the MSI (PowerShell as administrator):</p>
 <pre>.\controlzit-agent.exe enroll --code "CZ1-…"
 .\controlzit-agent.exe install</pre>

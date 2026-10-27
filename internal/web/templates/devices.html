@@ -1,14 +1,56 @@
 {{template "app" .}}
 {{define "content"}}
+{{$d := .Data}}{{$f := $d.F}}
 <h1>{{.T "Devices"}}</h1>
 <section class="panel">
-  <form method="get" action="/devices" class="row">
-    <input type="search" name="q" value="{{.Data.Q}}" placeholder="{{.T "Search name, user, system, customer"}}" aria-label="{{.T "Search"}}">
-    <button class="secondary">{{.T "Search"}}</button>
+  <form method="get" action="/devices" class="stack">
+    <div class="row">
+      <input type="search" name="q" value="{{$d.Q}}" placeholder="{{.T "Search name, user, system, customer"}}" aria-label="{{.T "Search"}}">
+      <button class="secondary">{{.T "Search"}}</button>
+    </div>
+    <details class="filters" {{if $f.Any}}open{{end}}><summary class="small">{{.T "Filters"}}{{if $f.Any}} · <b>{{.T "%d of %d devices" (len $d.Devices) $d.Total}}</b>{{end}}</summary>
+      <div class="cols mt">
+        <label>{{.T "Customer"}}<select name="customer"><option value="0">{{.T "all"}}</option>{{range $d.Customers}}<option value="{{.ID}}" {{if eq .ID $f.Customer}}selected{{end}}>{{.Name}}</option>{{end}}</select></label>
+        <label>{{.T "Status"}}<select name="status"><option value="">{{.T "all"}}</option><option value="online" {{if eq $f.Status "online"}}selected{{end}}>{{.T "Online"}}</option><option value="offline" {{if eq $f.Status "offline"}}selected{{end}}>{{.T "Offline"}}</option></select></label>
+        <label>{{.T "Operating system"}}<select name="os"><option value="">{{.T "all"}}</option><option value="windows" {{if eq $f.OS "windows"}}selected{{end}}>Windows</option><option value="linux" {{if eq $f.OS "linux"}}selected{{end}}>Linux</option></select></label>
+        <label>{{.T "Vulnerabilities"}}<select name="vuln"><option value="">{{.T "all"}}</option><option value="critical" {{if eq $f.Vuln "critical"}}selected{{end}}>{{.T "critical"}}</option><option value="high" {{if eq $f.Vuln "high"}}selected{{end}}>{{.T "high and worse"}}</option></select></label>
+        {{if $d.Policies}}<label>{{.T "Policy"}}<select name="policy"><option value="0">{{.T "all"}}</option>{{range $d.Policies}}<option value="{{.ID}}" {{if eq .ID $f.Policy}}selected{{end}}>{{.Name}}{{if .CustomerID}} ({{.Customer}}){{end}}</option>{{end}}</select></label>{{end}}
+        {{if $d.Fields}}<label>{{.T "Custom field"}}<select name="field"><option value="0">—</option>{{range $d.Fields}}<option value="{{.ID}}" {{if eq .ID $f.Field}}selected{{end}}>{{.Name}}</option>{{end}}</select></label>
+        <label>{{.T "contains"}}<input name="fval" value="{{$f.FieldValue}}" maxlength="100"></label>{{end}}
+      </div>
+      <label class="check"><input type="checkbox" name="alerts" value="1" {{if $f.Alerts}}checked{{end}}>{{.T "Only devices with open alerts"}}</label>
+      <div class="row"><button class="secondary sm">{{.T "Apply"}}</button>{{if $f.Any}} <a href="/devices" class="small">{{.T "Clear the filters"}}</a>{{end}}</div>
+    </details>
   </form>
   <div class="mt">
-  {{if .Data.Devices}}{{template "devicetable" .}}
-  {{else}}<div class="empty">{{template "icon" "devices"}}<p>{{if .Data.Q}}{{.T "No device matches."}}{{else}}{{.T "No devices yet. Open a site of a customer, create an enrollment code and install the agent."}}{{end}}</p></div>{{end}}
+  {{if $d.Devices}}
+  <div class="table-wrap"><table>
+    <thead><tr>{{if .User.CanWrite}}<th class="check-col"><input type="checkbox" form="bulk" data-check-all="ids" aria-label="{{.T "Choose all"}}"></th>{{end}}<th>{{.T "Device"}}</th><th>{{.T "Status"}}</th><th class="hide-sm">{{.T "Customer / site"}}</th><th class="hide-sm">{{.T "Operating system"}}</th><th class="hide-sm">{{.T "User"}}</th><th class="hide-sm">{{.T "Last seen"}}</th></tr></thead>
+    <tbody>{{range $x := $d.Devices}}<tr>
+      {{if $.User.CanWrite}}<td class="check-col"><input type="checkbox" name="ids" value="{{.ID}}" form="bulk" aria-label="{{.Hostname}}"></td>{{end}}
+      <td><a href="/devices/{{.ID}}">{{.Hostname}}</a>{{with index $d.Alerts .ID}} <a href="/devices/{{$x.ID}}" class="badge warn" title="{{$.T "Open alerts"}}"><i></i>{{.}}</a>{{end}}{{with index $d.Vulns .ID}} <span class="badge bad" title="{{$.T "Vulnerabilities"}}"><i></i>{{.}} CVE</span>{{end}}</td>
+      <td>{{if $d.Online .}}<span class="badge ok"><i></i>{{$.T "Online"}}</span>{{else}}<span class="badge bad"><i></i>{{$.T "Offline"}}</span>{{end}}</td>
+      <td class="hide-sm muted">{{.Customer}} / {{.Site}}</td>
+      <td class="hide-sm">{{.OS}}{{if .OSBuild}} <span class="muted">({{.OSBuild}})</span>{{end}}</td>
+      <td class="hide-sm muted">{{.LastUser}}</td>
+      <td class="hide-sm muted">{{$.Ago .LastSeenAt}}</td>
+    </tr>{{end}}</tbody>
+  </table></div>
+  {{if .User.CanWrite}}<form id="bulk" method="post" action="/devices/bulk" class="row mt bulk-bar">
+    <input type="hidden" name="back" value="{{.Path}}">
+    <label>{{.T "With the chosen devices"}}<select name="action" required>
+      <option value="">—</option>
+      {{if $d.Scripts}}<option value="script">{{.T "Run a library script"}}</option>{{end}}
+      <option value="scan">{{.T "Search for updates"}}</option>
+      <option value="security">{{.T "Install the security updates"}}</option>
+      <option value="apps">{{.T "Update programs (winget)"}}</option>
+      <option value="inventory">{{.T "Refresh the inventory"}}</option>
+      <option value="restart">{{.T "Restart in 5 minutes"}}</option>
+    </select></label>
+    {{if $d.Scripts}}<label>{{.T "Script"}}<select name="script"><option value="">—</option>{{range $d.Scripts}}<option value="{{.ID}}">{{.Name}}</option>{{end}}</select></label>{{end}}
+    <button class="primary" data-confirm="{{.T "Start this on the chosen devices?"}}">{{.T "Start"}}</button>
+  </form>{{end}}
+  {{else}}<div class="empty">{{template "icon" "devices"}}<p>{{if or $d.Q $f.Any}}{{.T "No device matches."}}{{else}}{{.T "No devices yet. Open a site of a customer, create an enrollment code and install the agent."}}{{end}}</p></div>{{end}}
   </div>
 </section>
 {{end}}

@@ -59,14 +59,14 @@ footer .sp { flex: 1; }
   <section class="hero" id="hero">
     <div class="badge" id="badge"></div>
     <div>
-      <h1 id="headline">Loading…</h1>
+      <h1 id="headline" data-t="Loading…">Loading…</h1>
       <p id="detail"></p>
     </div>
   </section>
   <div class="grid">
-    <div class="card"><b>Server</b><span id="server">—</span><small id="contact"></small></div>
-    <div class="card"><b>Managed by</b><span id="customer">—</span><small id="site"></small></div>
-    <div class="card"><b>Updates</b><span id="updates">—</span><small id="updatesSub"></small></div>
+    <div class="card"><b data-t="Server">Server</b><span id="server">—</span><small id="contact"></small></div>
+    <div class="card"><b data-t="Managed by">Managed by</b><span id="customer">—</span><small id="site"></small></div>
+    <div class="card"><b data-t="Updates">Updates</b><span id="updates">—</span><small id="updatesSub"></small></div>
   </div>
 </main>
 <footer>
@@ -75,6 +75,8 @@ footer .sp { flex: 1; }
 <script>
 "use strict";
 const $ = id => document.getElementById(id);
+let tx = {};
+const t = (k, a) => { const s = tx[k] || k; return a === undefined ? s : s.replace(/%[sd]/, a); };
 const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const icons = {
   on: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6z"/><path d="M8.5 12l2.4 2.4 4.6-4.8"/></svg>',
@@ -83,39 +85,43 @@ const icons = {
 function ago(t) {
   if (!t) return "—";
   const s = Math.max(0, (Date.now() - new Date(t).getTime()) / 1000);
-  if (s < 60) return "just now";
-  if (s < 3600) return Math.floor(s / 60) + " min ago";
-  if (s < 86400) return Math.floor(s / 3600) + " h ago";
+  if (s < 60) return t("just now");
+  if (s < 3600) return t("%d min ago", Math.floor(s / 60));
+  if (s < 86400) return t("%d h ago", Math.floor(s / 3600));
   return new Date(t).toLocaleString();
 }
 function render(s) {
   const on = s.connected && !s.stale;
   $("conn").className = "conn" + (on ? " on" : "");
-  $("connText").textContent = on ? "Connected" : (s.running ? "Not connected" : "Agent not running");
+  $("connText").textContent = on ? t("Connected") : (s.running ? t("Not connected") : t("Agent not running"));
   $("hero").className = "hero" + (on ? " on" : "");
   $("badge").innerHTML = on ? icons.on : icons.off;
-  $("headline").textContent = on ? "This computer is managed and protected" : (s.running ? "The agent cannot reach the server" : "The ControlZit Agent service is not running");
-  $("detail").textContent = on ? "Connected since " + new Date(s.since).toLocaleString() + "." : (s.last_contact ? "Last contact " + ago(s.last_contact) + ". It keeps trying." : "");
+  $("headline").textContent = on ? t("This computer is managed and protected") : (s.running ? t("The agent cannot reach the server") : t("The ControlZit Agent service is not running"));
+  $("detail").textContent = on ? t("Connected since %s.", new Date(s.since).toLocaleString()) : (s.last_contact ? t("Last contact %s. It keeps trying.", ago(s.last_contact)) : "");
   $("host").textContent = [s.hostname, s.os].filter(Boolean).join(" · ") || " ";
   $("server").textContent = s.server || "—";
-  $("contact").textContent = s.last_contact ? "last contact " + ago(s.last_contact) : "";
+  $("contact").textContent = s.last_contact ? t("last contact %s", ago(s.last_contact)) : "";
   $("customer").textContent = s.customer || "—";
   $("site").textContent = s.site || "";
   const u = s.updates;
   if (u && u.scanned_at) {
-    $("updates").innerHTML = u.missing === 0 ? '<span class="pill ok">Up to date</span>' :
-      '<span class="pill ' + (u.security ? "bad" : "warn") + '">' + u.missing + " missing" + (u.security ? ", " + u.security + " security" : "") + "</span>";
-    $("updatesSub").textContent = (u.reboot_required ? "restart needed · " : "") + "checked " + ago(u.scanned_at);
+    $("updates").innerHTML = u.missing === 0 ? '<span class="pill ok">' + esc(t("Up to date")) + "</span>" :
+      '<span class="pill ' + (u.security ? "bad" : "warn") + '">' + esc(t("%d missing", u.missing) + (u.security ? ", " + t("%d security", u.security) : "")) + "</span>";
+    $("updatesSub").textContent = (s.restart ? t("restart required by %s", new Date(s.restart.deadline).toLocaleString()) + " · " : (u.reboot_required ? t("restart needed") + " · " : "")) + t("checked %s", ago(u.scanned_at));
   } else {
-    $("updates").textContent = "—"; $("updatesSub").textContent = u && u.state === "scanning" ? "searching…" : "";
+    $("updates").textContent = "—"; $("updatesSub").textContent = u && u.state === "scanning" ? t("searching…") : "";
   }
-  $("ver").textContent = "Agent " + (s.version || "");
+  $("ver").textContent = t("Agent %s", s.version || "");
 }
 async function refresh() {
   try { render(await window.czStatus()); } catch (e) { /* the next tick tries again */ }
 }
-refresh();
-setInterval(refresh, 3000);
+(async () => {
+  try { tx = await window.czText(); } catch (e) { /* English */ }
+  document.querySelectorAll("[data-t]").forEach(el => { el.textContent = t(el.dataset.t); });
+  refresh();
+  setInterval(refresh, 3000);
+})();
 </script>
 </body>
 </html>

@@ -1,0 +1,30 @@
+{{template "app" .}}
+{{define "content"}}
+{{$d := .Data}}
+<h1>{{template "icon" "search"}}{{.T "Search"}}</h1>
+<section class="panel">
+  <form method="get" action="/search" class="row">
+    <input type="search" name="q" value="{{$d.Q}}" autofocus minlength="2" placeholder="{{.T "Device, user, serial number, IP, customer, program or CVE"}}" aria-label="{{.T "Search"}}">
+    <button class="primary">{{.T "Search"}}</button>
+  </form>
+</section>
+{{if ge (len $d.Q) 2}}
+{{if not (or $d.Devices $d.Customers $d.Programs $d.Vulns)}}<section class="panel"><div class="empty">{{template "icon" "search"}}<p>{{.T "Nothing found."}}</p></div></section>{{end}}
+{{if $d.Devices}}<section class="panel">
+  <h2>{{template "icon" "devices"}}{{.T "Devices"}}</h2>
+  <ul class="hits">{{range $d.Devices}}<li><a href="/devices/{{.Device.ID}}"><b>{{.Device.Hostname}}</b></a> <span class="small muted">{{.Device.Customer}} / {{.Device.Site}}{{with .Why}} · {{.}}{{end}}</span></li>{{end}}</ul>
+</section>{{end}}
+{{if $d.Customers}}<section class="panel">
+  <h2>{{template "icon" "customers"}}{{.T "Customers"}}</h2>
+  <ul class="hits">{{range $d.Customers}}<li><a href="/customers/{{.ID}}"><b>{{.Name}}</b></a></li>{{end}}</ul>
+</section>{{end}}
+{{if $d.Programs}}<section class="panel">
+  <h2>{{template "icon" "package"}}{{.T "Installed programs"}}</h2>
+  <ul class="hits">{{range $d.Programs}}<li><b>{{.Name}}</b> <span class="small muted">{{$.T "%d devices" (len .Devices)}}:</span> <span class="small">{{range $i, $x := .Devices}}{{if lt $i 10}}{{if $i}}, {{end}}<a href="/devices/{{$x.ID}}">{{$x.Hostname}}</a>{{end}}{{end}}</span></li>{{end}}</ul>
+</section>{{end}}
+{{if $d.Vulns}}<section class="panel">
+  <h2>{{template "icon" "shield"}}{{.T "Vulnerabilities"}}</h2>
+  <ul class="hits">{{range $d.Vulns}}<li><b class="mono">{{.ID}}</b> <span class="small muted">{{.Product}}</span> <span class="small">{{range $i, $x := .Devices}}{{if $i}}, {{end}}<a href="/devices/{{$x.ID}}/vulnerabilities">{{$x.Hostname}}</a>{{end}}</span></li>{{end}}</ul>
+</section>{{end}}
+{{end}}
+{{end}}

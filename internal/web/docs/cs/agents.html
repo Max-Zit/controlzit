@@ -14,6 +14,7 @@
 <p>Stáhněte MSI na stránce pobočky (<b>Stáhnout agenta (MSI, 64bitový)</b>) a buď na něj poklepejte a vložte kód, nebo jej nainstalujte tiše, například pomocí zásad skupiny, Intune nebo skriptu:</p>
 <pre>msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="CZ1-…"</pre>
 <p>Agent běží jako služba Windows <i>ControlZit Agent</i>. Malá ikona vedle hodin ukazuje, zda je připojen (zelená), a otevírá okno se serverem a informací, kdo počítač spravuje.</p>
+<p>Ikona, její okno a otázka na restart používají jazyk zobrazení Windows uživatele (jeden ze 14 jazyků konzole, jinak angličtinu).</p>
 <p>Bez MSI (PowerShell jako správce):</p>
 <pre>.\controlzit-agent.exe enroll --code "CZ1-…"
 .\controlzit-agent.exe install</pre>

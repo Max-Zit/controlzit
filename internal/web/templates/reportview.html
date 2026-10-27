@@ -39,6 +39,19 @@
 </section>
 
 <section class="panel">
+  <h2>{{.T "Security and health"}}</h2>
+  <div class="report-grid">
+    <div class="stat"><b>{{$r.VulnCritical}}</b><span>{{.T "critical vulnerabilities with a fix"}}</span></div>
+    <div class="stat"><b>{{$r.VulnHigh}}</b><span>{{.T "high vulnerabilities with a fix"}}</span></div>
+    <div class="stat"><b>{{$r.DiskIssues}}</b><span>{{.T "devices with a disk or RAID problem"}} ({{.T "of %d checked" $r.DisksChecked}})</span></div>
+    <div class="stat"><b>{{$r.NetFailing}}</b><span>{{.T "network checks failing now"}} ({{.T "of %d" $r.NetChecks}})</span></div>
+  </div>
+  {{if $r.VulnTop}}<table class="mt"><thead><tr><th>{{.T "Program"}}</th><th class="num">{{.T "Devices"}}</th></tr></thead>
+    <tbody>{{range $r.VulnTop}}<tr><td>{{.Name}}</td><td class="num">{{.Count}}</td></tr>{{end}}</tbody></table>
+  <p class="small muted">{{.T "Updating these programs removes their vulnerabilities."}}</p>{{end}}
+</section>
+
+<section class="panel">
   <h2>{{.T "Alerts"}}</h2>
   {{if $r.Alerts.Opened}}
   <p>{{.T "%d alerts were opened, %d of them resolved; %d are open now." $r.Alerts.Opened $r.Alerts.Resolved $r.Alerts.OpenNow}}{{if $r.Alerts.Resolved}} {{if lt $r.Alerts.MeanHours 1.0}}{{.T "Resolved after %d minutes on average." ($r.Alerts.MeanMinutes)}}{{else}}{{.T "Resolved after %.1f hours on average." $r.Alerts.MeanHours}}{{end}}{{end}}</p>
@@ -58,6 +71,7 @@
     <div class="stat"><b>{{$r.Count "term.start"}}</b><span>{{.T "terminal sessions"}}</span></div>
     <div class="stat"><b>{{$r.Count "script.run"}}</b><span>{{.T "scripts run"}}</span></div>
     <div class="stat"><b>{{$r.Count "patch.install"}}</b><span>{{.T "update installations"}}</span></div>
+    <div class="stat"><b>{{$r.Count "software.upgrade"}}</b><span>{{.T "program updates"}}</span></div>
     <div class="stat"><b>{{add (add ($r.Count "file.upload") ($r.Count "file.download")) ($r.Count "file.delete")}}</b><span>{{.T "file operations"}}</span></div>
   </div>
 </section>

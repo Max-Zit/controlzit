@@ -14,6 +14,7 @@
 <p>拠点ページで MSI をダウンロード（<b>エージェントをダウンロード（MSI、64 ビット）</b>）し、ダブルクリックしてコードを貼り付けるか、グループポリシー、Intune、スクリプトなどでサイレントインストールします:</p>
 <pre>msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="CZ1-…"</pre>
 <p>エージェントは Windows サービス <i>ControlZit Agent</i> として動作します。時計の横の小さなアイコンが接続状態（緑）を示し、サーバーとコンピューターの管理者を表示するウィンドウを開きます。</p>
+<p>アイコン、そのウィンドウ、再起動の確認は、ユーザーの Windows の表示言語を使います (コンソールの 14 言語のいずれか。それ以外は英語)。</p>
 <p>MSI を使わない場合（管理者として PowerShell）:</p>
 <pre>.\controlzit-agent.exe enroll --code "CZ1-…"
 .\controlzit-agent.exe install</pre>

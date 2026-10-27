@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/max-zit/controlzit/internal/proto"
 	"github.com/max-zit/controlzit/internal/store"
 )
 
@@ -61,6 +62,12 @@ type Report struct {
 	Alerts                                        *store.AlertStats
 	Activity                                      map[string]int
 	Outdated                                      int // agents older than the installer
+	// Security and health now: fixable vulnerabilities, disk and RAID
+	// problems, failing network checks.
+	VulnCritical, VulnHigh   int
+	VulnTop                  []store.Counted // programs with fixable vulnerabilities, by devices
+	DisksChecked, DiskIssues int             // devices with a disk health report, with a problem
+	NetChecks, NetFailing    int
 }
 
 type reportDevice struct {
@@ -170,6 +177,7 @@ func (s *Server) buildReport(ctx context.Context, u *store.User, customerID int6
 	if rep.Activity, err = s.store.ReportActivity(ctx, ids, rep.From); err != nil {
 		return nil, err
 	}
+	s.reportHealth(ctx, rep, ids)
 	return rep, nil
 }
 
@@ -407,5 +415,73 @@ func (s *Server) RunReports(ctx context.Context) {
 			continue
 		}
 		_ = s.store.Audit(ctx, "system", "", "report.email", target, "scheduled report of "+c.Name+" sent to "+strings.Join(to, ", "))
+	}
+}
+
+// reportHealth adds the vulnerabilities, disk health and network checks of
+// the report's devices.
+func (s *Server) reportHealth(ctx context.Context, rep *Report, ids []int64) {
+	in := map[int64]bool{}
+	for _, id := range ids {
+		in[id] = true
+	}
+	if vs, err := s.store.DeviceVulns(ctx, 0); err == nil {
+		devs := map[string]map[int64]bool{}
+		for _, v := range vs {
+			if !in[v.DeviceID] || v.Fix == "none" {
+				continue
+			}
+			switch v.Severity {
+			case "critical":
+				rep.VulnCritical++
+			case "high":
+				rep.VulnHigh++
+			default:
+				continue
+			}
+			k := strings.TrimSpace(v.Product + " " + v.Version)
+			if devs[k] == nil {
+				devs[k] = map[int64]bool{}
+			}
+			devs[k][v.DeviceID] = true
+		}
+		for k, d := range devs {
+			rep.VulnTop = append(rep.VulnTop, store.Counted{Name: k, Count: len(d)})
+		}
+		sort.Slice(rep.VulnTop, func(i, j int) bool {
+			a, b := rep.VulnTop[i], rep.VulnTop[j]
+			return a.Count > b.Count || a.Count == b.Count && a.Name < b.Name
+		})
+		if len(rep.VulnTop) > 10 {
+			rep.VulnTop = rep.VulnTop[:10]
+		}
+	}
+	if hs, err := s.store.DiskHealth(ctx, 0); err == nil {
+		for id, h := range hs {
+			if !in[id] {
+				continue
+			}
+			rep.DisksChecked++
+			bad := false
+			for _, d := range h.Health.Disks {
+				bad = bad || d.Health == proto.HealthWarning || d.Health == proto.HealthFailing
+			}
+			for _, a := range h.Health.Arrays {
+				bad = bad || a.Health == proto.HealthWarning || a.Health == proto.HealthFailing
+			}
+			if bad {
+				rep.DiskIssues++
+			}
+		}
+	}
+	if cs, err := s.store.NetChecks(ctx, 0); err == nil {
+		for _, c := range cs {
+			if in[c.DeviceID] {
+				rep.NetChecks++
+				if !c.OK {
+					rep.NetFailing++
+				}
+			}
+		}
 	}
 }

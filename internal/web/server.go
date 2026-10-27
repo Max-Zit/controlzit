@@ -326,6 +326,8 @@ func (s *Server) Handler() http.Handler {
 	app("GET /alerts", s.handleAlerts)
 	app("POST /alerts/{id}/ack", s.handleAlertAck)
 	app("GET /devices", s.handleDevices)
+	app("POST /devices/bulk", s.handleDevicesBulk)
+	app("GET /search", s.handleSearch)
 	app("GET /devices/{id}", s.handleDevice)
 	app("GET /devices/{id}/rd", s.handleRD)
 	app("GET /devices/{id}/rd/ws", s.handleRDSocket)

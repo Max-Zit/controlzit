@@ -14,6 +14,7 @@
 <p>Laden Sie das MSI auf der Standortseite herunter (<b>Agent herunterladen (MSI, 64-Bit)</b>) und doppelklicken Sie es und fügen den Code ein, oder installieren Sie es still, zum Beispiel per Gruppenrichtlinie, Intune oder Skript:</p>
 <pre>msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="CZ1-…"</pre>
 <p>Der Agent läuft als Windows-Dienst <i>ControlZit Agent</i>. Ein kleines Symbol neben der Uhr zeigt, ob er verbunden ist (grün), und öffnet ein Fenster mit dem Server und wer den Computer verwaltet.</p>
+<p>Das Symbol, sein Fenster und die Neustartfrage verwenden die Anzeigesprache des Windows des Benutzers (eine der 14 Sprachen der Konsole, sonst Englisch).</p>
 <p>Ohne MSI (PowerShell als Administrator):</p>
 <pre>.\controlzit-agent.exe enroll --code "CZ1-…"
 .\controlzit-agent.exe install</pre>

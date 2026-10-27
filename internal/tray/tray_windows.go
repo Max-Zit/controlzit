@@ -145,7 +145,7 @@ func statusLines() (title, state, place string) {
 	s, err := agent.ReadStatus(st.statusPath)
 	title = "ControlZit Agent"
 	if err != nil {
-		return title, "Agent status unknown (is the service running?)", ""
+		return title, T("Agent status unknown (is the service running?)"), ""
 	}
 	if s.Version != "" {
 		title += " " + s.Version
@@ -153,14 +153,14 @@ func statusLines() (title, state, place string) {
 	stale := time.Since(s.Updated) > 3*time.Minute
 	switch {
 	case s.Connected && !stale:
-		state = "Connected to " + s.Server
+		state = T("Connected to %s", s.Server)
 	case stale:
-		state = "Agent not running"
+		state = T("Agent not running")
 	default:
-		state = "Not connected to " + s.Server
+		state = T("Not connected to %s", s.Server)
 	}
 	if s.Customer != "" {
-		place = "Managed by " + s.Customer
+		place = T("Managed by %s", s.Customer)
 		if s.Site != "" {
 			place += " / " + s.Site
 		}
@@ -222,7 +222,7 @@ func showMenu() {
 	add := func(flags uintptr, id uintptr, text string) {
 		_, _, _ = pAppendMenu.Call(m, flags, id, uintptr(unsafe.Pointer(utf16(text)))) // #nosec G103 -- Win32 string
 	}
-	add(mfString, cmdOpen, "Open ControlZit Agent")
+	add(mfString, cmdOpen, T("Open ControlZit Agent"))
 	_, _, _ = pSetMenuDefault.Call(m, cmdOpen, 0)
 	_, _, _ = pAppendMenu.Call(m, mfSeparator, 0, 0)
 	add(mfString|mfGrayed, 1, title)
@@ -231,7 +231,7 @@ func showMenu() {
 		add(mfString|mfGrayed, 3, place)
 	}
 	_, _, _ = pAppendMenu.Call(m, mfSeparator, 0, 0)
-	add(mfString, cmdHide, "Hide this icon until the next sign-in")
+	add(mfString, cmdHide, T("Hide this icon until the next sign-in"))
 	var p point
 	_, _, _ = pGetCursorPos.Call(uintptr(unsafe.Pointer(&p))) // #nosec G103 -- Win32 out-parameter
 	_, _, _ = pSetForeground.Call(st.hwnd)

@@ -14,6 +14,7 @@
 <p>在站点页面下载 MSI（<b>下载代理（MSI，64 位）</b>），双击并粘贴代码，或者通过组策略、Intune 或脚本静默安装：</p>
 <pre>msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="CZ1-…"</pre>
 <p>代理作为 Windows 服务 <i>ControlZit Agent</i> 运行。时钟旁的小图标显示它是否已连接（绿色），并可打开一个窗口，显示服务器以及由谁管理这台计算机。</p>
+<p>图标、其窗口和重启询问使用用户 Windows 的显示语言（控制台的 14 种语言之一，否则为英语）。</p>
 <p>不使用 MSI（以管理员身份运行 PowerShell）：</p>
 <pre>.\controlzit-agent.exe enroll --code "CZ1-…"
 .\controlzit-agent.exe install</pre>

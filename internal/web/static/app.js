@@ -137,7 +137,7 @@ document.addEventListener("change", function (ev) {
   "use strict";
   var name = ev.target.getAttribute && ev.target.getAttribute("data-check-all");
   if (!name) return;
-  ev.target.form.querySelectorAll('input[type=checkbox][name="' + name + '"]').forEach(function (c) { c.checked = ev.target.checked; });
+  document.querySelectorAll('input[type=checkbox][name="' + name + '"]').forEach(function (c) { if (c.form === ev.target.form) c.checked = ev.target.checked; });
 });
 document.addEventListener("DOMContentLoaded", function () {
   "use strict";
@@ -171,4 +171,17 @@ document.addEventListener("click", function (ev) {
     return;
   }
   if (ev.target.closest && ev.target.closest("[data-closewin]")) window.close();
+});
+
+// Ctrl+K (or "/" outside a text field) jumps to the search of the header.
+document.addEventListener("keydown", function (ev) {
+  "use strict";
+  var box = document.querySelector("[data-hotkey]");
+  if (!box) return;
+  var typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement && document.activeElement.tagName);
+  if ((ev.key === "k" && (ev.ctrlKey || ev.metaKey)) || (ev.key === "/" && !typing)) {
+    ev.preventDefault();
+    box.focus();
+    box.select();
+  }
 });

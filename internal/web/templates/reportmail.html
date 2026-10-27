@@ -26,6 +26,11 @@
     <div style="font-size:14px;line-height:1.6">
       {{.T "up to date"}}: <b>{{$r.UpToDate}}</b> · {{.T "missing security updates"}}: <b>{{$r.Security}}</b> · {{.T "devices waiting for a restart"}}: <b>{{$r.Reboot}}</b>{{if $r.NoReport}} · {{.T "no report yet"}}: <b>{{$r.NoReport}}</b>{{end}}
     </div>
+    <h2 style="font-size:16px;margin:16px 0 6px">{{.T "Security and health"}}</h2>
+    <div style="font-size:14px;line-height:1.6">
+      {{.T "critical vulnerabilities with a fix"}}: <b>{{$r.VulnCritical}}</b> · {{.T "high vulnerabilities with a fix"}}: <b>{{$r.VulnHigh}}</b> · {{.T "devices with a disk or RAID problem"}}: <b>{{$r.DiskIssues}}</b> · {{.T "network checks failing now"}}: <b>{{$r.NetFailing}}</b>
+      {{range $r.VulnTop}}<br>{{.Name}}: <b>{{.Count}}</b>{{end}}
+    </div>
     <h2 style="font-size:16px;margin:16px 0 6px">{{.T "Alerts"}}</h2>
     <div style="font-size:14px;line-height:1.6">
       {{if $r.Alerts.Opened}}{{.T "%d alerts were opened, %d of them resolved; %d are open now." $r.Alerts.Opened $r.Alerts.Resolved $r.Alerts.OpenNow}}<br>

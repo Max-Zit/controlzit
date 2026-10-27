@@ -128,6 +128,7 @@ func (v *window) run() {
 	}
 	w.SetSize(620, 380, webview2.HintMin)
 	_ = w.Bind("czStatus", func() viewStatus { return currentStatus() })
+	_ = w.Bind("czText", func() map[string]string { return windowTexts() })
 	w.SetHtml(uiHTML)
 	v.mu.Lock()
 	v.w, v.hwnd = w, hwnd

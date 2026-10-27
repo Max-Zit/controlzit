@@ -472,3 +472,14 @@ article.doc pre { margin: 6px 0 16px; }
 kbd { font-family: var(--mono); font-size: 12px; border: 1px solid var(--line-2); border-bottom-width: 2px; border-radius: 5px; padding: 1px 6px; background: var(--panel-2); }
 @media (max-width: 900px) { .docs { grid-template-columns: 1fr; } .docnav { position: static; } article.doc { padding: 20px; } }
 .search-hits mark { background: var(--warn-bg); color: inherit; border-radius: 3px; padding: 0 2px; }
+
+/* ---- device list: filters and actions on the chosen devices */
+details.filters summary { cursor: pointer; color: var(--muted); }
+th.check-col, td.check-col { width: 1%; }
+.bulk-bar { padding: 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--panel-2); }
+
+/* ---- search */
+.topsearch input { width: 240px; height: 36px; padding: 0 12px; font-size: 13.5px; background-color: transparent; border-color: var(--line); }
+.topsearch input:focus { width: 300px; }
+ul.hits { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+@media (max-width: 900px) { .topsearch { display: none; } }

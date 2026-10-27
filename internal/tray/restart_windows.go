@@ -60,10 +60,10 @@ func askRestart(deadline time.Time) {
 		restartAsk.open = false
 		restartAsk.Unlock()
 	}()
-	text := "Your administrator needs to restart this computer to finish installing updates.\n\n" +
-		"It restarts automatically on " + deadline.Local().Format("Monday, 2 January 15:04") + ".\n\n" +
-		"Restart now? Save your work first. Choose No to be reminded later."
-	r, _, _ := pMessageBox.Call(0, uintptr(unsafe.Pointer(utf16(text))), uintptr(unsafe.Pointer(utf16("ControlZit: restart needed"))), // #nosec G103 -- Win32 strings
+	text := T("Your administrator needs to restart this computer to finish installing updates.") + "\n\n" +
+		T("It restarts automatically on %s.", deadline.Local().Format("2006-01-02 15:04")) + "\n\n" +
+		T("Restart now? Save your work first. Choose No to be reminded later.")
+	r, _, _ := pMessageBox.Call(0, uintptr(unsafe.Pointer(utf16(text))), uintptr(unsafe.Pointer(utf16(T("ControlZit: restart needed")))), // #nosec G103 -- Win32 strings
 		mbYesNo|mbIconInfo|mbTopMost|mbSetForegrnd)
 	if r != idYes {
 		return
@@ -73,5 +73,5 @@ func askRestart(deadline time.Time) {
 		return
 	}
 	shutdown := filepath.Join(sys, "shutdown.exe")
-	_ = exec.Command(shutdown, "/r", "/t", "30", "/c", "Restarting to finish installing updates.").Run() // #nosec G204 G702 -- the system program, fixed arguments
+	_ = exec.Command(shutdown, "/r", "/t", "30", "/c", T("Restarting to finish installing updates.")).Run() // #nosec G204 G702 -- the system program, fixed arguments
 }

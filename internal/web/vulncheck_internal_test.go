@@ -60,6 +60,12 @@ func TestCatalogAndEcosystem(t *testing.T) {
 	if a, _ := catalogApp("Adobe Acrobat (64-bit)", "24.1"); a == nil || a.product != "acrobat_dc" {
 		t.Fatal("acrobat")
 	}
+	if a, v := catalogApp("Microsoft .NET Runtime - 8.0.1 (x64)", "64.4.33213"); a == nil || a.product != ".net" || v != "8.0.1" {
+		t.Fatalf(".NET %q", v)
+	}
+	if a, v := catalogApp("Visual Studio Community 2022", "17.8.34511.84"); a == nil || v != "17.8.34511.84" {
+		t.Fatalf("Visual Studio %q", v)
+	}
 	if a, _ := catalogApp("Some Tool", "1"); a != nil {
 		t.Fatal("unknown program matched")
 	}
