@@ -137,7 +137,7 @@
       <div id="auto-rows">{{range .Data.Runs}}{{template "autorow" (rowctx $ .)}}{{end}}</div>
       <template id="auto-new">{{template "autorow" (rowctx $ .Data.NewRun)}}</template>
       <button type="button" class="secondary sm" data-add-row="auto-new" data-rows="auto-rows">{{template "icon" "plus"}}{{.T "Add an automation"}}</button>
-      {{if not .Data.Scripts}}<p class="small muted">{{.T "The script library is empty."}} <a href="/scripts/new">{{.T "New script"}}</a></p>{{end}}
+      {{if not .Data.Scripts}}<p class="small muted">{{.T "The script library is empty."}}{{if .User.IsAdmin}} <a href="/scripts/new">{{.T "New script"}}</a>{{end}}</p>{{end}}
     </div>
   </section>
   {{if .User.IsAdmin}}<section class="panel">

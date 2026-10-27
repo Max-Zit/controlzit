@@ -5,6 +5,7 @@ import (
 	"crypto/ed25519"
 	"crypto/rand"
 	"encoding/json"
+	"net/http"
 	"strings"
 	"testing"
 
@@ -49,7 +50,7 @@ func TestNetChecksAndDiskHealth(t *testing.T) {
 	admin, _ := e.setupAdmin("192.168.1.10")
 	ctx := context.Background()
 
-	if r := admin.post("/policies/new", "name", "Bad", "net_set", "1", "net_name", "x", "net_kind", "tcp", "net_target", "host", "net_port", "", "net_minutes", "3"); !strings.Contains(r.loc, "/policies/new") {
+	if r := admin.post("/policies/new", "name", "Bad", "net_set", "1", "net_name", "x", "net_kind", "tcp", "net_target", "host", "net_port", "", "net_minutes", "3"); r.code != http.StatusBadRequest || !strings.Contains(r.body, "a TCP check needs a port") {
 		t.Fatal("a TCP check without a port was accepted")
 	}
 	customerPolicy(t, admin, d.CustomerID, "name", "Checks", "net_set", "1",

@@ -121,6 +121,7 @@ type customerData struct {
 	SiteName string
 	Address  string
 	Fields   []store.CustomField
+	Policy   *store.Policy // assigned to the customer
 }
 
 func (s *Server) handleCustomer(w http.ResponseWriter, r *http.Request) {
@@ -144,6 +145,7 @@ func (s *Server) showCustomer(w http.ResponseWriter, r *http.Request, status int
 	}
 	d.Sites = sites
 	d.Fields, _ = s.store.FieldValues(r.Context(), "customer", d.Customer.ID)
+	d.Policy = s.assignedPolicy(r.Context(), "customer", d.Customer.ID)
 	p := &Page{Title: d.Customer.Name, Nav: "customers", Data: d}
 	if errMsg != "" {
 		p.Error = translate(s.lang(r, userFrom(r)), errMsg)
@@ -232,6 +234,7 @@ func (s *Server) siteFor(w http.ResponseWriter, r *http.Request) *store.Site {
 
 type siteData struct {
 	Site        *store.Site
+	Policy      *store.Policy // assigned to the site
 	Devices     []*store.Device
 	Fingerprint string
 	Tokens      []store.EnrollToken
@@ -262,6 +265,7 @@ func (s *Server) showSite(w http.ResponseWriter, r *http.Request, status int, d 
 		return
 	}
 	d.Tokens, d.Now = toks, s.now()
+	d.Policy = s.assignedPolicy(r.Context(), "site", d.Site.ID)
 	if d.Devices, err = s.store.Devices(r.Context(), userFrom(r), store.DeviceFilter{SiteID: d.Site.ID}); err != nil {
 		s.serverError(w, r, err)
 		return

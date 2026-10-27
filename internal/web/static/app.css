@@ -148,6 +148,7 @@ td.ellipsis { max-width: 320px; white-space: nowrap; overflow: hidden; text-over
 /* ---- forms */
 form.stack { display: grid; gap: 16px; max-width: 720px; }
 form.stack.wide { max-width: none; gap: 0; margin-bottom: 20px; }
+form.stack { grid-template-columns: minmax(0, 1fr); }
 form.stack.wide .panel > * + * { margin-top: 14px; }
 form.stack.wide .panel > h2 + p { margin-top: -4px; }
 form.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }

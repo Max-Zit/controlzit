@@ -2,6 +2,7 @@
 {{define "content"}}
 <p class="back"><a href="/customers">{{.T "Customers"}}</a></p>
 <h1>{{.Data.Customer.Name}}</h1>
+<p class="small muted">{{template "icon" "policy"}} {{.T "Policy"}}: {{with .Data.Policy}}{{if $.User.CanWrite}}<a href="/policies/{{.ID}}">{{.Name}}</a>{{else}}{{.Name}}{{end}}{{else}}{{.T "built-in defaults"}}{{end}}</p>
 <section class="panel">
   <h2>{{.T "Sites"}}</h2>
   {{if .Data.Sites}}

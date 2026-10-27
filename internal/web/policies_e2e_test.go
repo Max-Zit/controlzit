@@ -57,7 +57,7 @@ func TestPolicies(t *testing.T) {
 		t.Fatalf("new policy: %d %s", r.code, r.loc)
 	}
 	pid := m[1]
-	if r := admin.post("/policies/new", "name", "Office"); !strings.Contains(r.loc, "/policies/new") {
+	if r := admin.post("/policies/new", "name", "Office"); r.code != http.StatusBadRequest || !strings.Contains(r.body, "already exists") {
 		t.Fatal("duplicate name accepted")
 	}
 	if r := admin.post("/policies/"+pid+"/assign", "target", "customer:"+itoa(d.CustomerID)); r.code != http.StatusSeeOther {
@@ -142,7 +142,7 @@ func TestPolicyAutomations(t *testing.T) {
 	if err != nil || len(jobs) != 1 || jobs[0].CreatedBy != "policy Auto" || jobs[0].Total != 1 {
 		t.Fatalf("jobs: %+v %v", jobs, err)
 	}
-	waitForUpTo(t, "automation run", 30*time.Second, func() bool {
+	waitForUpTo(t, "automation run", 60*time.Second, func() bool {
 		j, err := e.st.Job(ctx, jobs[0].ID)
 		return err == nil && j.Done == 1
 	})

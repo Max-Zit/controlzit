@@ -7,6 +7,7 @@ import (
 	"crypto/ed25519"
 	"crypto/rand"
 	"encoding/json"
+	"net/http"
 	"strings"
 	"sync"
 	"testing"
@@ -53,7 +54,7 @@ func TestBlockedPrograms(t *testing.T) {
 		Software: []proto.Software{{Name: "uTorrent", Version: "3.6"}, {Name: "uTorrent Web", Version: "1.4"}, {Name: "7-Zip 24.08"}}}); err != nil {
 		t.Fatal(err)
 	}
-	if r := admin.post("/policies/new", "name", "Bad", "software_set", "1", "blk_match", "ab", "blk_action", "alert"); !strings.Contains(r.loc, "/policies/new") {
+	if r := admin.post("/policies/new", "name", "Bad", "software_set", "1", "blk_match", "ab", "blk_action", "alert"); r.code != http.StatusBadRequest || !strings.Contains(r.body, "3–100 characters") || !strings.Contains(r.body, `value="ab"`) {
 		t.Fatal("a blocked name of 2 characters was accepted")
 	}
 	customerPolicy(t, admin, d.CustomerID, "name", "No torrents", "software_set", "1",

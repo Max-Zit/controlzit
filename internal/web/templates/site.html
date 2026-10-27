@@ -2,6 +2,7 @@
 {{define "content"}}
 <p class="back"><a href="/customers">{{.T "Customers"}}</a> / <a href="/customers/{{.Data.Site.CustomerID}}">{{.Data.Site.Customer}}</a></p>
 <h1>{{.Data.Site.Name}}</h1>
+<p class="small muted">{{template "icon" "policy"}} {{.T "Policy"}}: {{with .Data.Policy}}{{if $.User.CanWrite}}<a href="/policies/{{.ID}}">{{.Name}}</a>{{else}}{{.Name}}{{end}}{{else}}{{.T "the customer's"}}{{end}}</p>
 {{if and .User.CanWrite .Data.AgentLocal}}<div class="flash err" role="alert">{{template "icon" "alert"}}<span>{{.T "Agents would connect to %s, which is only this server itself: the console is open on localhost and no public address for agents is set. Set it in Settings → Network and access before you install agents." .Data.AgentURL}}{{if .User.IsAdmin}} <a href="/settings/network">{{.T "Open settings"}}</a>{{end}}</span></div>{{end}}
 {{with .Data.NewToken}}
 <section class="panel accent">

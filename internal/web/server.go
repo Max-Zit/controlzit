@@ -517,6 +517,7 @@ func (s *Server) secure(next http.Handler) http.Handler {
 		h.Set("Referrer-Policy", "same-origin")
 		h.Set("Cross-Origin-Opener-Policy", "same-origin")
 		h.Set("Cross-Origin-Resource-Policy", "same-origin")
+		h.Set("Cross-Origin-Embedder-Policy", "require-corp") // everything the console loads is its own
 		h.Set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(), usb=()")
 		if r.TLS != nil {
 			h.Set("Strict-Transport-Security", "max-age=31536000")

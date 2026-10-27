@@ -99,6 +99,12 @@ func (s *Server) handlePolicy(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	s.showPolicy(w, r, p, http.StatusOK, "")
+}
+
+// showPolicy renders the policy editor for p (with the values of a form that
+// was refused, and its error).
+func (s *Server) showPolicy(w http.ResponseWriter, r *http.Request, p *store.Policy, status int, errMsg string) {
 	ctx := r.Context()
 	d := &policyData{P: p, Days: weekdays, Chocolatey: s.softwareSettings(ctx).Chocolatey, ScriptNames: map[int64]string{}}
 	for h := 0; h < 24; h++ {
@@ -209,12 +215,17 @@ func (s *Server) handlePolicy(w http.ResponseWriter, r *http.Request) {
 	if p.ID == 0 {
 		title = "New policy"
 	}
-	s.render(w, r, http.StatusOK, "policy", &Page{Title: title, Nav: "policies", Data: d})
+	page := &Page{Title: title, Nav: "policies", Data: d}
+	if errMsg != "" {
+		page.Error = translate(s.lang(r, userFrom(r)), errMsg)
+	}
+	s.render(w, r, status, "policy", page)
 }
 
 // policyForm reads the parts of a policy from the form.
 func policyForm(r *http.Request) (PolicySettings, string) {
 	var ps PolicySettings
+	dayErr := "" // an error found while reading; the form is read to its end
 	if r.FormValue("updates_set") == "1" {
 		u := PatchPolicy{Mode: r.FormValue("mode"), RestartMode: r.FormValue("restart_mode"), InWindow: r.FormValue("when") == "window",
 			DelayDays: formInt(r, "delay_days"), DeadlineDays: formInt(r, "deadline_days")}
@@ -222,7 +233,7 @@ func policyForm(r *http.Request) (PolicySettings, string) {
 		u.Hour, _ = strconv.Atoi(r.FormValue("hour"))
 		u.Days = formDays(r, "day")
 		if u.Mode != PatchAutoOff && !u.InWindow && len(u.Days) == 0 {
-			return ps, "Choose at least one day."
+			dayErr = "Choose at least one day."
 		}
 		ps.Updates = &u
 	}
@@ -324,6 +335,9 @@ func policyForm(r *http.Request) (PolicySettings, string) {
 	if r.FormValue("bitlocker_set") == "1" {
 		ps.BitLocker = &BitLockerPolicy{Require: r.FormValue("bitlocker_require") == "1"}
 	}
+	if dayErr != "" {
+		return ps, dayErr
+	}
 	if err := ps.Validate(); err != nil {
 		return ps, err.Error()
 	}
@@ -364,13 +378,14 @@ func (s *Server) handlePolicySave(w http.ResponseWriter, r *http.Request) {
 	var old PolicySettings
 	_ = json.Unmarshal(p.Settings, &old)
 	p.Name, p.Description = strings.TrimSpace(r.FormValue("name")), strings.TrimSpace(r.FormValue("description"))
-	if p.Name == "" || len(p.Name) > 120 || len(p.Description) > 1000 {
-		s.redirect(w, r, back, "Enter a name (up to 120 characters).")
-		return
-	}
 	ps, msg := policyForm(r)
+	if p.Name == "" || len(p.Name) > 120 || len(p.Description) > 1000 {
+		msg = "Enter a name (up to 120 characters)."
+	}
 	if msg != "" {
-		s.redirect(w, r, back, msg)
+		// Show the form again with what was entered.
+		p.Settings, _ = json.Marshal(ps)
+		s.showPolicy(w, r, p, http.StatusBadRequest, msg)
 		return
 	}
 	if !u.IsAdmin() {
@@ -383,7 +398,7 @@ func (s *Server) handlePolicySave(w http.ResponseWriter, r *http.Request) {
 	}
 	p.Settings, p.UpdatedBy = raw, s.issuer(r)
 	if err := s.store.SavePolicy(r.Context(), p); errors.Is(err, store.ErrConflict) {
-		s.redirect(w, r, back, "A policy with this name already exists.")
+		s.showPolicy(w, r, p, http.StatusBadRequest, "A policy with this name already exists.")
 		return
 	} else if err != nil {
 		s.serverError(w, r, err)
@@ -679,4 +694,20 @@ func keyedDays(r *http.Request, name string) map[string][]int {
 		}
 	}
 	return days
+}
+
+// assignedPolicy is the policy assigned to a customer or site (nil: none).
+func (s *Server) assignedPolicy(ctx context.Context, kind string, id int64) *store.Policy {
+	as, err := s.store.Assignments(ctx)
+	if err != nil {
+		return nil
+	}
+	for _, a := range as {
+		if a.TargetType == kind && a.TargetID == id {
+			if p, err := s.store.Policy(ctx, a.PolicyID); err == nil {
+				return p
+			}
+		}
+	}
+	return nil
 }
