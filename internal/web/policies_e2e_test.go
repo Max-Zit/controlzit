@@ -223,21 +223,6 @@ func atoi(s string) int {
 	return n
 }
 
-// customerPolicy makes a policy from the form fields and assigns it to a
-// customer.
-func customerPolicy(t *testing.T, c *client, customerID int64, kv ...string) string {
-	t.Helper()
-	r := c.post("/policies/new", kv...)
-	pid := strings.TrimPrefix(r.loc, "/policies/")
-	if _, err := strconv.Atoi(pid); err != nil {
-		t.Fatalf("new policy: %d %s", r.code, r.loc)
-	}
-	if r := c.post("/policies/"+pid+"/assign", "target", "customer:"+itoa(customerID)); r.code != http.StatusSeeOther {
-		t.Fatalf("assign: %d", r.code)
-	}
-	return pid
-}
-
 // A new customer gets its own Default policy with the built-in settings; on
 // the upgrade, existing customers get one once, with the server's former
 // Windows Update and alert settings.

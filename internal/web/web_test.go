@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -469,4 +470,19 @@ func TestRemoteNoticeSetting(t *testing.T) {
 	if !e.srv.Remote(ctx).ShowNotice {
 		t.Fatal("notice not switched on again")
 	}
+}
+
+// customerPolicy makes a policy from the form fields and assigns it to a
+// customer.
+func customerPolicy(t *testing.T, c *client, customerID int64, kv ...string) string {
+	t.Helper()
+	r := c.post("/policies/new", kv...)
+	pid := strings.TrimPrefix(r.loc, "/policies/")
+	if _, err := strconv.Atoi(pid); err != nil {
+		t.Fatalf("new policy: %d %s", r.code, r.loc)
+	}
+	if r := c.post("/policies/"+pid+"/assign", "target", "customer:"+itoa(customerID)); r.code != http.StatusSeeOther {
+		t.Fatalf("assign: %d", r.code)
+	}
+	return pid
 }
