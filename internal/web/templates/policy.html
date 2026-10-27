@@ -102,8 +102,22 @@
       </div>
       <label class="check"><input type="checkbox" name="defender_off" value="1" {{if $m.DefenderOff}}checked{{end}}>{{.T "Alert when Microsoft Defender antivirus or real-time protection is off"}}</label>
       <label class="check"><input type="checkbox" name="firewall_off" value="1" {{if $m.FirewallOff}}checked{{end}}>{{.T "Alert when a Windows Firewall profile is off"}}</label>
+      <label class="check"><input type="checkbox" name="disk_health" value="1" {{if not $m.DiskHealthOff}}checked{{end}}>{{.T "Alert when a disk reports a problem (SMART) or a RAID array is degraded"}}</label>
       <label>{{.T "Services that must run"}} <small>{{.T "optional"}}</small><textarea name="watch_services" rows="3" spellcheck="false" placeholder="Spooler&#10;MSSQLSERVER">{{.Data.Services}}</textarea></label>
       <p class="small muted">{{.T "Alert emails and chat channels stay those of Settings → Monitoring and alerts."}}</p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2><label class="check"><input type="checkbox" name="net_set" value="1" {{if $s.NetChecks}}checked{{end}} data-part="pol-net">{{template "icon" "network"}}{{.T "Network checks"}}</label></h2>
+    <div id="pol-net" class="policy-part">
+      <p class="small muted">{{.T "Every device of this policy checks these addresses every minute from its own network: ping, a TCP port, or a web address (which must answer without an error and with a valid certificate). An alert opens when a check fails longer than its minutes, and 14 days before the certificate of a web address expires."}}</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>{{.T "Name"}}</th><th>{{.T "Type"}}</th><th>{{.T "Address"}}</th><th>{{.T "Port"}}</th><th>{{.T "Alert after (minutes)"}}</th><th></th></tr></thead>
+        <tbody id="net-rows">{{range .Data.Nets}}{{template "netrow" (rowctx $ .)}}{{end}}</tbody>
+      </table></div>
+      <template id="net-new">{{template "netrow" (rowctx $ .Data.NewNet)}}</template>
+      <button type="button" class="secondary sm mt" data-add-row="net-new" data-rows="net-rows">{{template "icon" "plus"}}{{.T "Add a check"}}</button>
     </div>
   </section>
 
@@ -188,3 +202,16 @@
   </div>
   <div class="checks">{{range $p.Data.Days}}<label class="check"><input type="checkbox" name="maint_day" value="{{$w.Key}}:{{.}}" {{if containsDay $w.Days .}}checked{{end}}>{{$p.T (weekday .)}}</label>{{end}}</div>
 </fieldset>{{end}}
+
+{{define "netrow"}}{{$p := .P}}{{$c := .Row}}<tr data-row>
+  <td><input name="net_name" value="{{$c.Name}}" maxlength="60" placeholder="{{$p.T "Router"}}"></td>
+  <td><select name="net_kind">
+    <option value="ping" {{if eq $c.Kind "ping"}}selected{{end}}>ping</option>
+    <option value="tcp" {{if eq $c.Kind "tcp"}}selected{{end}}>TCP</option>
+    <option value="http" {{if eq $c.Kind "http"}}selected{{end}}>{{$p.T "web (HTTP/HTTPS)"}}</option>
+  </select></td>
+  <td><input name="net_target" value="{{$c.Target}}" maxlength="500" spellcheck="false" class="mono" placeholder="192.168.1.1"></td>
+  <td><input type="number" name="net_port" value="{{if $c.Port}}{{$c.Port}}{{end}}" min="1" max="65535" class="narrow"></td>
+  <td><input type="number" name="net_minutes" value="{{$c.FailMinutes}}" min="1" max="1440" class="narrow"></td>
+  <td class="nowrap actions"><button type="button" class="ghost sm" data-remove-row aria-label="{{$p.T "Remove"}}">{{template "icon" "trash"}}</button></td>
+</tr>{{end}}

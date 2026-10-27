@@ -16,6 +16,12 @@
 </table>
 <p>Upozorenja su <b>Upozorenje</b> ili <b>Kritično</b> (kritično: uređaji van mreže, zaustavljeni servisi, isključen Defender i diskovi sa manje od 1 GB slobodnog ili 98 % zauzeća). <a href="/alerts">Upozorenja</a> pokazuju otvorena (i, po želji, rešena); tehničar može da <b>potvrdi</b> upozorenje da bi drugi videli da neko radi na tome. Broj otvorenih upozorenja se vidi u meniju.</p>
 
+<h2 id="netchecks">Mrežne provere</h2>
+<p>Deo polise <b>Mrežne provere</b> navodi adrese koje svaki uređaj polise proverava svakog minuta iz svoje mreže: <b>ping</b> (ruter, štampač, server), <b>TCP</b> port (na primer baza na 1433) ili <b>web</b> adresu, koja mora da odgovori bez HTTP greške i sa važećim sertifikatom. Alarm se otvara kada provera ne prolazi duže od zadatih minuta, i 14 dana pre isteka sertifikata web adrese. Pregled uređaja prikazuje svaku proveru sa vremenom odziva.</p>
+
+<h2 id="diskhealth">Zdravlje diskova</h2>
+<p>Jednom na sat uređaji javljaju zdravlje svojih fizičkih diskova: na Windowsu ono što diskovi javljaju Windowsu (SMART: stanje, temperatura, habanje SSD-a, neispravljene greške) i Storage Spaces diskove; na Linuxu SMART preko <code>smartctl</code> (paket smartmontools) i md softverske RAID nizove. Disk koji prijavi problem i degradiran RAID niz otvaraju alarm, osim ako pravila alarma polise to isključe. Diskovi iza hardverskog RAID kontrolera nisu vidljivi sistemu i nisu obuhvaćeni. Pregled uređaja prikazuje diskove.</p>
+
 <h2 id="email">Upozorenja e-poštom</h2>
 <ol>
   <li>Unesite <b>server za e-poštu (SMTP)</b>: adresu, port, zaštitu veze (STARTTLS ili TLS; lozinka se nikad ne šalje nešifrovanom vezom), korisnika, lozinku i pošiljaoca. Lozinka se čuva šifrovano.</li>

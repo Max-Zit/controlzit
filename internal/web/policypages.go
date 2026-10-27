@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/max-zit/controlzit/internal/proto"
 	"github.com/max-zit/controlzit/internal/store"
 )
 
@@ -49,10 +50,12 @@ type policyData struct {
 	Maint       []MaintWindow // with an empty row to add
 	NewMaint    MaintWindow   // the row "Add a window" adds
 	Quiet       bool
-	Required    []RequiredApp // with empty rows to add
-	NewApp      RequiredApp   // the row "Add a program" adds
-	NewRun      Automation    // the row "Add an automation" adds
-	Runs        []Automation  // with empty rows to add
+	Nets        []NetCheckRule // with an empty row to add
+	NewNet      NetCheckRule   // the row "Add a check" adds
+	Required    []RequiredApp  // with empty rows to add
+	NewApp      RequiredApp    // the row "Add a program" adds
+	NewRun      Automation     // the row "Add an automation" adds
+	Runs        []Automation   // with empty rows to add
 	Days        []int
 	Hours       []int
 	Assigned    []store.Assignment
@@ -128,6 +131,13 @@ func (s *Server) handlePolicy(w http.ResponseWriter, r *http.Request) {
 		d.Maint[i].Key = "w" + strconv.Itoa(i)
 	}
 	d.NewMaint = MaintWindow{Key: "__KEY__", Start: 22 * 60, Hours: 4}
+	if d.S.NetChecks != nil {
+		d.Nets = append(d.Nets, d.S.NetChecks.Checks...)
+	}
+	d.NewNet = NetCheckRule{NetCheck: proto.NetCheck{Kind: proto.NetPing}, FailMinutes: 3}
+	if len(d.Nets) == 0 {
+		d.Nets = append(d.Nets, d.NewNet)
+	}
 	if d.S.Software != nil {
 		d.Required = append(d.Required, d.S.Software.Required...)
 	}
@@ -215,6 +225,23 @@ func policyForm(r *http.Request) (PolicySettings, string) {
 		a.Days = formDays(r, "apps_day")
 		ps.AppUpdates = a
 	}
+	if r.FormValue("net_set") == "1" {
+		n := &NetCheckPolicy{Checks: []NetCheckRule{}}
+		names, kinds, targets, ports, mins := r.Form["net_name"], r.Form["net_kind"], r.Form["net_target"], r.Form["net_port"], r.Form["net_minutes"]
+		for i := range names {
+			if i >= len(kinds) || i >= len(targets) || i >= len(ports) || i >= len(mins) {
+				break
+			}
+			c := NetCheckRule{NetCheck: proto.NetCheck{Name: strings.TrimSpace(names[i]), Kind: kinds[i], Target: strings.TrimSpace(targets[i])}}
+			if c.Name == "" && c.Target == "" {
+				continue
+			}
+			c.Port, _ = strconv.Atoi(ports[i])
+			c.FailMinutes, _ = strconv.Atoi(mins[i])
+			n.Checks = append(n.Checks, c)
+		}
+		ps.NetChecks = n
+	}
 	if r.FormValue("maint_set") == "1" {
 		m := &MaintenancePolicy{Windows: []MaintWindow{}, Quiet: r.FormValue("maint_quiet") == "1"}
 		days := keyedDays(r, "maint_day")
@@ -253,7 +280,7 @@ func policyForm(r *http.Request) (PolicySettings, string) {
 		ps.Alerts = &AlertRules{CPUPercent: formInt(r, "cpu_percent"), CPUMinutes: formInt(r, "cpu_minutes"), MemPercent: formInt(r, "mem_percent"),
 			MemMinutes: formInt(r, "mem_minutes"), DiskPercent: formInt(r, "disk_percent"), DiskMinFreeGB: formInt(r, "disk_min_free_gb"),
 			OfflineMinutes: formInt(r, "offline_minutes"), RebootDays: formInt(r, "reboot_days"), DefenderOff: r.FormValue("defender_off") == "1",
-			FirewallOff: r.FormValue("firewall_off") == "1", WatchServices: lines(r.FormValue("watch_services"))}
+			FirewallOff: r.FormValue("firewall_off") == "1", WatchServices: lines(r.FormValue("watch_services")), DiskHealthOff: r.FormValue("disk_health") != "1"}
 	}
 	if r.FormValue("automations_set") == "1" {
 		au := &AutomationPolicy{Runs: []Automation{}}
@@ -488,6 +515,8 @@ func (s *Server) handleDevicePolicy(w http.ResponseWriter, r *http.Request) {
 	dd.Parts = append(dd.Parts, policyPart{Name: "Program updates", Source: src})
 	dd.Maint, src = pr.maintenance(d.ID)
 	dd.Parts = append(dd.Parts, policyPart{Name: "Maintenance windows", Source: src})
+	_, src = pr.netChecks(d.ID)
+	dd.Parts = append(dd.Parts, policyPart{Name: "Network checks", Source: src})
 	dd.InWindow = dd.Maint.active(s.now().Local())
 	if reqs, err := s.store.RestartRequests(ctx); err == nil {
 		if q, ok := reqs[d.ID]; ok {

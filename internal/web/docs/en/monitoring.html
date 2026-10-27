@@ -16,6 +16,12 @@
 </table>
 <p>Alerts are a <b>Warning</b> or <b>Critical</b> (critical: offline devices, stopped services, Defender off, and disks with less than 1 GB free or 98 % used). <a href="/alerts">Alerts</a> lists the open ones (and, if you want, the resolved ones); a technician can <b>acknowledge</b> an alert so others see that someone is on it. The number of open alerts is shown in the menu.</p>
 
+<h2 id="netchecks">Network checks</h2>
+<p>The <b>Network checks</b> part of a policy lists addresses that every device of the policy checks every minute from its own network: <b>ping</b> (a router, a printer, a server), a <b>TCP</b> port (for example a database on 1433) or a <b>web</b> address, which must answer without an HTTP error and with a valid certificate. An alert opens when a check fails longer than its minutes, and 14 days before the certificate of a web address expires. The device's overview shows each check with its response time.</p>
+
+<h2 id="diskhealth">Disk health</h2>
+<p>Once an hour the devices report the health of their physical disks: on Windows what the disks report to Windows (SMART: health, temperature, wear of SSDs, uncorrected errors) and the Storage Spaces disks; on Linux SMART through <code>smartctl</code> (package smartmontools) and the md software RAID arrays. A disk that reports a problem and a degraded RAID array open an alert, unless the policy's alert rules switch this off. Disks behind a hardware RAID controller are not visible to the system and are not covered. The device's overview shows the disks.</p>
+
 <h2 id="email">Alert emails</h2>
 <ol>
   <li>Enter the <b>email server (SMTP)</b>: host, port, connection security (STARTTLS or TLS; a password is never sent over an unencrypted connection), user, password and sender. The password is stored encrypted.</li>

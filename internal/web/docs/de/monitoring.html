@@ -16,6 +16,12 @@
 </table>
 <p>Alarme sind <b>Warnung</b> oder <b>Kritisch</b> (kritisch: Offline-Geräte, gestoppte Dienste, Defender aus und Datenträger mit weniger als 1 GB frei oder 98 % belegt). <a href="/alerts">Alarme</a> listet die offenen (und auf Wunsch die behobenen); ein Techniker kann einen Alarm <b>bestätigen</b>, damit andere sehen, dass sich jemand darum kümmert. Die Zahl offener Alarme steht im Menü.</p>
 
+<h2 id="netchecks">Netzwerkprüfungen</h2>
+<p>Der Teil <b>Netzwerkprüfungen</b> einer Richtlinie listet Adressen, die jedes Gerät der Richtlinie jede Minute aus seinem eigenen Netz prüft: <b>Ping</b> (ein Router, ein Drucker, ein Server), einen <b>TCP</b>-Port (zum Beispiel eine Datenbank auf 1433) oder eine <b>Web</b>adresse, die ohne HTTP-Fehler und mit gültigem Zertifikat antworten muss. Ein Alarm öffnet sich, wenn eine Prüfung länger als ihre Minuten fehlschlägt, und 14 Tage bevor das Zertifikat einer Webadresse abläuft. Die Übersicht des Geräts zeigt jede Prüfung mit ihrer Antwortzeit.</p>
+
+<h2 id="diskhealth">Zustand der Datenträger</h2>
+<p>Einmal pro Stunde melden die Geräte den Zustand ihrer physischen Datenträger: unter Windows, was die Datenträger Windows melden (SMART: Zustand, Temperatur, Abnutzung von SSDs, nicht korrigierte Fehler) und die Storage-Spaces-Datenträger; unter Linux SMART über <code>smartctl</code> (Paket smartmontools) und die md-Software-RAID-Verbünde. Ein Datenträger, der ein Problem meldet, und ein beeinträchtigter RAID-Verbund öffnen einen Alarm, sofern die Alarmregeln der Richtlinie das nicht ausschalten. Datenträger hinter einem Hardware-RAID-Controller sieht das System nicht; sie sind nicht abgedeckt. Die Übersicht des Geräts zeigt die Datenträger.</p>
+
 <h2 id="email">Alarm-E-Mails</h2>
 <ol>
   <li>Geben Sie den <b>E-Mail-Server (SMTP)</b> ein: Host, Port, Verbindungssicherheit (STARTTLS oder TLS; ein Passwort wird nie über eine unverschlüsselte Verbindung gesendet), Benutzer, Passwort und Absender. Das Passwort wird verschlüsselt gespeichert.</li>

@@ -1,6 +1,7 @@
 package web
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -66,6 +67,8 @@ type deviceData struct {
 	Software  []proto.Software
 	SwQuery   string
 	Package   *Packages
+	Health    *store.DiskHealthState
+	NetChecks []store.NetCheckState
 }
 
 func (s *Server) handleDevice(w http.ResponseWriter, r *http.Request) {
@@ -76,6 +79,12 @@ func (s *Server) handleDevice(w http.ResponseWriter, r *http.Request) {
 	dd := &deviceData{D: d, Inv: d.Inventory, Online: d.Online(s.now(), onlineWindow) && s.Connected(d.ID), Now: s.now(), Package: s.packages()}
 	dd.Alerts, _ = s.store.Alerts(r.Context(), userFrom(r), store.AlertFilter{DeviceID: d.ID, Open: true})
 	dd.Metrics, dd.MetricsAt, dd.Stopped, _ = s.store.DeviceMetrics(r.Context(), d.ID)
+	if h, err := s.store.DiskHealth(r.Context(), d.ID); err == nil {
+		if x, ok := h[d.ID]; ok {
+			dd.Health = &x
+		}
+	}
+	dd.NetChecks, _ = s.store.NetChecks(r.Context(), d.ID)
 	if d.Inventory != nil {
 		q := strings.ToLower(strings.TrimSpace(r.FormValue("sw")))
 		dd.SwQuery = q
@@ -105,6 +114,7 @@ func (s *Server) handleDeviceRefresh(w http.ResponseWriter, r *http.Request) {
 		s.redirect(w, r, to, "The device is offline.")
 		return
 	}
+	go s.collectDiskHealth(context.WithoutCancel(r.Context()), d.ID) // #nosec G118 -- after the response; own timeout
 	s.audit(r, "device.inventory", "device:"+strconv.FormatInt(d.ID, 10), "inventory requested from %q", d.Hostname)
 	s.redirect(w, r, to, "Inventory requested. Reload the page in a minute.")
 }

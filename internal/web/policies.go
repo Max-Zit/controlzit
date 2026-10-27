@@ -28,6 +28,7 @@ type PolicySettings struct {
 	BitLocker   *BitLockerPolicy   `json:"bitlocker,omitempty"`
 	AppUpdates  *AppUpdatePolicy   `json:"app_updates,omitempty"`
 	Maintenance *MaintenancePolicy `json:"maintenance,omitempty"`
+	NetChecks   *NetCheckPolicy    `json:"net_checks,omitempty"`
 }
 
 // SoftwarePolicy lists the programs a device must have; missing ones are
@@ -61,19 +62,20 @@ type AlertRules struct {
 	DefenderOff    bool     `json:"defender_off"`
 	FirewallOff    bool     `json:"firewall_off"`
 	WatchServices  []string `json:"watch_services"`
+	DiskHealthOff  bool     `json:"disk_health_off,omitempty"` // no alerts for disk and RAID problems
 }
 
 func alertRulesOf(m MonitoringSettings) AlertRules {
 	return AlertRules{CPUPercent: m.CPUPercent, CPUMinutes: m.CPUMinutes, MemPercent: m.MemPercent, MemMinutes: m.MemMinutes,
 		DiskPercent: m.DiskPercent, DiskMinFreeGB: m.DiskMinFreeGB, OfflineMinutes: m.OfflineMinutes, RebootDays: m.RebootDays,
-		DefenderOff: m.DefenderOff, FirewallOff: m.FirewallOff, WatchServices: m.WatchServices}
+		DefenderOff: m.DefenderOff, FirewallOff: m.FirewallOff, WatchServices: m.WatchServices, DiskHealthOff: m.DiskHealthOff}
 }
 
 // apply puts the thresholds into the server's monitoring settings.
 func (a AlertRules) apply(m MonitoringSettings) MonitoringSettings {
 	m.CPUPercent, m.CPUMinutes, m.MemPercent, m.MemMinutes = a.CPUPercent, a.CPUMinutes, a.MemPercent, a.MemMinutes
 	m.DiskPercent, m.DiskMinFreeGB, m.OfflineMinutes, m.RebootDays = a.DiskPercent, a.DiskMinFreeGB, a.OfflineMinutes, a.RebootDays
-	m.DefenderOff, m.FirewallOff, m.WatchServices = a.DefenderOff, a.FirewallOff, a.WatchServices
+	m.DefenderOff, m.FirewallOff, m.WatchServices, m.DiskHealthOff = a.DefenderOff, a.FirewallOff, a.WatchServices, a.DiskHealthOff
 	return m
 }
 
@@ -142,6 +144,11 @@ func (p *PolicySettings) Validate() error {
 	}
 	if m := p.Maintenance; m != nil {
 		if err := m.validate(); err != nil {
+			return err
+		}
+	}
+	if n := p.NetChecks; n != nil {
+		if err := n.validate(); err != nil {
 			return err
 		}
 	}

@@ -16,6 +16,12 @@
 </table>
 <p>Waarschuwingen zijn <b>Waarschuwing</b> of <b>Kritiek</b> (kritiek: offline apparaten, gestopte services, Defender uit, en schijven met minder dan 1 GB vrij of 98 % gebruikt). <a href="/alerts">Waarschuwingen</a> toont de open (en desgewenst de opgeloste); een technicus kan een waarschuwing <b>bevestigen</b> zodat anderen zien dat iemand ermee bezig is. Het aantal open waarschuwingen staat in het menu.</p>
 
+<h2 id="netchecks">Netwerkcontroles</h2>
+<p>Het onderdeel <b>Netwerkcontroles</b> van een beleid noemt adressen die elk apparaat van het beleid elke minuut vanuit zijn eigen netwerk controleert: <b>ping</b> (een router, een printer, een server), een <b>TCP</b>-poort (bijvoorbeeld een database op 1433) of een <b>web</b>adres, dat zonder HTTP-fout en met een geldig certificaat moet antwoorden. Een waarschuwing opent wanneer een controle langer dan haar minuten mislukt, en 14 dagen voordat het certificaat van een webadres verloopt. Het overzicht van het apparaat toont elke controle met de reactietijd.</p>
+
+<h2 id="diskhealth">Schijfstatus</h2>
+<p>Eén keer per uur melden de apparaten de status van hun fysieke schijven: op Windows wat de schijven aan Windows melden (SMART: status, temperatuur, slijtage van SSD's, niet-gecorrigeerde fouten) en de Opslagruimten-schijven; op Linux SMART via <code>smartctl</code> (pakket smartmontools) en de md-software-RAID-arrays. Een schijf die een probleem meldt en een gedegradeerde RAID-array openen een waarschuwing, tenzij de waarschuwingsregels van het beleid dat uitschakelen. Schijven achter een hardware-RAID-controller zijn niet zichtbaar voor het systeem en vallen erbuiten. Het overzicht van het apparaat toont de schijven.</p>
+
 <h2 id="email">Waarschuwingsmails</h2>
 <ol>
   <li>Voer de <b>e-mailserver (SMTP)</b> in: host, poort, verbindingsbeveiliging (STARTTLS of TLS; een wachtwoord wordt nooit over een onversleutelde verbinding verzonden), gebruiker, wachtwoord en afzender. Het wachtwoord wordt versleuteld opgeslagen.</li>

@@ -16,6 +16,12 @@
 </table>
 <p>Gli avvisi sono <b>Avvertenza</b> o <b>Critico</b> (critico: dispositivi offline, servizi arrestati, Defender disattivato e dischi con meno di 1 GB libero o il 98 % occupato). <a href="/alerts">Avvisi</a> elenca quelli aperti (e, se vuoi, quelli risolti); un tecnico può <b>confermare</b> un avviso perché gli altri vedano che qualcuno se ne occupa. Il numero di avvisi aperti compare nel menu.</p>
 
+<h2 id="netchecks">Controlli di rete</h2>
+<p>La parte <b>Controlli di rete</b> di un criterio elenca indirizzi che ogni dispositivo del criterio controlla ogni minuto dalla propria rete: <b>ping</b> (un router, una stampante, un server), una porta <b>TCP</b> (ad esempio un database sulla 1433) o un indirizzo <b>web</b>, che deve rispondere senza errori HTTP e con un certificato valido. Un avviso si apre quando un controllo fallisce più a lungo dei suoi minuti, e 14 giorni prima che scada il certificato di un indirizzo web. La panoramica del dispositivo mostra ogni controllo con il tempo di risposta.</p>
+
+<h2 id="diskhealth">Stato dei dischi</h2>
+<p>Una volta all'ora i dispositivi comunicano lo stato dei loro dischi fisici: su Windows ciò che i dischi riportano a Windows (SMART: stato, temperatura, usura degli SSD, errori non corretti) e i dischi di Spazi di archiviazione; su Linux SMART tramite <code>smartctl</code> (pacchetto smartmontools) e gli array RAID software md. Un disco che segnala un problema e un array RAID degradato aprono un avviso, a meno che le regole di avviso del criterio lo disattivino. I dischi dietro un controller RAID hardware non sono visibili al sistema e non sono coperti. La panoramica del dispositivo mostra i dischi.</p>
+
 <h2 id="email">Email di avviso</h2>
 <ol>
   <li>Inserisci il <b>server email (SMTP)</b>: host, porta, sicurezza della connessione (STARTTLS o TLS; una password non viene mai inviata su una connessione non cifrata), utente, password e mittente. La password è salvata cifrata.</li>

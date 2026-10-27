@@ -16,6 +16,12 @@
 </table>
 <p>Alerty to <b>Ostrzeżenie</b> lub <b>Krytyczny</b> (krytyczne: urządzenia offline, zatrzymane usługi, wyłączony Defender i dyski z mniej niż 1 GB wolnego miejsca lub zajęte w 98 %). <a href="/alerts">Alerty</a> pokazuje otwarte (i opcjonalnie rozwiązane); technik może <b>potwierdzić</b> alert, aby inni widzieli, że ktoś się nim zajmuje. Liczba otwartych alertów widnieje w menu.</p>
 
+<h2 id="netchecks">Sprawdzenia sieci</h2>
+<p>Część <b>Sprawdzenia sieci</b> zasady wymienia adresy, które każde urządzenie zasady sprawdza co minutę ze swojej sieci: <b>ping</b> (router, drukarka, serwer), port <b>TCP</b> (na przykład baza danych na 1433) albo adres <b>WWW</b>, który musi odpowiedzieć bez błędu HTTP i z ważnym certyfikatem. Alert otwiera się, gdy sprawdzenie nie przechodzi dłużej niż jego minuty, oraz 14 dni przed wygaśnięciem certyfikatu adresu WWW. Przegląd urządzenia pokazuje każde sprawdzenie z czasem odpowiedzi.</p>
+
+<h2 id="diskhealth">Stan dysków</h2>
+<p>Raz na godzinę urządzenia zgłaszają stan swoich dysków fizycznych: w Windows to, co dyski zgłaszają systemowi (SMART: stan, temperatura, zużycie SSD, nieskorygowane błędy) i dyski Miejsc do magazynowania; w Linux SMART przez <code>smartctl</code> (pakiet smartmontools) i programowe macierze RAID md. Dysk zgłaszający problem i zdegradowana macierz RAID otwierają alert, chyba że reguły alertów zasady to wyłączają. Dyski za sprzętowym kontrolerem RAID nie są widoczne dla systemu i nie są objęte. Przegląd urządzenia pokazuje dyski.</p>
+
 <h2 id="email">E-maile z alertami</h2>
 <ol>
   <li>Wpisz <b>serwer poczty (SMTP)</b>: host, port, zabezpieczenie połączenia (STARTTLS lub TLS; hasło nigdy nie jest wysyłane nieszyfrowanym połączeniem), użytkownika, hasło i nadawcę. Hasło jest przechowywane w postaci zaszyfrowanej.</li>

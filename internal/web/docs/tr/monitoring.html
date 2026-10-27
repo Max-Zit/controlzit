@@ -16,6 +16,12 @@
 </table>
 <p>Uyarılar <b>Uyarı</b> veya <b>Kritik</b>'tir (kritik: çevrimdışı cihazlar, durmuş hizmetler, kapalı Defender ve 1 GB'tan az boş alanı olan veya %98 dolu diskler). <a href="/alerts">Uyarılar</a> açık olanları (ve isterseniz çözülenleri) listeler; bir teknisyen, başkalarının birinin ilgilendiğini görmesi için bir uyarıyı <b>onaylayabilir</b>. Açık uyarı sayısı menüde gösterilir.</p>
 
+<h2 id="netchecks">Ağ denetimleri</h2>
+<p>Bir ilkenin <b>Ağ denetimleri</b> bölümü, ilkenin her cihazının kendi ağından her dakika denetlediği adresleri listeler: <b>ping</b> (bir yönlendirici, bir yazıcı, bir sunucu), bir <b>TCP</b> bağlantı noktası (örneğin 1433'teki bir veritabanı) veya HTTP hatası olmadan ve geçerli bir sertifikayla yanıt vermesi gereken bir <b>web</b> adresi. Bir denetim belirlenen dakikalardan uzun süre başarısız olduğunda ve bir web adresinin sertifikası dolmadan 14 gün önce uyarı açılır. Cihazın genel görünümü her denetimi yanıt süresiyle gösterir.</p>
+
+<h2 id="diskhealth">Disk sağlığı</h2>
+<p>Cihazlar saatte bir fiziksel disklerinin sağlığını bildirir: Windows'ta disklerin Windows'a bildirdikleri (SMART: durum, sıcaklık, SSD aşınması, düzeltilmemiş hatalar) ve Depolama Alanları diskleri; Linux'ta <code>smartctl</code> (smartmontools paketi) üzerinden SMART ve md yazılım RAID dizileri. Sorun bildiren bir disk ve bozulmuş bir RAID dizisi, ilkenin uyarı kuralları bunu kapatmadıkça uyarı açar. Donanım RAID denetleyicisinin arkasındaki diskler sistem tarafından görülmez ve kapsanmaz. Cihazın genel görünümü diskleri gösterir.</p>
+
 <h2 id="email">Uyarı e-postaları</h2>
 <ol>
   <li><b>E-posta sunucusunu (SMTP)</b> girin: ana bilgisayar, port, bağlantı güvenliği (STARTTLS veya TLS; parola asla şifresiz bir bağlantıdan gönderilmez), kullanıcı, parola ve gönderen. Parola şifreli olarak saklanır.</li>

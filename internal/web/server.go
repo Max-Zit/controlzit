@@ -34,6 +34,7 @@ type Server struct {
 	tasks   taskRunner
 	alerts  sync.Mutex     // one alert check at a time
 	notices restartNotices // restart requests last sent to agents
+	collect collectors     // network checks and disk health in the background
 	log     *slog.Logger
 	tmpl    map[string]*template.Template
 	now     func() time.Time

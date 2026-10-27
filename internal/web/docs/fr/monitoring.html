@@ -16,6 +16,12 @@
 </table>
 <p>Les alertes sont <b>Avertissement</b> ou <b>Critique</b> (critique : appareils hors ligne, services arrêtés, Defender désactivé, et disques avec moins de 1 Go libre ou 98 % utilisés). <a href="/alerts">Alertes</a> liste les alertes ouvertes (et, si vous le souhaitez, les résolues) ; un technicien peut <b>acquitter</b> une alerte pour que les autres voient que quelqu'un s'en occupe. Le nombre d'alertes ouvertes s'affiche dans le menu.</p>
 
+<h2 id="netchecks">Vérifications réseau</h2>
+<p>La partie <b>Vérifications réseau</b> d'une stratégie liste des adresses que chaque appareil de la stratégie vérifie chaque minute depuis son propre réseau : <b>ping</b> (un routeur, une imprimante, un serveur), un port <b>TCP</b> (par exemple une base de données sur 1433) ou une adresse <b>web</b>, qui doit répondre sans erreur HTTP et avec un certificat valide. Une alerte s'ouvre quand une vérification échoue plus longtemps que ses minutes, et 14 jours avant l'expiration du certificat d'une adresse web. La vue d'ensemble de l'appareil montre chaque vérification avec son temps de réponse.</p>
+
+<h2 id="diskhealth">Santé des disques</h2>
+<p>Une fois par heure, les appareils indiquent la santé de leurs disques physiques : sous Windows, ce que les disques signalent à Windows (SMART : état, température, usure des SSD, erreurs non corrigées) et les disques Storage Spaces ; sous Linux, SMART via <code>smartctl</code> (paquet smartmontools) et les grappes RAID logicielles md. Un disque qui signale un problème et une grappe RAID dégradée ouvrent une alerte, sauf si les règles d'alerte de la stratégie le désactivent. Les disques derrière un contrôleur RAID matériel ne sont pas visibles du système et ne sont pas couverts. La vue d'ensemble de l'appareil montre les disques.</p>
+
 <h2 id="email">E-mails d'alerte</h2>
 <ol>
   <li>Saisissez le <b>serveur e-mail (SMTP)</b> : hôte, port, sécurité de la connexion (STARTTLS ou TLS ; un mot de passe n'est jamais envoyé sur une connexion non chiffrée), utilisateur, mot de passe et expéditeur. Le mot de passe est stocké chiffré.</li>

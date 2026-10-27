@@ -16,6 +16,12 @@
 </table>
 <p>Las alertas son <b>Advertencia</b> o <b>Crítica</b> (crítica: dispositivos sin conexión, servicios detenidos, Defender desactivado y discos con menos de 1 GB libre o 98 % usado). <a href="/alerts">Alertas</a> muestra las abiertas (y, si lo desea, las resueltas); un técnico puede <b>confirmar</b> una alerta para que otros vean que alguien se ocupa. El número de alertas abiertas aparece en el menú.</p>
 
+<h2 id="netchecks">Comprobaciones de red</h2>
+<p>La parte <b>Comprobaciones de red</b> de una directiva enumera direcciones que cada dispositivo de la directiva comprueba cada minuto desde su propia red: <b>ping</b> (un router, una impresora, un servidor), un puerto <b>TCP</b> (por ejemplo una base de datos en el 1433) o una dirección <b>web</b>, que debe responder sin error HTTP y con un certificado válido. Se abre una alerta cuando una comprobación falla más tiempo que sus minutos, y 14 días antes de que caduque el certificado de una dirección web. La vista general del dispositivo muestra cada comprobación con su tiempo de respuesta.</p>
+
+<h2 id="diskhealth">Estado de los discos</h2>
+<p>Una vez por hora los dispositivos informan del estado de sus discos físicos: en Windows, lo que los discos comunican a Windows (SMART: estado, temperatura, desgaste de los SSD, errores no corregidos) y los discos de Espacios de almacenamiento; en Linux, SMART mediante <code>smartctl</code> (paquete smartmontools) y los RAID de software md. Un disco que informa de un problema y un RAID degradado abren una alerta, salvo que las reglas de alerta de la directiva lo desactiven. Los discos detrás de una controladora RAID por hardware no son visibles para el sistema y no se cubren. La vista general del dispositivo muestra los discos.</p>
+
 <h2 id="email">Correos de alerta</h2>
 <ol>
   <li>Introduzca el <b>servidor de correo (SMTP)</b>: host, puerto, seguridad de la conexión (STARTTLS o TLS; una contraseña nunca se envía por una conexión sin cifrar), usuario, contraseña y remitente. La contraseña se guarda cifrada.</li>

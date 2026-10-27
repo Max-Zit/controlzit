@@ -42,6 +42,8 @@ check "refresh inventory" '[ "$($C -o /dev/null -w %{http_code} -X POST $S/devic
 # --- files
 B=$S/devices/$DEV/files
 check "drives listed" '$C $B | grep -q "class=\"drive\""'
+for i in $(seq 1 30); do $C "$S/devices/$DEV" | grep -q "Disk health" && break; sleep 3; done
+check "disk health on the device page" '$C "$S/devices/$DEV" | grep -q "Disk health"'
 $C -o /dev/null --data-urlencode "dir=C:\\" -d name=cztest $B/mkdir  # the work folder (may exist already)
 head -c 2500000 /dev/urandom > .gotmp/r-up.bin
 $C -o /dev/null -F "dir=C:\\cztest" -F "overwrite=1" -F "file=@.gotmp/r-up.bin;filename=r-up.bin" $B/upload
@@ -137,6 +139,12 @@ check "installed programs listed from the registry" '$C "$S/devices/$DEV/softwar
 check "software library page with the Chocolatey setting" '$C "$S/software" | grep -q "name=\"chocolatey\""'
 check "policies page" '$C "$S/policies" | grep -q "/policies/new"'
 check "policy editor has program updates and maintenance windows" '$C "$S/policies/new" | grep -q "name=\"apps_set\"" && $C "$S/policies/new" | grep -q "maint-rows"'
+# network checks from the device, through a temporary device policy
+NPOL=$($C -o /dev/null -w '%{redirect_url}' -d "name=Regress+checks&customer=0&net_set=1&net_name=Gateway&net_kind=ping&net_target=192.168.101.254&net_port=&net_minutes=5&net_name=Agent+port&net_kind=tcp&net_target=192.168.101.179&net_port=8444&net_minutes=5" $S/policies/new | grep -o '[0-9]*$')
+$C -o /dev/null -d "target=device:$DEV" $S/policies/$NPOL/assign
+for i in $(seq 1 40); do $C "$S/devices/$DEV" | grep -q "Agent port" && break; sleep 3; done
+check "network checks run on the device" '$C "$S/devices/$DEV" | tr -d "\n" | grep -q "Agent port</b>.*badge ok.*Gateway</b>.*badge ok"'
+$C -o /dev/null -X POST $S/policies/$NPOL/delete
 check "device policy tab" '$C "$S/devices/$DEV/policy" | grep -q "Where the settings come from"'
 # REST API with a short-lived read-only token, deleted afterwards.
 TOK=$($C -d name=regress -d role=readonly -d days=1 $S/account/tokens | grep -o 'czt_[A-Za-z0-9_-]\{30,\}' | head -1)

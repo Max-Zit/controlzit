@@ -16,6 +16,12 @@
 </table>
 <p>Upozornění jsou <b>Varování</b> nebo <b>Kritické</b> (kritické: zařízení offline, zastavené služby, vypnutý Defender a disky s méně než 1 GB volného místa nebo zaplněné na 98 %). <a href="/alerts">Upozornění</a> ukazují otevřená (a případně vyřešená); technik může upozornění <b>potvrdit</b>, aby ostatní viděli, že se jím někdo zabývá. Počet otevřených upozornění je vidět v nabídce.</p>
 
+<h2 id="netchecks">Síťové kontroly</h2>
+<p>Část zásady <b>Síťové kontroly</b> uvádí adresy, které každé zařízení zásady kontroluje každou minutu ze své vlastní sítě: <b>ping</b> (router, tiskárna, server), port <b>TCP</b> (například databáze na 1433) nebo <b>webovou</b> adresu, která musí odpovědět bez chyby HTTP a s platným certifikátem. Upozornění se otevře, když kontrola selhává déle než její minuty, a 14 dní před vypršením certifikátu webové adresy. Přehled zařízení ukazuje každou kontrolu s dobou odezvy.</p>
+
+<h2 id="diskhealth">Stav disků</h2>
+<p>Jednou za hodinu zařízení hlásí stav svých fyzických disků: ve Windows to, co disky hlásí systému (SMART: stav, teplota, opotřebení SSD, neopravené chyby) a disky Prostorů úložiště; v Linuxu SMART přes <code>smartctl</code> (balíček smartmontools) a softwarová pole RAID md. Disk, který hlásí problém, a degradované pole RAID otevřou upozornění, pokud to pravidla upozornění zásady nevypnou. Disky za hardwarovým řadičem RAID systém nevidí a nejsou zahrnuty. Přehled zařízení ukazuje disky.</p>
+
 <h2 id="email">E-maily s upozorněními</h2>
 <ol>
   <li>Zadejte <b>e-mailový server (SMTP)</b>: hostitele, port, zabezpečení spojení (STARTTLS nebo TLS; heslo se nikdy neposílá nešifrovaným spojením), uživatele, heslo a odesílatele. Heslo se ukládá šifrovaně.</li>

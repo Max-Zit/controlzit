@@ -94,6 +94,34 @@
   {{else}}<p class="muted">—</p>{{end}}
 </section>
 </div>
+{{with .Data.Health}}<section class="panel">
+  <h2>{{template "icon" "disk"}}{{$.T "Disk health"}} <span class="muted small">{{$.Ago .CollectedAt}}</span></h2>
+  {{if .Health.Disks}}<div class="table-wrap"><table>
+    <thead><tr><th>{{$.T "Disk"}}</th><th>{{$.T "Status"}}</th><th class="hide-sm">{{$.T "Temperature"}}</th><th class="hide-sm">{{$.T "Wear"}}</th><th class="hide-sm">{{$.T "Errors"}}</th><th class="hide-sm">{{$.T "Powered on"}}</th></tr></thead>
+    <tbody>{{range .Health.Disks}}<tr>
+      <td><b>{{.Model}}</b><br><span class="small muted">{{.Media}} {{.Bus}}{{if .SizeGB}} · {{.SizeGB}} GB{{end}}{{if .Serial}} · {{.Serial}}{{end}}</span></td>
+      <td><span class="badge {{if eq .Health "ok"}}ok{{else if eq .Health "warning"}}warn{{else if eq .Health "failing"}}bad{{end}}"><i></i>{{if eq .Health "ok"}}{{$.T "healthy"}}{{else if eq .Health "warning"}}{{$.T "warning"}}{{else if eq .Health "failing"}}{{$.T "failing"}}{{else}}{{$.T "unknown"}}{{end}}</span>{{if and .Status (ne .Status "OK")}} <span class="small muted">{{.Status}}</span>{{end}}</td>
+      <td class="hide-sm">{{if .TempC}}{{.TempC}} °C{{else}}—{{end}}</td>
+      <td class="hide-sm">{{if ge .Wear 0}}{{.Wear}} %{{else}}—{{end}}</td>
+      <td class="hide-sm">{{.Errors}}</td>
+      <td class="hide-sm">{{if .PowerOnHours}}{{$.T "%d h" .PowerOnHours}}{{else}}—{{end}}</td>
+    </tr>{{end}}</tbody>
+  </table></div>{{end}}
+  {{range .Health.Arrays}}<p><span class="badge {{if eq .Health "ok"}}ok{{else if eq .Health "warning"}}warn{{else if eq .Health "failing"}}bad{{end}}"><i></i>RAID {{.Name}}</span> {{.Level}} <span class="small muted">{{.State}}</span></p>{{end}}
+  {{range .Health.Errors}}<p class="small muted">{{.}}</p>{{end}}
+</section>{{end}}
+{{if .Data.NetChecks}}<section class="panel">
+  <h2>{{template "icon" "network"}}{{.T "Network checks"}}</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{.T "Name"}}</th><th>{{.T "Address"}}</th><th>{{.T "Status"}}</th><th class="hide-sm">{{.T "Checked"}}</th></tr></thead>
+    <tbody>{{range .Data.NetChecks}}<tr>
+      <td><b>{{.Name}}</b></td>
+      <td class="small mono">{{.Kind}} {{.Target}}</td>
+      <td>{{if .OK}}<span class="badge ok"><i></i>{{$.T "%d ms" .MS}}</span>{{else}}<span class="badge bad"><i></i>{{$.T "fails"}}</span> <span class="small muted">{{.Error}}{{with .FailingSince}} · {{$.T "since %s" ($.Time .)}}{{end}}</span>{{end}}{{if .CertDays}} <span class="small {{if lt .CertDays 14}}warn-text{{else}}muted{{end}}">{{$.T "certificate: %d days" .CertDays}}</span>{{end}}</td>
+      <td class="hide-sm small muted">{{$.Ago .CheckedAt}}</td>
+    </tr>{{end}}</tbody>
+  </table></div>
+</section>{{end}}
 <section class="panel">
   <h2>{{.T "Network"}}</h2>
   <div class="table-wrap"><table>

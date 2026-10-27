@@ -16,6 +16,12 @@
 </table>
 <p>Os alertas são <b>Aviso</b> ou <b>Crítico</b> (crítico: dispositivos offline, serviços parados, Defender desligado e discos com menos de 1 GB livre ou 98 % usados). <a href="/alerts">Alertas</a> lista os abertos (e, se quiser, os resolvidos); um técnico pode <b>confirmar</b> um alerta para que os outros vejam que alguém está a tratar dele. O número de alertas abertos aparece no menu.</p>
 
+<h2 id="netchecks">Verificações de rede</h2>
+<p>A parte <b>Verificações de rede</b> de uma política lista endereços que cada dispositivo da política verifica a cada minuto a partir da própria rede: <b>ping</b> (um roteador, uma impressora, um servidor), uma porta <b>TCP</b> (por exemplo um banco de dados na 1433) ou um endereço <b>web</b>, que deve responder sem erro HTTP e com um certificado válido. Um alerta é aberto quando uma verificação falha por mais tempo que seus minutos, e 14 dias antes de o certificado de um endereço web expirar. A visão geral do dispositivo mostra cada verificação com o tempo de resposta.</p>
+
+<h2 id="diskhealth">Saúde dos discos</h2>
+<p>Uma vez por hora os dispositivos informam a saúde dos seus discos físicos: no Windows, o que os discos informam ao Windows (SMART: estado, temperatura, desgaste de SSDs, erros não corrigidos) e os discos de Espaços de Armazenamento; no Linux, SMART pelo <code>smartctl</code> (pacote smartmontools) e os RAIDs de software md. Um disco que relata um problema e um RAID degradado abrem um alerta, a menos que as regras de alerta da política desliguem isso. Discos atrás de uma controladora RAID de hardware não são visíveis para o sistema e não são cobertos. A visão geral do dispositivo mostra os discos.</p>
+
 <h2 id="email">E-mails de alerta</h2>
 <ol>
   <li>Introduza o <b>servidor de e-mail (SMTP)</b>: anfitrião, porta, segurança da ligação (STARTTLS ou TLS; uma palavra-passe nunca é enviada por uma ligação não encriptada), utilizador, palavra-passe e remetente. A palavra-passe é guardada encriptada.</li>
