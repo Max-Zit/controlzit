@@ -14,10 +14,16 @@ func (s *Server) RunMonitor(ctx context.Context) {
 	t := time.NewTicker(time.Minute)
 	defer t.Stop()
 	purge := time.Now()
+	var required time.Time
 	for {
 		s.CheckAlerts(ctx)
 		s.RunPatchSchedule(ctx)
 		s.RunSchedules(ctx)
+		s.RunPolicyAutomations(ctx)
+		if time.Since(required) >= requiredEvery {
+			required = time.Now()
+			s.RunRequiredSoftware(ctx)
+		}
 		s.DispatchTasks(ctx)
 		s.RunReports(ctx)
 		if time.Since(purge) > 6*time.Hour {
@@ -37,12 +43,11 @@ func (s *Server) RunMonitor(ctx context.Context) {
 // CheckAlerts evaluates the rules once and sends the notifications.
 func (s *Server) CheckAlerts(ctx context.Context) {
 	m := s.Monitoring(ctx)
-	states, err := s.store.MonitorStates(ctx, time.Duration(m.CPUMinutes)*time.Minute, time.Duration(m.MemMinutes)*time.Minute)
+	states, conds, keep, err := s.evaluatePolicies(ctx, m)
 	if err != nil {
 		s.log.Error("monitor: cannot load devices", "err", err)
 		return
 	}
-	conds, keep := evaluate(m, states, s.now())
 	opened, resolved, err := s.store.SyncAlerts(ctx, conds, keep)
 	if err != nil {
 		s.log.Error("monitor: cannot update alerts", "err", err)
@@ -129,4 +134,46 @@ func alertEmail(alerts []store.Alert, devs map[int64]store.MonitorState) (subjec
 	}
 	b.WriteString("-- \nControlZit · sent because alert emails are switched on in Settings → Monitoring.\n")
 	return subject, b.String()
+}
+
+// evaluatePolicies applies to each device the alert rules of its policy (or
+// the server's). The load averages are computed per rule window.
+func (s *Server) evaluatePolicies(ctx context.Context, m MonitoringSettings) ([]store.MonitorState, []store.Condition, map[int64]bool, error) {
+	pr, err := s.loadPolicies(ctx)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	type window struct{ cpu, mem int }
+	rules := map[int64]MonitoringSettings{}
+	windows := map[window]bool{{m.CPUMinutes, m.MemMinutes}: true}
+	for id := range pr.scopes {
+		r, _ := pr.alerts(id, m)
+		rules[id] = r
+		windows[window{r.CPUMinutes, r.MemMinutes}] = true
+	}
+	var all []store.MonitorState
+	var conds []store.Condition
+	keep := map[int64]bool{}
+	for w := range windows {
+		states, err := s.store.MonitorStates(ctx, time.Duration(w.cpu)*time.Minute, time.Duration(w.mem)*time.Minute)
+		if err != nil {
+			return nil, nil, nil, err
+		}
+		for _, st := range states {
+			r, ok := rules[st.ID]
+			if !ok {
+				r = m
+			}
+			if (window{r.CPUMinutes, r.MemMinutes}) != w {
+				continue
+			}
+			all = append(all, st)
+			c, k := evaluate(r, []store.MonitorState{st}, s.now())
+			conds = append(conds, c...)
+			for id := range k {
+				keep[id] = true
+			}
+		}
+	}
+	return all, conds, keep, nil
 }

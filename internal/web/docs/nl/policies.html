@@ -1,0 +1,27 @@
+<h1>Beleid</h1>
+<p class="lead">Een beleid stelt Windows Update, vereiste software, waarschuwingsregels en automatiseringen in voor de klanten, locaties of apparaten waaraan het is toegewezen, zodat alle computers van een kantoor of klant op dezelfde manier worden beheerd.</p>
+
+<h2 id="parts">Onderdelen van een beleid</h2>
+<ul>
+  <li><b>Windows Update</b> — wat automatisch wordt geïnstalleerd, op welke dagen en om welk uur, en of de computer herstart als een update dat nodig heeft.</li>
+  <li><b>Vereiste software</b> — programma's die elk Windows-apparaat van het beleid moet hebben; ontbrekende installeert de server.</li>
+  <li><b>Waarschuwingsregels</b> — de drempels voor processor, geheugen, schijven, offline apparaten en wachtende herstarts, Defender en de firewall, en de services die moeten draaien.</li>
+  <li><b>Automatiseringen</b> — bibliotheekscripts die op vaste dagen en een vast tijdstip op de apparaten van het beleid draaien.</li>
+</ul>
+<p>Elk onderdeel wordt in het beleid in- of uitgeschakeld. Een uitgeschakeld onderdeel stelt dit beleid niet in: het komt van een minder specifiek beleid of van de instellingen van de server (<a href="/settings/updates">Windows-updates</a>, <a href="/settings/monitoring">Bewaking en waarschuwingen</a>).</p>
+
+<h2 id="assign">Een beleid toewijzen</h2>
+<p>Beleid maakt u onder <a href="/policies">Beleid</a> (beheerders). Op de pagina van een beleid wijst <b>Toewijzen aan</b> het toe aan een klant, een locatie of één apparaat; het tabblad <b>Beleid</b> van een apparaat stelt het eigen beleid van het apparaat in. Een klant, locatie of apparaat heeft één beleid; een ander toewijzen vervangt het.</p>
+<p>Voor elk onderdeel geldt de meest specifieke toewijzing die het instelt: het beleid van het apparaat, dan dat van de locatie, dan dat van de klant, dan de serverinstellingen. Voorbeeld: het beleid van de klant stelt Windows Update en vereiste software in, het beleid van een locatie alleen strengere waarschuwingsregels — de apparaten van die locatie krijgen de updates en software van de klant en de waarschuwingsregels van de locatie.</p>
+
+<h2 id="software">Vereiste software</h2>
+<p>Elk vereist programma heeft een bron — de <a href="/software">softwarebibliotheek</a>, winget of Chocolatey — en een tekst die de naam in de Windows-lijst van geïnstalleerde programma's bevat (bijvoorbeeld <i>7-Zip</i>). Om de paar minuten vergelijkt de server de vereiste programma's met de inventaris van elk Windows-apparaat dat online is; een ontbrekend programma wordt geïnstalleerd als taak die u ziet onder <a href="/docs/devices#activity">Activiteit</a> van het apparaat. Na een installatie stuurt het apparaat een nieuwe inventaris. Ontbreekt het programma nog steeds, dan probeert de server het na 6 uur opnieuw. Er wordt niets geïnstalleerd voordat een apparaat zijn eerste inventaris heeft gestuurd.</p>
+
+<h2 id="alerts">Waarschuwingsregels</h2>
+<p>De drempels van een beleid vervangen die van de server voor zijn apparaten. E-mails en chatkanalen voor waarschuwingen blijven die van <a href="/settings/monitoring">Bewaking en waarschuwingen</a>.</p>
+
+<h2 id="automations">Automatiseringen</h2>
+<p>Een automatisering voert een script uit de <a href="/scripts">scriptbibliotheek</a> uit op de gekozen dagen en tijd (servertijd), als één taak voor alle apparaten waarvan de automatiseringen uit dit beleid komen. Offline apparaten voeren het uit wanneer ze verbinding maken, binnen 24 uur; de resultaten staan op de pagina van de taak en onder Activiteit van elk apparaat.</p>
+
+<h2 id="device">Wat voor een apparaat geldt</h2>
+<p>Het tabblad <b>Beleid</b> van een apparaat toont voor elk onderdeel welk beleid het instelt (en of het is toegewezen aan het apparaat, de locatie of de klant) of dat de serverinstellingen gelden, de staat van elk vereist programma (geïnstalleerd, ontbreekt, wanneer een installatie is gestart), de geldende instellingen voor Windows Update en waarschuwingen en de automatiseringen.</p>

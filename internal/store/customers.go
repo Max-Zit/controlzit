@@ -123,6 +123,9 @@ var ErrInUse = errors.New("still in use")
 // DeleteCustomer removes a customer without sites.
 func (s *Store) DeleteCustomer(ctx context.Context, id int64) error {
 	tag, err := s.db.Exec(ctx, `DELETE FROM customers WHERE id=$1`, id)
+	if err == nil && tag.RowsAffected() == 1 {
+		_, err = s.db.Exec(ctx, `DELETE FROM policy_assignments WHERE target_type='customer' AND target_id=$1`, id)
+	}
 	if isFK(err) {
 		return ErrInUse
 	}
@@ -219,6 +222,9 @@ func (s *Store) DeleteSite(ctx context.Context, id int64) error {
 		return err
 	}
 	defer tx.Rollback(ctx)
+	if _, err := tx.Exec(ctx, `DELETE FROM policy_assignments WHERE target_type='site' AND target_id=$1`, id); err != nil {
+		return err
+	}
 	if _, err := tx.Exec(ctx, `DELETE FROM enrollment_tokens WHERE site_id=$1`, id); err != nil {
 		return err
 	}

@@ -1,0 +1,27 @@
+<h1>Richtlinien</h1>
+<p class="lead">Eine Richtlinie legt Windows Update, erforderliche Software, Alarmregeln und Automatisierungen für die Kunden, Standorte oder Geräte fest, denen sie zugewiesen ist, damit alle Computer eines Büros oder Kunden gleich verwaltet werden.</p>
+
+<h2 id="parts">Teile einer Richtlinie</h2>
+<ul>
+  <li><b>Windows Update</b> — was automatisch installiert wird, an welchen Tagen und zu welcher Stunde, und ob der Computer neu startet, wenn ein Update es braucht.</li>
+  <li><b>Erforderliche Software</b> — Programme, die jedes Windows-Gerät der Richtlinie haben muss; fehlende installiert der Server.</li>
+  <li><b>Alarmregeln</b> — die Schwellen für CPU, Speicher, Datenträger, Offline-Geräte und ausstehende Neustarts, Defender und Firewall sowie die Dienste, die laufen müssen.</li>
+  <li><b>Automatisierungen</b> — Bibliotheksskripte, die an festgelegten Tagen zu einer festgelegten Zeit auf den Geräten der Richtlinie laufen.</li>
+</ul>
+<p>Jeder Teil wird in der Richtlinie ein- oder ausgeschaltet. Einen ausgeschalteten Teil legt diese Richtlinie nicht fest: Er kommt aus einer weniger spezifischen Richtlinie oder aus den Einstellungen des Servers (<a href="/settings/updates">Windows-Updates</a>, <a href="/settings/monitoring">Überwachung und Alarme</a>).</p>
+
+<h2 id="assign">Eine Richtlinie zuweisen</h2>
+<p>Richtlinien werden unter <a href="/policies">Richtlinien</a> angelegt (Administratoren). Auf der Seite einer Richtlinie weist <b>Zuweisen an</b> sie einem Kunden, einem Standort oder einem einzelnen Gerät zu; die Registerkarte <b>Richtlinie</b> eines Geräts legt die eigene Richtlinie des Geräts fest. Ein Kunde, Standort oder Gerät hat eine Richtlinie; eine andere zuzuweisen ersetzt sie.</p>
+<p>Für jeden Teil gilt die spezifischste Zuweisung, die ihn festlegt: die Richtlinie des Geräts, dann die des Standorts, dann die des Kunden, dann die Servereinstellungen. Beispiel: Die Richtlinie des Kunden legt Windows Update und erforderliche Software fest, die Richtlinie eines Standorts nur strengere Alarmregeln — die Geräte dieses Standorts erhalten Updates und Software des Kunden und die Alarmregeln des Standorts.</p>
+
+<h2 id="software">Erforderliche Software</h2>
+<p>Jedes erforderliche Programm hat eine Quelle — die <a href="/software">Softwarebibliothek</a>, winget oder Chocolatey — und einen Text, den sein Name in der Windows-Liste der installierten Programme enthält (zum Beispiel <i>7-Zip</i>). Alle paar Minuten vergleicht der Server die erforderlichen Programme mit dem Inventar jedes Windows-Geräts, das online ist; ein fehlendes Programm wird als Aufgabe installiert, die Sie unter <a href="/docs/devices#activity">Aktivität</a> des Geräts sehen. Nach einer Installation sendet das Gerät ein neues Inventar. Fehlt das Programm weiterhin, versucht es der Server nach 6 Stunden erneut. Bevor ein Gerät sein erstes Inventar gesendet hat, wird nichts installiert.</p>
+
+<h2 id="alerts">Alarmregeln</h2>
+<p>Die Schwellen einer Richtlinie ersetzen für ihre Geräte die des Servers. Alarm-E-Mails und Chat-Kanäle bleiben die aus <a href="/settings/monitoring">Überwachung und Alarme</a>.</p>
+
+<h2 id="automations">Automatisierungen</h2>
+<p>Eine Automatisierung führt ein Skript der <a href="/scripts">Skriptbibliothek</a> an den gewählten Tagen und zur gewählten Zeit (Serverzeit) als einen Auftrag für alle Geräte aus, deren Automatisierungen aus dieser Richtlinie kommen. Offline-Geräte führen es aus, wenn sie sich verbinden, innerhalb von 24 Stunden; die Ergebnisse stehen auf der Seite des Auftrags und unter Aktivität jedes Geräts.</p>
+
+<h2 id="device">Was für ein Gerät gilt</h2>
+<p>Die Registerkarte <b>Richtlinie</b> eines Geräts zeigt für jeden Teil, welche Richtlinie ihn festlegt (und ob sie dem Gerät, seinem Standort oder seinem Kunden zugewiesen ist) oder dass die Servereinstellungen gelten, den Stand jedes erforderlichen Programms (installiert, fehlt, wann eine Installation gestartet wurde), die geltenden Einstellungen für Windows Update und Alarme sowie die Automatisierungen.</p>

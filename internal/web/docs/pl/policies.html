@@ -1,0 +1,27 @@
+<h1>Zasady</h1>
+<p class="lead">Zasada ustawia Windows Update, wymagane oprogramowanie, reguły alertów i automatyzacje dla klientów, lokalizacji lub urządzeń, do których jest przypisana, dzięki czemu wszystkie komputery biura lub klienta są zarządzane jednakowo.</p>
+
+<h2 id="parts">Części zasady</h2>
+<ul>
+  <li><b>Windows Update</b> — co jest instalowane automatycznie, w które dni i o której godzinie oraz czy komputer uruchamia się ponownie, gdy wymaga tego aktualizacja.</li>
+  <li><b>Wymagane oprogramowanie</b> — programy, które musi mieć każde urządzenie z Windows objęte zasadą; brakujące instaluje serwer.</li>
+  <li><b>Reguły alertów</b> — progi dla procesora, pamięci, dysków, urządzeń offline i oczekujących ponownych uruchomień, Defendera i zapory oraz usługi, które muszą działać.</li>
+  <li><b>Automatyzacje</b> — skrypty z biblioteki uruchamiane na urządzeniach zasady w wybrane dni o wybranej godzinie.</li>
+</ul>
+<p>Każdą część włącza się lub wyłącza w zasadzie. Wyłączonej części ta zasada nie ustawia: pochodzi ona z mniej szczegółowej zasady lub z ustawień serwera (<a href="/settings/updates">Aktualizacje Windows</a>, <a href="/settings/monitoring">Monitorowanie i alerty</a>).</p>
+
+<h2 id="assign">Przypisywanie zasady</h2>
+<p>Zasady tworzy się w <a href="/policies">Zasady</a> (administratorzy). Na stronie zasady <b>Przypisz do</b> przypisuje ją klientowi, lokalizacji lub pojedynczemu urządzeniu; karta <b>Zasada</b> urządzenia ustawia własną zasadę urządzenia. Klient, lokalizacja lub urządzenie ma jedną zasadę; przypisanie innej ją zastępuje.</p>
+<p>Dla każdej części obowiązuje najbardziej szczegółowe przypisanie, które ją ustawia: zasada urządzenia, potem lokalizacji, potem klienta, a na końcu ustawienia serwera. Przykład: zasada klienta ustawia Windows Update i wymagane oprogramowanie, a zasada jednej lokalizacji tylko surowsze reguły alertów — urządzenia tej lokalizacji dostają aktualizacje i oprogramowanie klienta oraz reguły alertów lokalizacji.</p>
+
+<h2 id="software">Wymagane oprogramowanie</h2>
+<p>Każdy wymagany program ma źródło — <a href="/software">bibliotekę oprogramowania</a>, winget lub Chocolatey — oraz tekst, który zawiera jego nazwa na liście zainstalowanych programów Windows (na przykład <i>7-Zip</i>). Co kilka minut serwer porównuje wymagane programy z inwentarzem każdego urządzenia z Windows, które jest online; brakujący program jest instalowany jako zadanie widoczne w <a href="/docs/devices#activity">Aktywności</a> urządzenia. Po instalacji urządzenie wysyła nowy inwentarz. Jeśli programu nadal brakuje, serwer ponawia próbę po 6 godzinach. Nic nie jest instalowane, zanim urządzenie wyśle pierwszy inwentarz.</p>
+
+<h2 id="alerts">Reguły alertów</h2>
+<p>Progi zasady zastępują dla jej urządzeń progi serwera. E-maile i kanały czatu dla alertów pozostają te z <a href="/settings/monitoring">Monitorowanie i alerty</a>.</p>
+
+<h2 id="automations">Automatyzacje</h2>
+<p>Automatyzacja uruchamia skrypt z <a href="/scripts">biblioteki skryptów</a> w wybrane dni o wybranej godzinie (czas serwera) jako jedno zadanie dla wszystkich urządzeń, których automatyzacje pochodzą z tej zasady. Urządzenia offline uruchamiają go po połączeniu, w ciągu 24 godzin; wyniki są na stronie zadania i w Aktywności każdego urządzenia.</p>
+
+<h2 id="device">Co obowiązuje urządzenie</h2>
+<p>Karta <b>Zasada</b> urządzenia pokazuje dla każdej części, która zasada ją ustawia (i czy jest przypisana do urządzenia, jego lokalizacji czy klienta) albo że obowiązują ustawienia serwera, stan każdego wymaganego programu (zainstalowany, brak, kiedy uruchomiono instalację), obowiązujące ustawienia Windows Update i alertów oraz automatyzacje.</p>

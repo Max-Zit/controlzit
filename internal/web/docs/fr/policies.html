@@ -1,0 +1,27 @@
+<h1>Stratégies</h1>
+<p class="lead">Une stratégie définit Windows Update, les logiciels requis, les règles d'alerte et les automatisations des clients, sites ou appareils auxquels elle est attribuée, pour que tous les ordinateurs d'un bureau ou d'un client soient gérés de la même façon.</p>
+
+<h2 id="parts">Parties d'une stratégie</h2>
+<ul>
+  <li><b>Windows Update</b> — ce qui s'installe automatiquement, quels jours et à quelle heure, et si l'ordinateur redémarre quand une mise à jour l'exige.</li>
+  <li><b>Logiciels requis</b> — programmes que chaque appareil Windows de la stratégie doit avoir ; le serveur installe ceux qui manquent.</li>
+  <li><b>Règles d'alerte</b> — les seuils pour le processeur, la mémoire, les disques, les appareils hors ligne et les redémarrages en attente, Defender et le pare-feu, ainsi que les services qui doivent fonctionner.</li>
+  <li><b>Automatisations</b> — scripts de la bibliothèque exécutés sur les appareils de la stratégie certains jours, à une heure donnée.</li>
+</ul>
+<p>Chaque partie est activée ou désactivée dans la stratégie. Une partie désactivée n'est pas définie par cette stratégie : elle vient d'une stratégie moins précise ou des paramètres du serveur (<a href="/settings/updates">Mises à jour Windows</a>, <a href="/settings/monitoring">Surveillance et alertes</a>).</p>
+
+<h2 id="assign">Attribuer une stratégie</h2>
+<p>Créez les stratégies dans <a href="/policies">Stratégies</a> (administrateurs). Sur la page d'une stratégie, <b>Attribuer à</b> l'attribue à un client, un site ou un seul appareil ; l'onglet <b>Stratégie</b> d'un appareil définit la stratégie propre de l'appareil. Un client, un site ou un appareil a une stratégie ; en attribuer une autre la remplace.</p>
+<p>Pour chaque partie, l'attribution la plus précise qui la définit s'applique : la stratégie de l'appareil, puis celle du site, puis celle du client, puis les paramètres du serveur. Exemple : la stratégie du client définit Windows Update et les logiciels requis, la stratégie d'un site seulement des règles d'alerte plus strictes — les appareils de ce site reçoivent les mises à jour et logiciels du client et les règles d'alerte du site.</p>
+
+<h2 id="software">Logiciels requis</h2>
+<p>Chaque programme requis a une source — la <a href="/software">bibliothèque de logiciels</a>, winget ou Chocolatey — et un texte que contient son nom dans la liste Windows des programmes installés (par exemple <i>7-Zip</i>). Toutes les quelques minutes, le serveur compare les programmes requis à l'inventaire de chaque appareil Windows en ligne ; un programme manquant est installé comme une tâche visible dans l'<a href="/docs/devices#activity">Activité</a> de l'appareil. Après une installation, l'appareil envoie un nouvel inventaire. Si le programme manque toujours, le serveur réessaie au bout de 6 heures. Rien n'est installé avant qu'un appareil ait envoyé son premier inventaire.</p>
+
+<h2 id="alerts">Règles d'alerte</h2>
+<p>Les seuils d'une stratégie remplacent ceux du serveur pour ses appareils. Les e-mails et canaux de discussion des alertes restent ceux de <a href="/settings/monitoring">Surveillance et alertes</a>.</p>
+
+<h2 id="automations">Automatisations</h2>
+<p>Une automatisation exécute un script de la <a href="/scripts">bibliothèque de scripts</a> aux jours et à l'heure choisis (heure du serveur), comme une seule tâche pour tous les appareils dont les automatisations viennent de cette stratégie. Les appareils hors ligne l'exécutent à leur connexion, dans les 24 heures ; les résultats sont sur la page de la tâche et dans l'Activité de chaque appareil.</p>
+
+<h2 id="device">Ce qui s'applique à un appareil</h2>
+<p>L'onglet <b>Stratégie</b> d'un appareil montre, pour chaque partie, quelle stratégie la définit (et si elle est attribuée à l'appareil, à son site ou à son client) ou que les paramètres du serveur s'appliquent, l'état de chaque programme requis (installé, manquant, quand une installation a été lancée), les paramètres Windows Update et d'alerte appliqués et les automatisations.</p>

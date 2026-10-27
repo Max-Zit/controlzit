@@ -34,6 +34,7 @@ var DocPages = []DocPage{
 	{"scripts", "Scripts and scheduled jobs"},
 	{"updates", "Windows updates and software"},
 	{"monitoring", "Monitoring, alerts and notifications"},
+	{"policies", "Policies"},
 	{"reports", "Reports"},
 	{"users", "Users, roles and sign-in"},
 	{"settings", "Server settings and updates"},

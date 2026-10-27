@@ -1,0 +1,27 @@
+<h1>İlkeler</h1>
+<p class="lead">Bir ilke, atandığı müşteriler, konumlar veya cihazlar için Windows Update'i, gerekli yazılımı, uyarı kurallarını ve otomasyonları belirler; böylece bir ofisin veya müşterinin tüm bilgisayarları aynı şekilde yönetilir.</p>
+
+<h2 id="parts">Bir ilkenin bölümleri</h2>
+<ul>
+  <li><b>Windows Update</b> — neyin otomatik yükleneceği, hangi günlerde ve saatte, ve bir güncelleştirme gerektirdiğinde bilgisayarın yeniden başlayıp başlamayacağı.</li>
+  <li><b>Gerekli yazılım</b> — ilkedeki her Windows cihazında olması gereken programlar; eksik olanları sunucu yükler.</li>
+  <li><b>Uyarı kuralları</b> — işlemci, bellek, diskler, çevrimdışı cihazlar ve bekleyen yeniden başlatmalar, Defender ve güvenlik duvarı için eşikler ile çalışması gereken hizmetler.</li>
+  <li><b>Otomasyonlar</b> — ilkenin cihazlarında belirli günlerde belirli bir saatte çalışan kitaplık betikleri.</li>
+</ul>
+<p>Her bölüm ilkede açılır veya kapatılır. Kapalı bir bölümü bu ilke belirlemez: daha az özel bir ilkeden veya sunucunun ayarlarından gelir (<a href="/settings/updates">Windows güncelleştirmeleri</a>, <a href="/settings/monitoring">İzleme ve uyarılar</a>).</p>
+
+<h2 id="assign">İlke atama</h2>
+<p>İlkeler <a href="/policies">İlkeler</a> altında oluşturulur (yöneticiler). Bir ilkenin sayfasında <b>Şuna ata</b> onu bir müşteriye, bir konuma veya tek bir cihaza atar; bir cihazın <b>İlke</b> sekmesi cihazın kendi ilkesini belirler. Bir müşterinin, konumun veya cihazın tek bir ilkesi olur; başkasını atamak onun yerini alır.</p>
+<p>Her bölüm için onu belirleyen en özel atama geçerlidir: cihazın ilkesi, sonra konumun, sonra müşterinin, en son sunucu ayarları. Örnek: müşterinin ilkesi Windows Update'i ve gerekli yazılımı, bir konumun ilkesi yalnızca daha sıkı uyarı kurallarını belirler — o konumun cihazları müşterinin güncelleştirmelerini ve yazılımını, konumun uyarı kurallarını alır.</p>
+
+<h2 id="software">Gerekli yazılım</h2>
+<p>Her gerekli programın bir kaynağı — <a href="/software">yazılım kitaplığı</a>, winget veya Chocolatey — ve Windows'un yüklü programlar listesindeki adının içerdiği bir metin vardır (örneğin <i>7-Zip</i>). Sunucu birkaç dakikada bir gerekli programları çevrimiçi her Windows cihazının envanteriyle karşılaştırır; eksik bir program, cihazın <a href="/docs/devices#activity">Etkinlik</a> bölümünde gördüğünüz bir görev olarak yüklenir. Yüklemeden sonra cihaz yeni bir envanter gönderir. Program hâlâ eksikse sunucu 6 saat sonra yeniden dener. Bir cihaz ilk envanterini göndermeden hiçbir şey yüklenmez.</p>
+
+<h2 id="alerts">Uyarı kuralları</h2>
+<p>Bir ilkenin eşikleri, cihazları için sunucunun eşiklerinin yerini alır. Uyarı e-postaları ve sohbet kanalları <a href="/settings/monitoring">İzleme ve uyarılar</a>'dakiler olarak kalır.</p>
+
+<h2 id="automations">Otomasyonlar</h2>
+<p>Bir otomasyon, <a href="/scripts">betik kitaplığındaki</a> bir betiği seçilen günlerde ve saatte (sunucu saati), otomasyonları bu ilkeden gelen tüm cihazlar için tek bir görev olarak çalıştırır. Çevrimdışı cihazlar bunu bağlandıklarında, 24 saat içinde çalıştırır; sonuçlar görevin sayfasında ve her cihazın Etkinlik bölümündedir.</p>
+
+<h2 id="device">Bir cihaz için ne geçerli</h2>
+<p>Bir cihazın <b>İlke</b> sekmesi her bölüm için onu hangi ilkenin belirlediğini (ve ilkenin cihaza, konumuna veya müşterisine atanıp atanmadığını) ya da sunucu ayarlarının geçerli olduğunu, her gerekli programın durumunu (yüklü, eksik, yüklemenin ne zaman başlatıldığı), geçerli Windows Update ve uyarı ayarlarını ve otomasyonları gösterir.</p>

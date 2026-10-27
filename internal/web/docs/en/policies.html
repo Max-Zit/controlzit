@@ -1,0 +1,27 @@
+<h1>Policies</h1>
+<p class="lead">A policy sets Windows Update, required software, alert rules and automations for the customers, sites or devices it is assigned to, so that every computer of an office or a customer is managed the same way.</p>
+
+<h2 id="parts">Parts of a policy</h2>
+<ul>
+  <li><b>Windows Update</b> — what is installed automatically, on which days and at which hour, and whether the computer restarts when an update needs it.</li>
+  <li><b>Required software</b> — programs every Windows device of the policy must have; missing ones are installed by the server.</li>
+  <li><b>Alert rules</b> — the thresholds for CPU, memory, disks, offline devices and pending restarts, Defender and the firewall, and the services that must run.</li>
+  <li><b>Automations</b> — library scripts that run on the policy's devices on set days and at a set time.</li>
+</ul>
+<p>Each part is switched on or off in the policy. A part that is off is not set by this policy: it comes from a less specific policy or from the server's own settings (<a href="/settings/updates">Windows updates</a>, <a href="/settings/monitoring">Monitoring and alerts</a>).</p>
+
+<h2 id="assign">Assigning a policy</h2>
+<p>Create policies under <a href="/policies">Policies</a> (administrators). On a policy's page, <b>Assign to</b> gives it to a customer, a site or a single device; the <b>Policy</b> tab of a device sets the device's own policy. A customer, site or device has one policy; assigning another replaces it.</p>
+<p>For each part, the most specific assignment that sets it applies: the device's policy, then the site's, then the customer's, then the server's settings. Example: the customer's policy sets Windows Update and required software, a site's policy sets only stricter alert rules — the devices of that site get the customer's updates and software and the site's alert rules.</p>
+
+<h2 id="software">Required software</h2>
+<p>Each required program has a source — the <a href="/software">software library</a>, winget or Chocolatey — and a text that its name in the Windows list of installed programs contains (for example <i>7-Zip</i>). Every few minutes the server compares the required programs with the inventory of each online Windows device; a missing program is installed as a task you see under the device's <a href="/docs/devices#activity">Activity</a>. After an installation the device sends a new inventory. If the program is still missing, the server tries again after 6 hours. Nothing is installed before a device has sent its first inventory.</p>
+
+<h2 id="alerts">Alert rules</h2>
+<p>The thresholds of a policy replace those of the server for its devices. Alert emails and chat channels stay those of <a href="/settings/monitoring">Monitoring and alerts</a>.</p>
+
+<h2 id="automations">Automations</h2>
+<p>An automation runs a script of the <a href="/scripts">script library</a> on the chosen days and time (server time) as one job for all devices whose automations come from this policy. Offline devices run it when they connect, within 24 hours; the results are on the job's page and under each device's Activity.</p>
+
+<h2 id="device">What applies to a device</h2>
+<p>The <b>Policy</b> tab of a device shows, for each part, which policy sets it (and whether it is assigned to the device, its site or its customer) or that the server's settings apply, the state of every required program (installed, missing, when an installation was started), the Windows Update and alert settings that apply and the automations.</p>

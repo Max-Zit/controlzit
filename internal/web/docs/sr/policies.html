@@ -1,0 +1,27 @@
+<h1>Polise</h1>
+<p class="lead">Polisa podešava Windows Update, obavezni softver, pravila alarma i automatizacije za klijente, lokacije ili uređaje kojima je dodeljena, tako da se svi računari jedne kancelarije ili jednog klijenta vode na isti način.</p>
+
+<h2 id="parts">Delovi polise</h2>
+<ul>
+  <li><b>Windows Update</b> — šta se instalira automatski, kojim danima i u koji sat, i da li se računar ponovo pokreće kada ažuriranje to traži.</li>
+  <li><b>Obavezni softver</b> — programi koje svaki Windows uređaj polise mora da ima; server sam instalira one koji nedostaju.</li>
+  <li><b>Pravila alarma</b> — pragovi za procesor, memoriju, diskove, uređaje van mreže i restart na čekanju, Defender i zaštitni zid, i servisi koji moraju da rade.</li>
+  <li><b>Automatizacije</b> — skripte iz biblioteke koje se pokreću na uređajima polise određenim danima i u određeno vreme.</li>
+</ul>
+<p>Svaki deo se u polisi uključuje ili isključuje. Isključen deo ova polisa ne podešava: dolazi iz manje konkretne polise ili iz podešavanja servera (<a href="/settings/updates">Windows ažuriranja</a>, <a href="/settings/monitoring">Nadzor i alarmi</a>).</p>
+
+<h2 id="assign">Dodela polise</h2>
+<p>Polise se prave u <a href="/policies">Polise</a> (administratori). Na stranici polise <b>Dodeli</b> je daje klijentu, lokaciji ili jednom uređaju; kartica <b>Polisa</b> uređaja podešava sopstvenu polisu uređaja. Klijent, lokacija ili uređaj ima jednu polisu; dodela druge je zamenjuje.</p>
+<p>Za svaki deo važi najkonkretnija dodela koja ga podešava: polisa uređaja, pa lokacije, pa klijenta, pa podešavanja servera. Primer: polisa klijenta podešava Windows Update i obavezni softver, a polisa jedne lokacije samo strožija pravila alarma — uređaji te lokacije dobijaju ažuriranja i softver klijenta i pravila alarma lokacije.</p>
+
+<h2 id="software">Obavezni softver</h2>
+<p>Svaki obavezni program ima izvor — <a href="/software">biblioteku softvera</a>, winget ili Chocolatey — i tekst koji njegov naziv na Windows listi instaliranih programa sadrži (na primer <i>7-Zip</i>). Na nekoliko minuta server poredi obavezne programe sa inventarom svakog Windows uređaja na mreži; program koji nedostaje instalira se kao zadatak koji vidite u <a href="/docs/devices#activity">Aktivnostima</a> uređaja. Posle instalacije uređaj šalje novi inventar. Ako program i dalje nedostaje, server pokušava ponovo posle 6 sati. Ništa se ne instalira pre nego što uređaj pošalje prvi inventar.</p>
+
+<h2 id="alerts">Pravila alarma</h2>
+<p>Pragovi polise za njene uređaje zamenjuju pragove servera. Mejlovi i chat kanali za alarme ostaju oni iz <a href="/settings/monitoring">Nadzor i alarmi</a>.</p>
+
+<h2 id="automations">Automatizacije</h2>
+<p>Automatizacija pokreće skriptu iz <a href="/scripts">biblioteke skripti</a> izabranim danima i u izabrano vreme (vreme servera) kao jedan posao za sve uređaje čije automatizacije dolaze iz ove polise. Uređaji van mreže je pokreću kada se povežu, u roku od 24 sata; rezultati su na stranici posla i u Aktivnostima svakog uređaja.</p>
+
+<h2 id="device">Šta važi za uređaj</h2>
+<p>Kartica <b>Polisa</b> uređaja za svaki deo pokazuje koja ga polisa podešava (i da li je dodeljena uređaju, lokaciji ili klijentu) ili da važe podešavanja servera, stanje svakog obaveznog programa (instaliran, nedostaje, kada je pokrenuta instalacija), važeća podešavanja za Windows Update i alarme i automatizacije.</p>

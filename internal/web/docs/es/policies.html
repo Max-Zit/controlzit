@@ -1,0 +1,27 @@
+<h1>Directivas</h1>
+<p class="lead">Una directiva define Windows Update, el software requerido, las reglas de alerta y las automatizaciones de los clientes, sedes o dispositivos a los que se asigna, para que todos los equipos de una oficina o de un cliente se administren igual.</p>
+
+<h2 id="parts">Partes de una directiva</h2>
+<ul>
+  <li><b>Windows Update</b> — qué se instala automáticamente, qué días y a qué hora, y si el equipo se reinicia cuando una actualización lo necesita.</li>
+  <li><b>Software requerido</b> — programas que todo dispositivo Windows de la directiva debe tener; el servidor instala los que faltan.</li>
+  <li><b>Reglas de alerta</b> — los umbrales de CPU, memoria, discos, dispositivos sin conexión y reinicios pendientes, Defender y el firewall, y los servicios que deben estar en ejecución.</li>
+  <li><b>Automatizaciones</b> — scripts de la biblioteca que se ejecutan en los dispositivos de la directiva ciertos días a una hora fija.</li>
+</ul>
+<p>Cada parte se activa o desactiva en la directiva. Una parte desactivada no la define esta directiva: viene de una directiva menos específica o de la configuración del servidor (<a href="/settings/updates">Actualizaciones de Windows</a>, <a href="/settings/monitoring">Supervisión y alertas</a>).</p>
+
+<h2 id="assign">Asignar una directiva</h2>
+<p>Las directivas se crean en <a href="/policies">Directivas</a> (administradores). En la página de una directiva, <b>Asignar a</b> la da a un cliente, una sede o un solo dispositivo; la pestaña <b>Directiva</b> de un dispositivo define la directiva propia del dispositivo. Un cliente, sede o dispositivo tiene una directiva; asignar otra la reemplaza.</p>
+<p>Para cada parte se aplica la asignación más específica que la define: la directiva del dispositivo, luego la de la sede, luego la del cliente y por último la configuración del servidor. Ejemplo: la directiva del cliente define Windows Update y el software requerido, la de una sede solo reglas de alerta más estrictas — los dispositivos de esa sede reciben las actualizaciones y el software del cliente y las reglas de alerta de la sede.</p>
+
+<h2 id="software">Software requerido</h2>
+<p>Cada programa requerido tiene un origen — la <a href="/software">biblioteca de software</a>, winget o Chocolatey — y un texto que contiene su nombre en la lista de Windows de programas instalados (por ejemplo <i>7-Zip</i>). Cada pocos minutos el servidor compara los programas requeridos con el inventario de cada dispositivo Windows en línea; un programa que falta se instala como una tarea que ve en la <a href="/docs/devices#activity">Actividad</a> del dispositivo. Tras una instalación, el dispositivo envía un inventario nuevo. Si el programa sigue faltando, el servidor lo intenta de nuevo a las 6 horas. No se instala nada antes de que un dispositivo envíe su primer inventario.</p>
+
+<h2 id="alerts">Reglas de alerta</h2>
+<p>Los umbrales de una directiva reemplazan a los del servidor para sus dispositivos. Los correos y canales de chat de las alertas siguen siendo los de <a href="/settings/monitoring">Supervisión y alertas</a>.</p>
+
+<h2 id="automations">Automatizaciones</h2>
+<p>Una automatización ejecuta un script de la <a href="/scripts">biblioteca de scripts</a> los días y a la hora elegidos (hora del servidor) como un solo trabajo para todos los dispositivos cuyas automatizaciones vienen de esta directiva. Los dispositivos sin conexión lo ejecutan al conectarse, dentro de 24 horas; los resultados están en la página del trabajo y en la Actividad de cada dispositivo.</p>
+
+<h2 id="device">Qué se aplica a un dispositivo</h2>
+<p>La pestaña <b>Directiva</b> de un dispositivo muestra, para cada parte, qué directiva la define (y si está asignada al dispositivo, a su sede o a su cliente) o que se aplica la configuración del servidor, el estado de cada programa requerido (instalado, falta, cuándo se inició una instalación), la configuración de Windows Update y de alertas que se aplica y las automatizaciones.</p>

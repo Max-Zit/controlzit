@@ -373,6 +373,7 @@ func taskWinget(s *Server, ctx context.Context, d *store.Device, t *store.Device
 	if res.ExitCode != 0 {
 		return outcome(false, a.Back, "winget ended with code %s; the audit log has its output.", code), nil
 	}
+	s.requestInventory(ctx, d.ID) // the installed programs changed
 	return outcome(true, a.Back, "done"), nil
 }
 
@@ -401,6 +402,7 @@ func taskChoco(s *Server, ctx context.Context, d *store.Device, t *store.DeviceT
 	if res.ExitCode != 0 {
 		return outcome(false, a.Back, "Chocolatey ended with code %s; the audit log has its output.", res.ExitCode), nil
 	}
+	s.requestInventory(ctx, d.ID)
 	return outcome(true, a.Back, "done"), nil
 }
 
@@ -423,6 +425,7 @@ func taskUninstall(s *Server, ctx context.Context, d *store.Device, t *store.Dev
 		return taskOutcome{}, err
 	}
 	s.taskAudit(ctx, t, d, "software.uninstall", "uninstalled %s (%s, %s) on %q: exit code %d", res.Name, a.Key, res.Method, d.Hostname, res.ExitCode)
+	s.requestInventory(ctx, d.ID)
 	return outcome(true, a.Back, "done"), nil
 }
 

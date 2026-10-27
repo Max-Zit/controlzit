@@ -299,11 +299,13 @@ func (s *Server) handlePatchPolicySave(w http.ResponseWriter, r *http.Request) {
 // RunPatchSchedule starts the automatic installations that are due (called
 // every minute by the monitor loop).
 func (s *Server) RunPatchSchedule(ctx context.Context) {
-	p := s.Patches(ctx)
-	now := s.now().Local()
-	if p.Mode == PatchAutoOff || !p.Day(int(now.Weekday())) || now.Hour() != p.Hour {
+	def := s.Patches(ctx)
+	pr, err := s.loadPolicies(ctx)
+	if err != nil {
+		s.log.Warn("patch schedule: cannot load policies", "err", err)
 		return
 	}
+	now := s.now().Local()
 	list, err := s.store.PatchOverview(ctx, nil)
 	if err != nil {
 		s.log.Warn("patch schedule: cannot load devices", "err", err)
@@ -311,6 +313,11 @@ func (s *Server) RunPatchSchedule(ctx context.Context) {
 	}
 	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
 	for _, dp := range list {
+		// The device's policy, or the server's settings.
+		p, _ := pr.updates(dp.ID, def)
+		if p.Mode == PatchAutoOff || !p.Day(int(now.Weekday())) || now.Hour() != p.Hour {
+			continue
+		}
 		rep := dp.Report
 		if rep == nil || rep.State != proto.PatchIdle || !s.Connected(dp.ID) ||
 			(dp.AutoInstallOn != nil && dp.AutoInstallOn.Format("2006-01-02") == today.Format("2006-01-02")) {

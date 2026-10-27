@@ -1,0 +1,27 @@
+<h1>Políticas</h1>
+<p class="lead">Uma política define o Windows Update, o software obrigatório, as regras de alerta e as automações dos clientes, locais ou dispositivos aos quais é atribuída, para que todos os computadores de um escritório ou cliente sejam gerenciados do mesmo jeito.</p>
+
+<h2 id="parts">Partes de uma política</h2>
+<ul>
+  <li><b>Windows Update</b> — o que é instalado automaticamente, em quais dias e a que hora, e se o computador reinicia quando uma atualização precisa.</li>
+  <li><b>Software obrigatório</b> — programas que todo dispositivo Windows da política deve ter; o servidor instala os que faltam.</li>
+  <li><b>Regras de alerta</b> — os limites de CPU, memória, discos, dispositivos offline e reinicializações pendentes, Defender e firewall, e os serviços que devem estar em execução.</li>
+  <li><b>Automações</b> — scripts da biblioteca executados nos dispositivos da política em dias definidos, a uma hora definida.</li>
+</ul>
+<p>Cada parte é ativada ou desativada na política. Uma parte desativada não é definida por esta política: vem de uma política menos específica ou das configurações do servidor (<a href="/settings/updates">Atualizações do Windows</a>, <a href="/settings/monitoring">Monitoramento e alertas</a>).</p>
+
+<h2 id="assign">Atribuir uma política</h2>
+<p>As políticas são criadas em <a href="/policies">Políticas</a> (administradores). Na página de uma política, <b>Atribuir a</b> a atribui a um cliente, um local ou um único dispositivo; a guia <b>Política</b> de um dispositivo define a política própria do dispositivo. Um cliente, local ou dispositivo tem uma política; atribuir outra a substitui.</p>
+<p>Para cada parte vale a atribuição mais específica que a define: a política do dispositivo, depois a do local, depois a do cliente e, por fim, as configurações do servidor. Exemplo: a política do cliente define o Windows Update e o software obrigatório, a política de um local só define regras de alerta mais rígidas — os dispositivos desse local recebem as atualizações e o software do cliente e as regras de alerta do local.</p>
+
+<h2 id="software">Software obrigatório</h2>
+<p>Cada programa obrigatório tem uma origem — a <a href="/software">biblioteca de software</a>, winget ou Chocolatey — e um texto que o nome dele na lista do Windows de programas instalados contém (por exemplo <i>7-Zip</i>). A cada poucos minutos o servidor compara os programas obrigatórios com o inventário de cada dispositivo Windows online; um programa que falta é instalado como uma tarefa que você vê na <a href="/docs/devices#activity">Atividade</a> do dispositivo. Após uma instalação, o dispositivo envia um novo inventário. Se o programa continuar faltando, o servidor tenta de novo após 6 horas. Nada é instalado antes de o dispositivo enviar o primeiro inventário.</p>
+
+<h2 id="alerts">Regras de alerta</h2>
+<p>Os limites de uma política substituem os do servidor para os seus dispositivos. Os e-mails e canais de chat dos alertas continuam os de <a href="/settings/monitoring">Monitoramento e alertas</a>.</p>
+
+<h2 id="automations">Automações</h2>
+<p>Uma automação executa um script da <a href="/scripts">biblioteca de scripts</a> nos dias e horário escolhidos (horário do servidor) como uma única tarefa para todos os dispositivos cujas automações vêm desta política. Dispositivos offline a executam quando se conectam, dentro de 24 horas; os resultados ficam na página da tarefa e na Atividade de cada dispositivo.</p>
+
+<h2 id="device">O que vale para um dispositivo</h2>
+<p>A guia <b>Política</b> de um dispositivo mostra, para cada parte, qual política a define (e se ela está atribuída ao dispositivo, ao local ou ao cliente) ou que valem as configurações do servidor, o estado de cada programa obrigatório (instalado, faltando, quando uma instalação foi iniciada), as configurações de Windows Update e de alertas em vigor e as automações.</p>

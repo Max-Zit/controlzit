@@ -16,6 +16,14 @@
     return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   }
 
+  // A checkbox with data-part shows the part of a form it switches on.
+  Array.prototype.forEach.call(document.querySelectorAll("input[data-part]"), function (cb) {
+    var part = document.getElementById(cb.getAttribute("data-part"));
+    function sync() { if (part) part.hidden = !cb.checked; }
+    cb.addEventListener("change", sync);
+    sync();
+  });
+
   document.addEventListener("click", function (ev) {
     var el = ev.target.closest("[data-theme-toggle],[data-toggle],[data-close],[data-copy]");
     if (!el) return;

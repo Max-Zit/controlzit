@@ -156,7 +156,8 @@ var funcs = template.FuncMap{
 		}
 		return false
 	},
-	"join": strings.Join,
+	"join":        strings.Join,
+	"containsDay": containsInt,
 	"u64": func(n int64) uint64 {
 		if n < 0 {
 			return 0

@@ -1,0 +1,120 @@
+{{template "app" .}}
+{{define "content"}}
+{{$p := .Data.P}}{{$s := .Data.S}}
+<p class="back"><a href="/policies">{{.T "Policies"}}</a>{{if $p.ID}} / {{$p.Name}}{{end}}</p>
+<h1>{{template "icon" "policy"}}{{if $p.ID}}{{$p.Name}}{{else}}{{.T "New policy"}}{{end}}</h1>
+<form method="post" action="{{if $p.ID}}/policies/{{$p.ID}}{{else}}/policies/new{{end}}" class="stack wide">
+  <section class="panel">
+    <label>{{.T "Name"}}<input name="name" value="{{$p.Name}}" required maxlength="120" placeholder="{{.T "Office computers"}}"></label>
+    <label>{{.T "Description"}} <small>{{.T "optional"}}</small><input name="description" value="{{$p.Description}}" maxlength="1000"></label>
+    <p class="small muted">{{.T "Switch on the parts this policy sets. A part that is off comes from a less specific policy or from the server's settings."}}</p>
+  </section>
+
+  <section class="panel">
+    <h2><label class="check"><input type="checkbox" name="updates_set" value="1" {{if $s.Updates}}checked{{end}} data-part="pol-updates">{{template "icon" "download"}}{{.T "Windows Update"}}</label></h2>
+    <div id="pol-updates" class="policy-part">
+      <fieldset class="box">
+        <legend>{{.T "Install automatically"}}</legend>
+        <label class="check"><input type="radio" name="mode" value="off" {{if eq .Data.Updates.Mode "off"}}checked{{end}}>{{.T "Off: updates are installed only from the console"}}</label>
+        <label class="check"><input type="radio" name="mode" value="security" {{if eq .Data.Updates.Mode "security"}}checked{{end}}>{{.T "Security and critical updates, Defender definitions"}}</label>
+        <label class="check"><input type="radio" name="mode" value="all" {{if eq .Data.Updates.Mode "all"}}checked{{end}}>{{.T "All updates except feature upgrades"}}</label>
+      </fieldset>
+      <fieldset class="box">
+        <legend>{{.T "When"}}</legend>
+        <div class="checks">{{range .Data.Days}}<label class="check"><input type="checkbox" name="day" value="{{.}}" {{if $.Data.Updates.Day .}}checked{{end}}>{{$.T (weekday .)}}</label>{{end}}</div>
+        <label>{{.T "Starting at (server time)"}}<select name="hour" class="narrow">{{range .Data.Hours}}<option value="{{.}}" {{if eq . $.Data.Updates.Hour}}selected{{end}}>{{printf "%02d:00" .}}</option>{{end}}</select></label>
+      </fieldset>
+      <label class="check"><input type="checkbox" name="reboot" value="1" {{if .Data.Updates.Reboot}}checked{{end}}>{{.T "Restart automatically when an update needs it (in 5 minutes, with a notice to the signed-in user)"}}</label>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2><label class="check"><input type="checkbox" name="software_set" value="1" {{if $s.Software}}checked{{end}} data-part="pol-software">{{template "icon" "package"}}{{.T "Required software"}}</label></h2>
+    <div id="pol-software" class="policy-part">
+      <p class="small muted">{{.T "Programs every Windows device of this policy must have. A program counts as installed when its name in the Windows list of installed programs contains the text you enter. The server checks every few minutes and installs a missing program; if it is still missing, it tries again after 6 hours. Each installation shows under the device's Activity."}}</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>{{.T "Source"}}</th><th>{{.T "Package"}}</th><th>{{.T "Installed name contains"}}</th></tr></thead>
+        <tbody>{{range .Data.Required}}<tr>
+          <td><select name="req_source">
+            <option value="library" {{if eq .Source "library"}}selected{{end}}>{{$.T "Software library"}}</option>
+            <option value="winget" {{if eq .Source "winget"}}selected{{end}}>winget</option>
+            {{if or $.Data.Chocolatey (eq .Source "choco")}}<option value="choco" {{if eq .Source "choco"}}selected{{end}}>Chocolatey</option>{{end}}
+          </select></td>
+          <td><input name="req_id" value="{{.ID}}" list="pol-packages" maxlength="128" spellcheck="false" class="mono" placeholder="7zip.7zip"></td>
+          <td><input name="req_match" value="{{.Match}}" maxlength="100" placeholder="7-Zip"></td>
+        </tr>{{end}}</tbody>
+      </table></div>
+      <datalist id="pol-packages">{{range .Data.Packages}}<option value="{{.ID}}">{{.Name}} {{.Version}}</option>{{end}}</datalist>
+      <p class="small muted">{{.T "For the software library enter the number of the package (the list offers them); for winget and Chocolatey the package ID. Empty rows are ignored; clear a row to remove it."}}</p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2><label class="check"><input type="checkbox" name="alerts_set" value="1" {{if $s.Alerts}}checked{{end}} data-part="pol-alerts">{{template "icon" "alert"}}{{.T "Alert rules"}}</label></h2>
+    <div id="pol-alerts" class="policy-part">
+      {{$m := .Data.Alerts}}
+      <div class="cols">
+        <label>{{.T "CPU load above (%)"}}<input type="number" name="cpu_percent" value="{{$m.CPUPercent}}" min="50" max="100"></label>
+        <label>{{.T "for (minutes)"}}<input type="number" name="cpu_minutes" value="{{$m.CPUMinutes}}" min="2" max="240"></label>
+        <label>{{.T "Memory use above (%)"}}<input type="number" name="mem_percent" value="{{$m.MemPercent}}" min="50" max="100"></label>
+        <label>{{.T "for (minutes)"}}<input type="number" name="mem_minutes" value="{{$m.MemMinutes}}" min="2" max="240"></label>
+        <label>{{.T "Disk used above (%)"}}<input type="number" name="disk_percent" value="{{$m.DiskPercent}}" min="50" max="100"></label>
+        <label>{{.T "or less free than (GB, disks larger than twice this)"}}<input type="number" name="disk_min_free_gb" value="{{$m.DiskMinFreeGB}}" min="0" max="10000"></label>
+        <label>{{.T "Offline longer than (minutes)"}}<input type="number" name="offline_minutes" value="{{$m.OfflineMinutes}}" min="3" max="10080"></label>
+        <label>{{.T "Restart pending and up longer than (days)"}}<input type="number" name="reboot_days" value="{{$m.RebootDays}}" min="0" max="365"></label>
+      </div>
+      <label class="check"><input type="checkbox" name="defender_off" value="1" {{if $m.DefenderOff}}checked{{end}}>{{.T "Alert when Microsoft Defender antivirus or real-time protection is off"}}</label>
+      <label class="check"><input type="checkbox" name="firewall_off" value="1" {{if $m.FirewallOff}}checked{{end}}>{{.T "Alert when a Windows Firewall profile is off"}}</label>
+      <label>{{.T "Services that must run"}} <small>{{.T "optional"}}</small><textarea name="watch_services" rows="3" spellcheck="false" placeholder="Spooler&#10;MSSQLSERVER">{{.Data.Services}}</textarea></label>
+      <p class="small muted">{{.T "Alert emails and chat channels stay those of Settings → Monitoring and alerts."}}</p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2><label class="check"><input type="checkbox" name="automations_set" value="1" {{if $s.Automations}}checked{{end}} data-part="pol-auto">{{template "icon" "clock"}}{{.T "Automations"}}</label></h2>
+    <div id="pol-auto" class="policy-part">
+      <p class="small muted">{{.T "Library scripts that run on the devices of this policy on the chosen days and time (server time). Offline devices run them when they connect, within 24 hours."}}</p>
+      {{range $i, $a := .Data.Runs}}
+      <fieldset class="box">
+        <div class="row">
+          <label>{{$.T "Script"}}<select name="auto_script"><option value="">—</option>{{range $.Data.Scripts}}<option value="{{.ID}}" {{if eq .ID $a.ScriptID}}selected{{end}}>{{.Name}}</option>{{end}}</select></label>
+          <label>{{$.T "Time"}}<input type="time" name="auto_time" value="{{$a.Time}}"></label>
+        </div>
+        <div class="checks">{{range $.Data.Days}}<label class="check"><input type="checkbox" name="auto_day_{{$i}}" value="{{.}}" {{if containsDay $a.Days .}}checked{{end}}>{{$.T (weekday .)}}</label>{{end}}</div>
+      </fieldset>
+      {{end}}
+      {{if not .Data.Scripts}}<p class="small muted">{{.T "The script library is empty."}} <a href="/scripts/new">{{.T "New script"}}</a></p>{{end}}
+    </div>
+  </section>
+  <div><button class="primary">{{.T "Save"}}</button></div>
+</form>
+
+{{if $p.ID}}
+<section class="panel">
+  <h2>{{template "icon" "customers"}}{{.T "Assigned to"}}</h2>
+  {{if .Data.Assigned}}
+  <div class="table-wrap"><table>
+    <tbody>{{range .Data.Assigned}}<tr>
+      <td><span class="badge"><i></i>{{if eq .TargetType "customer"}}{{$.T "Customer"}}{{else if eq .TargetType "site"}}{{$.T "Site"}}{{else}}{{$.T "Device"}}{{end}}</span></td>
+      <td>{{if eq .TargetType "customer"}}<a href="/customers/{{.TargetID}}">{{.Name}}</a>{{else if eq .TargetType "site"}}<a href="/sites/{{.TargetID}}">{{.Name}}</a>{{else}}<a href="/devices/{{.TargetID}}/policy">{{.Name}}</a>{{end}}</td>
+      <td class="small muted hide-sm">{{$.Time .AssignedAt}} · {{.AssignedBy}}</td>
+      <td class="nowrap actions"><form method="post" action="/policies/{{$p.ID}}/unassign" class="inline"><input type="hidden" name="target" value="{{.TargetType}}:{{.TargetID}}"><button class="ghost sm">{{$.T "Remove"}}</button></form></td>
+    </tr>{{end}}</tbody>
+  </table></div>
+  {{else}}<p class="muted">{{.T "This policy is not assigned yet."}}</p>{{end}}
+  <form method="post" action="/policies/{{$p.ID}}/assign" class="row mt">
+    <select name="target" required aria-label="{{.T "Assign to"}}">
+      <option value="">{{.T "Assign to…"}}</option>
+      <optgroup label="{{.T "Customers"}}">{{range .Data.Customers}}<option value="customer:{{.ID}}">{{.Name}}</option>{{end}}</optgroup>
+      <optgroup label="{{.T "Sites"}}">{{range .Data.Sites}}<option value="site:{{.ID}}">{{.Customer}} / {{.Name}}</option>{{end}}</optgroup>
+      <optgroup label="{{.T "Devices"}}">{{range .Data.Devices}}<option value="device:{{.ID}}">{{.Hostname}} ({{.Customer}})</option>{{end}}</optgroup>
+    </select>
+    <button class="secondary">{{.T "Assign"}}</button>
+  </form>
+  <p class="small muted mt">{{.T "A customer, site or device has one policy; assigning this one replaces the one it had."}}</p>
+</section>
+<form method="post" action="/policies/{{$p.ID}}/delete" data-confirm="{{.T "Delete policy %s? Its customers, sites and devices fall back to less specific policies or the server's settings." $p.Name}}">
+  <button class="danger">{{template "icon" "trash"}}{{.T "Delete"}}</button>
+</form>
+{{end}}
+{{end}}

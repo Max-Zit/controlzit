@@ -1,0 +1,27 @@
+<h1>Zásady</h1>
+<p class="lead">Zásada nastavuje Windows Update, požadovaný software, pravidla upozornění a automatizace pro zákazníky, lokality nebo zařízení, kterým je přiřazena, aby se všechny počítače kanceláře nebo zákazníka spravovaly stejně.</p>
+
+<h2 id="parts">Části zásady</h2>
+<ul>
+  <li><b>Windows Update</b> — co se instaluje automaticky, ve které dny a v kolik hodin, a zda se počítač restartuje, když to aktualizace vyžaduje.</li>
+  <li><b>Požadovaný software</b> — programy, které musí mít každé zařízení s Windows této zásady; chybějící nainstaluje server.</li>
+  <li><b>Pravidla upozornění</b> — prahy pro procesor, paměť, disky, zařízení offline a čekající restarty, Defender a bránu firewall a služby, které musí běžet.</li>
+  <li><b>Automatizace</b> — skripty z knihovny, které běží na zařízeních zásady ve stanovené dny ve stanovený čas.</li>
+</ul>
+<p>Každá část se v zásadě zapíná nebo vypíná. Vypnutou část tato zásada nenastavuje: pochází z méně konkrétní zásady nebo z nastavení serveru (<a href="/settings/updates">Aktualizace Windows</a>, <a href="/settings/monitoring">Monitorování a upozornění</a>).</p>
+
+<h2 id="assign">Přiřazení zásady</h2>
+<p>Zásady se vytvářejí v <a href="/policies">Zásady</a> (správci). Na stránce zásady ji <b>Přiřadit k</b> přiřadí zákazníkovi, lokalitě nebo jednomu zařízení; karta <b>Zásada</b> zařízení nastavuje vlastní zásadu zařízení. Zákazník, lokalita nebo zařízení má jednu zásadu; přiřazení jiné ji nahradí.</p>
+<p>Pro každou část platí nejkonkrétnější přiřazení, které ji nastavuje: zásada zařízení, pak lokality, pak zákazníka a nakonec nastavení serveru. Příklad: zásada zákazníka nastavuje Windows Update a požadovaný software, zásada jedné lokality jen přísnější pravidla upozornění — zařízení této lokality dostanou aktualizace a software zákazníka a pravidla upozornění lokality.</p>
+
+<h2 id="software">Požadovaný software</h2>
+<p>Každý požadovaný program má zdroj — <a href="/software">knihovnu softwaru</a>, winget nebo Chocolatey — a text, který obsahuje jeho název v seznamu nainstalovaných programů Windows (například <i>7-Zip</i>). Každých pár minut server porovná požadované programy s inventářem každého zařízení s Windows, které je online; chybějící program se nainstaluje jako úloha, kterou uvidíte v <a href="/docs/devices#activity">Aktivitě</a> zařízení. Po instalaci zařízení pošle nový inventář. Pokud program stále chybí, server to zkusí znovu po 6 hodinách. Dokud zařízení nepošle první inventář, nic se neinstaluje.</p>
+
+<h2 id="alerts">Pravidla upozornění</h2>
+<p>Prahy zásady nahrazují pro její zařízení prahy serveru. E-maily a chatové kanály upozornění zůstávají ty z <a href="/settings/monitoring">Monitorování a upozornění</a>.</p>
+
+<h2 id="automations">Automatizace</h2>
+<p>Automatizace spustí skript z <a href="/scripts">knihovny skriptů</a> ve zvolené dny a čas (čas serveru) jako jednu úlohu pro všechna zařízení, jejichž automatizace pocházejí z této zásady. Zařízení offline ho spustí po připojení, do 24 hodin; výsledky jsou na stránce úlohy a v Aktivitě každého zařízení.</p>
+
+<h2 id="device">Co platí pro zařízení</h2>
+<p>Karta <b>Zásada</b> zařízení ukazuje pro každou část, která zásada ji nastavuje (a zda je přiřazena zařízení, jeho lokalitě nebo zákazníkovi), nebo že platí nastavení serveru, stav každého požadovaného programu (nainstalován, chybí, kdy byla spuštěna instalace), platná nastavení Windows Update a upozornění a automatizace.</p>

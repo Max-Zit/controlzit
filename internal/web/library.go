@@ -97,6 +97,7 @@ func (s *Server) runJob(jr store.JobRun) {
 			runID = &run.ID
 			if ok {
 				status = "done"
+				s.requestInventory(ctx, d.ID) // the installed programs changed
 			}
 			result := run.Error
 			if result == "" {

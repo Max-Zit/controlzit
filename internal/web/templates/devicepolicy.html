@@ -1,0 +1,61 @@
+{{template "app" .}}
+{{define "content"}}
+{{$d := .Data.D}}
+<p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a> / <a href="/devices/{{$d.ID}}">{{$d.Hostname}}</a></p>
+<h1>{{template "icon" "policy"}}{{.T "Policy"}} <span class="muted h1-sub">{{$d.Hostname}}</span></h1>
+{{template "devtabs" (devtabs . $d "policy")}}
+
+<section class="panel">
+  <h2>{{.T "Where the settings come from"}}</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{.T "Part"}}</th><th>{{.T "From"}}</th></tr></thead>
+    <tbody>{{range .Data.Parts}}<tr>
+      <td>{{$.T .Name}}</td>
+      <td>{{with .Source}}{{if $.User.IsAdmin}}<a href="/policies/{{.Policy.ID}}">{{.Policy.Name}}</a>{{else}}{{.Policy.Name}}{{end}} <span class="small muted">({{if eq .Level "device"}}{{$.T "assigned to the device"}}{{else if eq .Level "site"}}{{$.T "assigned to the site"}}{{else}}{{$.T "assigned to the customer"}}{{end}})</span>{{else}}<span class="muted">{{$.T "server settings"}}</span>{{end}}</td>
+    </tr>{{end}}</tbody>
+  </table></div>
+  {{if .User.IsAdmin}}
+  <form method="post" action="/devices/{{$d.ID}}/policy" class="row mt">
+    <label>{{.T "Policy of this device"}}<select name="policy">
+      <option value="0">{{.T "none (site or customer policy)"}}</option>
+      {{range .Data.Policies}}<option value="{{.ID}}" {{if $.Data.Assigned}}{{if eq .ID $.Data.Assigned.Policy.ID}}selected{{end}}{{end}}>{{.Name}}</option>{{end}}
+    </select></label>
+    <button class="secondary">{{.T "Save"}}</button>
+  </form>
+  {{end}}
+</section>
+
+<section class="panel">
+  <h2>{{template "icon" "package"}}{{.T "Required software"}}</h2>
+  {{if .Data.Required}}
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{.T "Program"}}</th><th>{{.T "Source"}}</th><th>{{.T "Status"}}</th></tr></thead>
+    <tbody>{{range .Data.Required}}<tr>
+      <td><b>{{.Name}}</b><br><span class="small muted">{{$.T "Installed name contains"}} „{{.App.Match}}“</span></td>
+      <td class="small">{{if eq .App.Source "library"}}{{$.T "Software library"}}{{else if eq .App.Source "choco"}}Chocolatey{{else}}winget{{end}}</td>
+      <td>{{if .Installed}}<span class="badge ok"><i></i>{{$.T "installed"}}</span>{{else}}<span class="badge warn"><i></i>{{$.T "missing"}}</span>{{if not .Tried.IsZero}} <span class="small muted">{{$.T "installation started %s" ($.Ago .Tried)}}</span>{{end}}{{end}}</td>
+    </tr>{{end}}</tbody>
+  </table></div>
+  <p class="small muted mt">{{.T "The list of installed programs comes from the device's inventory; after an installation the device sends a new one."}}</p>
+  {{else}}<p class="muted">{{.T "No program is required for this device."}}</p>{{end}}
+</section>
+
+<section class="panel">
+  <h2>{{template "icon" "download"}}{{.T "Windows Update"}}</h2>
+  {{$u := .Data.Updates}}
+  <p>{{if eq $u.Mode "off"}}{{.T "Off: updates are installed only from the console"}}{{else if eq $u.Mode "security"}}{{.T "Security and critical updates, Defender definitions"}}{{else}}{{.T "All updates except feature upgrades"}}{{end}}{{if ne $u.Mode "off"}} · {{range $i, $x := $u.Days}}{{if $i}}, {{end}}{{$.T (weekday $x)}}{{end}} {{printf "%02d:00" $u.Hour}}{{if $u.Reboot}} · {{.T "restart when needed"}}{{end}}{{end}}</p>
+</section>
+
+<section class="panel">
+  <h2>{{template "icon" "alert"}}{{.T "Alert rules"}}</h2>
+  {{$m := .Data.Alerts}}
+  <p class="small">{{.T "CPU load above (%)"}} {{$m.CPUPercent}} · {{.T "Memory use above (%)"}} {{$m.MemPercent}} · {{.T "Disk used above (%)"}} {{$m.DiskPercent}} · {{.T "Offline longer than (minutes)"}} {{$m.OfflineMinutes}}{{if $m.WatchServices}} · {{.T "Services that must run"}}: {{join $m.WatchServices ", "}}{{end}}</p>
+</section>
+
+<section class="panel">
+  <h2>{{template "icon" "clock"}}{{.T "Automations"}}</h2>
+  {{if .Data.Runs}}
+  <ul>{{range .Data.Runs}}<li>{{index $.Data.ScriptNames .ScriptID}} · {{range $i, $x := .Days}}{{if $i}}, {{end}}{{$.T (weekday $x)}}{{end}} {{.Time}}</li>{{end}}</ul>
+  {{else}}<p class="muted">{{.T "No automations for this device."}}</p>{{end}}
+</section>
+{{end}}

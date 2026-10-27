@@ -206,6 +206,9 @@ func (s *Store) SaveInventory(ctx context.Context, id int64, inv *proto.Inventor
 // DeleteDevice removes a device; its agent can no longer connect.
 func (s *Store) DeleteDevice(ctx context.Context, id int64) error {
 	tag, err := s.db.Exec(ctx, `DELETE FROM devices WHERE id=$1`, id)
+	if err == nil {
+		_, err = s.db.Exec(ctx, `DELETE FROM policy_assignments WHERE target_type='device' AND target_id=$1`, id)
+	}
 	if err == nil && tag.RowsAffected() == 0 {
 		return ErrNotFound
 	}

@@ -131,6 +131,8 @@ check "agent runs the installer version" '$C $S/settings/agents | grep -q "All a
 check "System event log readable" '$C "$S/devices/$DEV/events?log=System&level=0&hours=720" | grep -q "events, newest first"'
 check "installed programs listed from the registry" '$C "$S/devices/$DEV/software?view=list" | grep -q "name=\"name\" value=\"ControlZit Agent\""'
 check "software library page with the Chocolatey setting" '$C "$S/software" | grep -q "name=\"chocolatey\""'
+check "policies page" '$C "$S/policies" | grep -q "/policies/new"'
+check "device policy tab" '$C "$S/devices/$DEV/policy" | grep -q "Where the settings come from"'
 
 # --- Windows updates
 check "device reports Windows updates" '$C $S/devices/$DEV/updates | grep -q "Searched"'

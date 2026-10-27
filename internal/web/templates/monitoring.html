@@ -8,6 +8,7 @@
 <form method="post" action="/settings/monitoring" class="stack wide">
   <section class="panel">
     <h2>{{template "icon" "online"}}{{.T "Alert rules"}}</h2>
+    <p class="small muted"><a href="/policies">{{.T "Policies"}}</a>: {{.T "these settings apply to devices whose policies do not set this part."}}</p>
     <p class="muted">{{.T "The server checks every device once a minute. An alert opens while its condition holds and closes by itself when it is gone."}}</p>
     <div class="cols">
       <label>{{.T "CPU load above (%)"}}<input type="number" name="cpu_percent" value="{{$m.CPUPercent}}" min="50" max="100" required></label>
