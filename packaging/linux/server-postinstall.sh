@@ -38,7 +38,18 @@ if [ -f /var/lib/controlzit/.appliance ]; then
     systemctl enable controlzit-appliance-boot.service >/dev/null 2>&1 || true
     if [ -d /etc/ssh/sshd_config.d ]; then
         install -m 0644 $a/sshd-controlzit.conf /etc/ssh/sshd_config.d/50-controlzit.conf
-        sshd -t 2>/dev/null && { systemctl reload ssh 2>/dev/null || true; } || rm -f /etc/ssh/sshd_config.d/50-controlzit.conf
+        # Inside the installer (no host keys yet) sshd -t fails anyway: take
+        # the file out only when it is what makes the check fail.
+        if sshd -t 2>/dev/null; then
+            systemctl reload ssh 2>/dev/null || true
+        else
+            mv /etc/ssh/sshd_config.d/50-controlzit.conf /etc/ssh/50-controlzit.conf.off
+            if sshd -t 2>/dev/null; then
+                rm -f /etc/ssh/50-controlzit.conf.off
+            else
+                mv /etc/ssh/50-controlzit.conf.off /etc/ssh/sshd_config.d/50-controlzit.conf
+            fi
+        fi
     fi
     [ -f /var/lib/controlzit/.appliance-ready ] && /usr/local/sbin/controlzit-appliance-boot issue >/dev/null 2>&1 || true
 fi
