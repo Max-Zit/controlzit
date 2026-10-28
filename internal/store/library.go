@@ -238,17 +238,19 @@ type JobRun struct {
 }
 
 // ClaimJobRuns marks the next pending job of each given device as running
-// (one at a time per device) and returns them.
-func (s *Store) ClaimJobRuns(ctx context.Context, devices []int64) ([]JobRun, error) {
+// (one at a time per device, at most limit runs, older jobs first) and
+// returns them. Runs not claimed stay pending ("waiting").
+func (s *Store) ClaimJobRuns(ctx context.Context, devices []int64, limit int) ([]JobRun, error) {
 	now := s.now()
-	rows, err := s.db.Query(ctx, `WITH c AS (
+	rows, err := s.db.Query(ctx, `WITH n AS (
 		SELECT DISTINCT ON (jd.device_id) jd.job_id, jd.device_id FROM script_job_devices jd JOIN script_jobs j ON j.id=jd.job_id
 		WHERE jd.status='pending' AND j.expires_at > $2 AND jd.device_id = ANY($1)
 		  AND NOT EXISTS (SELECT 1 FROM script_job_devices r WHERE r.device_id=jd.device_id AND r.status='running')
-		ORDER BY jd.device_id, jd.job_id)
+		ORDER BY jd.device_id, jd.job_id),
+		c AS (SELECT job_id, device_id FROM n ORDER BY job_id, device_id LIMIT $3)
 		UPDATE script_job_devices x SET status='running', updated_at=$2 FROM c, script_jobs j
 		WHERE x.job_id=c.job_id AND x.device_id=c.device_id AND x.status='pending' AND j.id=x.job_id
-		RETURNING x.job_id, x.device_id, j.name, j.shell, j.body, j.timeout, j.created_by`, devices, now)
+		RETURNING x.job_id, x.device_id, j.name, j.shell, j.body, j.timeout, j.created_by`, devices, now, limit)
 	if err != nil {
 		return nil, err
 	}

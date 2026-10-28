@@ -41,3 +41,12 @@
 
 <h2 id="fields">Campos personalizados</h2>
 <p>Em <a href="/settings/fields">Configurações → Campos personalizados</a> os administradores adicionam seus próprios campos para dispositivos e clientes — texto, número ou data —, por exemplo um número de patrimônio, o fim da garantia ou um contrato. Os técnicos os preenchem nas páginas de dispositivos e clientes; a API retorna os campos com cada dispositivo e os define com <code>PUT /api/v1/devices/{id}/fields</code>.</p>
+
+<h2 id="backup">Backup da consola</h2>
+<p><a href="/settings/backup">Definições → Backup da consola</a> faz o backup da consola todos os dias à hora escolhida, ou de imediato com <b>Fazer backup agora</b>. Um backup contém a base de dados, a chave secreta das palavras-passe guardadas, os certificados e chaves em que os agentes confiam e a biblioteca de software. Os backups mais recentes (tantos quantos escolher) ficam na pasta <code>backups</code> do diretório de dados e podem ser transferidos a partir da página.</p>
+<p>Com uma <b>frase-passe</b> os ficheiros são cifrados (AES-256-GCM); guarde-a noutro local, porque sem ela não é possível restaurar um backup. Uma cópia de cada backup pode ir para uma <b>pasta SFTP</b> noutro servidor (palavra-passe ou chave privada). O primeiro teste da ligação mostra a chave de anfitrião do servidor para confiar; as cópias só vão para um servidor com essa chave. Se um backup ou a sua cópia falhar, os destinatários dos e-mails de alerta recebem um e-mail.</p>
+<p>Um <b>restauro</b> corre com o servidor parado: no appliance no menu de configuração (<b>Restore a backup</b>), com os pacotes Linux:</p>
+<pre>sudo systemctl stop controlzit-server
+sudo -u controlzit sh -c 'set -a; . /etc/controlzit/server.env; controlzit-server -data-dir /var/lib/controlzit -restore /path/controlzit-backup-….czb'
+sudo systemctl start controlzit-server</pre>
+<p>A frase-passe de um backup cifrado é lida de <code>CONTROLZIT_BACKUP_PASSPHRASE</code> ou de um ficheiro indicado com <code>-restore-passphrase-file</code>. A base de dados é restaurada num só passo (se falhar, nada muda); uma versão mais recente do ControlZit atualiza a base restaurada ao arrancar. Um novo servidor restaurado a partir de um backup mantém todos os agentes, porque confiam no mesmo certificado.</p>

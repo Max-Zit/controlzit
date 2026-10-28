@@ -13,6 +13,7 @@
   <tr><td>Microsoft Defender desactivado</td><td>el antivirus o su protección en tiempo real está desactivado (opcional)</td></tr>
   <tr><td>Cortafuegos desactivado</td><td>un perfil del Firewall de Windows está desactivado (opcional)</td></tr>
   <tr><td>Servicio detenido</td><td>un servicio de su lista (nombres de servicio, no nombres para mostrar) está en inicio automático pero no se ejecuta</td></tr>
+  <tr><td>Disco lleno pronto</td><td>según el crecimiento del espacio usado en los últimos 14 días, un disco se llenará dentro de los días indicados (0 = desactivado)</td></tr>
 </table>
 <p>Las alertas son <b>Advertencia</b> o <b>Crítica</b> (crítica: dispositivos sin conexión, servicios detenidos, Defender desactivado y discos con menos de 1 GB libre o 98 % usado). <a href="/alerts">Alertas</a> muestra las abiertas (y, si lo desea, las resueltas); un técnico puede <b>confirmar</b> una alerta para que otros vean que alguien se ocupa. El número de alertas abiertas aparece en el menú.</p>
 
@@ -40,3 +41,7 @@
 
 <h2 id="metrics">Valores actuales</h2>
 <p>La página del dispositivo muestra la carga de CPU actual, la memoria y los discos, y los servicios automáticos que no se ejecutan.</p>
+
+<h2 id="history">Historial y previsión de discos</h2>
+<p>La pestaña <b>History</b> de un dispositivo dibuja la carga de CPU, la memoria, el tráfico de red (agentes 0.11 y posteriores) y el espacio usado de cada disco durante 24 horas, 7, 30 o 90 días. Los valores por minuto se guardan 7 días y los resúmenes por hora 90 días.</p>
+<p>Con el espacio en disco por hora, el servidor calcula cuándo se llenará cada disco si sigue creciendo como en los últimos 14 días. Un disco que se llenará en 90 días aparece en la página del dispositivo; la regla de alerta <b>Disco lleno pronto</b> abre una alerta dentro de los días fijados en la directiva (14 en las directivas nuevas; crítica en 3 días o menos).</p>

@@ -41,3 +41,12 @@
 
 <h2 id="fields">Pola własne</h2>
 <p>W <a href="/settings/fields">Ustawienia → Pola własne</a> administratorzy dodają własne pola dla urządzeń i klientów — tekst, liczbę lub datę — na przykład numer inwentarzowy, koniec gwarancji lub umowę. Technicy wypełniają je na stronach urządzeń i klientów; API zwraca pola z każdym urządzeniem i ustawia je przez <code>PUT /api/v1/devices/{id}/fields</code>.</p>
+
+<h2 id="backup">Kopia konsoli</h2>
+<p><a href="/settings/backup">Ustawienia → Kopia konsoli</a> tworzy kopię konsoli codziennie o wybranej godzinie albo od razu przyciskiem <b>Utwórz kopię teraz</b>. Kopia zawiera bazę danych, tajny klucz zapisanych haseł, certyfikaty i klucze, którym ufają agenci, oraz bibliotekę oprogramowania. Najnowsze kopie (tyle, ile wybierzesz) zostają w folderze <code>backups</code> katalogu danych i można je pobrać ze strony.</p>
+<p>Z <b>hasłem</b> pliki są szyfrowane (AES-256-GCM); przechowuj hasło w innym miejscu, bo bez niego kopii nie da się przywrócić. Kopia każdej kopii zapasowej może trafić do <b>folderu SFTP</b> na innym serwerze (hasło lub klucz prywatny). Pierwszy test połączenia pokazuje klucz hosta serwera do zaufania; kopie trafiają tylko na serwer z tym kluczem. Gdy kopia lub jej przesłanie się nie powiedzie, odbiorcy e-maili z alertami dostają e-mail.</p>
+<p><b>Przywracanie</b> odbywa się przy zatrzymanym serwerze: na appliance w menu konfiguracji (<b>Restore a backup</b>), z pakietami Linux:</p>
+<pre>sudo systemctl stop controlzit-server
+sudo -u controlzit sh -c 'set -a; . /etc/controlzit/server.env; controlzit-server -data-dir /var/lib/controlzit -restore /path/controlzit-backup-….czb'
+sudo systemctl start controlzit-server</pre>
+<p>Hasło zaszyfrowanej kopii jest odczytywane z <code>CONTROLZIT_BACKUP_PASSPHRASE</code> lub z pliku podanego przez <code>-restore-passphrase-file</code>. Baza danych jest przywracana w jednym kroku (gdy się to nie uda, nic się nie zmienia); nowsza wersja ControlZit aktualizuje przywróconą bazę przy starcie. Nowy serwer przywrócony z kopii zachowuje wszystkich agentów, bo ufają temu samemu certyfikatowi.</p>

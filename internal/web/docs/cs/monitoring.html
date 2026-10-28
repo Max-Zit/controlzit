@@ -13,6 +13,7 @@
   <tr><td>Microsoft Defender vypnutý</td><td>je antivirus nebo jeho ochrana v reálném čase vypnutá (volitelné)</td></tr>
   <tr><td>Firewall vypnutý</td><td>je některý profil brány Windows Firewall vypnutý (volitelné)</td></tr>
   <tr><td>Služba zastavena</td><td>služba z vašeho seznamu (názvy služeb, ne zobrazované názvy) má nastaveno automatické spuštění, ale neběží</td></tr>
+  <tr><td>Disk brzy plný</td><td>podle růstu využitého místa za posledních 14 dní bude disk plný do zadaného počtu dní (0 = vypnuto)</td></tr>
 </table>
 <p>Upozornění jsou <b>Varování</b> nebo <b>Kritické</b> (kritické: zařízení offline, zastavené služby, vypnutý Defender a disky s méně než 1 GB volného místa nebo zaplněné na 98 %). <a href="/alerts">Upozornění</a> ukazují otevřená (a případně vyřešená); technik může upozornění <b>potvrdit</b>, aby ostatní viděli, že se jím někdo zabývá. Počet otevřených upozornění je vidět v nabídce.</p>
 
@@ -40,3 +41,7 @@
 
 <h2 id="metrics">Aktuální hodnoty</h2>
 <p>Stránka zařízení ukazuje aktuální zatížení CPU, paměť a disky a automatické služby, které neběží.</p>
+
+<h2 id="history">Historie a předpověď disků</h2>
+<p>Karta <b>History</b> zařízení kreslí zátěž CPU, paměť, síťový provoz (agenti 0.11 a novější) a využité místo každého disku za 24 hodin, 7, 30 nebo 90 dní. Minutové hodnoty se uchovávají 7 dní, hodinové souhrny 90 dní.</p>
+<p>Z hodinových údajů o místě na disku server spočítá, kdy bude každý disk plný, pokud bude dál růst jako za posledních 14 dní. Disk, který bude plný do 90 dní, se zobrazí na stránce zařízení; pravidlo upozornění <b>Disk brzy plný</b> otevře upozornění v počtu dní nastaveném v zásadě (14 u nových zásad; kritické do 3 dní).</p>

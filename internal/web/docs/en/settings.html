@@ -41,3 +41,12 @@
 
 <h2 id="fields">Custom fields</h2>
 <p>Under <a href="/settings/fields">Settings → Custom fields</a> administrators add their own fields for devices and customers — text, number or date — for example an asset number, the end of the warranty or a contract. Technicians fill them in on the device and customer pages; the API returns the device fields with each device and sets them with <code>PUT /api/v1/devices/{id}/fields</code>.</p>
+
+<h2 id="backup">Console backup</h2>
+<p><a href="/settings/backup">Settings → Console backup</a> backs up the console every day at the chosen hour, or at once with <b>Back up now</b>. A backup holds the database, the secret key of the stored passwords, the certificates and keys the agents trust, and the software library. The newest backups (as many as you choose) stay in the folder <code>backups</code> of the data directory and can be downloaded from the page.</p>
+<p>With a <b>passphrase</b> the files are encrypted (AES-256-GCM); keep the passphrase elsewhere, because without it a backup cannot be restored. A copy of each backup can go to an <b>SFTP folder</b> on another server (password or private key). The first test of the connection shows the server's host key to trust; copies go only to a server with that key. When a backup or its copy fails, the alert email recipients get an email.</p>
+<p>A <b>restore</b> runs with the server stopped: on the appliance in the setup menu (<b>Restore a backup</b>), with the Linux packages:</p>
+<pre>sudo systemctl stop controlzit-server
+sudo -u controlzit sh -c 'set -a; . /etc/controlzit/server.env; controlzit-server -data-dir /var/lib/controlzit -restore /path/controlzit-backup-….czb'
+sudo systemctl start controlzit-server</pre>
+<p>The passphrase of an encrypted backup is read from <code>CONTROLZIT_BACKUP_PASSPHRASE</code> or from a file given with <code>-restore-passphrase-file</code>. The database is restored in one step (nothing changes if that fails); a newer ControlZit updates the restored database when it starts. A new server restored from a backup keeps all agents, because they trust the same certificate.</p>

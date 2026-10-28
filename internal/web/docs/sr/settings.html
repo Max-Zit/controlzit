@@ -41,3 +41,12 @@
 
 <h2 id="fields">Prilagođena polja</h2>
 <p>U <a href="/settings/fields">Podešavanja → Prilagođena polja</a> administratori dodaju svoja polja za uređaje i klijente — tekst, broj ili datum — na primer inventarski broj, kraj garancije ili ugovor. Tehničari ih popunjavaju na stranicama uređaja i klijenata; API vraća polja uređaja uz svaki uređaj i menja ih sa <code>PUT /api/v1/devices/{id}/fields</code>.</p>
+
+<h2 id="backup">Rezervna kopija konzole</h2>
+<p><a href="/settings/backup">Podešavanja → Console backup</a> pravi rezervnu kopiju konzole svakog dana u izabrano vreme, ili odmah dugmetom <b>Back up now</b>. Kopija sadrži bazu, tajni ključ sačuvanih lozinki, sertifikate i ključeve kojima agenti veruju i biblioteku softvera. Najnovije kopije (onoliko koliko izaberete) ostaju u folderu <code>backups</code> direktorijuma podataka i mogu se preuzeti sa stranice.</p>
+<p>Sa <b>lozinkom</b> (passphrase) fajlovi su šifrovani (AES-256-GCM); čuvajte lozinku negde drugde, jer bez nje kopija ne može da se vrati. Kopija svake rezervne kopije može da ide u <b>SFTP folder</b> na drugom serveru (lozinka ili privatni ključ). Prvi test veze prikazuje ključ hosta servera kome treba verovati; kopije idu samo na server sa tim ključem. Kada kopija ili njeno kopiranje ne uspe, primaoci mejlova za uzbune dobijaju mejl.</p>
+<p><b>Vraćanje</b> se radi dok je server zaustavljen: na appliance-u u meniju za podešavanje (<b>Restore a backup</b>), sa Linux paketima:</p>
+<pre>sudo systemctl stop controlzit-server
+sudo -u controlzit sh -c 'set -a; . /etc/controlzit/server.env; controlzit-server -data-dir /var/lib/controlzit -restore /path/controlzit-backup-….czb'
+sudo systemctl start controlzit-server</pre>
+<p>Lozinka šifrovane kopije čita se iz <code>CONTROLZIT_BACKUP_PASSPHRASE</code> ili iz fajla zadatog sa <code>-restore-passphrase-file</code>. Baza se vraća u jednom koraku (ništa se ne menja ako to ne uspe); novija verzija ControlZit-a ažurira vraćenu bazu pri pokretanju. Novi server vraćen iz kopije zadržava sve agente, jer oni veruju istom sertifikatu.</p>

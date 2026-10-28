@@ -24,7 +24,33 @@ const (
 	inventoryHours   = 12
 	// An agent that sent nothing for this long is dropped.
 	agentReadTimeout = 3 * heartbeatSeconds * time.Second
+	// The server pings each agent this often; a channel whose pong does not
+	// come within pingTimeout is closed, so a lost agent shows offline in
+	// under a minute instead of after agentReadTimeout.
+	pingEvery   = 30 * time.Second
+	pingTimeout = 15 * time.Second
 )
+
+// keepAlive pings ws until ctx ends and closes it when a pong is missing.
+// The pongs are read by the connection's read loop.
+func keepAlive(ctx context.Context, ws *websocket.Conn) {
+	t := time.NewTicker(pingEvery)
+	defer t.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-t.C:
+		}
+		pctx, cancel := context.WithTimeout(ctx, pingTimeout)
+		err := ws.Ping(pctx)
+		cancel()
+		if err != nil && ctx.Err() == nil {
+			_ = ws.CloseNow()
+			return
+		}
+	}
+}
 
 // hub keeps the open agent channels.
 type hub struct {
@@ -281,6 +307,7 @@ func (s *Server) handleConnect(w http.ResponseWriter, r *http.Request) {
 		_ = ws.CloseNow()
 	}()
 	s.log.Info("agent connected", "device", d.ID, "hostname", d.Hostname, "ip", ip)
+	go keepAlive(ctx, ws)
 	for {
 		rctx, rcancel := context.WithTimeout(ctx, agentReadTimeout)
 		typ, data, err := ws.Read(rctx)
@@ -316,9 +343,14 @@ func (s *Server) agentMessage(ctx context.Context, c *agentConn, d *store.Device
 		if err := send(ctx, c.ws, proto.TypeWelcome, proto.Welcome{DeviceID: d.ID, HeartbeatSeconds: heartbeatSeconds, InventoryHours: inventoryHours, CommandKey: s.commandPub()}); err != nil {
 			return err
 		}
-		go s.autoUpdate(d, h.AgentVersion)       // #nosec G118 -- outlives the agent's message; own timeouts inside
-		go s.DispatchJobs(context.Background())  // #nosec G118 -- background work, not tied to this message
-		go s.DispatchTasks(context.Background()) // #nosec G118 -- background work, not tied to this message
+		go s.autoUpdate(d, h.AgentVersion) // #nosec G118 -- outlives the agent's message; own timeouts inside
+		// Only this device's waiting work: after a server restart hundreds
+		// of agents connect within seconds.
+		go func() { // #nosec G118 -- background work, not tied to this message
+			ids := []int64{d.ID}
+			s.dispatchJobs(context.Background(), ids)
+			s.dispatchTasks(context.Background(), ids)
+		}()
 		return nil
 	case proto.TypeHeartbeat:
 		var hb proto.Heartbeat

@@ -142,7 +142,7 @@ func (s *Server) windowsUpdatesSeen(ctx context.Context, r *proto.PatchReport) m
 // RunAppUpdates starts the program updates of policies that are due (monitor
 // loop, every minute), once a day per device.
 func (s *Server) RunAppUpdates(ctx context.Context) {
-	pr, err := s.loadPolicies(ctx)
+	pr, err := s.cachedPolicies(ctx)
 	if err != nil {
 		return
 	}
@@ -323,7 +323,7 @@ func (n *restartNotices) forget(id int64) {
 // deadline, its user is asked by the tray icon, and at the deadline (in the
 // maintenance window, if the device has one) the server restarts it.
 func (s *Server) RunRestarts(ctx context.Context) {
-	pr, err := s.loadPolicies(ctx)
+	pr, err := s.cachedPolicies(ctx)
 	if err != nil {
 		return
 	}

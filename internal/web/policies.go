@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/max-zit/controlzit/internal/proto"
@@ -72,12 +73,14 @@ type AlertRules struct {
 	WatchServices  []string `json:"watch_services"`
 	DiskHealthOff  bool     `json:"disk_health_off,omitempty"` // no alerts for disk and RAID problems
 	VulnAlerts     bool     `json:"vuln_alerts,omitempty"`     // alert on critical vulnerabilities
+	DiskFullDays   int      `json:"disk_full_days,omitempty"`  // alert when a disk will be full within this many days
 }
 
 func alertRulesOf(m MonitoringSettings) AlertRules {
 	return AlertRules{CPUPercent: m.CPUPercent, CPUMinutes: m.CPUMinutes, MemPercent: m.MemPercent, MemMinutes: m.MemMinutes,
 		DiskPercent: m.DiskPercent, DiskMinFreeGB: m.DiskMinFreeGB, OfflineMinutes: m.OfflineMinutes, RebootDays: m.RebootDays,
-		DefenderOff: m.DefenderOff, FirewallOff: m.FirewallOff, WatchServices: m.WatchServices, DiskHealthOff: m.DiskHealthOff, VulnAlerts: m.VulnAlerts}
+		DefenderOff: m.DefenderOff, FirewallOff: m.FirewallOff, WatchServices: m.WatchServices, DiskHealthOff: m.DiskHealthOff, VulnAlerts: m.VulnAlerts,
+		DiskFullDays: m.DiskFullDays}
 }
 
 // apply puts the thresholds into the server's monitoring settings.
@@ -85,6 +88,7 @@ func (a AlertRules) apply(m MonitoringSettings) MonitoringSettings {
 	m.CPUPercent, m.CPUMinutes, m.MemPercent, m.MemMinutes = a.CPUPercent, a.CPUMinutes, a.MemPercent, a.MemMinutes
 	m.DiskPercent, m.DiskMinFreeGB, m.OfflineMinutes, m.RebootDays = a.DiskPercent, a.DiskMinFreeGB, a.OfflineMinutes, a.RebootDays
 	m.DefenderOff, m.FirewallOff, m.WatchServices, m.DiskHealthOff, m.VulnAlerts = a.DefenderOff, a.FirewallOff, a.WatchServices, a.DiskHealthOff, a.VulnAlerts
+	m.DiskFullDays = a.DiskFullDays
 	return m
 }
 
@@ -195,6 +199,35 @@ type policyLevel struct {
 type policyResolver struct {
 	byTarget map[string]*policyLevel
 	scopes   map[int64]store.DeviceScope
+}
+
+// policyCache keeps the resolver the background loops share; it is loaded
+// again when the store reports a change of policies, assignments or
+// devices, and at the latest after policyCacheFor (device OS changes).
+type policyCache struct {
+	mu      sync.Mutex
+	pr      *policyResolver
+	version uint64
+	at      time.Time
+}
+
+const policyCacheFor = time.Minute
+
+// cachedPolicies is loadPolicies for background work, which asks for the
+// policies many times a minute. Callers must not change the resolver.
+func (s *Server) cachedPolicies(ctx context.Context) (*policyResolver, error) {
+	s.policies.mu.Lock()
+	defer s.policies.mu.Unlock()
+	v := s.store.ScopeVersion()
+	if c := &s.policies; c.pr != nil && c.version == v && time.Since(c.at) < policyCacheFor {
+		return c.pr, nil
+	}
+	pr, err := s.loadPolicies(ctx)
+	if err != nil {
+		return nil, err
+	}
+	s.policies.pr, s.policies.version, s.policies.at = pr, v, time.Now()
+	return pr, nil
 }
 
 func (s *Server) loadPolicies(ctx context.Context) (*policyResolver, error) {
@@ -341,7 +374,7 @@ func requiredKey(deviceID int64, a RequiredApp) string {
 // RunRequiredSoftware installs the required programs that are missing on
 // connected Windows devices (monitor loop, every requiredEvery).
 func (s *Server) RunRequiredSoftware(ctx context.Context) {
-	pr, err := s.loadPolicies(ctx)
+	pr, err := s.cachedPolicies(ctx)
 	if err != nil {
 		s.log.Warn("policies: cannot load", "err", err)
 		return
@@ -412,7 +445,7 @@ func (s *Server) installRequired(ctx context.Context, d *store.Device, a Require
 // (monitor loop, every minute): one job per automation and time slot, for
 // the devices whose automations come from that policy.
 func (s *Server) RunPolicyAutomations(ctx context.Context) {
-	pr, err := s.loadPolicies(ctx)
+	pr, err := s.cachedPolicies(ctx)
 	if err != nil {
 		return
 	}

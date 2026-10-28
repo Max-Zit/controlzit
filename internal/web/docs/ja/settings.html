@@ -41,3 +41,12 @@
 
 <h2 id="fields">カスタム フィールド</h2>
 <p><a href="/settings/fields">設定 → カスタム フィールド</a>で、管理者はデバイスと顧客の独自フィールド (テキスト、数値、日付) を追加します。たとえば資産番号、保証終了日、契約などです。技術者がデバイスと顧客のページで入力し、API は各デバイスとともにフィールドを返し、<code>PUT /api/v1/devices/{id}/fields</code> で設定します。</p>
+
+<h2 id="backup">コンソールのバックアップ</h2>
+<p><a href="/settings/backup">設定 → コンソールのバックアップ</a> は、毎日指定した時刻に、または <b>今すぐバックアップ</b> ですぐにコンソールをバックアップします。バックアップには、データベース、保存されたパスワードの秘密鍵、エージェントが信頼する証明書と鍵、ソフトウェアライブラリが含まれます。最新のバックアップ（指定した数）はデータディレクトリの <code>backups</code> フォルダーに残り、ページからダウンロードできます。</p>
+<p><b>パスフレーズ</b>を設定するとファイルは暗号化されます（AES-256-GCM）。パスフレーズがないとバックアップを復元できないため、別の場所に保管してください。各バックアップのコピーを別のサーバーの <b>SFTP フォルダー</b>に送ることもできます（パスワードまたは秘密鍵）。接続の最初のテストで信頼するサーバーのホスト鍵が表示され、コピーはその鍵を持つサーバーにのみ送られます。バックアップまたはそのコピーに失敗すると、アラートメールの宛先にメールが届きます。</p>
+<p><b>復元</b>はサーバーを停止した状態で実行します。アプライアンスではセットアップメニュー（<b>Restore a backup</b>）、Linux パッケージでは次のとおりです:</p>
+<pre>sudo systemctl stop controlzit-server
+sudo -u controlzit sh -c 'set -a; . /etc/controlzit/server.env; controlzit-server -data-dir /var/lib/controlzit -restore /path/controlzit-backup-….czb'
+sudo systemctl start controlzit-server</pre>
+<p>暗号化されたバックアップのパスフレーズは <code>CONTROLZIT_BACKUP_PASSPHRASE</code> または <code>-restore-passphrase-file</code> で指定したファイルから読み取られます。データベースは 1 回の処理で復元されます（失敗した場合は何も変わりません）。より新しい ControlZit は起動時に復元したデータベースを更新します。バックアップから復元した新しいサーバーは、同じ証明書を信頼するためすべてのエージェントをそのまま引き継ぎます。</p>

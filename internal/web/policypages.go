@@ -306,7 +306,8 @@ func policyForm(r *http.Request) (PolicySettings, string) {
 		ps.Alerts = &AlertRules{CPUPercent: formInt(r, "cpu_percent"), CPUMinutes: formInt(r, "cpu_minutes"), MemPercent: formInt(r, "mem_percent"),
 			MemMinutes: formInt(r, "mem_minutes"), DiskPercent: formInt(r, "disk_percent"), DiskMinFreeGB: formInt(r, "disk_min_free_gb"),
 			OfflineMinutes: formInt(r, "offline_minutes"), RebootDays: formInt(r, "reboot_days"), DefenderOff: r.FormValue("defender_off") == "1",
-			FirewallOff: r.FormValue("firewall_off") == "1", WatchServices: lines(r.FormValue("watch_services")), DiskHealthOff: r.FormValue("disk_health") != "1", VulnAlerts: r.FormValue("vuln_alerts") == "1"}
+			FirewallOff: r.FormValue("firewall_off") == "1", WatchServices: lines(r.FormValue("watch_services")), DiskHealthOff: r.FormValue("disk_health") != "1", VulnAlerts: r.FormValue("vuln_alerts") == "1",
+			DiskFullDays: formInt(r, "disk_full_days")}
 	}
 	if r.FormValue("automations_set") == "1" {
 		au := &AutomationPolicy{Runs: []Automation{}}

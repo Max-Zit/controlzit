@@ -36,34 +36,50 @@ func (h *hub) connectedIDs() []int64 {
 }
 
 type jobRunner struct {
-	once sync.Once
-	sem  chan struct{}
+	mu      sync.Mutex // one claim at a time, so the count stays right
+	running int        // job runs started and not finished
 }
 
 // DispatchJobs starts the pending job runs of connected devices. It is
-// called when a job is created, when an agent connects and every minute.
+// called when a job is created, when a run ends and every minute.
 func (s *Server) DispatchJobs(ctx context.Context) {
-	s.jobs.once.Do(func() { s.jobs.sem = make(chan struct{}, jobParallel) })
 	if err := s.store.ExpireJobs(ctx, false); err != nil {
 		s.log.Warn("jobs: cannot expire", "err", err)
 	}
-	ids := s.hub.connectedIDs()
+	s.dispatchJobs(ctx, s.hub.connectedIDs())
+}
+
+// dispatchJobs claims runs of the given devices, at most as many as there
+// are free slots (jobParallel); the others stay waiting until a slot frees.
+func (s *Server) dispatchJobs(ctx context.Context, ids []int64) {
+	ids = s.onlyConnected(ids)
 	if len(ids) == 0 {
 		return
 	}
-	runs, err := s.store.ClaimJobRuns(ctx, ids)
+	s.jobs.mu.Lock()
+	defer s.jobs.mu.Unlock()
+	free := jobParallel - s.jobs.running
+	if free <= 0 {
+		return
+	}
+	runs, err := s.store.ClaimJobRuns(ctx, ids, free)
 	if err != nil {
 		s.log.Warn("jobs: cannot claim runs", "err", err)
 		return
 	}
+	s.jobs.running += len(runs)
 	for _, jr := range runs {
-		go s.runJob(jr) // #nosec G118 -- a job run outlives the request that started it; own timeout
+		go func() { // #nosec G118 -- a job run outlives the request that started it; own timeout
+			s.runJob(jr)
+			s.jobs.mu.Lock()
+			s.jobs.running--
+			s.jobs.mu.Unlock()
+			s.DispatchJobs(context.Background()) // a slot is free: the next waiting run
+		}()
 	}
 }
 
 func (s *Server) runJob(jr store.JobRun) {
-	s.jobs.sem <- struct{}{}
-	defer func() { <-s.jobs.sem }()
 	base, cancelTask := context.WithCancelCause(context.Background())
 	defer cancelTask(nil)
 	ctx, cancel := context.WithTimeout(base, time.Duration(jr.Timeout)*time.Second+2*actionTimeout)
@@ -144,7 +160,6 @@ func (s *Server) runJob(jr store.JobRun) {
 		}
 		_ = s.store.FinishTask(context.Background(), task.ID, taskStatus, out.Result, out.Args, out.Link)
 	}
-	s.DispatchJobs(context.Background()) // the device's next pending job
 }
 
 // ---- library pages
@@ -515,4 +530,16 @@ func containsInt(list []int, v int) bool {
 		}
 	}
 	return false
+}
+
+// onlyConnected keeps the devices whose agent is connected now: work for
+// the others waits until they connect.
+func (s *Server) onlyConnected(ids []int64) []int64 {
+	out := ids[:0:0]
+	for _, id := range ids {
+		if s.Connected(id) {
+			out = append(out, id)
+		}
+	}
+	return out
 }

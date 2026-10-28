@@ -28,20 +28,23 @@ import (
 
 // Server serves the console and the agent endpoint.
 type Server struct {
-	store   *store.Store
-	pkg     packageCache
-	jobs    jobRunner
-	tasks   taskRunner
-	alerts  sync.Mutex     // one alert check at a time
-	notices restartNotices // restart requests last sent to agents
-	collect collectors     // network checks and disk health in the background
-	vulns   vulnScanner    // one vulnerability scan at a time
-	log     *slog.Logger
-	tmpl    map[string]*template.Template
-	now     func() time.Time
-	guard   *loginGuard
-	hub     *hub
-	rd      rdHub
+	store    *store.Store
+	pkg      packageCache
+	jobs     jobRunner
+	tasks    taskRunner
+	alerts   sync.Mutex     // one alert check at a time
+	notices  restartNotices // restart requests last sent to agents
+	collect  collectors     // network checks and disk health in the background
+	vulns    vulnScanner    // one vulnerability scan at a time
+	policies policyCache    // the policies of the background loops
+	forecast forecasts      // disk-full forecasts of all devices
+	backups  backupRunner   // one console backup at a time
+	log      *slog.Logger
+	tmpl     map[string]*template.Template
+	now      func() time.Time
+	guard    *loginGuard
+	hub      *hub
+	rd       rdHub
 
 	// TaskWait is how long a page waits for a new task (0: taskWait).
 	TaskWait time.Duration
@@ -355,6 +358,7 @@ func (s *Server) Handler() http.Handler {
 	app("POST /devices/{id}/agent-update", s.handleDeviceUpdate)
 	app("GET /devices/{id}/updates", s.handleDevicePatches)
 	app("GET /devices/{id}/events", s.handleEvents)
+	app("GET /devices/{id}/history", s.handleHistory)
 	app("GET /devices/{id}/software", s.handleSoftware)
 	app("POST /devices/{id}/software", s.handleSoftwareAction)
 	app("POST /devices/{id}/updates/scan", s.handlePatchScan)
@@ -454,6 +458,12 @@ func (s *Server) Handler() http.Handler {
 	admin("GET /settings/security", s.handleSecurity)
 	admin("POST /settings/security", s.handleSecuritySave)
 	admin("POST /settings/security/unblock", s.handleUnblock)
+	admin("GET /settings/backup", s.handleBackupSettings)
+	admin("POST /settings/backup", s.handleBackupSave)
+	admin("POST /settings/backup/run", s.handleBackupRun)
+	admin("POST /settings/backup/test", s.handleBackupTest)
+	admin("POST /settings/backup/delete", s.handleBackupDelete)
+	admin("GET /settings/backup/file/{name}", s.handleBackupDownload)
 	admin("GET /settings/reports", s.handleReportSettings)
 	admin("POST /settings/reports", s.handleReportSettingsSave)
 	admin("POST /settings/reports/send", s.handleReportSend)

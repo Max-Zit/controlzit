@@ -10,44 +10,56 @@ import (
 	"github.com/max-zit/controlzit/internal/store"
 )
 
-// RunMonitor checks the alert rules every minute until ctx ends.
+// RunMonitor runs the background work of the server until ctx ends. Each
+// part has its own loop, so a slow one (a mail server that does not answer,
+// a large report) does not hold up the others.
 func (s *Server) RunMonitor(ctx context.Context) {
-	t := time.NewTicker(time.Minute)
-	defer t.Stop()
-	purge := time.Now()
-	var required time.Time
 	if err := s.MigrateCustomerPolicies(ctx); err != nil {
 		s.log.Error("cannot add the Default policies of the customers", "err", err)
 	}
-	for {
-		s.CheckAlerts(ctx)
-		s.RunPatchSchedule(ctx)
-		s.RunSchedules(ctx)
-		s.RunPolicyAutomations(ctx)
-		s.RunAppUpdates(ctx)
-		s.RunRestarts(ctx)
-		s.RunNetChecks(ctx)
-		s.RunDiskHealth(ctx)
-		s.RunVulnScan(ctx)
-		if time.Since(required) >= requiredEvery {
-			required = time.Now()
-			s.RunRequiredSoftware(ctx)
-			s.RunBitLocker(ctx)
-		}
-		s.DispatchTasks(ctx)
-		s.RunReports(ctx)
-		if time.Since(purge) > 6*time.Hour {
-			purge = time.Now()
-			if err := s.store.PurgeSamples(ctx, 7*24*time.Hour); err != nil {
-				s.log.Warn("cannot purge old samples", "err", err)
+	s.every(ctx, "alerts", time.Minute, s.CheckAlerts)
+	s.every(ctx, "patch schedule", time.Minute, s.RunPatchSchedule)
+	s.every(ctx, "script schedules", time.Minute, s.RunSchedules)
+	s.every(ctx, "policy automations", time.Minute, s.RunPolicyAutomations)
+	s.every(ctx, "program updates", time.Minute, s.RunAppUpdates)
+	s.every(ctx, "restarts", time.Minute, s.RunRestarts)
+	s.every(ctx, "network checks", time.Minute, s.RunNetChecks)
+	s.every(ctx, "disk health", time.Minute, s.RunDiskHealth)
+	s.every(ctx, "vulnerability scan", time.Minute, s.RunVulnScan)
+	s.every(ctx, "required software", requiredEvery, func(ctx context.Context) {
+		s.RunRequiredSoftware(ctx)
+		s.RunBitLocker(ctx)
+	})
+	s.every(ctx, "tasks", time.Minute, s.DispatchTasks)
+	s.every(ctx, "reports", time.Minute, s.RunReports)
+	s.every(ctx, "metric history", 10*time.Minute, s.RunMetricHistory)
+	s.every(ctx, "console backup", time.Minute, s.RunBackups)
+	<-ctx.Done()
+}
+
+// every runs fn now and then every interval in its own goroutine until ctx
+// ends; runs of one loop never overlap. A panic is logged and the loop goes
+// on with its next run.
+func (s *Server) every(ctx context.Context, name string, interval time.Duration, fn func(context.Context)) {
+	go func() {
+		t := time.NewTicker(interval)
+		defer t.Stop()
+		for {
+			func() {
+				defer func() {
+					if r := recover(); r != nil {
+						s.log.Error("background work failed", "part", name, "panic", fmt.Sprint(r))
+					}
+				}()
+				fn(ctx)
+			}()
+			select {
+			case <-ctx.Done():
+				return
+			case <-t.C:
 			}
 		}
-		select {
-		case <-ctx.Done():
-			return
-		case <-t.C:
-		}
-	}
+	}()
 }
 
 // CheckAlerts evaluates the rules once and sends the notifications.
@@ -96,18 +108,22 @@ func (s *Server) CheckAlerts(ctx context.Context) {
 		return
 	}
 	subject, body := alertEmail(send, names)
-	sctx, cancel := context.WithTimeout(ctx, 90*time.Second)
-	defer cancel()
-	if err := sendMail(sctx, e, m.Recipients, subject, body); err != nil {
-		s.log.Error("alert email failed", "err", err)
-		_ = s.store.Audit(ctx, "-", "server", "alert.email.failed", "settings", "alert email could not be sent: "+err.Error())
-		return
-	}
 	ids := make([]int64, len(opened))
 	for i, a := range opened {
 		ids[i] = a.ID
 	}
-	_ = s.store.MarkNotified(ctx, ids)
+	// The mail goes out in the background: a slow mail server must not hold
+	// the alert check (and everything waiting for its lock).
+	go func() { // #nosec G118 -- the mail outlives this check; own timeout
+		ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
+		defer cancel()
+		if err := sendMail(ctx, e, m.Recipients, subject, body); err != nil {
+			s.log.Error("alert email failed", "err", err)
+			_ = s.store.Audit(ctx, "-", "server", "alert.email.failed", "settings", "alert email could not be sent: "+err.Error())
+			return
+		}
+		_ = s.store.MarkNotified(ctx, ids)
+	}()
 }
 
 // alertEmail writes the notification text.
@@ -151,46 +167,39 @@ func alertEmail(alerts []store.Alert, devs map[int64]store.MonitorState) (subjec
 // evaluatePolicies applies to each device the alert rules of its policy (or
 // the built-in ones). The load averages are computed per rule window.
 func (s *Server) evaluatePolicies(ctx context.Context, m MonitoringSettings) ([]store.MonitorState, []store.Condition, map[int64]bool, error) {
-	pr, err := s.loadPolicies(ctx)
+	pr, err := s.cachedPolicies(ctx)
 	if err != nil {
 		return nil, nil, nil, err
 	}
 	m = builtinAlerts(m)
-	type window struct{ cpu, mem int }
 	rules := map[int64]MonitoringSettings{}
-	windows := map[window]bool{{m.CPUMinutes, m.MemMinutes}: true}
+	windows := map[int64]store.LoadWindow{}
 	for id := range pr.scopes {
 		r, _ := pr.alerts(id, m)
 		rules[id] = r
-		windows[window{r.CPUMinutes, r.MemMinutes}] = true
+		windows[id] = store.LoadWindow{CPUMinutes: r.CPUMinutes, MemMinutes: r.MemMinutes}
 	}
-	var all []store.MonitorState
+	all, err := s.store.MonitorStates(ctx, store.LoadWindow{CPUMinutes: m.CPUMinutes, MemMinutes: m.MemMinutes}, windows)
+	if err != nil {
+		return nil, nil, nil, err
+	}
 	var conds []store.Condition
 	keep := map[int64]bool{}
-	for w := range windows {
-		states, err := s.store.MonitorStates(ctx, time.Duration(w.cpu)*time.Minute, time.Duration(w.mem)*time.Minute)
-		if err != nil {
-			return nil, nil, nil, err
+	for _, st := range all {
+		r, ok := rules[st.ID]
+		if !ok {
+			r = m
 		}
-		for _, st := range states {
-			r, ok := rules[st.ID]
-			if !ok {
-				r = m
-			}
-			if (window{r.CPUMinutes, r.MemMinutes}) != w {
-				continue
-			}
-			all = append(all, st)
-			c, k := evaluate(r, []store.MonitorState{st}, s.now())
-			conds = append(conds, c...)
-			for id := range k {
-				keep[id] = true
-			}
+		c, k := evaluate(r, []store.MonitorState{st}, s.now())
+		conds = append(conds, c...)
+		for id := range k {
+			keep[id] = true
 		}
 	}
 	conds = append(conds, s.healthConditions(ctx, pr, rules)...)
 	conds = append(conds, s.blockedConditions(ctx, pr)...)
 	conds = append(conds, s.vulnConditions(ctx, rules)...)
+	conds = append(conds, s.forecastConditions(rules, m)...)
 	// Devices in a quiet maintenance window open no new alerts; their open
 	// alerts stay as they are.
 	now := s.now().Local()

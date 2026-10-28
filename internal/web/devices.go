@@ -46,6 +46,7 @@ type deviceData struct {
 	SwQuery   string
 	Package   *Packages
 	Health    *store.DiskHealthState
+	Forecast  []DiskForecast
 	NetChecks []store.NetCheckState
 	Fields    []store.CustomField
 }
@@ -56,6 +57,7 @@ func (s *Server) handleDevice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	dd := &deviceData{D: d, Inv: d.Inventory, Online: d.Online(s.now(), onlineWindow) && s.Connected(d.ID), Now: s.now(), Package: s.packages()}
+	dd.Forecast = s.deviceForecasts(d.ID)
 	dd.Alerts, _ = s.store.Alerts(r.Context(), userFrom(r), store.AlertFilter{DeviceID: d.ID, Open: true})
 	dd.Metrics, dd.MetricsAt, dd.Stopped, _ = s.store.DeviceMetrics(r.Context(), d.ID)
 	if h, err := s.store.DiskHealth(r.Context(), d.ID); err == nil {

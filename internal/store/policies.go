@@ -51,6 +51,7 @@ func (s *Store) Policy(ctx context.Context, id int64) (*Policy, error) {
 
 // SavePolicy adds (ID 0) or changes a policy.
 func (s *Store) SavePolicy(ctx context.Context, p *Policy) error {
+	defer s.scopesChanged()
 	p.UpdatedAt = s.now()
 	if len(p.Settings) == 0 {
 		p.Settings = json.RawMessage("{}")
@@ -74,6 +75,7 @@ func (s *Store) SavePolicy(ctx context.Context, p *Policy) error {
 
 // DeletePolicy removes a policy and its assignments.
 func (s *Store) DeletePolicy(ctx context.Context, id int64) error {
+	defer s.scopesChanged()
 	_, err := s.db.Exec(ctx, `DELETE FROM policies WHERE id=$1`, id)
 	return err
 }
@@ -91,6 +93,7 @@ type Assignment struct {
 
 // Assign gives a target a policy (replacing the one it had).
 func (s *Store) Assign(ctx context.Context, targetType string, targetID, policyID int64, by string) error {
+	defer s.scopesChanged()
 	_, err := s.db.Exec(ctx, `INSERT INTO policy_assignments(target_type, target_id, policy_id, assigned_by, assigned_at) VALUES($1,$2,$3,$4,$5)
 		ON CONFLICT (target_type, target_id) DO UPDATE SET policy_id=EXCLUDED.policy_id, assigned_by=EXCLUDED.assigned_by, assigned_at=EXCLUDED.assigned_at`,
 		targetType, targetID, policyID, by, s.now())
@@ -99,6 +102,7 @@ func (s *Store) Assign(ctx context.Context, targetType string, targetID, policyI
 
 // Unassign removes the policy of a target.
 func (s *Store) Unassign(ctx context.Context, targetType string, targetID int64) error {
+	defer s.scopesChanged()
 	_, err := s.db.Exec(ctx, `DELETE FROM policy_assignments WHERE target_type=$1 AND target_id=$2`, targetType, targetID)
 	return err
 }

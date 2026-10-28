@@ -90,6 +90,7 @@
   <a href="/settings/remote" class="{{if eq .Title "Remote desktop"}}on{{end}}">{{template "icon" "screen"}}<span>{{.T "Remote desktop"}}<small>{{.T "Notice on the remote screen"}}</small></span></a>
   <a href="/settings/reports" class="{{if eq .Title "Reports"}}on{{end}}">{{template "icon" "mail"}}<span>{{.T "Reports"}}<small>{{.T "Email reports to customers"}}</small></span></a>
   <a href="/settings/fields" class="{{if eq .Title "Custom fields"}}on{{end}}">{{template "icon" "file"}}<span>{{.T "Custom fields"}}<small>{{.T "Your own fields for devices and customers"}}</small></span></a>
+  <a href="/settings/backup" class="{{if eq .Title "Console backup"}}on{{end}}">{{template "icon" "disk"}}<span>{{.T "Console backup"}}<small>{{.T "Daily backup of the console, restore"}}</small></span></a>
   <a href="/settings/version" class="{{if eq .Title "ControlZit updates"}}on{{end}}">{{template "icon" "download"}}<span>{{.T "ControlZit updates"}}<small>{{.T "New versions of the server"}}</small></span></a>
   <a href="/settings/agents" class="{{if eq .Title "Agent updates"}}on{{end}}">{{template "icon" "download"}}<span>{{.T "Agent updates"}}<small>{{.T "Installer and automatic updates"}}</small></span></a>
   <a href="/settings/diagnostics" class="{{if eq .Title "Diagnostics"}}on{{end}}">{{template "icon" "file"}}<span>{{.T "Diagnostics"}}<small>{{.T "Logs and a file for support"}}</small></span></a>
@@ -143,6 +144,7 @@
   {{if .D.IsWindows}}<a href="/devices/{{$id}}/events" class="{{if eq .Cur "events"}}on{{end}}">{{template "icon" "audit"}}{{.P.T "Events"}}</a>
   <a href="/devices/{{$id}}/software" class="{{if eq .Cur "software"}}on{{end}}">{{template "icon" "plus"}}{{.P.T "Programs"}}</a>{{end}}
   {{end}}
+  <a href="/devices/{{$id}}/history" class="{{if eq .Cur "history"}}on{{end}}">{{template "icon" "online"}}{{.P.T "History"}}</a>
   <a href="/devices/{{$id}}/updates" class="{{if eq .Cur "updates"}}on{{end}}">{{template "icon" "download"}}{{.P.T "Updates"}}</a>
   <a href="/devices/{{$id}}/vulnerabilities" class="{{if eq .Cur "vulns"}}on{{end}}">{{template "icon" "shield"}}{{.P.T "Vulnerabilities"}}</a>
   {{if and .P.User.CanWrite .D.IsWindows}}<a href="/devices/{{$id}}/bitlocker" class="{{if eq .Cur "bitlocker"}}on{{end}}">{{template "icon" "lock"}}BitLocker</a>{{end}}

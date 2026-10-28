@@ -13,6 +13,7 @@
   <tr><td>Microsoft Defender uit</td><td>het antivirus of de realtimebeveiliging uit staat (optioneel)</td></tr>
   <tr><td>Firewall uit</td><td>een Windows Firewall-profiel uit staat (optioneel)</td></tr>
   <tr><td>Service gestopt</td><td>een service uit uw lijst (servicenamen, geen weergavenamen) automatisch moet starten maar niet draait</td></tr>
+  <tr><td>Schijf binnenkort vol</td><td>volgens de groei van de gebruikte ruimte in de laatste 14 dagen is een schijf binnen het opgegeven aantal dagen vol (0 = uit)</td></tr>
 </table>
 <p>Waarschuwingen zijn <b>Waarschuwing</b> of <b>Kritiek</b> (kritiek: offline apparaten, gestopte services, Defender uit, en schijven met minder dan 1 GB vrij of 98 % gebruikt). <a href="/alerts">Waarschuwingen</a> toont de open (en desgewenst de opgeloste); een technicus kan een waarschuwing <b>bevestigen</b> zodat anderen zien dat iemand ermee bezig is. Het aantal open waarschuwingen staat in het menu.</p>
 
@@ -40,3 +41,7 @@
 
 <h2 id="metrics">Actuele waarden</h2>
 <p>De apparaatpagina toont de huidige CPU-belasting, het geheugen en de schijven, en de automatische services die niet draaien.</p>
+
+<h2 id="history">Geschiedenis en schijfvoorspelling</h2>
+<p>Het tabblad <b>History</b> van een apparaat tekent de CPU-belasting, het geheugen, het netwerkverkeer (agents 0.11 en nieuwer) en de gebruikte ruimte van elke schijf over 24 uur, 7, 30 of 90 dagen. Minuutwaarden worden 7 dagen bewaard, uuroverzichten 90 dagen.</p>
+<p>Uit de schijfruimte per uur berekent de server wanneer elke schijf vol is als die blijft groeien zoals in de laatste 14 dagen. Een schijf die binnen 90 dagen vol is, staat op de apparaatpagina; de waarschuwingsregel <b>Schijf binnenkort vol</b> opent een waarschuwing binnen het aantal dagen uit het beleid (14 bij nieuwe beleidsregels; kritiek binnen 3 dagen).</p>

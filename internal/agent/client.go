@@ -286,6 +286,28 @@ func (a *Agent) session(ctx context.Context) error {
 		}
 	}()
 
+	// Pings find a dead channel (a server or network gone without a close)
+	// within a minute; a missing pong closes the channel and ends Read.
+	go func() {
+		t := time.NewTicker(30 * time.Second)
+		defer t.Stop()
+		for {
+			select {
+			case <-sctx.Done():
+				return
+			case <-t.C:
+			}
+			pctx, pcancel := context.WithTimeout(sctx, 20*time.Second)
+			err := ws.Ping(pctx)
+			pcancel()
+			if err != nil && sctx.Err() == nil {
+				a.Log.Warn("the server does not answer pings; reconnecting", "err", err)
+				_ = ws.CloseNow()
+				return
+			}
+		}
+	}()
+
 	heartbeat := time.NewTicker(60 * time.Second)
 	defer heartbeat.Stop()
 	// The first heartbeat with metrics soon after connecting.

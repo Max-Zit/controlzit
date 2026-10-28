@@ -41,3 +41,12 @@
 
 <h2 id="fields">Eigen velden</h2>
 <p>Onder <a href="/settings/fields">Instellingen → Eigen velden</a> voegen beheerders eigen velden toe voor apparaten en klanten — tekst, getal of datum —, bijvoorbeeld een inventarisnummer, het einde van de garantie of een contract. Technici vullen ze in op de pagina's van apparaten en klanten; de API geeft de velden mee met elk apparaat en zet ze met <code>PUT /api/v1/devices/{id}/fields</code>.</p>
+
+<h2 id="backup">Back-up van de console</h2>
+<p><a href="/settings/backup">Instellingen → Back-up van de console</a> maakt elke dag op het gekozen uur een back-up van de console, of meteen met <b>Nu back-up maken</b>. Een back-up bevat de database, de geheime sleutel van de opgeslagen wachtwoorden, de certificaten en sleutels die de agents vertrouwen en de softwarebibliotheek. De nieuwste back-ups (zoveel als u kiest) blijven in de map <code>backups</code> van de datamap en zijn te downloaden vanaf de pagina.</p>
+<p>Met een <b>wachtzin</b> worden de bestanden versleuteld (AES-256-GCM); bewaar de wachtzin ergens anders, want zonder kan een back-up niet worden hersteld. Een kopie van elke back-up kan naar een <b>SFTP-map</b> op een andere server (wachtwoord of privésleutel). De eerste test van de verbinding toont de hostsleutel van de server om te vertrouwen; kopieën gaan alleen naar een server met die sleutel. Mislukt een back-up of de kopie, dan krijgen de ontvangers van de waarschuwingsmails een e-mail.</p>
+<p>Een <b>herstel</b> draait terwijl de server gestopt is: op de appliance in het setupmenu (<b>Restore a backup</b>), met de Linux-pakketten:</p>
+<pre>sudo systemctl stop controlzit-server
+sudo -u controlzit sh -c 'set -a; . /etc/controlzit/server.env; controlzit-server -data-dir /var/lib/controlzit -restore /path/controlzit-backup-….czb'
+sudo systemctl start controlzit-server</pre>
+<p>De wachtzin van een versleutelde back-up wordt gelezen uit <code>CONTROLZIT_BACKUP_PASSPHRASE</code> of uit een bestand opgegeven met <code>-restore-passphrase-file</code>. De database wordt in één stap hersteld (mislukt dat, dan verandert er niets); een nieuwere ControlZit werkt de herstelde database bij bij het starten. Een nieuwe server die uit een back-up is hersteld, houdt alle agents, omdat ze hetzelfde certificaat vertrouwen.</p>

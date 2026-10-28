@@ -41,3 +41,12 @@
 
 <h2 id="fields">自定义字段</h2>
 <p>管理员在<a href="/settings/fields">设置 → 自定义字段</a>中为设备和客户添加自己的字段（文本、数字或日期），例如资产编号、保修截止日期或合同。技术人员在设备和客户页面上填写；API 在每台设备中返回这些字段，并通过 <code>PUT /api/v1/devices/{id}/fields</code> 设置。</p>
+
+<h2 id="backup">控制台备份</h2>
+<p><a href="/settings/backup">设置 → 控制台备份</a> 每天在选定的时间备份控制台，也可点击 <b>立即备份</b> 马上备份。备份包含数据库、已保存密码的密钥、代理信任的证书和密钥以及软件库。最新的备份（数量由您选择）保留在数据目录的 <code>backups</code> 文件夹中，可从页面下载。</p>
+<p>设置<b>密码短语</b>后文件会被加密（AES-256-GCM）；请将密码短语另行保存，因为没有它就无法恢复备份。每个备份的副本可以发送到另一台服务器上的 <b>SFTP 文件夹</b>（密码或私钥）。首次测试连接时会显示需要信任的服务器主机密钥；副本只会发送到具有该密钥的服务器。备份或其复制失败时，告警邮件的收件人会收到邮件。</p>
+<p><b>恢复</b>需在服务器停止时进行：在设备上通过设置菜单（<b>Restore a backup</b>），使用 Linux 软件包时：</p>
+<pre>sudo systemctl stop controlzit-server
+sudo -u controlzit sh -c 'set -a; . /etc/controlzit/server.env; controlzit-server -data-dir /var/lib/controlzit -restore /path/controlzit-backup-….czb'
+sudo systemctl start controlzit-server</pre>
+<p>加密备份的密码短语从 <code>CONTROLZIT_BACKUP_PASSPHRASE</code> 或 <code>-restore-passphrase-file</code> 指定的文件读取。数据库一步恢复（失败则不做任何更改）；较新版本的 ControlZit 会在启动时更新恢复的数据库。从备份恢复的新服务器会保留所有代理，因为它们信任同一证书。</p>

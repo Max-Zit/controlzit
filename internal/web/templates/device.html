@@ -33,6 +33,7 @@
   {{template "alerttable" .}}
 </section>
 {{end}}
+{{range .Data.Forecast}}{{if le .Days 90.0}}<div class="flash {{if le .Days 3.0}}err{{else}}warn{{end}}" role="status">{{template "icon" "disk"}}<span>{{$.T "%s full in about %d days" .Drive .DaysLeft}} · <a href="/devices/{{$.Data.D.ID}}/history?range=30d">{{$.T "History"}}</a></span></div>{{end}}{{end}}
 {{with .Data.Metrics}}
 <section class="panel">
   <h2>{{template "icon" "online"}}{{$.T "Load now"}} <span class="muted small">{{$.Ago $.Data.MetricsAt}}</span></h2>

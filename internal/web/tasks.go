@@ -97,7 +97,7 @@ func (s *Server) queueTask(ctx context.Context, d *store.Device, by, kind, title
 	if err := s.store.AddTask(ctx, t); err != nil {
 		return nil, err
 	}
-	go s.DispatchTasks(context.Background()) // #nosec G118 -- the task outlives the request that queued it
+	go s.dispatchTasks(context.Background(), []int64{d.ID}) // #nosec G118 -- the task outlives the request that queued it
 	return t, nil
 }
 
@@ -108,7 +108,12 @@ func (s *Server) DispatchTasks(ctx context.Context) {
 	if err := s.store.ExpireTasks(ctx, false); err != nil {
 		s.log.Warn("tasks: cannot expire", "err", err)
 	}
-	ids := s.hub.connectedIDs()
+	s.dispatchTasks(ctx, s.hub.connectedIDs())
+}
+
+// dispatchTasks starts the next queued task of the given devices.
+func (s *Server) dispatchTasks(ctx context.Context, ids []int64) {
+	ids = s.onlyConnected(ids)
 	if len(ids) == 0 {
 		return
 	}
@@ -140,7 +145,7 @@ func (s *Server) runTask(t *store.DeviceTask) {
 	if err := s.store.FinishTask(context.Background(), t.ID, status, out.Result, out.Args, out.Link); err != nil {
 		s.log.Warn("tasks: cannot store a result", "task", t.ID, "err", err)
 	}
-	s.DispatchTasks(context.Background())
+	s.dispatchTasks(context.Background(), []int64{t.DeviceID}) // the device's next task
 }
 
 func (s *Server) taskBody(ctx context.Context, t *store.DeviceTask) (taskOutcome, error) {

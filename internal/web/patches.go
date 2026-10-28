@@ -265,7 +265,7 @@ var weekdays = []int{1, 2, 3, 4, 5, 6, 0}
 // every minute by the monitor loop).
 func (s *Server) RunPatchSchedule(ctx context.Context) {
 	def := defaultPatchPolicy()
-	pr, err := s.loadPolicies(ctx)
+	pr, err := s.cachedPolicies(ctx)
 	if err != nil {
 		s.log.Warn("patch schedule: cannot load policies", "err", err)
 		return

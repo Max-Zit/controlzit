@@ -13,6 +13,7 @@
   <tr><td>Microsoft Defender désactivé</td><td>l'antivirus ou sa protection en temps réel est désactivé (facultatif)</td></tr>
   <tr><td>Pare-feu désactivé</td><td>un profil du pare-feu Windows est désactivé (facultatif)</td></tr>
   <tr><td>Service arrêté</td><td>un service de votre liste (noms de service, pas noms d'affichage) est en démarrage automatique mais ne tourne pas</td></tr>
+  <tr><td>Disque bientôt plein</td><td>d'après la croissance de l'espace utilisé sur les 14 derniers jours, un disque sera plein d'ici le nombre de jours indiqué (0 = désactivé)</td></tr>
 </table>
 <p>Les alertes sont <b>Avertissement</b> ou <b>Critique</b> (critique : appareils hors ligne, services arrêtés, Defender désactivé, et disques avec moins de 1 Go libre ou 98 % utilisés). <a href="/alerts">Alertes</a> liste les alertes ouvertes (et, si vous le souhaitez, les résolues) ; un technicien peut <b>acquitter</b> une alerte pour que les autres voient que quelqu'un s'en occupe. Le nombre d'alertes ouvertes s'affiche dans le menu.</p>
 
@@ -40,3 +41,7 @@
 
 <h2 id="metrics">Valeurs en direct</h2>
 <p>La page de l'appareil affiche la charge CPU actuelle, la mémoire et les disques, ainsi que les services automatiques arrêtés.</p>
+
+<h2 id="history">Historique et prévision des disques</h2>
+<p>L'onglet <b>History</b> d'un appareil trace la charge CPU, la mémoire, le trafic réseau (agents 0.11 et plus récents) et l'espace utilisé de chaque disque sur 24 heures, 7, 30 ou 90 jours. Les valeurs à la minute sont conservées 7 jours, les synthèses horaires 90 jours.</p>
+<p>À partir de l'espace disque horaire, le serveur calcule quand chaque disque sera plein s'il continue de croître comme sur les 14 derniers jours. Un disque plein d'ici 90 jours est affiché sur la page de l'appareil ; la règle d'alerte <b>Disque bientôt plein</b> ouvre une alerte dans le nombre de jours fixé dans la stratégie (14 pour les nouvelles stratégies ; critique sous 3 jours).</p>

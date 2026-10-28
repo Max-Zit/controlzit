@@ -28,6 +28,7 @@ type MonitoringSettings struct {
 	WatchServices  []string `json:"watch_services"`
 	DiskHealthOff  bool     `json:"disk_health_off,omitempty"`
 	VulnAlerts     bool     `json:"vuln_alerts,omitempty"`
+	DiskFullDays   int      `json:"disk_full_days,omitempty"` // alert when a disk will be full within this many days (0 = off)
 	EmailOnOpen    bool     `json:"email_on_open"`
 	EmailOnResolve bool     `json:"email_on_resolve"`
 	Recipients     []string `json:"recipients"`
@@ -35,7 +36,7 @@ type MonitoringSettings struct {
 
 func defaultMonitoring() MonitoringSettings {
 	return MonitoringSettings{CPUPercent: 90, CPUMinutes: 15, MemPercent: 90, MemMinutes: 15, DiskPercent: 90, DiskMinFreeGB: 5,
-		OfflineMinutes: 15, RebootDays: 7, DefenderOff: true, FirewallOff: true}
+		OfflineMinutes: 15, RebootDays: 7, DefenderOff: true, FirewallOff: true, DiskFullDays: 14}
 }
 
 // Validate checks the ranges.
@@ -49,6 +50,8 @@ func (m *MonitoringSettings) Validate() error {
 		return errors.New("disk thresholds are out of range")
 	case m.OfflineMinutes < 3 || m.OfflineMinutes > 10080:
 		return errors.New("the offline time must be 3–10080 minutes")
+	case m.DiskFullDays < 0 || m.DiskFullDays > 365:
+		return errors.New("the disk-full forecast must be 0–365 days")
 	case m.RebootDays < 0 || m.RebootDays > 365:
 		return errors.New("the restart days must be 0–365")
 	case len(m.WatchServices) > 100 || len(m.Recipients) > 50:

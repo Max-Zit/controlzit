@@ -50,6 +50,7 @@ func clip(s string, n int) string {
 // EnrollDevice consumes one use of an enrollment token and registers the
 // agent key in the token's site, in one transaction.
 func (s *Store) EnrollDevice(ctx context.Context, token string, pub []byte, hostname, osName, agentVersion, ip string) (*Device, error) {
+	defer s.scopesChanged()
 	if len(pub) != 32 {
 		return nil, errors.New("bad agent key")
 	}
@@ -205,6 +206,7 @@ func (s *Store) SaveInventory(ctx context.Context, id int64, inv *proto.Inventor
 
 // DeleteDevice removes a device; its agent can no longer connect.
 func (s *Store) DeleteDevice(ctx context.Context, id int64) error {
+	defer s.scopesChanged()
 	tag, err := s.db.Exec(ctx, `DELETE FROM devices WHERE id=$1`, id)
 	if err == nil {
 		_, err = s.db.Exec(ctx, `DELETE FROM policy_assignments WHERE target_type='device' AND target_id=$1`, id)

@@ -13,6 +13,7 @@
   <tr><td>Microsoft Defender aus</td><td>der Virenschutz oder sein Echtzeitschutz aus ist (optional)</td></tr>
   <tr><td>Firewall aus</td><td>ein Windows-Firewall-Profil aus ist (optional)</td></tr>
   <tr><td>Dienst gestoppt</td><td>ein Dienst aus Ihrer Liste (Dienstnamen, nicht Anzeigenamen) automatisch starten soll, aber nicht läuft</td></tr>
+  <tr><td>Datenträger bald voll</td><td>nach dem Wachstum des belegten Speichers in den letzten 14 Tagen ist ein Datenträger innerhalb der angegebenen Tage voll (0 = aus)</td></tr>
 </table>
 <p>Alarme sind <b>Warnung</b> oder <b>Kritisch</b> (kritisch: Offline-Geräte, gestoppte Dienste, Defender aus und Datenträger mit weniger als 1 GB frei oder 98 % belegt). <a href="/alerts">Alarme</a> listet die offenen (und auf Wunsch die behobenen); ein Techniker kann einen Alarm <b>bestätigen</b>, damit andere sehen, dass sich jemand darum kümmert. Die Zahl offener Alarme steht im Menü.</p>
 
@@ -40,3 +41,7 @@
 
 <h2 id="metrics">Aktuelle Werte</h2>
 <p>Die Geräteseite zeigt die aktuelle CPU-Last, Arbeitsspeicher und Datenträger sowie die automatischen Dienste, die nicht laufen.</p>
+
+<h2 id="history">Verlauf und Prognose für Datenträger</h2>
+<p>Der Reiter <b>History</b> eines Geräts zeichnet CPU-Last, Arbeitsspeicher, Netzwerkverkehr (Agenten ab 0.11) und den belegten Speicher jedes Datenträgers über 24 Stunden, 7, 30 oder 90 Tage. Minutenwerte werden 7 Tage aufbewahrt, Stundenzusammenfassungen 90 Tage.</p>
+<p>Aus dem stündlichen Speicherplatz berechnet der Server, wann jeder Datenträger voll ist, wenn er weiter wie in den letzten 14 Tagen wächst. Ein Datenträger, der innerhalb von 90 Tagen voll ist, wird auf der Geräteseite angezeigt; die Warnregel <b>Datenträger bald voll</b> öffnet eine Warnung innerhalb der in der Richtlinie eingestellten Tage (14 bei neuen Richtlinien; kritisch innerhalb von 3 Tagen).</p>

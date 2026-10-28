@@ -238,6 +238,10 @@ type Metrics struct {
 	MemTotal uint64  `json:"mem_total"`
 	MemUsed  uint64  `json:"mem_used"`
 	Disks    []Disk  `json:"disks"`
+	// NetRx and NetTx are the bytes per second received and sent by all
+	// network adapters (not loopback) since the last sample (agents 0.11+).
+	NetRx float64 `json:"net_rx,omitempty"`
+	NetTx float64 `json:"net_tx,omitempty"`
 	// StoppedAuto lists automatic services that are not running; nil when
 	// not collected in this heartbeat (every 5 minutes).
 	StoppedAuto []string `json:"stopped_auto,omitempty"`

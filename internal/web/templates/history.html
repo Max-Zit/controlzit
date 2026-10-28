@@ -1,0 +1,55 @@
+{{template "app" .}}
+{{define "content"}}
+{{$d := .Data.D}}
+<p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a> / <a href="/devices/{{$d.ID}}">{{$d.Hostname}}</a></p>
+<h1>{{template "icon" "online"}}{{.T "History"}} <span class="muted h1-sub">{{$d.Hostname}}</span></h1>
+{{template "devtabs" (devtabs . $d "history")}}
+
+<nav class="tabs" aria-label="{{.T "Period"}}">
+  {{range .Data.Ranges}}<a href="/devices/{{$d.ID}}/history?range={{.Key}}" class="{{if eq .Key $.Data.Range.Key}}on{{end}}">{{$.T .Label}}</a>{{end}}
+</nav>
+
+{{with .Data.Forecasts}}
+<section class="panel">
+  <h2>{{template "icon" "alert"}}{{$.T "Disk full forecast"}}</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{$.T "Drive"}}</th><th>{{$.T "Full in about"}}</th><th class="hide-sm">{{$.T "Grows a day"}}</th><th class="hide-sm">{{$.T "Free now"}}</th></tr></thead>
+    <tbody>{{range .}}<tr>
+      <td>{{.Drive}}</td>
+      <td><span class="badge {{if le .Days 3.0}}bad{{else if le .Days 30.0}}warn{{end}}"><i></i>{{$.T "%d days" .DaysLeft}}</span> <span class="muted small">{{$.Time .FullAt}}</span></td>
+      <td class="hide-sm">{{$.Bytes .Growth}}</td>
+      <td class="hide-sm">{{$.Bytes .FreeBytes}} / {{$.Bytes .SizeBytes}}</td>
+    </tr>{{end}}</tbody>
+  </table></div>
+  <p class="small muted">{{$.T "By the growth of the used space over the last 14 days."}}</p>
+</section>
+{{end}}
+
+{{if .Data.Empty}}
+<section class="panel"><p class="muted">{{.T "No history for this period yet. The agent sends its load every minute while it is connected."}}</p></section>
+{{else}}
+{{with .Data.Load}}<section class="panel">
+  <h2>{{$.T "CPU and memory"}}</h2>
+  {{template "chart" .}}
+</section>{{end}}
+{{with .Data.Net}}<section class="panel">
+  <h2>{{$.T "Network"}}</h2>
+  {{template "chart" .}}
+</section>{{else}}{{if .Data.Load}}<section class="panel"><h2>{{.T "Network"}}</h2><p class="muted small">{{.T "Agents from version 0.11 send the network traffic."}}</p></section>{{end}}{{end}}
+{{with .Data.Disk}}<section class="panel">
+  <h2>{{$.T "Disk space used"}}</h2>
+  {{template "chart" .}}
+</section>{{end}}
+{{end}}
+{{end}}
+
+{{define "chart"}}
+<figure class="chart">
+  <svg viewBox="0 0 {{.W}} {{.H}}" role="img" preserveAspectRatio="none">
+    {{range .YTicks}}<line class="grid" x1="52" x2="712" y1="{{.Pos}}" y2="{{.Pos}}"></line><text class="ylab" x="46" y="{{.Pos}}">{{.Label}}</text>{{end}}
+    {{range .XTicks}}<text class="xlab" x="{{.Pos}}" y="176">{{.Label}}</text>{{end}}
+    {{range .Series}}{{$c := .Class}}{{range .Paths}}<polyline class="ln {{$c}}" points="{{.}}"></polyline>{{end}}{{end}}
+  </svg>
+  <figcaption class="legend">{{range .Series}}<span class="lg {{.Class}}"><i></i>{{.Name}} <b>{{.Last}}</b></span>{{end}}</figcaption>
+</figure>
+{{end}}

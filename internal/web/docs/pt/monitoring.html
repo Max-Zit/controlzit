@@ -13,6 +13,7 @@
   <tr><td>Microsoft Defender desligado</td><td>o antivírus ou a proteção em tempo real está desligado (opcional)</td></tr>
   <tr><td>Firewall desligada</td><td>um perfil da Firewall do Windows está desligado (opcional)</td></tr>
   <tr><td>Serviço parado</td><td>um serviço da sua lista (nomes de serviço, não nomes a apresentar) está definido para arranque automático mas não está em execução</td></tr>
+  <tr><td>Disco cheio em breve</td><td>pelo crescimento do espaço usado nos últimos 14 dias, um disco ficará cheio dentro dos dias indicados (0 = desligado)</td></tr>
 </table>
 <p>Os alertas são <b>Aviso</b> ou <b>Crítico</b> (crítico: dispositivos offline, serviços parados, Defender desligado e discos com menos de 1 GB livre ou 98 % usados). <a href="/alerts">Alertas</a> lista os abertos (e, se quiser, os resolvidos); um técnico pode <b>confirmar</b> um alerta para que os outros vejam que alguém está a tratar dele. O número de alertas abertos aparece no menu.</p>
 
@@ -40,3 +41,7 @@
 
 <h2 id="metrics">Valores atuais</h2>
 <p>A página do dispositivo mostra a carga de CPU atual, a memória e os discos, e os serviços automáticos que não estão em execução.</p>
+
+<h2 id="history">Histórico e previsão de discos</h2>
+<p>O separador <b>History</b> de um dispositivo desenha a carga da CPU, a memória, o tráfego de rede (agentes 0.11 e mais recentes) e o espaço usado de cada disco em 24 horas, 7, 30 ou 90 dias. Os valores por minuto são guardados 7 dias e os resumos por hora 90 dias.</p>
+<p>A partir do espaço em disco por hora, o servidor calcula quando cada disco ficará cheio se continuar a crescer como nos últimos 14 dias. Um disco que ficará cheio dentro de 90 dias aparece na página do dispositivo; a regra de alerta <b>Disco cheio em breve</b> abre um alerta dentro dos dias definidos na política (14 nas políticas novas; crítico dentro de 3 dias).</p>

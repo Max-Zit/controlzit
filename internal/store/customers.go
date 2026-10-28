@@ -122,6 +122,7 @@ var ErrInUse = errors.New("still in use")
 
 // DeleteCustomer removes a customer without sites.
 func (s *Store) DeleteCustomer(ctx context.Context, id int64) error {
+	defer s.scopesChanged()
 	tag, err := s.db.Exec(ctx, `DELETE FROM customers WHERE id=$1`, id)
 	if err == nil && tag.RowsAffected() == 1 {
 		_, err = s.db.Exec(ctx, `DELETE FROM policy_assignments WHERE target_type='customer' AND target_id=$1`, id)
@@ -217,6 +218,7 @@ func (s *Store) UpdateSite(ctx context.Context, id int64, name, address, notes s
 
 // DeleteSite removes a site without devices; its enrollment tokens go with it.
 func (s *Store) DeleteSite(ctx context.Context, id int64) error {
+	defer s.scopesChanged()
 	tx, err := s.db.Begin(ctx)
 	if err != nil {
 		return err

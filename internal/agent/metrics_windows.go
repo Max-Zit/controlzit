@@ -5,6 +5,7 @@ package agent
 import (
 	"context"
 	"encoding/json"
+	"net"
 	"os/exec"
 	"sort"
 	"sync"
@@ -83,6 +84,9 @@ func CollectMetrics(ctx context.Context) *proto.Metrics {
 		}
 	}
 	now := time.Now()
+	if rx, tx, ok := netCounters(); ok {
+		out.NetRx, out.NetTx = netPrev.rate(rx, tx, now)
+	}
 	if now.Sub(m.lastServices) >= 5*time.Minute {
 		m.lastServices = now
 		out.StoppedAuto = stoppedAutoServices()
@@ -152,4 +156,26 @@ func securityState(ctx context.Context) *proto.SecurityState {
 	}
 	s.CheckedAt = time.Now().UTC()
 	return &s
+}
+
+// netCounters sums the bytes received and sent by the adapters that are up
+// (loopback excluded).
+func netCounters() (rx, tx uint64, ok bool) {
+	ifs, err := net.Interfaces()
+	if err != nil {
+		return 0, 0, false
+	}
+	for _, i := range ifs {
+		if i.Flags&net.FlagUp == 0 || i.Flags&net.FlagLoopback != 0 || i.Index <= 0 {
+			continue
+		}
+		row := windows.MibIfRow2{InterfaceIndex: uint32(i.Index)} // #nosec G115 -- positive interface index
+		if windows.GetIfEntry2Ex(windows.MibIfEntryNormal, &row) != nil {
+			continue
+		}
+		rx += row.InOctets
+		tx += row.OutOctets
+		ok = true
+	}
+	return rx, tx, ok
 }

@@ -41,3 +41,12 @@
 
 <h2 id="fields">Eigene Felder</h2>
 <p>Unter <a href="/settings/fields">Einstellungen → Eigene Felder</a> legen Administratoren eigene Felder für Geräte und Kunden an — Text, Zahl oder Datum —, zum Beispiel eine Inventarnummer, das Garantieende oder einen Vertrag. Techniker füllen sie auf den Seiten der Geräte und Kunden aus; die API liefert die Gerätefelder mit jedem Gerät und setzt sie mit <code>PUT /api/v1/devices/{id}/fields</code>.</p>
+
+<h2 id="backup">Konsolensicherung</h2>
+<p><a href="/settings/backup">Einstellungen → Konsolensicherung</a> sichert die Konsole jeden Tag zur gewählten Stunde oder sofort mit <b>Jetzt sichern</b>. Eine Sicherung enthält die Datenbank, den geheimen Schlüssel der gespeicherten Passwörter, die Zertifikate und Schlüssel, denen die Agenten vertrauen, und die Software-Bibliothek. Die neuesten Sicherungen (so viele Sie wählen) bleiben im Ordner <code>backups</code> des Datenverzeichnisses und lassen sich von der Seite herunterladen.</p>
+<p>Mit einer <b>Passphrase</b> werden die Dateien verschlüsselt (AES-256-GCM); bewahren Sie die Passphrase woanders auf, denn ohne sie lässt sich eine Sicherung nicht wiederherstellen. Eine Kopie jeder Sicherung kann in einen <b>SFTP-Ordner</b> auf einem anderen Server gehen (Passwort oder privater Schlüssel). Der erste Test der Verbindung zeigt den Host-Schlüssel des Servers zum Vertrauen; Kopien gehen nur an einen Server mit diesem Schlüssel. Schlägt eine Sicherung oder ihre Kopie fehl, erhalten die Empfänger der Warn-E-Mails eine E-Mail.</p>
+<p>Eine <b>Wiederherstellung</b> läuft bei gestopptem Server: auf der Appliance im Setup-Menü (<b>Restore a backup</b>), mit den Linux-Paketen:</p>
+<pre>sudo systemctl stop controlzit-server
+sudo -u controlzit sh -c 'set -a; . /etc/controlzit/server.env; controlzit-server -data-dir /var/lib/controlzit -restore /path/controlzit-backup-….czb'
+sudo systemctl start controlzit-server</pre>
+<p>Die Passphrase einer verschlüsselten Sicherung wird aus <code>CONTROLZIT_BACKUP_PASSPHRASE</code> oder aus einer mit <code>-restore-passphrase-file</code> angegebenen Datei gelesen. Die Datenbank wird in einem Schritt wiederhergestellt (schlägt das fehl, ändert sich nichts); eine neuere ControlZit-Version aktualisiert die wiederhergestellte Datenbank beim Start. Ein aus einer Sicherung wiederhergestellter neuer Server behält alle Agenten, weil sie demselben Zertifikat vertrauen.</p>

@@ -41,3 +41,12 @@
 
 <h2 id="fields">Campos personalizados</h2>
 <p>En <a href="/settings/fields">Configuración → Campos personalizados</a> los administradores añaden sus propios campos para dispositivos y clientes — texto, número o fecha —, por ejemplo un número de inventario, el fin de la garantía o un contrato. Los técnicos los rellenan en las páginas de dispositivos y clientes; la API devuelve los campos con cada dispositivo y los establece con <code>PUT /api/v1/devices/{id}/fields</code>.</p>
+
+<h2 id="backup">Copia de la consola</h2>
+<p><a href="/settings/backup">Configuración → Copia de la consola</a> hace una copia de la consola cada día a la hora elegida, o en el momento con <b>Hacer copia ahora</b>. Una copia contiene la base de datos, la clave secreta de las contraseñas guardadas, los certificados y claves en los que confían los agentes y la biblioteca de software. Las copias más recientes (tantas como elija) quedan en la carpeta <code>backups</code> del directorio de datos y se pueden descargar desde la página.</p>
+<p>Con una <b>frase de contraseña</b> los archivos se cifran (AES-256-GCM); guárdela en otro lugar, porque sin ella no se puede restaurar una copia. Una copia de cada copia de seguridad puede ir a una <b>carpeta SFTP</b> de otro servidor (contraseña o clave privada). La primera prueba de la conexión muestra la clave de host del servidor para confiar en ella; las copias solo van a un servidor con esa clave. Si una copia o su envío falla, los destinatarios de los correos de alerta reciben un correo.</p>
+<p>Una <b>restauración</b> se hace con el servidor detenido: en el appliance desde el menú de configuración (<b>Restore a backup</b>), con los paquetes de Linux:</p>
+<pre>sudo systemctl stop controlzit-server
+sudo -u controlzit sh -c 'set -a; . /etc/controlzit/server.env; controlzit-server -data-dir /var/lib/controlzit -restore /path/controlzit-backup-….czb'
+sudo systemctl start controlzit-server</pre>
+<p>La frase de contraseña de una copia cifrada se lee de <code>CONTROLZIT_BACKUP_PASSPHRASE</code> o de un archivo indicado con <code>-restore-passphrase-file</code>. La base de datos se restaura en un solo paso (si falla, nada cambia); una versión más reciente de ControlZit actualiza la base restaurada al arrancar. Un servidor nuevo restaurado desde una copia conserva todos los agentes, porque confían en el mismo certificado.</p>

@@ -8,7 +8,7 @@
 <p>Guarde los scripts que usa a menudo en <a href="/scripts">Scripts → Biblioteca de scripts</a>, con nombre y descripción. Desde ahí ejecuta un script en dispositivos seleccionados, en todos los dispositivos de algunos clientes o en todos los dispositivos.</p>
 
 <h2 id="jobs">Trabajos</h2>
-<p>Ejecutar un script de la biblioteca en varios dispositivos crea un <b>trabajo</b>. La página del trabajo muestra cada dispositivo con su estado (en espera, en ejecución, correcto, fallido, caducado) y su salida. El código de salida 0 cuenta como éxito. Los dispositivos sin conexión ejecutan el script al conectarse, en un plazo de 24 horas; después cuentan como caducados.</p>
+<p>Ejecutar un script de la biblioteca en varios dispositivos crea un <b>trabajo</b>. La página del trabajo muestra cada dispositivo con su estado (en espera, en ejecución, correcto, fallido, caducado) y su salida. El código de salida 0 cuenta como éxito. Los dispositivos sin conexión ejecutan el script al conectarse, en un plazo de 24 horas; después cuentan como caducados. Como máximo se ejecutan 32 scripts de trabajos a la vez; los demás dispositivos muestran <b>en espera</b> hasta que haya un hueco libre.</p>
 
 <h2 id="schedules">Programaciones</h2>
 <p>Un script de la biblioteca puede ejecutarse según una programación: los días de la semana elegidos a una hora (hora del servidor), en dispositivos concretos, en todos los dispositivos de algunos clientes o en todos los dispositivos (también los nuevos). Una programación se puede pausar y reanudar. Los dispositivos sin conexión en ese momento ejecutan el script al conectarse, en un plazo de 24 horas.</p>

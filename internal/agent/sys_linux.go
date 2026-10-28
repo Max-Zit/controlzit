@@ -373,10 +373,23 @@ func failedUnits(ctx context.Context) []string {
 func CollectMetrics(ctx context.Context) *proto.Metrics {
 	total, avail := meminfo()
 	m := &proto.Metrics{CPU: cpuPercent(), MemTotal: total, MemUsed: total - min(avail, total), Disks: disks()}
+	if rx, tx, ok := netCounters(); ok {
+		m.NetRx, m.NetTx = netPrev.rate(rx, tx, time.Now())
+	}
 	if time.Since(lastFailed) >= 5*time.Minute && have("systemctl") {
 		lastFailed = time.Now()
 		m.StoppedAuto = failedUnits(ctx)
 		m.Security = &proto.SecurityState{PendingReboot: rebootRequired(), CheckedAt: time.Now().UTC()}
 	}
 	return m
+}
+
+// netCounters sums the bytes received and sent by all interfaces except
+// loopback, from /proc/net/dev.
+func netCounters() (rx, tx uint64, ok bool) {
+	b, err := os.ReadFile("/proc/net/dev")
+	if err != nil {
+		return 0, 0, false
+	}
+	return parseNetDev(string(b))
 }

@@ -8,7 +8,7 @@
 <p>Save scripts you use often under <a href="/scripts">Scripts → Script library</a>, with a name and a description. From there you run a script on selected devices, on all devices of some customers, or on all devices.</p>
 
 <h2 id="jobs">Jobs</h2>
-<p>Running a library script on several devices creates a <b>job</b>. The job page shows every device with its state (waiting, running, succeeded, failed, expired) and its output. Exit code 0 counts as success. Devices that are offline run the script when they connect, within 24 hours; after that they count as expired.</p>
+<p>Running a library script on several devices creates a <b>job</b>. The job page shows every device with its state (waiting, running, succeeded, failed, expired) and its output. Exit code 0 counts as success. Devices that are offline run the script when they connect, within 24 hours; after that they count as expired. At most 32 scripts of jobs run at the same time; the other devices show <b>waiting</b> until a place is free.</p>
 
 <h2 id="schedules">Schedules</h2>
 <p>A script in the library can run on a schedule: on chosen days of the week at a time (server time), on single devices, on all devices of some customers or on all devices (also new ones). A schedule can be paused and resumed. Devices that are offline at that time run the script when they connect, within 24 hours.</p>

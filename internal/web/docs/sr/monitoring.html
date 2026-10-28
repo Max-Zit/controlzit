@@ -13,6 +13,7 @@
   <tr><td>Microsoft Defender isključen</td><td>je antivirus ili njegova zaštita u realnom vremenu isključena (po izboru)</td></tr>
   <tr><td>Zaštitni zid isključen</td><td>je neki profil Windows zaštitnog zida isključen (po izboru)</td></tr>
   <tr><td>Servis zaustavljen</td><td>servis sa vašeg spiska (imena servisa, ne prikazana imena) je podešen da se pokreće automatski, ali ne radi</td></tr>
+  <tr><td>Disk će se uskoro napuniti</td><td>po rastu zauzetog prostora u poslednjih 14 dana, disk će biti pun za zadati broj dana (0 = isključeno)</td></tr>
 </table>
 <p>Upozorenja su <b>Upozorenje</b> ili <b>Kritično</b> (kritično: uređaji van mreže, zaustavljeni servisi, isključen Defender i diskovi sa manje od 1 GB slobodnog ili 98 % zauzeća). <a href="/alerts">Upozorenja</a> pokazuju otvorena (i, po želji, rešena); tehničar može da <b>potvrdi</b> upozorenje da bi drugi videli da neko radi na tome. Broj otvorenih upozorenja se vidi u meniju.</p>
 
@@ -40,3 +41,7 @@
 
 <h2 id="metrics">Trenutne vrednosti</h2>
 <p>Stranica uređaja pokazuje trenutno opterećenje procesora, memoriju i diskove i automatske servise koji ne rade.</p>
+
+<h2 id="history">Istorija i prognoza diska</h2>
+<p>Kartica <b>History</b> uređaja crta opterećenje procesora, memoriju, mrežni saobraćaj (agenti 0.11 i noviji) i zauzet prostor svakog diska za 24 sata, 7, 30 ili 90 dana. Vrednosti po minutu čuvaju se 7 dana, satni zbirovi 90 dana.</p>
+<p>Iz satnih podataka o disku server računa kada će se svaki disk napuniti ako nastavi da raste kao u poslednjih 14 dana. Disk koji će biti pun u narednih 90 dana prikazuje se na stranici uređaja; pravilo uzbune <b>Disk će se uskoro napuniti</b> otvara uzbunu u okviru broja dana zadatog u polisi (14 za nove polise; kritično u roku od 3 dana).</p>

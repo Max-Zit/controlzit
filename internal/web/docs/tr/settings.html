@@ -41,3 +41,12 @@
 
 <h2 id="fields">Özel alanlar</h2>
 <p><a href="/settings/fields">Ayarlar → Özel alanlar</a> altında yöneticiler cihazlar ve müşteriler için kendi alanlarını ekler — metin, sayı veya tarih — örneğin bir demirbaş numarası, garanti bitişi veya bir sözleşme. Teknisyenler bunları cihaz ve müşteri sayfalarında doldurur; API alanları her cihazla birlikte döndürür ve <code>PUT /api/v1/devices/{id}/fields</code> ile ayarlar.</p>
+
+<h2 id="backup">Konsol yedeği</h2>
+<p><a href="/settings/backup">Ayarlar → Konsol yedeği</a> konsolu her gün seçilen saatte veya <b>Şimdi yedekle</b> ile hemen yedekler. Bir yedek; veritabanını, kayıtlı parolaların gizli anahtarını, ajanların güvendiği sertifika ve anahtarları ve yazılım kitaplığını içerir. En yeni yedekler (seçtiğiniz sayıda) veri dizinindeki <code>backups</code> klasöründe kalır ve sayfadan indirilebilir.</p>
+<p><b>Parola</b> ile dosyalar şifrelenir (AES-256-GCM); parolayı başka bir yerde saklayın, çünkü parola olmadan yedek geri yüklenemez. Her yedeğin bir kopyası başka bir sunucudaki <b>SFTP klasörüne</b> gidebilir (parola veya özel anahtar). Bağlantının ilk testi, güvenilecek sunucu ana makine anahtarını gösterir; kopyalar yalnızca bu anahtara sahip sunucuya gider. Bir yedek veya kopyası başarısız olursa uyarı e-postası alıcılarına e-posta gönderilir.</p>
+<p><b>Geri yükleme</b> sunucu durdurulmuşken yapılır: appliance'ta kurulum menüsünden (<b>Restore a backup</b>), Linux paketleriyle:</p>
+<pre>sudo systemctl stop controlzit-server
+sudo -u controlzit sh -c 'set -a; . /etc/controlzit/server.env; controlzit-server -data-dir /var/lib/controlzit -restore /path/controlzit-backup-….czb'
+sudo systemctl start controlzit-server</pre>
+<p>Şifreli bir yedeğin parolası <code>CONTROLZIT_BACKUP_PASSPHRASE</code> değişkeninden veya <code>-restore-passphrase-file</code> ile verilen dosyadan okunur. Veritabanı tek adımda geri yüklenir (başarısız olursa hiçbir şey değişmez); daha yeni bir ControlZit sürümü geri yüklenen veritabanını başlarken günceller. Yedekten geri yüklenen yeni bir sunucu tüm ajanları korur, çünkü aynı sertifikaya güvenirler.</p>

@@ -41,3 +41,12 @@
 
 <h2 id="fields">Campi personalizzati</h2>
 <p>In <a href="/settings/fields">Impostazioni → Campi personalizzati</a> gli amministratori aggiungono campi propri per dispositivi e clienti — testo, numero o data —, ad esempio un numero di inventario, la fine della garanzia o un contratto. I tecnici li compilano nelle pagine dei dispositivi e dei clienti; l'API restituisce i campi con ogni dispositivo e li imposta con <code>PUT /api/v1/devices/{id}/fields</code>.</p>
+
+<h2 id="backup">Backup della console</h2>
+<p><a href="/settings/backup">Impostazioni → Backup della console</a> esegue il backup della console ogni giorno all'ora scelta, o subito con <b>Backup ora</b>. Un backup contiene il database, la chiave segreta delle password salvate, i certificati e le chiavi di cui si fidano gli agenti e la libreria software. I backup più recenti (quanti ne scegli) restano nella cartella <code>backups</code> della directory dati e si scaricano dalla pagina.</p>
+<p>Con una <b>passphrase</b> i file sono cifrati (AES-256-GCM); conservala altrove, perché senza di essa un backup non può essere ripristinato. Una copia di ogni backup può andare in una <b>cartella SFTP</b> su un altro server (password o chiave privata). Il primo test della connessione mostra la chiave host del server da considerare attendibile; le copie vanno solo a un server con quella chiave. Se un backup o la sua copia non riesce, i destinatari delle email di avviso ricevono un'email.</p>
+<p>Un <b>ripristino</b> si esegue a server fermo: sull'appliance dal menu di configurazione (<b>Restore a backup</b>), con i pacchetti Linux:</p>
+<pre>sudo systemctl stop controlzit-server
+sudo -u controlzit sh -c 'set -a; . /etc/controlzit/server.env; controlzit-server -data-dir /var/lib/controlzit -restore /path/controlzit-backup-….czb'
+sudo systemctl start controlzit-server</pre>
+<p>La passphrase di un backup cifrato viene letta da <code>CONTROLZIT_BACKUP_PASSPHRASE</code> o da un file indicato con <code>-restore-passphrase-file</code>. Il database viene ripristinato in un solo passaggio (se non riesce non cambia nulla); una versione più recente di ControlZit aggiorna il database ripristinato all'avvio. Un nuovo server ripristinato da un backup mantiene tutti gli agenti, perché si fidano dello stesso certificato.</p>

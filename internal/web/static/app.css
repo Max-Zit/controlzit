@@ -484,3 +484,28 @@ th.check-col, td.check-col { width: 1%; }
 .topsearch input:focus { width: 300px; }
 ul.hits { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
 @media (max-width: 900px) { .topsearch { display: none; } }
+
+/* History charts (SVG drawn on the server) */
+.chart { margin: 0; }
+.chart svg { width: 100%; height: 200px; display: block; overflow: visible; }
+.chart .grid { stroke: var(--line); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.chart text { fill: var(--muted); font-size: 11px; }
+.chart .ylab { text-anchor: end; dominant-baseline: middle; }
+.chart .xlab { text-anchor: middle; }
+.chart .ln { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.chart .ln.s1 { stroke: var(--accent); }
+.legend .s1 i { background: var(--accent); }
+.chart .ln.s2 { stroke: var(--ok); }
+.legend .s2 i { background: var(--ok); }
+.chart .ln.s3 { stroke: var(--warn); }
+.legend .s3 i { background: var(--warn); }
+.chart .ln.s4 { stroke: var(--bad); }
+.legend .s4 i { background: var(--bad); }
+.chart .ln.s5 { stroke: #0891b2; }
+.legend .s5 i { background: #0891b2; }
+.chart .ln.s6 { stroke: #a21caf; }
+.legend .s6 i { background: #a21caf; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; font-size: 13px; color: var(--muted); }
+.legend .lg { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 12px; height: 3px; border-radius: 2px; display: inline-block; }
+.legend b { color: var(--text); font-weight: 600; }

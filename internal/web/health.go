@@ -85,7 +85,7 @@ type collectors struct {
 // RunNetChecks asks the connected devices to run their policy's network
 // checks (monitor loop, every minute; in the background).
 func (s *Server) RunNetChecks(ctx context.Context) {
-	pr, err := s.loadPolicies(ctx)
+	pr, err := s.cachedPolicies(ctx)
 	if err != nil {
 		return
 	}

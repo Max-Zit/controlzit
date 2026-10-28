@@ -38,7 +38,11 @@ func (s *Store) SaveMetrics(ctx context.Context, id int64, m *proto.Metrics) err
 			return err
 		}
 	}
-	if _, err := tx.Exec(ctx, `INSERT INTO device_samples(device_id, at, cpu, mem) VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING`, id, now, m.CPU, mem); err != nil {
+	var rx, txb *float64 // older agents send no network numbers
+	if m.NetRx > 0 || m.NetTx > 0 {
+		rx, txb = &m.NetRx, &m.NetTx
+	}
+	if _, err := tx.Exec(ctx, `INSERT INTO device_samples(device_id, at, cpu, mem, rx, tx) VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING`, id, now, m.CPU, mem, rx, txb); err != nil {
 		return err
 	}
 	return tx.Commit(ctx)
@@ -68,16 +72,33 @@ type MonitorState struct {
 	Samples        int
 }
 
-// MonitorStates loads every device with its averages over window.
-func (s *Store) MonitorStates(ctx context.Context, cpuWindow, memWindow time.Duration) ([]MonitorState, error) {
-	now := s.now()
-	rows, err := s.db.Query(ctx, `SELECT d.id, x.customer_id, d.hostname, c.name, x.name, d.connected, d.last_seen_at, d.boot_time,
-		d.metrics, d.security, d.stopped_auto,
-		COALESCE((SELECT avg(cpu) FROM device_samples WHERE device_id=d.id AND at > $1), 0),
-		(SELECT count(*) FROM device_samples WHERE device_id=d.id AND at > $1),
-		COALESCE((SELECT avg(mem) FROM device_samples WHERE device_id=d.id AND at > $2), 0)
-		FROM devices d JOIN sites x ON x.id=d.site_id JOIN customers c ON c.id=x.customer_id ORDER BY d.id`,
-		now.Add(-cpuWindow), now.Add(-memWindow))
+// LoadWindow is how many minutes back the CPU and memory averages of a
+// device reach (its alert rules).
+type LoadWindow struct{ CPUMinutes, MemMinutes int }
+
+// MonitorStates loads every device with its CPU and memory averages, in one
+// query: each device over its own window (windows), the others over def.
+func (s *Store) MonitorStates(ctx context.Context, def LoadWindow, windows map[int64]LoadWindow) ([]MonitorState, error) {
+	ids := make([]int64, 0, len(windows))
+	cpu := make([]int32, 0, len(windows))
+	mem := make([]int32, 0, len(windows))
+	for id, w := range windows {
+		ids = append(ids, id)
+		cpu = append(cpu, int32(min(w.CPUMinutes, 1<<20))) // #nosec G115 -- clamped
+		mem = append(mem, int32(min(w.MemMinutes, 1<<20))) // #nosec G115 -- clamped
+	}
+	rows, err := s.db.Query(ctx, `WITH w AS (SELECT * FROM unnest($2::bigint[], $3::int[], $4::int[]) AS w(id, cpu, mem)),
+		d AS (SELECT d.*, $1::timestamptz - make_interval(mins => COALESCE(w.cpu, $5)) AS cpu_from,
+			$1::timestamptz - make_interval(mins => COALESCE(w.mem, $6)) AS mem_from
+			FROM devices d LEFT JOIN w ON w.id=d.id)
+		SELECT d.id, x.customer_id, d.hostname, c.name, x.name, d.connected, d.last_seen_at, d.boot_time,
+		d.metrics, d.security, d.stopped_auto, COALESCE(l.cpu, 0), COALESCE(l.n, 0), COALESCE(l.mem, 0)
+		FROM d JOIN sites x ON x.id=d.site_id JOIN customers c ON c.id=x.customer_id
+		LEFT JOIN LATERAL (SELECT avg(cpu) FILTER (WHERE at > d.cpu_from) AS cpu, count(*) FILTER (WHERE at > d.cpu_from) AS n,
+			avg(mem) FILTER (WHERE at > d.mem_from) AS mem
+			FROM device_samples WHERE device_id=d.id AND at > LEAST(d.cpu_from, d.mem_from)) l ON true
+		ORDER BY d.id`,
+		s.now(), ids, cpu, mem, def.CPUMinutes, def.MemMinutes)
 	if err != nil {
 		return nil, err
 	}

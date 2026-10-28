@@ -8,7 +8,7 @@
 <p>Speichern Sie häufig verwendete Skripte unter <a href="/scripts">Skripte → Skriptbibliothek</a> mit Name und Beschreibung. Von dort führen Sie ein Skript auf ausgewählten Geräten, auf allen Geräten einiger Kunden oder auf allen Geräten aus.</p>
 
 <h2 id="jobs">Aufträge</h2>
-<p>Ein Bibliotheksskript auf mehreren Geräten auszuführen erzeugt einen <b>Auftrag</b>. Die Auftragsseite zeigt jedes Gerät mit seinem Status (wartend, läuft, erfolgreich, fehlgeschlagen, abgelaufen) und seiner Ausgabe. Exitcode 0 gilt als Erfolg. Offline-Geräte führen das Skript beim Verbinden aus, innerhalb von 24 Stunden; danach gelten sie als abgelaufen.</p>
+<p>Ein Bibliotheksskript auf mehreren Geräten auszuführen erzeugt einen <b>Auftrag</b>. Die Auftragsseite zeigt jedes Gerät mit seinem Status (wartend, läuft, erfolgreich, fehlgeschlagen, abgelaufen) und seiner Ausgabe. Exitcode 0 gilt als Erfolg. Offline-Geräte führen das Skript beim Verbinden aus, innerhalb von 24 Stunden; danach gelten sie als abgelaufen. Höchstens 32 Skripte von Aufträgen laufen gleichzeitig; die übrigen Geräte zeigen <b>wartend</b>, bis ein Platz frei ist.</p>
 
 <h2 id="schedules">Zeitpläne</h2>
 <p>Ein Skript der Bibliothek kann nach Zeitplan laufen: an gewählten Wochentagen zu einer Uhrzeit (Serverzeit), auf einzelnen Geräten, auf allen Geräten einiger Kunden oder auf allen Geräten (auch neuen). Ein Zeitplan kann pausiert und fortgesetzt werden. Geräte, die zu diesem Zeitpunkt offline sind, führen das Skript beim Verbinden aus, innerhalb von 24 Stunden.</p>

@@ -13,6 +13,7 @@
   <tr><td>Microsoft Defender kapalı</td><td>virüsten koruma veya gerçek zamanlı koruma kapalıysa (isteğe bağlı)</td></tr>
   <tr><td>Güvenlik duvarı kapalı</td><td>bir Windows Güvenlik Duvarı profili kapalıysa (isteğe bağlı)</td></tr>
   <tr><td>Hizmet durdu</td><td>listenizdeki bir hizmet (görünen adlar değil, hizmet adları) otomatik başlamaya ayarlı olduğu halde çalışmıyorsa</td></tr>
+  <tr><td>Disk yakında dolacak</td><td>son 14 gündeki kullanılan alan artışına göre bir disk verilen gün içinde dolacak (0 = kapalı)</td></tr>
 </table>
 <p>Uyarılar <b>Uyarı</b> veya <b>Kritik</b>'tir (kritik: çevrimdışı cihazlar, durmuş hizmetler, kapalı Defender ve 1 GB'tan az boş alanı olan veya %98 dolu diskler). <a href="/alerts">Uyarılar</a> açık olanları (ve isterseniz çözülenleri) listeler; bir teknisyen, başkalarının birinin ilgilendiğini görmesi için bir uyarıyı <b>onaylayabilir</b>. Açık uyarı sayısı menüde gösterilir.</p>
 
@@ -40,3 +41,7 @@
 
 <h2 id="metrics">Anlık değerler</h2>
 <p>Cihaz sayfası anlık CPU yükünü, belleği ve diskleri ve çalışmayan otomatik hizmetleri gösterir.</p>
+
+<h2 id="history">Geçmiş ve disk tahmini</h2>
+<p>Bir cihazın <b>History</b> sekmesi CPU yükünü, belleği, ağ trafiğini (0.11 ve sonraki ajanlar) ve her diskin kullanılan alanını 24 saat, 7, 30 veya 90 gün için çizer. Dakikalık değerler 7 gün, saatlik özetler 90 gün saklanır.</p>
+<p>Sunucu saatlik disk alanından, son 14 gündeki gibi büyümeye devam ederse her diskin ne zaman dolacağını hesaplar. 90 gün içinde dolacak bir disk cihaz sayfasında gösterilir; <b>Disk yakında dolacak</b> uyarı kuralı, ilkede ayarlanan gün sayısı içinde bir uyarı açar (yeni ilkelerde 14; 3 gün içinde kritik).</p>

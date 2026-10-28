@@ -107,6 +107,7 @@
         <label>{{.T "or less free than (GB, disks larger than twice this)"}}<input type="number" name="disk_min_free_gb" value="{{$m.DiskMinFreeGB}}" min="0" max="10000"></label>
         <label>{{.T "Offline longer than (minutes)"}}<input type="number" name="offline_minutes" value="{{$m.OfflineMinutes}}" min="3" max="10080"></label>
         <label>{{.T "Restart pending and up longer than (days)"}}<input type="number" name="reboot_days" value="{{$m.RebootDays}}" min="0" max="365"></label>
+        <label>{{.T "Disk full within (days, by the trend; 0 = off)"}}<input type="number" name="disk_full_days" value="{{$m.DiskFullDays}}" min="0" max="365"></label>
       </div>
       <label class="check"><input type="checkbox" name="defender_off" value="1" {{if $m.DefenderOff}}checked{{end}}>{{.T "Alert when Microsoft Defender antivirus or real-time protection is off"}}</label>
       <label class="check"><input type="checkbox" name="firewall_off" value="1" {{if $m.FirewallOff}}checked{{end}}>{{.T "Alert when a Windows Firewall profile is off"}}</label>

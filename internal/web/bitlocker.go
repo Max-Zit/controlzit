@@ -153,7 +153,7 @@ func systemUnprotected(inv *proto.Inventory) bool {
 // day and starts the encryption where a policy requires it (monitor loop,
 // every few minutes).
 func (s *Server) RunBitLocker(ctx context.Context) {
-	pr, err := s.loadPolicies(ctx)
+	pr, err := s.cachedPolicies(ctx)
 	if err != nil {
 		return
 	}

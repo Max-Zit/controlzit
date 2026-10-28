@@ -13,6 +13,7 @@
   <tr><td>Microsoft Defender wyłączony</td><td>antywirus lub ochrona w czasie rzeczywistym jest wyłączona (opcjonalnie)</td></tr>
   <tr><td>Zapora wyłączona</td><td>profil Zapory systemu Windows jest wyłączony (opcjonalnie)</td></tr>
   <tr><td>Usługa zatrzymana</td><td>usługa z Twojej listy (nazwy usług, nie nazwy wyświetlane) ma uruchamiać się automatycznie, ale nie działa</td></tr>
+  <tr><td>Dysk wkrótce pełny</td><td>według przyrostu zajętego miejsca w ostatnich 14 dniach dysk zapełni się w podanej liczbie dni (0 = wyłączone)</td></tr>
 </table>
 <p>Alerty to <b>Ostrzeżenie</b> lub <b>Krytyczny</b> (krytyczne: urządzenia offline, zatrzymane usługi, wyłączony Defender i dyski z mniej niż 1 GB wolnego miejsca lub zajęte w 98 %). <a href="/alerts">Alerty</a> pokazuje otwarte (i opcjonalnie rozwiązane); technik może <b>potwierdzić</b> alert, aby inni widzieli, że ktoś się nim zajmuje. Liczba otwartych alertów widnieje w menu.</p>
 
@@ -40,3 +41,7 @@
 
 <h2 id="metrics">Bieżące wartości</h2>
 <p>Strona urządzenia pokazuje bieżące obciążenie CPU, pamięć i dyski oraz niedziałające usługi automatyczne.</p>
+
+<h2 id="history">Historia i prognoza dysków</h2>
+<p>Karta <b>History</b> urządzenia rysuje obciążenie CPU, pamięć, ruch sieciowy (agenci 0.11 i nowsi) oraz zajęte miejsce każdego dysku z 24 godzin, 7, 30 lub 90 dni. Wartości minutowe są przechowywane 7 dni, podsumowania godzinowe 90 dni.</p>
+<p>Na podstawie godzinowych danych o miejscu na dysku serwer oblicza, kiedy każdy dysk się zapełni, jeśli będzie rósł jak w ostatnich 14 dniach. Dysk, który zapełni się w ciągu 90 dni, jest pokazany na stronie urządzenia; reguła alertu <b>Dysk wkrótce pełny</b> otwiera alert w liczbie dni ustawionej w zasadzie (14 dla nowych zasad; krytyczny w ciągu 3 dni).</p>

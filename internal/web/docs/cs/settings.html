@@ -41,3 +41,12 @@
 
 <h2 id="fields">Vlastní pole</h2>
 <p>V <a href="/settings/fields">Nastavení → Vlastní pole</a> správci přidávají vlastní pole pro zařízení a zákazníky — text, číslo nebo datum — například inventární číslo, konec záruky nebo smlouvu. Technici je vyplňují na stránkách zařízení a zákazníků; API vrací pole s každým zařízením a nastavuje je přes <code>PUT /api/v1/devices/{id}/fields</code>.</p>
+
+<h2 id="backup">Záloha konzole</h2>
+<p><a href="/settings/backup">Nastavení → Záloha konzole</a> zálohuje konzoli každý den ve zvolenou hodinu, nebo hned tlačítkem <b>Zálohovat nyní</b>. Záloha obsahuje databázi, tajný klíč uložených hesel, certifikáty a klíče, kterým agenti důvěřují, a knihovnu softwaru. Nejnovější zálohy (kolik zvolíte) zůstávají ve složce <code>backups</code> datového adresáře a lze je stáhnout ze stránky.</p>
+<p>S <b>heslem</b> jsou soubory šifrované (AES-256-GCM); heslo uchovávejte jinde, protože bez něj zálohu nelze obnovit. Kopie každé zálohy může jít do <b>složky SFTP</b> na jiném serveru (heslo nebo soukromý klíč). První test spojení ukáže klíč hostitele serveru, kterému máte důvěřovat; kopie jdou jen na server s tímto klíčem. Když záloha nebo její kopie selže, příjemci e-mailů s upozorněními dostanou e-mail.</p>
+<p><b>Obnovení</b> se spouští při zastaveném serveru: na appliance v nabídce nastavení (<b>Restore a backup</b>), s balíčky pro Linux:</p>
+<pre>sudo systemctl stop controlzit-server
+sudo -u controlzit sh -c 'set -a; . /etc/controlzit/server.env; controlzit-server -data-dir /var/lib/controlzit -restore /path/controlzit-backup-….czb'
+sudo systemctl start controlzit-server</pre>
+<p>Heslo šifrované zálohy se čte z <code>CONTROLZIT_BACKUP_PASSPHRASE</code> nebo ze souboru zadaného přes <code>-restore-passphrase-file</code>. Databáze se obnoví v jednom kroku (když selže, nic se nezmění); novější ControlZit obnovenou databázi při spuštění aktualizuje. Nový server obnovený ze zálohy si ponechá všechny agenty, protože důvěřují stejnému certifikátu.</p>

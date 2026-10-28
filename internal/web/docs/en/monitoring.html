@@ -13,6 +13,7 @@
   <tr><td>Microsoft Defender off</td><td>the antivirus or its real-time protection is off (optional)</td></tr>
   <tr><td>Firewall off</td><td>a Windows Firewall profile is off (optional)</td></tr>
   <tr><td>Service stopped</td><td>a service from your list (service names, not display names) is set to start automatically but is not running</td></tr>
+  <tr><td>Disk full soon</td><td>by the growth of its used space over the last 14 days, a disk will be full within the given days (0 = off)</td></tr>
 </table>
 <p>Alerts are a <b>Warning</b> or <b>Critical</b> (critical: offline devices, stopped services, Defender off, and disks with less than 1 GB free or 98 % used). <a href="/alerts">Alerts</a> lists the open ones (and, if you want, the resolved ones); a technician can <b>acknowledge</b> an alert so others see that someone is on it. The number of open alerts is shown in the menu.</p>
 
@@ -40,3 +41,7 @@
 
 <h2 id="metrics">Live values</h2>
 <p>The device page shows the current CPU load, memory and disks, and the automatic services that are not running.</p>
+
+<h2 id="history">History and disk forecast</h2>
+<p>The <b>History</b> tab of a device draws its CPU load, memory, network traffic (agents 0.11 and newer) and the used space of each disk over 24 hours, 7, 30 or 90 days. The minute values are kept 7 days, hourly summaries 90 days.</p>
+<p>From the hourly disk space the server computes when each disk will be full if it keeps growing as in the last 14 days. A disk that will be full within 90 days is shown on the device page; the alert rule <b>Disk full soon</b> opens an alert within the days set in the policy (14 for new policies; critical within 3 days).</p>
