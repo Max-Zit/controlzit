@@ -9,6 +9,7 @@ package main
 import (
 	"bytes"
 	"debug/buildinfo"
+	_ "embed"
 	"flag"
 	"fmt"
 	"os"
@@ -64,6 +65,31 @@ func licenseText(dir string) (string, error) {
 		}
 	}
 	return "", fmt.Errorf("no license file in %s", dir)
+}
+
+// lucideLicense is the license of the Lucide icons (with the Feather part),
+// which the console's and the agent window's icons follow.
+//
+//go:embed notices/lucide.txt
+var lucideLicense string
+
+// extraNotices returns what a module asks to be passed on besides its
+// license: its NOTICE file (Apache-2.0 §4d) and the licenses of files it
+// carries from others (the WebView2 SDK's loader DLL).
+func extraNotices(path, dir string) string {
+	var b strings.Builder
+	for _, name := range []string{"NOTICE", "NOTICE.txt", "NOTICE.md"} {
+		if t, err := os.ReadFile(filepath.Join(dir, name)); err == nil { // #nosec G304 -- module cache
+			fmt.Fprintf(&b, "NOTICE of %s:\n\n```\n%s\n```\n\n", path, strings.TrimSpace(string(t)))
+			break
+		}
+	}
+	if path == "github.com/jchv/go-webview2" {
+		if t, err := os.ReadFile(filepath.Join(dir, "webviewloader", "sdk", "LICENSE.txt")); err == nil { // #nosec G304 -- module cache
+			fmt.Fprintf(&b, "WebView2Loader.dll (Microsoft WebView2 SDK), carried by %s:\n\n```\n%s\n```\n\n", path, strings.TrimSpace(string(t)))
+		}
+	}
+	return b.String()
 }
 
 func modCache() string { return goEnv("GOMODCACHE") }
@@ -125,7 +151,7 @@ func main() {
 	b.WriteString("Its programs contain the following components under their own licenses, all compatible with the AGPL-3.0.\n\n")
 	b.WriteString("| Component | Version | License |\n|---|---|---|\n")
 	b.WriteString("| Go standard library and runtime | " + goVersion + " | BSD-3-Clause |\n")
-	type entry struct{ path, version, kind, text string }
+	type entry struct{ path, version, kind, text, notice string }
 	var list []entry
 	failed := false
 	for _, p := range paths {
@@ -137,19 +163,23 @@ func main() {
 			failed = true
 			continue
 		}
-		list = append(list, entry{p, mods[p], kind, text})
+		list = append(list, entry{p, mods[p], kind, text, extraNotices(p, dir)})
 		fmt.Fprintf(&b, "| %s | %s | %s |\n", p, mods[p], kind)
 	}
 	b.WriteString("\nOther components:\n\n")
 	b.WriteString("- PostgreSQL (PostgreSQL License) is the database; with the development option `--dev-embedded-db` the server downloads PostgreSQL binaries (Zonky embedded-postgres-binaries, Apache-2.0) and runs them.\n")
-	b.WriteString("- The Windows installer is built with WiX Toolset 5 (MS-RL); WiX is a build tool and is not part of the installed agent.\n\n")
+	b.WriteString("- The Windows installer is built with WiX Toolset 5 (MS-RL). The installer carries WiX's unmodified custom-action library of the Util extension (closing the tray program and setting the service's recovery during the installation); the installed agent does not use WiX.\n")
+	b.WriteString("- The agent's window loads the Microsoft Edge WebView2 runtime through WebView2Loader.dll of the Microsoft WebView2 SDK (BSD-3-Clause), which github.com/jchv/go-webview2 carries; its license follows that module's.\n")
+	b.WriteString("- Many icons of the console and of the agent's window are drawn after Lucide (ISC), some of which come from Feather (MIT); see \"Icons\" below.\n\n")
 	goroot := goEnv("GOROOT")
 	if t, err := os.ReadFile(filepath.Join(goroot, "LICENSE")); err == nil { // #nosec G304 -- Go installation
 		b.WriteString("## Go standard library and runtime\n\n```\n" + strings.TrimSpace(string(t)) + "\n```\n\n")
 	}
 	for _, e := range list {
 		fmt.Fprintf(&b, "## %s %s (%s)\n\n```\n%s\n```\n\n", e.path, e.version, e.kind, strings.TrimSpace(e.text))
+		b.WriteString(e.notice)
 	}
+	b.WriteString("## Icons: Lucide (ISC) and Feather (MIT)\n\n```\n" + strings.TrimSpace(lucideLicense) + "\n```\n")
 	if err := os.WriteFile(*out, b.Bytes(), 0o644); err != nil { // #nosec G306 -- a public document
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
