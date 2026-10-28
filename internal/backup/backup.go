@@ -250,11 +250,18 @@ func Restore(ctx context.Context, r io.Reader, passphrase, dataDir string, resto
 		if err != nil {
 			return nil, err
 		}
+		if strings.Contains(h.Name, "..") {
+			return nil, fmt.Errorf("the backup holds an unexpected entry %q", h.Name)
+		}
 		rel, ok := strings.CutPrefix(h.Name, filesPrefix)
 		if !ok || h.Typeflag != tar.TypeReg || !safeRel(rel) {
 			return nil, fmt.Errorf("the backup holds an unexpected entry %q", h.Name)
 		}
-		if err := writeFile(filepath.Join(dataDir, filepath.FromSlash(rel)), tr); err != nil {
+		dst := filepath.Join(dataDir, filepath.FromSlash(rel))
+		if inside, err := filepath.Rel(dataDir, dst); err != nil || strings.HasPrefix(inside, "..") {
+			return nil, fmt.Errorf("the backup holds an unexpected entry %q", h.Name)
+		}
+		if err := writeFile(dst, tr); err != nil {
 			return nil, err
 		}
 	}
