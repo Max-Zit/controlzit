@@ -53,7 +53,7 @@ func init() {
 		if self != nil {
 			self.Log.Info("terminal session started", "session", a.Session, "technician", a.Technician)
 		}
-		go serveTerminal(ws, t, a.Session)
+		go serveTerminal(ws, t, a.Session) // #nosec G118 -- the session outlives the command that started it
 		return nil, nil
 	})
 }
