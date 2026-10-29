@@ -259,11 +259,11 @@ func regDeleteTree(parent registry.Key, name string, depth int) error {
 	subs, _ := k.ReadSubKeyNames(-1)
 	for _, s := range subs {
 		if err := regDeleteTree(k, s, depth+1); err != nil {
-			k.Close()
+			_ = k.Close()
 			return err
 		}
 	}
-	k.Close()
+	_ = k.Close()
 	return regErr(registry.DeleteKey(parent, name))
 }
 
@@ -281,7 +281,7 @@ func regNewKey(_ context.Context, raw json.RawMessage) (any, error) {
 	if err != nil {
 		return nil, regErr(err)
 	}
-	k.Close()
+	_ = k.Close()
 	return nil, nil
 }
 
