@@ -132,6 +132,28 @@
   </section>
 
   <section class="panel">
+    <h2><label class="check"><input type="checkbox" name="mon_set" value="1" {{if $s.Monitors}}checked{{end}} data-part="pol-mon">{{template "icon" "audit"}}{{.T "Monitors"}}</label></h2>
+    <div id="pol-mon" class="policy-part">
+      <p class="small muted">{{.T "The devices of this policy are asked every 5 minutes. An event rule opens an alert when at least the given number of matching events came within its minutes (Windows event logs); a process rule when the program is not running (Windows and Linux). Agents 0.12 and newer."}}</p>
+      <h3 class="small">{{.T "Events"}}</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>{{.T "Name"}}</th><th>{{.T "Log"}}</th><th>{{.T "Event IDs"}}</th><th>{{.T "Source"}}</th><th>{{.T "Level"}}</th><th>{{.T "At least"}}</th><th>{{.T "Within (minutes)"}}</th><th>{{.T "Severity"}}</th><th></th></tr></thead>
+        <tbody id="ev-rows">{{range .Data.Events}}{{template "evrow" (rowctx $ .)}}{{end}}</tbody>
+      </table></div>
+      <template id="ev-new">{{template "evrow" (rowctx $ .Data.NewEvent)}}</template>
+      <button type="button" class="secondary sm mt" data-add-row="ev-new" data-rows="ev-rows">{{template "icon" "plus"}}{{.T "Add an event rule"}}</button>
+      <p class="small muted">{{.T "Examples: Security 4625 (failed sign-ins), 5 within 10 minutes; System 41 (unexpected restart); System 7031, 7034 (a service ended unexpectedly). Security log events have no level: keep the level at any."}}</p>
+      <h3 class="small mt">{{.T "Processes that must run"}}</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>{{.T "Program"}}</th><th>{{.T "Severity"}}</th><th></th></tr></thead>
+        <tbody id="proc-rows">{{range .Data.Procs}}{{template "procrow" (rowctx $ .)}}{{end}}</tbody>
+      </table></div>
+      <template id="proc-new">{{template "procrow" (rowctx $ .Data.NewProc)}}</template>
+      <button type="button" class="secondary sm mt" data-add-row="proc-new" data-rows="proc-rows">{{template "icon" "plus"}}{{.T "Add a process"}}</button>
+    </div>
+  </section>
+
+  <section class="panel">
     <h2><label class="check"><input type="checkbox" name="automations_set" value="1" {{if $s.Automations}}checked{{end}} data-part="pol-auto">{{template "icon" "clock"}}{{.T "Automations"}}</label></h2>
     <div id="pol-auto" class="policy-part">
       <p class="small muted">{{.T "Library scripts that run on the devices of this policy on the chosen days and time (server time). Offline devices run them when they connect, within 24 hours."}}</p>
@@ -232,5 +254,28 @@
     <option value="alert" {{if not $b.Remove}}selected{{end}}>{{$p.T "Alert only"}}</option>
     <option value="remove" {{if $b.Remove}}selected{{end}}>{{$p.T "Alert and remove"}}</option>
   </select></td>
+  <td class="nowrap actions"><button type="button" class="ghost sm" data-remove-row aria-label="{{$p.T "Remove"}}">{{template "icon" "trash"}}</button></td>
+</tr>{{end}}
+
+{{define "evrow"}}{{$p := .P}}{{$e := .Row}}<tr data-row>
+  <td><input name="ev_name" value="{{$e.Name}}" maxlength="60" placeholder="{{$p.T "Failed sign-ins"}}"></td>
+  <td><select name="ev_log">{{range $p.Data.Logs}}<option value="{{.}}" {{if eq . $e.Log}}selected{{end}}>{{$p.T .}}</option>{{end}}</select></td>
+  <td><input name="ev_ids" value="{{$e.IDText}}" maxlength="80" placeholder="4625" class="mono"></td>
+  <td><input name="ev_source" value="{{$e.Source}}" maxlength="200" placeholder="{{$p.T "any"}}"></td>
+  <td><select name="ev_level">
+    <option value="0" {{if eq $e.Level 0}}selected{{end}}>{{$p.T "any"}}</option>
+    <option value="1" {{if eq $e.Level 1}}selected{{end}}>{{$p.T "critical"}}</option>
+    <option value="2" {{if eq $e.Level 2}}selected{{end}}>{{$p.T "error or worse"}}</option>
+    <option value="3" {{if eq $e.Level 3}}selected{{end}}>{{$p.T "warning or worse"}}</option>
+  </select></td>
+  <td><input type="number" name="ev_count" value="{{$e.Count}}" min="1" max="10000" class="narrow"></td>
+  <td><input type="number" name="ev_minutes" value="{{$e.Minutes}}" min="5" max="1440" class="narrow"></td>
+  <td><select name="ev_severity"><option value="warning" {{if eq $e.Severity "warning"}}selected{{end}}>{{$p.T "warning"}}</option><option value="critical" {{if eq $e.Severity "critical"}}selected{{end}}>{{$p.T "critical"}}</option></select></td>
+  <td class="nowrap actions"><button type="button" class="ghost sm" data-remove-row aria-label="{{$p.T "Remove"}}">{{template "icon" "trash"}}</button></td>
+</tr>{{end}}
+
+{{define "procrow"}}{{$p := .P}}{{$r := .Row}}<tr data-row>
+  <td><input name="proc_name" value="{{$r.Name}}" maxlength="100" placeholder="sqlservr.exe" class="mono"></td>
+  <td><select name="proc_severity"><option value="warning" {{if eq $r.Severity "warning"}}selected{{end}}>{{$p.T "warning"}}</option><option value="critical" {{if eq $r.Severity "critical"}}selected{{end}}>{{$p.T "critical"}}</option></select></td>
   <td class="nowrap actions"><button type="button" class="ghost sm" data-remove-row aria-label="{{$p.T "Remove"}}">{{template "icon" "trash"}}</button></td>
 </tr>{{end}}

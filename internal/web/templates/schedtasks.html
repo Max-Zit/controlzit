@@ -1,0 +1,41 @@
+{{template "app" .}}
+{{define "content"}}
+{{$d := .Data.D}}{{$t := .Data}}
+<p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a> / <a href="/devices/{{$d.ID}}">{{$d.Hostname}}</a></p>
+<h1>{{template "icon" "clock"}}{{.T "Scheduled tasks"}} <span class="muted h1-sub">{{$d.Hostname}}</span></h1>
+{{template "devtabs" (devtabs . $d "tasks")}}
+
+{{if $t.OldAgent}}<div class="flash warn" role="status">{{template "icon" "alert"}}<span>{{.T "Scheduled tasks need agent 0.12 or newer; update the agent (Settings → Agent updates)."}}</span></div>
+{{else}}
+{{if $t.Err}}<div class="flash err" role="alert">{{template "icon" "alert"}}<span>{{$t.Err}}</span></div>{{end}}
+{{if not $t.Offline}}
+<section class="panel">
+  <form method="get" action="/devices/{{$d.ID}}/tasks" class="row filter">
+    <input type="search" name="q" value="{{$t.Q}}" placeholder="{{.T "Search by name or command"}}" aria-label="{{.T "Search"}}">
+    <label class="check"><input type="checkbox" name="all" value="1" {{if $t.All}}checked{{end}} data-autosubmit>{{.T "Include Windows' own tasks"}}</label>
+    <button class="secondary">{{.T "Filter"}}</button>
+    <span class="muted small">{{.T "%d of %d" (len $t.Tasks) $t.Total}}</span>
+  </form>
+  {{if $t.Tasks}}
+  <div class="table-wrap mt"><table>
+    <thead><tr><th>{{.T "Task"}}</th><th>{{.T "State"}}</th><th class="hide-sm">{{.T "Last run"}}</th><th class="hide-sm">{{.T "Next run"}}</th><th></th></tr></thead>
+    <tbody>{{range $t.Tasks}}<tr>
+      <td><b>{{.Name}}</b><br><code class="small muted">{{.Path}}</code>{{if .Action}}<br><span class="small muted mono wrap">{{.Action}}</span>{{end}}{{if .RunAs}}<br><span class="small muted">{{$.T "Runs as"}} {{.RunAs}}</span>{{end}}</td>
+      <td class="nowrap">{{if eq .State "Running"}}<span class="badge warn"><i></i>{{$.T "running"}}</span>{{else if eq .State "Disabled"}}<span class="badge"><i></i>{{$.T "disabled"}}</span>{{else if eq .State "Ready"}}<span class="badge ok"><i></i>{{$.T "ready"}}</span>{{else}}<span class="badge"><i></i>{{.State}}</span>{{end}}</td>
+      <td class="hide-sm small">{{if .LastRun}}{{$.Time .LastRun}}<br><span class="muted">{{$t.TaskResult .LastResult}}</span>{{else}}—{{end}}</td>
+      <td class="hide-sm small">{{if .NextRun}}{{$.Time .NextRun}}{{else}}—{{end}}</td>
+      <td class="nowrap actions">
+        <form method="post" action="/devices/{{$d.ID}}/tasks" class="inline">
+          <input type="hidden" name="path" value="{{.Path}}"><input type="hidden" name="name" value="{{.Name}}"><input type="hidden" name="q" value="{{$t.Q}}"><input type="hidden" name="all" value="{{if $t.All}}1{{end}}">
+          {{if eq .State "Running"}}<button class="secondary sm" name="action" value="end">{{$.T "End"}}</button>{{else if ne .State "Disabled"}}<button class="secondary sm" name="action" value="run">{{$.T "Run"}}</button>{{end}}
+          {{if eq .State "Disabled"}}<button class="secondary sm" name="action" value="enable">{{$.T "Enable"}}</button>{{else}}<button class="ghost sm" name="action" value="disable" data-confirm="{{$.T "Disable the task %s?" .Name}}">{{$.T "Disable"}}</button>{{end}}
+          <button class="ghost sm" name="action" value="delete" data-confirm="{{$.T "Delete the task %s?" .Name}}">{{template "icon" "trash"}}{{$.T "Delete"}}</button>
+        </form>
+      </td>
+    </tr>{{end}}</tbody>
+  </table></div>
+  {{else}}<p class="muted mt">{{.T "No tasks match."}}</p>{{end}}
+</section>
+{{end}}
+{{end}}
+{{end}}

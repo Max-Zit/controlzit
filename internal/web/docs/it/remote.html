@@ -19,11 +19,17 @@
 <h3 id="linux-rd">Linux</h3>
 <p>Il desktop remoto funziona sui desktop Linux con X11 (Xorg). Wayland non consente a un servizio in background di vedere o controllare lo schermo: accedi lì con una sessione X11 o usa il terminale. Senza desktop grafico, usa il terminale.</p>
 
-<h2 id="terminal">Terminale (Linux)</h2>
+<h2 id="terminal">Terminale (Linux, Windows)</h2>
 <p><b>Terminale</b> apre una shell root del dispositivo nel browser. Fai clic all'interno per digitare; copia selezionando il testo, incolla con <kbd>Ctrl</kbd>+<kbd>Maiusc</kbd>+<kbd>V</kbd> o <b>Invia testo</b>. L'inizio e la fine della sessione vengono scritti nel log di audit. Su Windows usa gli <a href="/docs/scripts">Script</a>.</p>
+<p>Su Windows (agenti 0.12 e successivi, Windows 10 1809 / Server 2019 e successivi) il terminale è Windows PowerShell eseguito come SYSTEM su una pseudoconsole. Uscendo dalla pagina terminano la shell e tutti i programmi che ha avviato.</p>
 
 <h2 id="files">File</h2>
 <p><b>File</b> esplora le unità del computer senza collegarsi allo schermo. Carica file (fino a 4 GB), scarica file, scarica una cartella o una selezione come ZIP, crea cartelle, rinomina ed elimina. L'agent esegue ogni operazione sui file come SYSTEM (Windows) o root (Linux); ognuna viene scritta nel log di audit con il tuo nome.</p>
 
 <h2 id="processes">Processi e servizi</h2>
 <p><b>Processi</b> elenca i programmi in esecuzione con memoria, thread e sessione e termina un processo. <b>Servizi</b> elenca i servizi (servizi Windows o unità systemd) e li avvia, arresta o riavvia. L'agent ControlZit si protegge da solo: non può essere arrestato o terminato dalla console.</p>
+
+<h2 id="registry">Editor del registro (Windows)</h2>
+<p>La scheda <b>Registry</b> di un dispositivo Windows sfoglia il registro: apri una chiave dal suo percorso (per esempio <code>HKLM\SOFTWARE\Vendor</code>) o naviga dalle radici HKLM, HKU, HKCR e HKCC. I valori si possono aggiungere, modificare ed eliminare (REG_SZ, REG_EXPAND_SZ, REG_DWORD, REG_QWORD, REG_MULTI_SZ; numeri in decimale o in esadecimale 0x); i valori binari sono mostrati in esadecimale. Le chiavi si possono creare ed eliminare con tutto il contenuto; le radici, le chiavi subito sotto e i rami propri del sistema sono protetti. Ogni modifica viene scritta nel registro di controllo con il valore sostituito. I registri degli utenti sono sotto HKU (per SID); HKCU sarebbe quello di SYSTEM. Agenti 0.12 e successivi.</p>
+<h2 id="tasks">Attività pianificate (Windows)</h2>
+<p>La scheda <b>Scheduled tasks</b> elenca le attività dell'Utilità di pianificazione con stato, ultima esecuzione e risultato, prossima esecuzione, account e comando. Le attività di Windows (sotto \Microsoft\) sono nascoste finché non le includi. Un'attività si può avviare, terminare, attivare, disattivare ed eliminare; ogni azione viene registrata. Agenti 0.12 e successivi.</p>

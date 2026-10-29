@@ -45,3 +45,11 @@
 <h2 id="history">Historie a předpověď disků</h2>
 <p>Karta <b>History</b> zařízení kreslí zátěž CPU, paměť, síťový provoz (agenti 0.11 a novější) a využité místo každého disku za 24 hodin, 7, 30 nebo 90 dní. Minutové hodnoty se uchovávají 7 dní, hodinové souhrny 90 dní.</p>
 <p>Z hodinových údajů o místě na disku server spočítá, kdy bude každý disk plný, pokud bude dál růst jako za posledních 14 dní. Disk, který bude plný do 90 dní, se zobrazí na stránce zařízení; pravidlo upozornění <b>Disk brzy plný</b> otevře upozornění v počtu dní nastaveném v zásadě (14 u nových zásad; kritické do 3 dní).</p>
+
+<h2 id="monitors">Monitory: události a procesy</h2>
+<p>Část zásady <b>Monitors</b> sleduje protokoly událostí Windows a programy, které musí běžet. Zařízení zásady se dotazují každých 5 minut (agenti 0.12 a novější).</p>
+<ul>
+  <li><b>Pravidla událostí</b>: protokol (System, Application, Security nebo Setup), volitelně ID událostí, zdroj a úroveň, a kolik odpovídajících událostí za kolik minut otevře upozornění (varování nebo kritické). Příklady: Security 4625 (neúspěšná přihlášení) 5krát během 10 minut; System 41 (neočekávaný restart); System 7031 a 7034 (služba neočekávaně skončila). Události protokolu Security nemají úroveň: ponechte úroveň <i>libovolná</i>.</li>
+  <li><b>Procesy, které musí běžet</b>: název programu, např. <code>sqlservr.exe</code> (Windows) nebo <code>nginx</code> (Linux); upozornění je otevřené, dokud neběží.</li>
+</ul>
+<p>Stránka zařízení ukazuje každé pravidlo s posledním výsledkem. Upozornění se samo zavře, když podmínka zmizí.</p>

@@ -13,7 +13,8 @@ import (
 	"github.com/max-zit/controlzit/internal/proto"
 )
 
-// Terminal (Linux devices): a root shell in the browser. Sessions use the
+// Terminal: a root shell (Linux) or PowerShell as SYSTEM (Windows, agents
+// windowsTermVersion and newer) in the browser. Sessions use the
 // remote desktop hub and stream endpoint; the server copies messages
 // between the browser and the agent without looking into them, and audits
 // the start and the end (not the keystrokes, which may hold passwords).
@@ -62,8 +63,8 @@ func (s *Server) handleTermSocket(w http.ResponseWriter, r *http.Request) {
 		_ = bws.Write(ctx, websocket.MessageText, []byte(`{"t":"error","text":`+strconv.Quote(translate(s.lang(r, u), msg))+`}`))
 		_ = bws.Close(websocket.StatusNormalClosure, "")
 	}
-	if d.IsWindows() {
-		fail("The terminal is available on Linux devices. On Windows, use Scripts.")
+	if d.IsWindows() && tooOldFor(d, windowsTermVersion) {
+		fail("The terminal on Windows needs agent 0.12 or newer; update the agent (Settings → Agent updates).")
 		return
 	}
 	name := u.DisplayName
@@ -132,3 +133,6 @@ func (s *Server) handleTermSocket(w http.ResponseWriter, r *http.Request) {
 	s.audit(r, "term.end", "device:"+strconv.FormatInt(d.ID, 10), "terminal session %s to %q ended after %s (%s shown, %s typed)", sess.id, d.Hostname, dur, formatBytes(uint64(bytesDown.Load())), formatBytes(uint64(bytesUp.Load()))) // #nosec G115 -- byte counts
 	s.log.Info("terminal session ended", "device", d.ID, "session", sess.id, "duration", dur.String(), "reason", errString(err))
 }
+
+// windowsTermVersion is the first agent with the Windows terminal.
+const windowsTermVersion = "0.12.0"

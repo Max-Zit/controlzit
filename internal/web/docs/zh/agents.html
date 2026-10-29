@@ -33,3 +33,10 @@ sudo ./controlzit-agent-linux-amd64 install --code "CZ1-…"</pre>
 
 <h2 id="remove">移除代理</h2>
 <p>在设备页面上删除设备（<b>移除设备</b>）。如果设备在线，代理会在几秒内自行卸载，Windows 更新会恢复其自身的设置。离线计算机将无法再连接；请在其上手动卸载代理（Windows：<i>应用 → ControlZit Agent → 卸载</i>；Linux：<code>sudo controlzit-agent uninstall</code>）。</p>
+
+<h2 id="mass">大量计算机：组策略和 Intune</h2>
+<p>创建一个使用次数足够所有计算机的注册码；站点页面随后会显示以下内容（已填入该注册码）：</p>
+<ul>
+  <li><b>组策略</b>：一个 PowerShell 启动脚本。将 MSI 放到计算机帐户（Domain Computers）可读取的共享中，输入其路径，复制脚本并将其添加到 计算机配置 → 策略 → Windows 设置 → 脚本 → 启动 → PowerShell 脚本。已安装代理（服务 <code>ControlZitAgent</code>）的计算机会跳过；安装日志为 <code>%windir%\Temp\controlzit-agent-install.log</code>。</li>
+  <li><b>Microsoft Intune</b>：将代理添加为 Windows 应用（Win32）：用 Microsoft 的 IntuneWinAppUtil 打包 MSI，并使用站点页面上的安装和卸载命令、安装行为<i>系统</i>以及检测规则（文件 <code>C:\Program Files\ControlZit Agent\controlzit-agent.exe</code>）。不要作为业务线（LOB）MSI 添加：代理会自行更新，Intune 随后会重新安装旧版本。</li>
+</ul>

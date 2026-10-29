@@ -124,6 +124,11 @@ func (p *Page) Time(t any) string {
 			return "—"
 		}
 		return v.Local().Format("2006-01-02 15:04")
+	case string: // RFC 3339, as agents send times
+		if ts, err := time.Parse(time.RFC3339, v); err == nil {
+			return p.Time(ts)
+		}
+		return "—"
 	}
 	return ""
 }

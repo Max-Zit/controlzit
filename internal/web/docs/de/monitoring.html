@@ -45,3 +45,11 @@
 <h2 id="history">Verlauf und Prognose für Datenträger</h2>
 <p>Der Reiter <b>History</b> eines Geräts zeichnet CPU-Last, Arbeitsspeicher, Netzwerkverkehr (Agenten ab 0.11) und den belegten Speicher jedes Datenträgers über 24 Stunden, 7, 30 oder 90 Tage. Minutenwerte werden 7 Tage aufbewahrt, Stundenzusammenfassungen 90 Tage.</p>
 <p>Aus dem stündlichen Speicherplatz berechnet der Server, wann jeder Datenträger voll ist, wenn er weiter wie in den letzten 14 Tagen wächst. Ein Datenträger, der innerhalb von 90 Tagen voll ist, wird auf der Geräteseite angezeigt; die Warnregel <b>Datenträger bald voll</b> öffnet eine Warnung innerhalb der in der Richtlinie eingestellten Tage (14 bei neuen Richtlinien; kritisch innerhalb von 3 Tagen).</p>
+
+<h2 id="monitors">Überwachung: Ereignisse und Prozesse</h2>
+<p>Der Teil <b>Monitors</b> einer Richtlinie überwacht die Windows-Ereignisprotokolle und Programme, die laufen müssen. Die Geräte der Richtlinie werden alle 5 Minuten abgefragt (Agenten ab 0.12).</p>
+<ul>
+  <li><b>Ereignisregeln</b>: ein Protokoll (System, Application, Security oder Setup), optional Ereignis-IDs, eine Quelle und eine Stufe, und wie viele passende Ereignisse in wie vielen Minuten eine Warnung öffnen (Warnung oder kritisch). Beispiele: Security 4625 (fehlgeschlagene Anmeldungen) 5-mal in 10 Minuten; System 41 (unerwarteter Neustart); System 7031 und 7034 (ein Dienst wurde unerwartet beendet). Ereignisse des Security-Protokolls haben keine Stufe: Stufe auf <i>beliebig</i> lassen.</li>
+  <li><b>Prozesse, die laufen müssen</b>: ein Programmname wie <code>sqlservr.exe</code> (Windows) oder <code>nginx</code> (Linux); eine Warnung bleibt offen, solange es nicht läuft.</li>
+</ul>
+<p>Die Geräteseite zeigt jede Regel mit ihrem letzten Ergebnis. Die Warnung schließt sich von selbst, wenn die Bedingung weg ist.</p>

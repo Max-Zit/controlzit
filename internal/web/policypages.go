@@ -54,10 +54,15 @@ type policyData struct {
 	Blocked     []BlockedApp   // with an empty row to add
 	NewBlocked  BlockedApp     // the row "Add a blocked program" adds
 	NewNet      NetCheckRule   // the row "Add a check" adds
-	Required    []RequiredApp  // with empty rows to add
-	NewApp      RequiredApp    // the row "Add a program" adds
-	NewRun      Automation     // the row "Add an automation" adds
-	Runs        []Automation   // with empty rows to add
+	Events      []EventRule    // event rules, with an empty row to add
+	NewEvent    EventRule
+	Procs       []ProcessRule
+	NewProc     ProcessRule
+	Logs        []string
+	Required    []RequiredApp // with empty rows to add
+	NewApp      RequiredApp   // the row "Add a program" adds
+	NewRun      Automation    // the row "Add an automation" adds
+	Runs        []Automation  // with empty rows to add
 	Days        []int
 	Hours       []int
 	Assigned    []store.Assignment
@@ -145,6 +150,19 @@ func (s *Server) showPolicy(w http.ResponseWriter, r *http.Request, p *store.Pol
 	d.NewNet = NetCheckRule{NetCheck: proto.NetCheck{Kind: proto.NetPing}, FailMinutes: 3}
 	if len(d.Nets) == 0 {
 		d.Nets = append(d.Nets, d.NewNet)
+	}
+	d.Logs = proto.EventLogs
+	d.NewEvent = EventRule{Log: "System", Count: 1, Minutes: 15, Severity: "warning"}
+	d.NewProc = ProcessRule{Severity: "critical"}
+	if d.S.Monitors != nil {
+		d.Events = append(d.Events, d.S.Monitors.Events...)
+		d.Procs = append(d.Procs, d.S.Monitors.Processes...)
+	}
+	if len(d.Events) == 0 {
+		d.Events = append(d.Events, d.NewEvent)
+	}
+	if len(d.Procs) == 0 {
+		d.Procs = append(d.Procs, d.NewProc)
 	}
 	if d.S.Software != nil {
 		d.Required = append(d.Required, d.S.Software.Required...)
@@ -260,6 +278,38 @@ func policyForm(r *http.Request) (PolicySettings, string) {
 			n.Checks = append(n.Checks, c)
 		}
 		ps.NetChecks = n
+	}
+	if r.FormValue("mon_set") == "1" {
+		m := &MonitorPolicy{}
+		names, logs, ids, srcs, levels, counts, mins, sevs := r.Form["ev_name"], r.Form["ev_log"], r.Form["ev_ids"], r.Form["ev_source"],
+			r.Form["ev_level"], r.Form["ev_count"], r.Form["ev_minutes"], r.Form["ev_severity"]
+		for i := range names {
+			if i >= len(logs) || i >= len(ids) || i >= len(srcs) || i >= len(levels) || i >= len(counts) || i >= len(mins) || i >= len(sevs) {
+				break
+			}
+			e := EventRule{Name: strings.TrimSpace(names[i]), Log: logs[i], Source: strings.TrimSpace(srcs[i]), Severity: sevs[i]}
+			if e.Name == "" && strings.TrimSpace(ids[i]) == "" && e.Source == "" {
+				continue
+			}
+			var err error
+			if e.IDs, err = parseEventIDs(ids[i]); err != nil {
+				return ps, err.Error()
+			}
+			e.Level, _ = strconv.Atoi(levels[i])
+			e.Count, _ = strconv.Atoi(counts[i])
+			e.Minutes, _ = strconv.Atoi(mins[i])
+			m.Events = append(m.Events, e)
+		}
+		pnames, psevs := r.Form["proc_name"], r.Form["proc_severity"]
+		for i := range pnames {
+			if i >= len(psevs) {
+				break
+			}
+			if n := strings.TrimSpace(pnames[i]); n != "" {
+				m.Processes = append(m.Processes, ProcessRule{Name: n, Severity: psevs[i]})
+			}
+		}
+		ps.Monitors = m
 	}
 	if r.FormValue("maint_set") == "1" {
 		m := &MaintenancePolicy{Windows: []MaintWindow{}, Quiet: r.FormValue("maint_quiet") == "1"}
@@ -552,6 +602,8 @@ func (s *Server) handleDevicePolicy(w http.ResponseWriter, r *http.Request) {
 	dd.Parts = append(dd.Parts, policyPart{Name: "Maintenance windows", Source: src})
 	_, src = pr.netChecks(d.ID)
 	dd.Parts = append(dd.Parts, policyPart{Name: "Network checks", Source: src})
+	_, src = pr.monitors(d.ID)
+	dd.Parts = append(dd.Parts, policyPart{Name: "Monitors", Source: src})
 	dd.InWindow = dd.Maint.active(s.now().Local())
 	if reqs, err := s.store.RestartRequests(ctx); err == nil {
 		if q, ok := reqs[d.ID]; ok {

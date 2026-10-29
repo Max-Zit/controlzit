@@ -33,3 +33,10 @@ sudo ./controlzit-agent-linux-amd64 install --code "CZ1-…"</pre>
 
 <h2 id="remove">Remover um agente</h2>
 <p>Elimine o dispositivo na sua página (<b>Remover dispositivo</b>). Se estiver online, o agente desinstala-se em segundos e o Windows Update recupera as suas próprias definições. Um computador offline já não consegue ligar-se; desinstale lá o agente manualmente (Windows: <i>Aplicações → ControlZit Agent → Desinstalar</i>; Linux: <code>sudo controlzit-agent uninstall</code>).</p>
+
+<h2 id="mass">Muitos computadores: Política de Grupo e Intune</h2>
+<p>Crie um código de inscrição com utilizações suficientes para todos os computadores; a página do local mostra então, preenchidos com esse código:</p>
+<ul>
+  <li><b>Política de Grupo</b>: um script de arranque PowerShell. Coloque o MSI numa partilha que as contas de computador (Computadores do domínio) possam ler, introduza o caminho, copie o script e adicione-o em Configuração do Computador → Políticas → Definições do Windows → Scripts → Arranque → Scripts do PowerShell. Os computadores que têm o agente (serviço <code>ControlZitAgent</code>) saltam-no; o registo de instalação é <code>%windir%\Temp\controlzit-agent-install.log</code>.</li>
+  <li><b>Microsoft Intune</b>: adicione o agente como aplicação Windows (Win32): empacote o MSI com o IntuneWinAppUtil da Microsoft e use os comandos de instalação e desinstalação, o comportamento de instalação <i>Sistema</i> e a regra de deteção (ficheiro <code>C:\Program Files\ControlZit Agent\controlzit-agent.exe</code>) da página do local. Não o adicione como MSI de linha de negócio: o agente atualiza-se sozinho e o Intune voltaria a instalar a versão antiga.</li>
+</ul>

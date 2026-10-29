@@ -45,3 +45,11 @@
 <h2 id="history">Histórico e previsão de discos</h2>
 <p>O separador <b>History</b> de um dispositivo desenha a carga da CPU, a memória, o tráfego de rede (agentes 0.11 e mais recentes) e o espaço usado de cada disco em 24 horas, 7, 30 ou 90 dias. Os valores por minuto são guardados 7 dias e os resumos por hora 90 dias.</p>
 <p>A partir do espaço em disco por hora, o servidor calcula quando cada disco ficará cheio se continuar a crescer como nos últimos 14 dias. Um disco que ficará cheio dentro de 90 dias aparece na página do dispositivo; a regra de alerta <b>Disco cheio em breve</b> abre um alerta dentro dos dias definidos na política (14 nas políticas novas; crítico dentro de 3 dias).</p>
+
+<h2 id="monitors">Monitores: eventos e processos</h2>
+<p>A parte <b>Monitors</b> de uma política vigia os registos de eventos do Windows e os programas que devem estar em execução. Os dispositivos da política são consultados a cada 5 minutos (agentes 0.12 e mais recentes).</p>
+<ul>
+  <li><b>Regras de eventos</b>: um registo (System, Application, Security ou Setup), opcionalmente IDs de eventos, uma origem e um nível, e quantos eventos correspondentes em quantos minutos abrem um alerta (aviso ou crítico). Exemplos: Security 4625 (inícios de sessão falhados) 5 vezes em 10 minutos; System 41 (reinício inesperado); System 7031 e 7034 (um serviço terminou inesperadamente). Os eventos do registo Security não têm nível: deixe o nível em <i>qualquer</i>.</li>
+  <li><b>Processos que devem estar em execução</b>: um nome de programa como <code>sqlservr.exe</code> (Windows) ou <code>nginx</code> (Linux); um alerta fica aberto enquanto não estiver em execução.</li>
+</ul>
+<p>A página do dispositivo mostra cada regra com o último resultado. O alerta fecha-se sozinho quando a condição desaparece.</p>

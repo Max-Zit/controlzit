@@ -45,3 +45,11 @@
 <h2 id="history">Historia i prognoza dysków</h2>
 <p>Karta <b>History</b> urządzenia rysuje obciążenie CPU, pamięć, ruch sieciowy (agenci 0.11 i nowsi) oraz zajęte miejsce każdego dysku z 24 godzin, 7, 30 lub 90 dni. Wartości minutowe są przechowywane 7 dni, podsumowania godzinowe 90 dni.</p>
 <p>Na podstawie godzinowych danych o miejscu na dysku serwer oblicza, kiedy każdy dysk się zapełni, jeśli będzie rósł jak w ostatnich 14 dniach. Dysk, który zapełni się w ciągu 90 dni, jest pokazany na stronie urządzenia; reguła alertu <b>Dysk wkrótce pełny</b> otwiera alert w liczbie dni ustawionej w zasadzie (14 dla nowych zasad; krytyczny w ciągu 3 dni).</p>
+
+<h2 id="monitors">Monitory: zdarzenia i procesy</h2>
+<p>Część zasady <b>Monitors</b> obserwuje dzienniki zdarzeń Windows i programy, które muszą działać. Urządzenia zasady są odpytywane co 5 minut (agenci 0.12 i nowsi).</p>
+<ul>
+  <li><b>Reguły zdarzeń</b>: dziennik (System, Application, Security lub Setup), opcjonalnie identyfikatory zdarzeń, źródło i poziom, oraz ile pasujących zdarzeń w ciągu ilu minut otwiera alert (ostrzeżenie lub krytyczny). Przykłady: Security 4625 (nieudane logowania) 5 razy w ciągu 10 minut; System 41 (nieoczekiwany restart); System 7031 i 7034 (usługa nieoczekiwanie zakończyła działanie). Zdarzenia dziennika Security nie mają poziomu: zostaw poziom <i>dowolny</i>.</li>
+  <li><b>Procesy, które muszą działać</b>: nazwa programu, np. <code>sqlservr.exe</code> (Windows) lub <code>nginx</code> (Linux); alert jest otwarty, dopóki nie działa.</li>
+</ul>
+<p>Strona urządzenia pokazuje każdą regułę z ostatnim wynikiem. Alert zamyka się sam, gdy warunek zniknie.</p>

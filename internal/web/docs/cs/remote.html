@@ -19,11 +19,17 @@
 <h3 id="linux-rd">Linux</h3>
 <p>Vzdálená plocha funguje na linuxových plochách s X11 (Xorg). Wayland nedovolí službě na pozadí vidět obrazovku ani ji ovládat: přihlaste se tam do relace X11 nebo použijte terminál. Bez grafické plochy použijte terminál.</p>
 
-<h2 id="terminal">Terminál (Linux)</h2>
+<h2 id="terminal">Terminál (Linux, Windows)</h2>
 <p><b>Terminál</b> otevře root shell zařízení v prohlížeči. Klikněte do něj a pište; kopírujte výběrem textu, vkládejte pomocí <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> nebo <b>Odeslat text</b>. Začátek a konec relace se zapisují do auditního protokolu. Ve Windows použijte <a href="/docs/scripts">Skripty</a>.</p>
+<p>Ve Windows (agenti 0.12 a novější, Windows 10 1809 / Server 2019 a novější) je terminálem Windows PowerShell běžící jako SYSTEM na pseudokonzoli. Opuštěním stránky skončí shell i všechny programy, které spustil.</p>
 
 <h2 id="files">Soubory</h2>
 <p><b>Soubory</b> procházejí jednotky počítače bez připojení k obrazovce. Nahrávejte soubory (až 4 GB), stahujte soubory, stáhněte složku nebo výběr jako ZIP, vytvářejte složky, přejmenovávejte a mažte. Agent provádí každou operaci se soubory jako SYSTEM (Windows) nebo root (Linux); každá se zapisuje do auditního protokolu s vaším jménem.</p>
 
 <h2 id="processes">Procesy a služby</h2>
 <p><b>Procesy</b> ukazují běžící programy s pamětí, vlákny a relací a ukončí proces. <b>Služby</b> ukazují služby (služby Windows nebo jednotky systemd) a spouštějí, zastavují nebo restartují je. Agent ControlZit chrání sám sebe: z konzole jej nelze zastavit ani ukončit.</p>
+
+<h2 id="registry">Editor registru (Windows)</h2>
+<p>Karta <b>Registry</b> zařízení s Windows prochází registr: otevřete klíč podle cesty (například <code>HKLM\SOFTWARE\Vendor</code>) nebo procházejte klíče od kořenů HKLM, HKU, HKCR a HKCC. Hodnoty lze přidat, změnit a smazat (REG_SZ, REG_EXPAND_SZ, REG_DWORD, REG_QWORD, REG_MULTI_SZ; čísla desítkově nebo šestnáctkově s 0x); binární hodnoty se zobrazují šestnáctkově. Klíče lze vytvořit a smazat se vším obsahem; kořeny, klíče přímo pod nimi a vlastní větve systému jsou chráněny. Každá změna se zapíše do auditního protokolu s nahrazenou hodnotou. Registry uživatelů jsou pod HKU (podle SID); HKCU by patřil účtu SYSTEM. Agenti 0.12 a novější.</p>
+<h2 id="tasks">Naplánované úlohy (Windows)</h2>
+<p>Karta <b>Scheduled tasks</b> zobrazuje úlohy Plánovače úloh se stavem, posledním spuštěním a výsledkem, příštím spuštěním, účtem a příkazem. Vlastní úlohy Windows (pod \Microsoft\) jsou skryté, dokud je nezahrnete. Úlohu lze spustit, ukončit, povolit, zakázat a smazat; každá akce se zaznamená. Agenti 0.12 a novější.</p>

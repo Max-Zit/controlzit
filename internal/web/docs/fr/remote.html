@@ -19,11 +19,17 @@
 <h3 id="linux-rd">Linux</h3>
 <p>Le bureau à distance fonctionne sur les bureaux Linux avec X11 (Xorg). Wayland ne permet pas à un service en arrière-plan de voir ou de contrôler l'écran : connectez-vous avec une session X11, ou utilisez le terminal. Sans bureau graphique, utilisez le terminal.</p>
 
-<h2 id="terminal">Terminal (Linux)</h2>
+<h2 id="terminal">Terminal (Linux, Windows)</h2>
 <p><b>Terminal</b> ouvre un shell root de l'appareil dans le navigateur. Cliquez dedans pour taper ; copiez en sélectionnant le texte, collez avec <kbd>Ctrl</kbd>+<kbd>Maj</kbd>+<kbd>V</kbd> ou <b>Envoyer du texte</b>. Le début et la fin de la session sont inscrits au journal d'audit. Sous Windows, utilisez les <a href="/docs/scripts">Scripts</a>.</p>
+<p>Sous Windows (agents 0.12 et plus récents, Windows 10 1809 / Server 2019 et plus récents), le terminal est Windows PowerShell exécuté en SYSTEM sur une pseudo-console. Quitter la page met fin au shell et à tous les programmes qu'il a lancés.</p>
 
 <h2 id="files">Fichiers</h2>
 <p><b>Fichiers</b> parcourt les lecteurs de l'ordinateur sans se connecter à l'écran. Téléversez des fichiers (jusqu'à 4 Go), téléchargez des fichiers, téléchargez un dossier ou une sélection en ZIP, créez des dossiers, renommez et supprimez. L'agent effectue chaque opération en tant que SYSTEM (Windows) ou root (Linux) ; chacune est inscrite au journal d'audit avec votre nom.</p>
 
 <h2 id="processes">Processus et services</h2>
 <p><b>Processus</b> liste les programmes en cours avec leur mémoire, leurs threads et leur session et termine un processus. <b>Services</b> liste les services (services Windows ou unités systemd) et les démarre, arrête ou redémarre. L'agent ControlZit se protège lui-même : il ne peut pas être arrêté ni terminé depuis la console.</p>
+
+<h2 id="registry">Éditeur du registre (Windows)</h2>
+<p>L'onglet <b>Registry</b> d'un appareil Windows parcourt le registre : ouvrez une clé par son chemin (par exemple <code>HKLM\SOFTWARE\Vendor</code>) ou naviguez depuis les racines HKLM, HKU, HKCR et HKCC. Les valeurs peuvent être ajoutées, modifiées et supprimées (REG_SZ, REG_EXPAND_SZ, REG_DWORD, REG_QWORD, REG_MULTI_SZ ; nombres en décimal ou en hexadécimal 0x) ; les valeurs binaires sont affichées en hexadécimal. Les clés peuvent être créées et supprimées avec tout leur contenu ; les racines, les clés juste en dessous et les branches propres au système sont protégées. Chaque modification est inscrite au journal d'audit avec la valeur remplacée. Les registres des utilisateurs sont sous HKU (par leur SID) ; HKCU serait celui de SYSTEM. Agents 0.12 et plus récents.</p>
+<h2 id="tasks">Tâches planifiées (Windows)</h2>
+<p>L'onglet <b>Scheduled tasks</b> liste les tâches du Planificateur de tâches avec leur état, dernière exécution et résultat, prochaine exécution, compte et commande. Les tâches de Windows (sous \Microsoft\) sont masquées sauf si vous les incluez. Une tâche peut être lancée, arrêtée, activée, désactivée et supprimée ; chaque action est auditée. Agents 0.12 et plus récents.</p>

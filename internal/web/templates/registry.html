@@ -1,0 +1,70 @@
+{{template "app" .}}
+{{define "content"}}
+{{$d := .Data.D}}{{$r := .Data}}
+<p class="back"><a href="/customers/{{$d.CustomerID}}">{{$d.Customer}}</a> / <a href="/sites/{{$d.SiteID}}">{{$d.Site}}</a> / <a href="/devices/{{$d.ID}}">{{$d.Hostname}}</a></p>
+<h1>{{template "icon" "key"}}{{.T "Registry"}} <span class="muted h1-sub">{{$d.Hostname}}</span></h1>
+{{template "devtabs" (devtabs . $d "registry")}}
+
+{{if $r.OldAgent}}<div class="flash warn" role="status">{{template "icon" "alert"}}<span>{{.T "The registry editor needs agent 0.12 or newer; update the agent (Settings → Agent updates)."}}</span></div>
+{{else}}
+{{if $r.Err}}<div class="flash err" role="alert">{{template "icon" "alert"}}<span>{{$r.Err}}</span></div>{{end}}
+<section class="panel">
+  <form method="get" action="/devices/{{$d.ID}}/registry" class="row filter">
+    <input name="path" value="{{$r.Path}}" placeholder="HKLM\SOFTWARE\…" aria-label="{{.T "Key"}}" class="mono" spellcheck="false">
+    <button class="secondary">{{.T "Open"}}</button>
+  </form>
+  <p class="small mt">{{range $i, $c := $r.Crumbs}}{{if $i}} \ {{end}}<a href="/devices/{{$d.ID}}/registry?path={{$c.Path}}">{{$c.Name}}</a>{{else}}{{range $i, $x := $r.Roots}}{{if $i}} · {{end}}<a href="/devices/{{$d.ID}}/registry?path={{$x}}">{{$x}}</a>{{end}}{{end}}</p>
+  <p class="small muted">{{.T "Changes take effect at once and are written to the audit log with the old value. HKU holds the users' hives (HKCU of the agent would be SYSTEM's own)."}}</p>
+</section>
+
+{{with $r.Key}}
+<div class="cards2">
+<section class="panel">
+  <h2>{{template "icon" "folder"}}{{$.T "Keys"}} <span class="muted small">{{len .Subkeys}}</span></h2>
+  {{if .Subkeys}}<ul class="reglist">{{range .Subkeys}}<li><a href="/devices/{{$d.ID}}/registry?path={{$r.SubPath .}}">{{template "icon" "folder"}}{{.}}</a></li>{{end}}</ul>{{else}}<p class="muted small">{{$.T "No subkeys."}}</p>{{end}}
+  {{if .More}}<p class="small muted">{{$.T "Only the first 3000 are listed."}}</p>{{end}}
+  <form method="post" action="/devices/{{$d.ID}}/registry" class="row mt">
+    <input type="hidden" name="path" value="{{$r.Path}}"><input type="hidden" name="action" value="newkey">
+    <input name="name" required maxlength="255" placeholder="{{$.T "New key"}}" aria-label="{{$.T "New key"}}">
+    <button class="secondary">{{template "icon" "plus"}}{{$.T "Create"}}</button>
+  </form>
+  {{if not $r.Protected}}<form method="post" action="/devices/{{$d.ID}}/registry" class="row mt" data-confirm="{{$.T "Delete the key %s with all its subkeys and values?" $r.Path}}">
+    <input type="hidden" name="path" value="{{$r.Path}}"><input type="hidden" name="action" value="deletekey">
+    <button class="ghost sm">{{template "icon" "trash"}}{{$.T "Delete this key"}}</button>
+  </form>{{end}}
+</section>
+<section class="panel">
+  <h2>{{template "icon" "file"}}{{$.T "Values"}} <span class="muted small">{{len .Values}}</span></h2>
+  {{if .Values}}<div class="table-wrap"><table class="regvals">
+    <thead><tr><th>{{$.T "Name"}}</th><th class="hide-sm">{{$.T "Type"}}</th><th>{{$.T "Data"}}</th><th></th></tr></thead>
+    <tbody>{{range .Values}}<tr>
+      <td class="nowrap">{{if .Name}}{{.Name}}{{else}}<span class="muted">({{$.T "default"}})</span>{{end}}</td>
+      <td class="hide-sm small muted">{{.Type}}</td>
+      <td class="mono small wrap">{{.Data}}</td>
+      <td class="actions nowrap">{{if $r.Editable .Type}}<details class="pop right"><summary class="btn secondary sm">{{$.T "Edit"}}</summary><div class="pop-body">
+        <form method="post" action="/devices/{{$d.ID}}/registry" class="stack">
+          <input type="hidden" name="path" value="{{$r.Path}}"><input type="hidden" name="action" value="set"><input type="hidden" name="name" value="{{.Name}}"><input type="hidden" name="type" value="{{.Type}}">
+          {{if eq .Type "REG_MULTI_SZ"}}<textarea name="data" rows="4" spellcheck="false">{{.Data}}</textarea>{{else}}<input name="data" value="{{.Data}}" spellcheck="false" class="mono">{{end}}
+          <button>{{$.T "Save"}}</button>
+        </form></div></details>{{end}}
+        <form method="post" action="/devices/{{$d.ID}}/registry" class="inline" data-confirm="{{$.T "Delete the value %s?" .Name}}">
+          <input type="hidden" name="path" value="{{$r.Path}}"><input type="hidden" name="action" value="delete"><input type="hidden" name="name" value="{{.Name}}">
+          <button class="ghost sm">{{template "icon" "trash"}}{{$.T "Delete"}}</button>
+        </form></td>
+    </tr>{{end}}</tbody>
+  </table></div>{{else}}<p class="muted small">{{$.T "No values."}}</p>{{end}}
+  {{if ne $r.Path (index $r.Crumbs 0).Path}}<details class="mt"><summary class="btn secondary sm">{{template "icon" "plus"}}{{$.T "New value"}}</summary>
+    <form method="post" action="/devices/{{$d.ID}}/registry" class="stack mt">
+      <input type="hidden" name="path" value="{{$r.Path}}"><input type="hidden" name="action" value="set">
+      <div class="cols">
+        <label>{{$.T "Name"}} <small>{{$.T "empty: the default value"}}</small><input name="name" maxlength="255"></label>
+        <label>{{$.T "Type"}}<select name="type">{{range $r.Types}}<option>{{.}}</option>{{end}}</select></label>
+      </div>
+      <label>{{$.T "Data"}} <small>{{$.T "numbers in decimal or 0x hex; REG_MULTI_SZ one string per line"}}</small><textarea name="data" rows="3" spellcheck="false"></textarea></label>
+      <button>{{$.T "Save"}}</button>
+    </form></details>{{end}}
+</section>
+</div>
+{{end}}
+{{end}}
+{{end}}

@@ -33,3 +33,10 @@ sudo ./controlzit-agent-linux-amd64 install --code "CZ1-…"</pre>
 
 <h2 id="remove">Odebrání agenta</h2>
 <p>Smažte zařízení na jeho stránce (<b>Odebrat zařízení</b>). Je-li online, agent se během několika sekund odinstaluje a Windows Update dostane zpět vlastní nastavení. Offline počítač se už nemůže připojit; agenta tam odinstalujte ručně (Windows: <i>Aplikace → ControlZit Agent → Odinstalovat</i>; Linux: <code>sudo controlzit-agent uninstall</code>).</p>
+
+<h2 id="mass">Mnoho počítačů: zásady skupiny a Intune</h2>
+<p>Vytvořte registrační kód s dostatkem použití pro všechny počítače; stránka pobočky pak zobrazí, vyplněné tímto kódem:</p>
+<ul>
+  <li><b>Zásady skupiny</b>: spouštěcí skript PowerShell. Umístěte MSI do sdílené složky, kterou mohou číst účty počítačů (Domain Computers), zadejte jeho cestu, zkopírujte skript a přidejte jej pod Konfigurace počítače → Zásady → Nastavení systému Windows → Skripty → Spuštění → Skripty PowerShell. Počítače s agentem (služba <code>ControlZitAgent</code>) jej přeskočí; protokol instalace je <code>%windir%\Temp\controlzit-agent-install.log</code>.</li>
+  <li><b>Microsoft Intune</b>: přidejte agenta jako aplikaci Windows (Win32): zabalte MSI nástrojem IntuneWinAppUtil od Microsoftu a použijte příkazy instalace a odinstalace, chování instalace <i>Systém</i> a pravidlo detekce (soubor <code>C:\Program Files\ControlZit Agent\controlzit-agent.exe</code>) ze stránky pobočky. Nepřidávejte jej jako obchodní (LOB) MSI: agent se aktualizuje sám a Intune by znovu nainstaloval starou verzi.</li>
+</ul>

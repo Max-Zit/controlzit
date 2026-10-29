@@ -283,3 +283,11 @@ func (w *capWriter) Write(p []byte) (int, error) {
 	}
 	return len(p), nil
 }
+
+// processList is the process list for the monitors.
+func processList() ([]proto.Process, error) { return listProcs() }
+
+// countEvents: Linux has no Windows event logs.
+func countEvents(context.Context, proto.EventMonitor) (int, error) {
+	return 0, errors.New("event logs are watched on Windows only")
+}

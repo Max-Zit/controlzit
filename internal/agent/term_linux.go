@@ -4,48 +4,18 @@ package agent
 
 import (
 	"bufio"
-	"context"
-	"encoding/json"
 	"errors"
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"syscall"
-	"time"
 
-	"github.com/coder/websocket"
 	"golang.org/x/sys/unix"
 
 	"github.com/max-zit/controlzit/internal/proto"
 )
-
-// A terminal is a login shell of root on a pseudo-terminal. The agent runs
-// as root already, so it needs no helper process: it connects the stream
-// itself and copies between the stream and the terminal.
-
-func init() {
-	register(proto.KindTermStart, func(ctx context.Context, raw json.RawMessage) (any, error) {
-		var a proto.TermStart
-		if err := args(raw, &a); err != nil {
-			return nil, err
-		}
-		if a.Session == "" || a.Token == "" || len(a.Session) > 64 || len(a.Technician) > 120 || !proto.ValidTermSize(a.Cols, a.Rows) {
-			return nil, errors.New("bad terminal request")
-		}
-		ws, err := dialStream(ctx, helperDir, a.Session, a.Token)
-		if err != nil {
-			return nil, err
-		}
-		if err := startTerminal(ws, a); err != nil {
-			_ = ws.Close(websocket.StatusInternalError, "")
-			return nil, fmt.Errorf("cannot start the shell: %w", err)
-		}
-		return nil, nil
-	})
-}
 
 // openPTY opens a new pseudo-terminal: the master (non-blocking, so a
 // close ends a pending read) and its slave.
@@ -104,10 +74,16 @@ func rootShell() string {
 	return "/bin/sh"
 }
 
-func startTerminal(ws *websocket.Conn, a proto.TermStart) error {
+// ptyShell is root's login shell on a pseudo-terminal.
+type ptyShell struct {
+	master *os.File
+	cmd    *exec.Cmd
+}
+
+func startTerminal(a proto.TermStart) (terminal, error) {
 	master, slave, err := openPTY()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	setSize(master, a.Cols, a.Rows)
 	shell := rootShell()
@@ -128,103 +104,23 @@ func startTerminal(ws *websocket.Conn, a proto.TermStart) error {
 	if err := cmd.Start(); err != nil {
 		_ = master.Close()
 		_ = slave.Close()
-		return err
+		return nil, err
 	}
 	_ = slave.Close()
-	if self != nil {
-		self.Log.Info("terminal session started", "session", a.Session, "technician", a.Technician)
-	}
-	go serveTerminal(ws, master, cmd, a.Session)
-	return nil
+	return &ptyShell{master: master, cmd: cmd}, nil
 }
 
-func serveTerminal(ws *websocket.Conn, master *os.File, cmd *exec.Cmd, session string) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	exited := make(chan int, 1)
-	go func() {
-		err := cmd.Wait()
-		code := 0
-		var ee *exec.ExitError
-		if errors.As(err, &ee) {
-			code = ee.ExitCode()
-		}
-		exited <- code
-	}()
-	// shell → browser
-	outDone := make(chan struct{})
-	go func() {
-		defer close(outDone)
-		buf := make([]byte, 32<<10)
-		for {
-			n, err := master.Read(buf)
-			if n > 0 {
-				wctx, wcancel := context.WithTimeout(ctx, 30*time.Second)
-				werr := ws.Write(wctx, websocket.MessageBinary, buf[:n])
-				wcancel()
-				if werr != nil {
-					cancel()
-					return
-				}
-			}
-			if err != nil {
-				return // EIO once the shell and its children are gone
-			}
-		}
-	}()
-	// browser → shell
-	go func() {
-		for {
-			typ, data, err := ws.Read(ctx)
-			if err != nil {
-				cancel()
-				return
-			}
-			if typ != websocket.MessageText {
-				continue
-			}
-			var in proto.TermInput
-			if json.Unmarshal(data, &in) != nil {
-				continue
-			}
-			switch in.T {
-			case "i":
-				if _, err := master.Write([]byte(in.D)); err != nil {
-					cancel()
-					return
-				}
-			case "r":
-				if proto.ValidTermSize(in.Cols, in.Rows) {
-					setSize(master, in.Cols, in.Rows)
-				}
-			}
-		}
-	}()
-	code := -1
-	select {
-	case code = <-exited:
-		// Let the last output through, then say so.
-		select {
-		case <-outDone:
-		case <-time.After(time.Second):
-		}
-		wctx, wcancel := context.WithTimeout(ctx, 5*time.Second)
-		_ = ws.Write(wctx, websocket.MessageText, []byte(`{"t":"exit","code":`+strconv.Itoa(code)+`}`))
-		wcancel()
-		_ = ws.Close(websocket.StatusNormalClosure, "")
-	case <-ctx.Done():
-		// The technician left: hang up the shell and what it started.
-		_ = syscall.Kill(-cmd.Process.Pid, syscall.SIGHUP)
-		select {
-		case code = <-exited:
-		case <-time.After(3 * time.Second):
-			_ = syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
-			code = <-exited
-		}
-		_ = ws.CloseNow()
+func (p *ptyShell) Read(b []byte) (int, error)  { return p.master.Read(b) } // EIO once the shell and its children are gone
+func (p *ptyShell) Write(b []byte) (int, error) { return p.master.Write(b) }
+func (p *ptyShell) Resize(cols, rows int)       { setSize(p.master, cols, rows) }
+func (p *ptyShell) Hangup()                     { _ = syscall.Kill(-p.cmd.Process.Pid, syscall.SIGHUP) }
+func (p *ptyShell) Kill()                       { _ = syscall.Kill(-p.cmd.Process.Pid, syscall.SIGKILL) }
+func (p *ptyShell) Close()                      { _ = p.master.Close() }
+
+func (p *ptyShell) Wait() int {
+	var ee *exec.ExitError
+	if err := p.cmd.Wait(); errors.As(err, &ee) {
+		return ee.ExitCode()
 	}
-	_ = master.Close()
-	if self != nil {
-		self.Log.Info("terminal session ended", "session", session, "exit", code)
-	}
+	return 0
 }

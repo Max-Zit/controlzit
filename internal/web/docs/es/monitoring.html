@@ -45,3 +45,11 @@
 <h2 id="history">Historial y previsión de discos</h2>
 <p>La pestaña <b>History</b> de un dispositivo dibuja la carga de CPU, la memoria, el tráfico de red (agentes 0.11 y posteriores) y el espacio usado de cada disco durante 24 horas, 7, 30 o 90 días. Los valores por minuto se guardan 7 días y los resúmenes por hora 90 días.</p>
 <p>Con el espacio en disco por hora, el servidor calcula cuándo se llenará cada disco si sigue creciendo como en los últimos 14 días. Un disco que se llenará en 90 días aparece en la página del dispositivo; la regla de alerta <b>Disco lleno pronto</b> abre una alerta dentro de los días fijados en la directiva (14 en las directivas nuevas; crítica en 3 días o menos).</p>
+
+<h2 id="monitors">Monitores: eventos y procesos</h2>
+<p>La parte <b>Monitors</b> de una directiva vigila los registros de eventos de Windows y los programas que deben ejecutarse. Los dispositivos de la directiva se consultan cada 5 minutos (agentes 0.12 y posteriores).</p>
+<ul>
+  <li><b>Reglas de eventos</b>: un registro (System, Application, Security o Setup), opcionalmente ID de eventos, un origen y un nivel, y cuántos eventos coincidentes en cuántos minutos abren una alerta (advertencia o crítica). Ejemplos: Security 4625 (inicios de sesión fallidos) 5 veces en 10 minutos; System 41 (reinicio inesperado); System 7031 y 7034 (un servicio terminó inesperadamente). Los eventos del registro Security no tienen nivel: deje el nivel en <i>cualquiera</i>.</li>
+  <li><b>Procesos que deben ejecutarse</b>: un nombre de programa como <code>sqlservr.exe</code> (Windows) o <code>nginx</code> (Linux); hay una alerta abierta mientras no se ejecuta.</li>
+</ul>
+<p>La página del dispositivo muestra cada regla con su último resultado. La alerta se cierra sola cuando la condición desaparece.</p>

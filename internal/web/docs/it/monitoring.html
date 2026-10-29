@@ -45,3 +45,11 @@
 <h2 id="history">Cronologia e previsione dei dischi</h2>
 <p>La scheda <b>History</b> di un dispositivo disegna il carico della CPU, la memoria, il traffico di rete (agenti 0.11 e successivi) e lo spazio usato di ogni disco nelle ultime 24 ore, 7, 30 o 90 giorni. I valori al minuto sono conservati 7 giorni, i riepiloghi orari 90 giorni.</p>
 <p>Dallo spazio su disco orario il server calcola quando ogni disco sarà pieno se continua a crescere come negli ultimi 14 giorni. Un disco che sarà pieno entro 90 giorni è mostrato nella pagina del dispositivo; la regola di avviso <b>Disco presto pieno</b> apre un avviso entro i giorni impostati nel criterio (14 per i nuovi criteri; critico entro 3 giorni).</p>
+
+<h2 id="monitors">Monitor: eventi e processi</h2>
+<p>La parte <b>Monitors</b> di un criterio sorveglia i registri eventi di Windows e i programmi che devono essere in esecuzione. I dispositivi del criterio vengono interrogati ogni 5 minuti (agenti 0.12 e successivi).</p>
+<ul>
+  <li><b>Regole eventi</b>: un registro (System, Application, Security o Setup), facoltativamente ID evento, un'origine e un livello, e quanti eventi corrispondenti in quanti minuti aprono un avviso (avviso o critico). Esempi: Security 4625 (accessi non riusciti) 5 volte in 10 minuti; System 41 (riavvio imprevisto); System 7031 e 7034 (un servizio è terminato in modo imprevisto). Gli eventi del registro Security non hanno livello: lascia il livello su <i>qualsiasi</i>.</li>
+  <li><b>Processi che devono essere in esecuzione</b>: un nome di programma come <code>sqlservr.exe</code> (Windows) o <code>nginx</code> (Linux); un avviso resta aperto finché non è in esecuzione.</li>
+</ul>
+<p>La pagina del dispositivo mostra ogni regola con l'ultimo risultato. L'avviso si chiude da solo quando la condizione scompare.</p>

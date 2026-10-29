@@ -19,11 +19,17 @@
 <h3 id="linux-rd">Linux</h3>
 <p>远程桌面适用于使用 X11（Xorg）的 Linux 桌面。Wayland 不允许后台服务查看或控制屏幕：请在那里使用 X11 会话登录，或使用终端。没有图形桌面时，请使用终端。</p>
 
-<h2 id="terminal">终端（Linux）</h2>
+<h2 id="terminal">终端（Linux、Windows）</h2>
 <p><b>终端</b>会在浏览器中打开设备的 root Shell。点击其中即可输入；选中文本即复制，用 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> 或<b>发送文本</b>粘贴。会话的开始和结束会写入审计日志。在 Windows 上请使用<a href="/docs/scripts">脚本</a>。</p>
+<p>在 Windows 上（0.12 及以上版本的代理，Windows 10 1809 / Server 2019 及更新版本），终端是以 SYSTEM 身份在伪控制台上运行的 Windows PowerShell。离开页面会结束该 shell 及其启动的所有程序。</p>
 
 <h2 id="files">文件</h2>
 <p><b>文件</b>无需连接屏幕即可浏览计算机的驱动器。上传文件（最大 4 GB）、下载文件、将文件夹或所选内容下载为 ZIP、创建文件夹、重命名和删除。代理以 SYSTEM（Windows）或 root（Linux）身份执行每个文件操作；每个操作都会以您的名义写入审计日志。</p>
 
 <h2 id="processes">进程和服务</h2>
 <p><b>进程</b>列出正在运行的程序及其内存、线程和会话，并可结束进程。<b>服务</b>列出服务（Windows 服务或 systemd 单元），并可启动、停止或重启它们。ControlZit 代理会保护自身：无法从控制台停止或结束。</p>
+
+<h2 id="registry">注册表编辑器（Windows）</h2>
+<p>Windows 设备的 <b>Registry</b> 选项卡用于浏览注册表：按路径打开键（例如 <code>HKLM\SOFTWARE\Vendor</code>），或从根键 HKLM、HKU、HKCR 和 HKCC 逐级点开。可以添加、修改和删除值（REG_SZ、REG_EXPAND_SZ、REG_DWORD、REG_QWORD、REG_MULTI_SZ；数字使用十进制或 0x 十六进制）；二进制值以十六进制显示。可以创建键，也可以连同其全部内容删除键；根键、紧邻其下的键以及系统自身的分支受保护。每次更改都会连同被替换的值写入审计日志。各用户的注册表位于 HKU 下（按其 SID）；HKCU 将是 SYSTEM 自己的。需要 0.12 及以上版本的代理。</p>
+<h2 id="tasks">计划任务（Windows）</h2>
+<p><b>Scheduled tasks</b> 选项卡列出任务计划程序中的任务，包括状态、上次运行及结果、下次运行、帐户和命令。Windows 自带的任务（位于 \Microsoft\ 下）默认隐藏，除非选择包括它们。任务可以运行、结束、启用、禁用和删除；每个操作都会记录审计。需要 0.12 及以上版本的代理。</p>

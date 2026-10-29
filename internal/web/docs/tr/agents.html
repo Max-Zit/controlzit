@@ -33,3 +33,10 @@ sudo ./controlzit-agent-linux-amd64 install --code "CZ1-…"</pre>
 
 <h2 id="remove">Bir ajanı kaldırma</h2>
 <p>Cihazı kendi sayfasında silin (<b>Cihazı kaldır</b>). Çevrimiçiyse ajan saniyeler içinde kendini kaldırır ve Windows Update kendi ayarlarını geri alır. Çevrimdışı bir bilgisayar artık bağlanamaz; ajanı orada elle kaldırın (Windows: <i>Uygulamalar → ControlZit Agent → Kaldır</i>; Linux: <code>sudo controlzit-agent uninstall</code>).</p>
+
+<h2 id="mass">Çok sayıda bilgisayar: Grup İlkesi ve Intune</h2>
+<p>Tüm bilgisayarlar için yeterli kullanım hakkı olan bir kayıt kodu oluşturun; konum sayfası bu kodla doldurulmuş olarak şunları gösterir:</p>
+<ul>
+  <li><b>Grup İlkesi</b>: bir PowerShell başlangıç betiği. MSI'yi bilgisayar hesaplarının (Domain Computers) okuyabildiği bir paylaşıma koyun, yolunu girin, betiği kopyalayın ve Bilgisayar Yapılandırması → İlkeler → Windows Ayarları → Betikler → Başlangıç → PowerShell Betikleri altına ekleyin. Ajanı olan bilgisayarlar (hizmet <code>ControlZitAgent</code>) atlar; kurulum günlüğü <code>%windir%\Temp\controlzit-agent-install.log</code> dosyasıdır.</li>
+  <li><b>Microsoft Intune</b>: ajanı Windows uygulaması (Win32) olarak ekleyin: MSI'yi Microsoft'un IntuneWinAppUtil aracıyla paketleyin ve konum sayfasındaki kurulum ve kaldırma komutlarını, <i>Sistem</i> kurulum davranışını ve algılama kuralını (dosya <code>C:\Program Files\ControlZit Agent\controlzit-agent.exe</code>) kullanın. İş kolu (LOB) MSI olarak eklemeyin: ajan kendini günceller ve Intune eski sürümü yeniden kurar.</li>
+</ul>

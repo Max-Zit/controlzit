@@ -45,3 +45,11 @@
 <h2 id="history">History and disk forecast</h2>
 <p>The <b>History</b> tab of a device draws its CPU load, memory, network traffic (agents 0.11 and newer) and the used space of each disk over 24 hours, 7, 30 or 90 days. The minute values are kept 7 days, hourly summaries 90 days.</p>
 <p>From the hourly disk space the server computes when each disk will be full if it keeps growing as in the last 14 days. A disk that will be full within 90 days is shown on the device page; the alert rule <b>Disk full soon</b> opens an alert within the days set in the policy (14 for new policies; critical within 3 days).</p>
+
+<h2 id="monitors">Monitors: events and processes</h2>
+<p>The <b>Monitors</b> part of a policy watches the Windows event logs and programs that must run. The devices of the policy are asked every 5 minutes (agents 0.12 and newer).</p>
+<ul>
+  <li><b>Event rules</b>: a log (System, Application, Security or Setup), optionally event IDs, a source and a level, and how many matching events within how many minutes open an alert (warning or critical). Examples: Security 4625 (failed sign-ins) 5 times within 10 minutes; System 41 (unexpected restart); System 7031 and 7034 (a service ended unexpectedly). Events of the Security log have no level: keep the level at <i>any</i>.</li>
+  <li><b>Processes that must run</b>: a program name such as <code>sqlservr.exe</code> (Windows) or <code>nginx</code> (Linux); an alert opens while it is not running.</li>
+</ul>
+<p>The device page shows each rule with its last result. The alert closes by itself when the condition is gone.</p>

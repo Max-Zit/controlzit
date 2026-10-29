@@ -45,3 +45,11 @@
 <h2 id="history">Geçmiş ve disk tahmini</h2>
 <p>Bir cihazın <b>History</b> sekmesi CPU yükünü, belleği, ağ trafiğini (0.11 ve sonraki ajanlar) ve her diskin kullanılan alanını 24 saat, 7, 30 veya 90 gün için çizer. Dakikalık değerler 7 gün, saatlik özetler 90 gün saklanır.</p>
 <p>Sunucu saatlik disk alanından, son 14 gündeki gibi büyümeye devam ederse her diskin ne zaman dolacağını hesaplar. 90 gün içinde dolacak bir disk cihaz sayfasında gösterilir; <b>Disk yakında dolacak</b> uyarı kuralı, ilkede ayarlanan gün sayısı içinde bir uyarı açar (yeni ilkelerde 14; 3 gün içinde kritik).</p>
+
+<h2 id="monitors">İzleyiciler: olaylar ve işlemler</h2>
+<p>Bir ilkenin <b>Monitors</b> bölümü Windows olay günlüklerini ve çalışması gereken programları izler. İlkenin cihazları 5 dakikada bir sorgulanır (ajan 0.12 ve üstü).</p>
+<ul>
+  <li><b>Olay kuralları</b>: bir günlük (System, Application, Security veya Setup), isteğe bağlı olay kimlikleri, bir kaynak ve bir düzey, ve kaç dakika içinde kaç eşleşen olayın uyarı açacağı (uyarı veya kritik). Örnekler: Security 4625 (başarısız oturum açmalar) 10 dakikada 5 kez; System 41 (beklenmeyen yeniden başlatma); System 7031 ve 7034 (bir hizmet beklenmedik şekilde sona erdi). Security günlüğü olaylarının düzeyi yoktur: düzeyi <i>herhangi</i> olarak bırakın.</li>
+  <li><b>Çalışması gereken işlemler</b>: <code>sqlservr.exe</code> (Windows) veya <code>nginx</code> (Linux) gibi bir program adı; çalışmadığı sürece bir uyarı açık kalır.</li>
+</ul>
+<p>Cihaz sayfası her kuralı son sonucuyla gösterir. Koşul ortadan kalkınca uyarı kendiliğinden kapanır.</p>

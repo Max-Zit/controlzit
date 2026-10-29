@@ -36,6 +36,7 @@ type Server struct {
 	notices  restartNotices // restart requests last sent to agents
 	collect  collectors     // network checks and disk health in the background
 	vulns    vulnScanner    // one vulnerability scan at a time
+	monitors monitorRunner  // one round of monitor checks at a time
 	policies policyCache    // the policies of the background loops
 	forecast forecasts      // disk-full forecasts of all devices
 	backups  backupRunner   // one console backup at a time
@@ -359,6 +360,10 @@ func (s *Server) Handler() http.Handler {
 	app("GET /devices/{id}/updates", s.handleDevicePatches)
 	app("GET /devices/{id}/events", s.handleEvents)
 	app("GET /devices/{id}/history", s.handleHistory)
+	app("GET /devices/{id}/registry", s.handleRegistry)
+	app("POST /devices/{id}/registry", s.handleRegistryChange)
+	app("GET /devices/{id}/tasks", s.handleSchedTasks)
+	app("POST /devices/{id}/tasks", s.handleSchedTaskControl)
 	app("GET /devices/{id}/software", s.handleSoftware)
 	app("POST /devices/{id}/software", s.handleSoftwareAction)
 	app("POST /devices/{id}/updates/scan", s.handlePatchScan)

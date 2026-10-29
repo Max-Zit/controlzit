@@ -19,11 +19,17 @@
 <h3 id="linux-rd">Linux</h3>
 <p>Extern bureaublad werkt op Linux-bureaubladen met X11 (Xorg). Wayland staat een achtergrondservice niet toe het scherm te zien of te bedienen: meld u daar aan met een X11-sessie of gebruik de terminal. Zonder grafisch bureaublad gebruikt u de terminal.</p>
 
-<h2 id="terminal">Terminal (Linux)</h2>
+<h2 id="terminal">Terminal (Linux, Windows)</h2>
 <p><b>Terminal</b> opent een root-shell van het apparaat in de browser. Klik erin om te typen; kopieer door tekst te selecteren, plak met <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> of <b>Tekst verzenden</b>. Begin en einde van de sessie worden in het auditlogboek gezet. Gebruik op Windows <a href="/docs/scripts">Scripts</a>.</p>
+<p>Op Windows (agents 0.12 en nieuwer, Windows 10 1809 / Server 2019 en nieuwer) is de terminal Windows PowerShell die als SYSTEM op een pseudoconsole draait. Als u de pagina verlaat, stoppen de shell en alle programma's die hij heeft gestart.</p>
 
 <h2 id="files">Bestanden</h2>
 <p><b>Bestanden</b> bladert door de stations van de computer zonder verbinding met het scherm. Upload bestanden (tot 4 GB), download bestanden, download een map of selectie als ZIP, maak mappen, wijzig namen en verwijder. De agent voert elke bestandsbewerking uit als SYSTEM (Windows) of root (Linux); elke bewerking wordt met uw naam in het auditlogboek gezet.</p>
 
 <h2 id="processes">Processen en services</h2>
 <p><b>Processen</b> toont actieve programma's met hun geheugen, threads en sessie en beëindigt een proces. <b>Services</b> toont services (Windows-services of systemd-units) en start, stopt of herstart ze. De ControlZit-agent beschermt zichzelf: hij kan niet vanuit de console worden gestopt of beëindigd.</p>
+
+<h2 id="registry">Registereditor (Windows)</h2>
+<p>Het tabblad <b>Registry</b> van een Windows-apparaat doorzoekt het register: open een sleutel via zijn pad (bijvoorbeeld <code>HKLM\SOFTWARE\Vendor</code>) of klik door de sleutels vanaf de hoofdsleutels HKLM, HKU, HKCR en HKCC. Waarden kunnen worden toegevoegd, gewijzigd en verwijderd (REG_SZ, REG_EXPAND_SZ, REG_DWORD, REG_QWORD, REG_MULTI_SZ; getallen decimaal of hexadecimaal met 0x); binaire waarden worden hexadecimaal getoond. Sleutels kunnen worden gemaakt en met hun hele inhoud verwijderd; de hoofdsleutels, de sleutels direct daaronder en de eigen takken van het systeem zijn beveiligd. Elke wijziging wordt met de vervangen waarde in het auditlogboek geschreven. De registers van de gebruikers staan onder HKU (per SID); HKCU zou dat van SYSTEM zijn. Agents 0.12 en nieuwer.</p>
+<h2 id="tasks">Geplande taken (Windows)</h2>
+<p>Het tabblad <b>Scheduled tasks</b> toont de taken van Taakplanner met hun status, laatste uitvoering en resultaat, volgende uitvoering, account en opdracht. De eigen taken van Windows (onder \Microsoft\) zijn verborgen tenzij u ze opneemt. Een taak kan worden uitgevoerd, beëindigd, in- en uitgeschakeld en verwijderd; elke actie wordt vastgelegd. Agents 0.12 en nieuwer.</p>

@@ -45,3 +45,11 @@
 <h2 id="history">Geschiedenis en schijfvoorspelling</h2>
 <p>Het tabblad <b>History</b> van een apparaat tekent de CPU-belasting, het geheugen, het netwerkverkeer (agents 0.11 en nieuwer) en de gebruikte ruimte van elke schijf over 24 uur, 7, 30 of 90 dagen. Minuutwaarden worden 7 dagen bewaard, uuroverzichten 90 dagen.</p>
 <p>Uit de schijfruimte per uur berekent de server wanneer elke schijf vol is als die blijft groeien zoals in de laatste 14 dagen. Een schijf die binnen 90 dagen vol is, staat op de apparaatpagina; de waarschuwingsregel <b>Schijf binnenkort vol</b> opent een waarschuwing binnen het aantal dagen uit het beleid (14 bij nieuwe beleidsregels; kritiek binnen 3 dagen).</p>
+
+<h2 id="monitors">Monitors: gebeurtenissen en processen</h2>
+<p>Het onderdeel <b>Monitors</b> van een beleid bewaakt de Windows-gebeurtenislogboeken en programma's die moeten draaien. De apparaten van het beleid worden elke 5 minuten bevraagd (agents 0.12 en nieuwer).</p>
+<ul>
+  <li><b>Gebeurtenisregels</b>: een logboek (System, Application, Security of Setup), optioneel gebeurtenis-ID's, een bron en een niveau, en hoeveel overeenkomende gebeurtenissen binnen hoeveel minuten een waarschuwing openen (waarschuwing of kritiek). Voorbeelden: Security 4625 (mislukte aanmeldingen) 5 keer binnen 10 minuten; System 41 (onverwachte herstart); System 7031 en 7034 (een service is onverwacht gestopt). Gebeurtenissen van het Security-logboek hebben geen niveau: laat het niveau op <i>elk</i> staan.</li>
+  <li><b>Processen die moeten draaien</b>: een programmanaam zoals <code>sqlservr.exe</code> (Windows) of <code>nginx</code> (Linux); een waarschuwing blijft open zolang het niet draait.</li>
+</ul>
+<p>De apparaatpagina toont elke regel met zijn laatste resultaat. De waarschuwing sluit vanzelf wanneer de voorwaarde weg is.</p>

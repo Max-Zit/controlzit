@@ -33,3 +33,10 @@ sudo ./controlzit-agent-linux-amd64 install --code "CZ1-…"</pre>
 
 <h2 id="remove">Einen Agent entfernen</h2>
 <p>Löschen Sie das Gerät auf seiner Seite (<b>Gerät entfernen</b>). Ist es online, deinstalliert sich der Agent innerhalb von Sekunden und Windows Update erhält seine eigenen Einstellungen zurück. Ein Offline-Computer kann sich nicht mehr verbinden; deinstallieren Sie den Agent dort von Hand (Windows: <i>Apps → ControlZit Agent → Deinstallieren</i>; Linux: <code>sudo controlzit-agent uninstall</code>).</p>
+
+<h2 id="mass">Viele Computer: Gruppenrichtlinie und Intune</h2>
+<p>Erstellen Sie einen Registrierungscode mit genug Verwendungen für alle Computer; die Standortseite zeigt dann, mit diesem Code ausgefüllt:</p>
+<ul>
+  <li><b>Gruppenrichtlinie</b>: ein PowerShell-Startskript. Legen Sie das MSI auf eine Freigabe, die die Computerkonten (Domänencomputer) lesen dürfen, geben Sie den Pfad ein, kopieren Sie das Skript und fügen Sie es unter Computerkonfiguration → Richtlinien → Windows-Einstellungen → Skripts → Starten → PowerShell-Skripts hinzu. Computer mit dem Agenten (Dienst <code>ControlZitAgent</code>) überspringen es; das Installationsprotokoll ist <code>%windir%\Temp\controlzit-agent-install.log</code>.</li>
+  <li><b>Microsoft Intune</b>: Fügen Sie den Agenten als Windows-App (Win32) hinzu: Packen Sie das MSI mit Microsofts IntuneWinAppUtil und verwenden Sie die Installations- und Deinstallationsbefehle, das Installationsverhalten <i>System</i> und die Erkennungsregel (Datei <code>C:\Program Files\ControlZit Agent\controlzit-agent.exe</code>) von der Standortseite. Nicht als Branchen-MSI hinzufügen: Der Agent aktualisiert sich selbst, und Intune würde wieder die alte Version installieren.</li>
+</ul>

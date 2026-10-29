@@ -12,7 +12,7 @@
   {{if .User.CanWrite}}
   <div class="devhead-actions">
     <a class="tile-btn primary" href="/devices/{{$d.ID}}/rd" data-rdwin="{{$d.ID}}"{{if not .Data.Online}} aria-disabled="true"{{end}}><span class="tb-ic">{{template "icon" "screen"}}</span><span><b>{{.T "Remote desktop"}}</b><small>{{.T "See and control the screen"}}</small></span></a>
-    {{if not $d.IsWindows}}<a class="tile-btn" href="/devices/{{$d.ID}}/terminal" data-rdwin="{{$d.ID}}" data-winname="czterm"{{if not .Data.Online}} aria-disabled="true"{{end}}><span class="tb-ic">{{template "icon" "terminal"}}</span><span><b>{{.T "Terminal"}}</b><small>{{.T "Root shell in the browser"}}</small></span></a>{{end}}
+    <a class="tile-btn" href="/devices/{{$d.ID}}/terminal" data-rdwin="{{$d.ID}}" data-winname="czterm"{{if not .Data.Online}} aria-disabled="true"{{end}}><span class="tb-ic">{{template "icon" "terminal"}}</span><span><b>{{.T "Terminal"}}</b><small>{{if $d.IsWindows}}{{.T "PowerShell as SYSTEM in the browser"}}{{else}}{{.T "Root shell in the browser"}}{{end}}</small></span></a>
     <a class="tile-btn" href="/devices/{{$d.ID}}/files"{{if not .Data.Online}} aria-disabled="true"{{end}}><span class="tb-ic">{{template "icon" "folder"}}</span><span><b>{{.T "Files"}}</b><small>{{.T "Without connecting to the screen"}}</small></span></a>
     <div class="power-btns">
       {{template "powerpop" (powerPop . "restart")}}
@@ -110,6 +110,17 @@
   </table></div>{{end}}
   {{range .Health.Arrays}}<p><span class="badge {{if eq .Health "ok"}}ok{{else if eq .Health "warning"}}warn{{else if eq .Health "failing"}}bad{{end}}"><i></i>RAID {{.Name}}</span> {{.Level}} <span class="small muted">{{.State}}</span></p>{{end}}
   {{range .Health.Errors}}<p class="small muted">{{.}}</p>{{end}}
+</section>{{end}}
+{{if .Data.Monitors}}<section class="panel">
+  <h2>{{template "icon" "audit"}}{{.T "Monitors"}}</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>{{.T "Rule"}}</th><th>{{.T "Status"}}</th><th class="hide-sm">{{.T "Checked"}}</th></tr></thead>
+    <tbody>{{range .Data.Monitors}}<tr>
+      <td><b>{{.Name}}</b>{{if .Detail}}<br><span class="small muted">{{.Detail}}</span>{{end}}</td>
+      <td>{{if not .Checked}}<span class="badge"><i></i>{{$.T "not checked yet"}}</span>{{else if .Error}}<span class="badge warn"><i></i>{{$.T "cannot check"}}</span> <span class="small muted">{{.Error}}</span>{{else if eq .Kind "process"}}{{if .OK}}<span class="badge ok"><i></i>{{$.T "running"}}</span>{{else}}<span class="badge bad"><i></i>{{$.T "not running"}}</span>{{end}}{{else}}{{if .OK}}<span class="badge ok"><i></i>{{$.T "%d events" .Count}}</span>{{else}}<span class="badge bad"><i></i>{{$.T "%d events" .Count}}</span>{{end}}{{end}}</td>
+      <td class="hide-sm small muted">{{with .Checked}}{{$.Ago .}}{{end}}</td>
+    </tr>{{end}}</tbody>
+  </table></div>
 </section>{{end}}
 {{if .Data.NetChecks}}<section class="panel">
   <h2>{{template "icon" "network"}}{{.T "Network checks"}}</h2>

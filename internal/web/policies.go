@@ -30,6 +30,7 @@ type PolicySettings struct {
 	AppUpdates  *AppUpdatePolicy   `json:"app_updates,omitempty"`
 	Maintenance *MaintenancePolicy `json:"maintenance,omitempty"`
 	NetChecks   *NetCheckPolicy    `json:"net_checks,omitempty"`
+	Monitors    *MonitorPolicy     `json:"monitors,omitempty"`
 }
 
 // SoftwarePolicy lists the programs a device must have; missing ones are
@@ -170,6 +171,11 @@ func (p *PolicySettings) Validate() error {
 	}
 	if n := p.NetChecks; n != nil {
 		if err := n.validate(); err != nil {
+			return err
+		}
+	}
+	if m := p.Monitors; m != nil {
+		if err := m.validate(); err != nil {
 			return err
 		}
 	}

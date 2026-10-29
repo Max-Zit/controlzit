@@ -185,3 +185,15 @@ document.addEventListener("keydown", function (ev) {
     box.select();
   }
 });
+
+// A field with data-fill puts its value into the template of another element
+// (data-template, the place marked by data-token), quoted for PowerShell.
+document.addEventListener("input", function (ev) {
+  "use strict";
+  var el = ev.target.closest && ev.target.closest("[data-fill]");
+  if (!el) return;
+  var target = document.querySelector(el.getAttribute("data-fill"));
+  if (!target || !target.hasAttribute("data-template")) return;
+  var value = el.value.replace(/'/g, "''");
+  target.textContent = target.getAttribute("data-template").split(el.getAttribute("data-token")).join(value);
+});

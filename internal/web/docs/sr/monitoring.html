@@ -45,3 +45,11 @@
 <h2 id="history">Istorija i prognoza diska</h2>
 <p>Kartica <b>History</b> uređaja crta opterećenje procesora, memoriju, mrežni saobraćaj (agenti 0.11 i noviji) i zauzet prostor svakog diska za 24 sata, 7, 30 ili 90 dana. Vrednosti po minutu čuvaju se 7 dana, satni zbirovi 90 dana.</p>
 <p>Iz satnih podataka o disku server računa kada će se svaki disk napuniti ako nastavi da raste kao u poslednjih 14 dana. Disk koji će biti pun u narednih 90 dana prikazuje se na stranici uređaja; pravilo uzbune <b>Disk će se uskoro napuniti</b> otvara uzbunu u okviru broja dana zadatog u polisi (14 za nove polise; kritično u roku od 3 dana).</p>
+
+<h2 id="monitors">Nadzor: događaji i procesi</h2>
+<p>Deo polise <b>Monitors</b> prati Windows event logove i programe koji moraju da rade. Uređaji polise se proveravaju svakih 5 minuta (agenti 0.12 i noviji).</p>
+<ul>
+  <li><b>Pravila za događaje</b>: log (System, Application, Security ili Setup), opciono ID-jevi događaja, izvor i nivo, i koliko odgovarajućih događaja u koliko minuta otvara uzbunu (upozorenje ili kritična). Primeri: Security 4625 (neuspele prijave) 5 puta u 10 minuta; System 41 (neočekivani restart); System 7031 i 7034 (servis je neočekivano prestao da radi). Događaji Security loga nemaju nivo: ostavite nivo na <i>bilo koji</i>.</li>
+  <li><b>Procesi koji moraju da rade</b>: ime programa kao <code>sqlservr.exe</code> (Windows) ili <code>nginx</code> (Linux); uzbuna je otvorena dok ne radi.</li>
+</ul>
+<p>Stranica uređaja prikazuje svako pravilo sa poslednjim rezultatom. Uzbuna se sama zatvara kada uslov nestane.</p>

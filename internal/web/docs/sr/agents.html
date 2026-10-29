@@ -33,3 +33,10 @@ sudo ./controlzit-agent-linux-amd64 install --code "CZ1-…"</pre>
 
 <h2 id="remove">Uklanjanje agenta</h2>
 <p>Obrišite uređaj na njegovoj stranici (<b>Ukloni uređaj</b>). Ako je na mreži, agent se sam deinstalira za nekoliko sekundi i Windows Update dobija nazad svoja podešavanja. Računar van mreže više ne može da se poveže; tamo deinstalirajte agenta ručno (Windows: <i>Aplikacije → ControlZit Agent → Deinstaliraj</i>; Linux: <code>sudo controlzit-agent uninstall</code>).</p>
+
+<h2 id="mass">Mnogo računara: Group Policy i Intune</h2>
+<p>Napravite kod za upis sa dovoljno korišćenja za sve računare; stranica lokacije zatim prikazuje, popunjeno tim kodom:</p>
+<ul>
+  <li><b>Group Policy</b>: PowerShell startup skriptu. Stavite MSI na deljeni folder koji računarski nalozi (Domain Computers) smeju da čitaju, upišite njegovu putanju, kopirajte skriptu i dodajte je pod Computer Configuration → Policies → Windows Settings → Scripts → Startup → PowerShell Scripts. Računari koji imaju agenta (servis <code>ControlZitAgent</code>) je preskaču; log instalacije je <code>%windir%\Temp\controlzit-agent-install.log</code>.</li>
+  <li><b>Microsoft Intune</b>: dodajte agenta kao Windows aplikaciju (Win32): spakujte MSI Microsoft-ovim alatom IntuneWinAppUtil i koristite komande za instalaciju i deinstalaciju, način instalacije <i>System</i> i pravilo detekcije (fajl <code>C:\Program Files\ControlZit Agent\controlzit-agent.exe</code>) sa stranice lokacije. Ne dodajte ga kao line-of-business MSI: agent se sam ažurira, a Intune bi ponovo instalirao staru verziju.</li>
+</ul>

@@ -48,6 +48,7 @@ type deviceData struct {
 	Health    *store.DiskHealthState
 	Forecast  []DiskForecast
 	NetChecks []store.NetCheckState
+	Monitors  []monitorRow
 	Fields    []store.CustomField
 }
 
@@ -66,6 +67,9 @@ func (s *Server) handleDevice(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	dd.NetChecks, _ = s.store.NetChecks(r.Context(), d.ID)
+	if pr, err := s.cachedPolicies(r.Context()); err == nil {
+		dd.Monitors = s.deviceMonitors(r.Context(), pr, d)
+	}
 	dd.Fields, _ = s.store.FieldValues(r.Context(), "device", d.ID)
 	if d.Inventory != nil {
 		q := strings.ToLower(strings.TrimSpace(r.FormValue("sw")))

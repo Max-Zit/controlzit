@@ -19,11 +19,17 @@
 <h3 id="linux-rd">Linux</h3>
 <p>Remote desktop works on Linux desktops with X11 (Xorg). Wayland does not let a background service see or control the screen: sign in with an X11 session there, or use the terminal. Without a graphical desktop, use the terminal.</p>
 
-<h2 id="terminal">Terminal (Linux)</h2>
+<h2 id="terminal">Terminal (Linux, Windows)</h2>
 <p><b>Terminal</b> opens a root shell of the device in the browser. Click into it to type; copy by selecting text, paste with <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> or <b>Send text</b>. The start and the end of the session are written to the audit log. On Windows, use <a href="/docs/scripts">Scripts</a>.</p>
+<p>On Windows (agents 0.12 and newer, Windows 10 1809 / Server 2019 and later) the terminal is Windows PowerShell running as SYSTEM on a pseudo console. Leaving the page ends the shell and every program it started.</p>
 
 <h2 id="files">Files</h2>
 <p><b>Files</b> browses the drives of the computer without connecting to the screen. Upload files (up to 4 GB), download files, download a folder or a selection as ZIP, create folders, rename and delete. The agent does every file operation as SYSTEM (Windows) or root (Linux); every operation is written to the audit log with your name.</p>
 
 <h2 id="processes">Processes and services</h2>
 <p><b>Processes</b> lists running programs with their memory, threads and session and ends a process. <b>Services</b> lists services (Windows services or systemd units) and starts, stops or restarts them. The ControlZit agent protects itself: it cannot be stopped or ended from the console.</p>
+
+<h2 id="registry">Registry editor (Windows)</h2>
+<p>The <b>Registry</b> tab of a Windows device browses the registry: open a key by its path (for example <code>HKLM\SOFTWARE\Vendor</code>) or click through the keys from the roots HKLM, HKU, HKCR and HKCC. Values can be added, changed and deleted (REG_SZ, REG_EXPAND_SZ, REG_DWORD, REG_QWORD, REG_MULTI_SZ; numbers in decimal or as 0x hex); binary values are shown in hex. Keys can be created and deleted with everything they hold; the roots, the keys right below them and the system's own branches are protected. Every change is written to the audit log with the value it replaced. The users' registries are under HKU (by their SID); HKCU would be SYSTEM's own. Agents 0.12 and newer.</p>
+<h2 id="tasks">Scheduled tasks (Windows)</h2>
+<p>The <b>Scheduled tasks</b> tab lists the tasks of the Task Scheduler with their state, last run and result, next run, account and command. Windows' own tasks (under \Microsoft\) are hidden unless you include them. A task can be run, ended, enabled, disabled and deleted; each action is audited. Agents 0.12 and newer.</p>

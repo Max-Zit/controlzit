@@ -19,11 +19,17 @@
 <h3 id="linux-rd">Linux</h3>
 <p>Uzak masaüstü X11 (Xorg) kullanan Linux masaüstlerinde çalışır. Wayland bir arka plan hizmetinin ekranı görmesine veya denetlemesine izin vermez: orada bir X11 oturumuyla giriş yapın veya terminali kullanın. Grafik masaüstü yoksa terminali kullanın.</p>
 
-<h2 id="terminal">Terminal (Linux)</h2>
+<h2 id="terminal">Terminal (Linux, Windows)</h2>
 <p><b>Terminal</b>, cihazın root kabuğunu tarayıcıda açar. Yazmak için içine tıklayın; metni seçerek kopyalayın, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> veya <b>Metin gönder</b> ile yapıştırın. Oturumun başlangıcı ve sonu denetim günlüğüne yazılır. Windows'ta <a href="/docs/scripts">Betikler</a>'i kullanın.</p>
+<p>Windows'ta (0.12 ve üstü ajanlar, Windows 10 1809 / Server 2019 ve üstü) terminal, sözde konsolda SYSTEM olarak çalışan Windows PowerShell'dir. Sayfadan ayrılmak kabuğu ve başlattığı tüm programları sonlandırır.</p>
 
 <h2 id="files">Dosyalar</h2>
 <p><b>Dosyalar</b>, ekrana bağlanmadan bilgisayarın sürücülerinde gezinir. Dosya yükleyin (4 GB'a kadar), dosya indirin, bir klasörü veya seçimi ZIP olarak indirin, klasör oluşturun, yeniden adlandırın ve silin. Ajan her dosya işlemini SYSTEM (Windows) veya root (Linux) olarak yapar; her biri adınızla denetim günlüğüne yazılır.</p>
 
 <h2 id="processes">İşlemler ve hizmetler</h2>
 <p><b>İşlemler</b>, çalışan programları bellek, iş parçacıkları ve oturumlarıyla listeler ve bir işlemi sonlandırır. <b>Hizmetler</b>, hizmetleri (Windows hizmetleri veya systemd birimleri) listeler ve başlatır, durdurur veya yeniden başlatır. ControlZit ajanı kendini korur: konsoldan durdurulamaz veya sonlandırılamaz.</p>
+
+<h2 id="registry">Kayıt defteri düzenleyicisi (Windows)</h2>
+<p>Bir Windows cihazının <b>Registry</b> sekmesi kayıt defterinde gezinir: bir anahtarı yoluyla açın (örneğin <code>HKLM\SOFTWARE\Vendor</code>) veya HKLM, HKU, HKCR ve HKCC köklerinden anahtarlara tıklayarak ilerleyin. Değerler eklenebilir, değiştirilebilir ve silinebilir (REG_SZ, REG_EXPAND_SZ, REG_DWORD, REG_QWORD, REG_MULTI_SZ; sayılar ondalık veya 0x ile onaltılık); ikili değerler onaltılık gösterilir. Anahtarlar oluşturulabilir ve tüm içerikleriyle silinebilir; kökler, hemen altındaki anahtarlar ve sistemin kendi dalları korunur. Her değişiklik, değiştirdiği değerle denetim günlüğüne yazılır. Kullanıcıların kayıt defterleri HKU altındadır (SID'lerine göre); HKCU, SYSTEM'in kendisine ait olurdu. Ajan 0.12 ve üstü.</p>
+<h2 id="tasks">Zamanlanmış görevler (Windows)</h2>
+<p><b>Scheduled tasks</b> sekmesi Görev Zamanlayıcı'nın görevlerini durumu, son çalıştırma ve sonucu, sonraki çalıştırma, hesap ve komutla listeler. Windows'un kendi görevleri (\Microsoft\ altında) siz dahil etmedikçe gizlidir. Bir görev çalıştırılabilir, sonlandırılabilir, etkinleştirilebilir, devre dışı bırakılabilir ve silinebilir; her işlem denetlenir. Ajan 0.12 ve üstü.</p>

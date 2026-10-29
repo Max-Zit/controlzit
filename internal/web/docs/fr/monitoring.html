@@ -45,3 +45,11 @@
 <h2 id="history">Historique et prévision des disques</h2>
 <p>L'onglet <b>History</b> d'un appareil trace la charge CPU, la mémoire, le trafic réseau (agents 0.11 et plus récents) et l'espace utilisé de chaque disque sur 24 heures, 7, 30 ou 90 jours. Les valeurs à la minute sont conservées 7 jours, les synthèses horaires 90 jours.</p>
 <p>À partir de l'espace disque horaire, le serveur calcule quand chaque disque sera plein s'il continue de croître comme sur les 14 derniers jours. Un disque plein d'ici 90 jours est affiché sur la page de l'appareil ; la règle d'alerte <b>Disque bientôt plein</b> ouvre une alerte dans le nombre de jours fixé dans la stratégie (14 pour les nouvelles stratégies ; critique sous 3 jours).</p>
+
+<h2 id="monitors">Surveillance : événements et processus</h2>
+<p>La partie <b>Monitors</b> d'une stratégie surveille les journaux d'événements Windows et les programmes qui doivent tourner. Les appareils de la stratégie sont interrogés toutes les 5 minutes (agents 0.12 et plus récents).</p>
+<ul>
+  <li><b>Règles d'événement</b> : un journal (System, Application, Security ou Setup), éventuellement des ID d'événement, une source et un niveau, et combien d'événements correspondants en combien de minutes ouvrent une alerte (avertissement ou critique). Exemples : Security 4625 (échecs de connexion) 5 fois en 10 minutes ; System 41 (redémarrage inattendu) ; System 7031 et 7034 (un service s'est arrêté de façon inattendue). Les événements du journal Security n'ont pas de niveau : laissez le niveau sur <i>tous</i>.</li>
+  <li><b>Processus qui doivent tourner</b> : un nom de programme comme <code>sqlservr.exe</code> (Windows) ou <code>nginx</code> (Linux) ; une alerte reste ouverte tant qu'il ne tourne pas.</li>
+</ul>
+<p>La page de l'appareil montre chaque règle avec son dernier résultat. L'alerte se ferme d'elle-même quand la condition disparaît.</p>

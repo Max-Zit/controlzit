@@ -33,3 +33,10 @@ sudo ./controlzit-agent-linux-amd64 install --code "CZ1-…"</pre>
 
 <h2 id="remove">エージェントの削除</h2>
 <p>デバイスのページで削除します（<b>デバイスを削除</b>）。オンラインの場合、エージェントは数秒で自身をアンインストールし、Windows Update は元の設定に戻ります。オフラインのコンピューターは今後接続できないため、そこで手動でアンインストールしてください（Windows: <i>アプリ → ControlZit Agent → アンインストール</i>、Linux: <code>sudo controlzit-agent uninstall</code>）。</p>
+
+<h2 id="mass">多数のコンピューター: グループ ポリシーと Intune</h2>
+<p>すべてのコンピューター分の使用回数を持つ登録コードを作成すると、サイト ページにそのコードを埋め込んだ次の内容が表示されます。</p>
+<ul>
+  <li><b>グループ ポリシー</b>: PowerShell のスタートアップ スクリプト。コンピューター アカウント (Domain Computers) が読み取れる共有に MSI を置き、そのパスを入力してスクリプトをコピーし、コンピューターの構成 → ポリシー → Windows の設定 → スクリプト → スタートアップ → PowerShell スクリプト に追加します。エージェント (サービス <code>ControlZitAgent</code>) があるコンピューターではスキップされます。インストール ログは <code>%windir%\Temp\controlzit-agent-install.log</code> です。</li>
+  <li><b>Microsoft Intune</b>: エージェントを Windows アプリ (Win32) として追加します。Microsoft の IntuneWinAppUtil で MSI をパッケージ化し、サイト ページのインストール/アンインストール コマンド、インストールの動作<i>システム</i>、検出規則 (ファイル <code>C:\Program Files\ControlZit Agent\controlzit-agent.exe</code>) を使用します。基幹業務 (LOB) MSI として追加しないでください。エージェントは自動更新されるため、Intune が古いバージョンを再インストールしてしまいます。</li>
+</ul>

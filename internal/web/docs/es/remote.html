@@ -19,11 +19,17 @@
 <h3 id="linux-rd">Linux</h3>
 <p>El escritorio remoto funciona en escritorios Linux con X11 (Xorg). Wayland no permite a un servicio en segundo plano ver ni controlar la pantalla: inicie allí una sesión X11 o use el terminal. Sin escritorio gráfico, use el terminal.</p>
 
-<h2 id="terminal">Terminal (Linux)</h2>
+<h2 id="terminal">Terminal (Linux, Windows)</h2>
 <p><b>Terminal</b> abre un shell root del dispositivo en el navegador. Haga clic en él para escribir; copie seleccionando texto, pegue con <kbd>Ctrl</kbd>+<kbd>Mayús</kbd>+<kbd>V</kbd> o <b>Enviar texto</b>. El inicio y el final de la sesión se anotan en el registro de auditoría. En Windows, use <a href="/docs/scripts">Scripts</a>.</p>
+<p>En Windows (agentes 0.12 y posteriores, Windows 10 1809 / Server 2019 y posteriores) el terminal es Windows PowerShell ejecutándose como SYSTEM en una pseudoconsola. Al salir de la página terminan el shell y todos los programas que inició.</p>
 
 <h2 id="files">Archivos</h2>
 <p><b>Archivos</b> explora las unidades del equipo sin conectarse a la pantalla. Suba archivos (hasta 4 GB), descargue archivos, descargue una carpeta o una selección como ZIP, cree carpetas, cambie nombres y elimine. El agente realiza cada operación de archivos como SYSTEM (Windows) o root (Linux); cada operación se anota en la auditoría con su nombre.</p>
 
 <h2 id="processes">Procesos y servicios</h2>
 <p><b>Procesos</b> muestra los programas en ejecución con su memoria, hilos y sesión y finaliza un proceso. <b>Servicios</b> muestra los servicios (servicios de Windows o unidades systemd) y los inicia, detiene o reinicia. El agente de ControlZit se protege a sí mismo: no se puede detener ni finalizar desde la consola.</p>
+
+<h2 id="registry">Editor del registro (Windows)</h2>
+<p>La pestaña <b>Registry</b> de un dispositivo Windows recorre el registro: abra una clave por su ruta (por ejemplo <code>HKLM\SOFTWARE\Vendor</code>) o navegue desde las raíces HKLM, HKU, HKCR y HKCC. Los valores se pueden añadir, cambiar y eliminar (REG_SZ, REG_EXPAND_SZ, REG_DWORD, REG_QWORD, REG_MULTI_SZ; números en decimal o en hexadecimal 0x); los valores binarios se muestran en hexadecimal. Las claves se pueden crear y eliminar con todo su contenido; las raíces, las claves justo debajo y las ramas propias del sistema están protegidas. Cada cambio se escribe en el registro de auditoría con el valor que sustituyó. Los registros de los usuarios están bajo HKU (por su SID); HKCU sería el de SYSTEM. Agentes 0.12 y posteriores.</p>
+<h2 id="tasks">Tareas programadas (Windows)</h2>
+<p>La pestaña <b>Scheduled tasks</b> muestra las tareas del Programador de tareas con su estado, última ejecución y resultado, próxima ejecución, cuenta y comando. Las tareas propias de Windows (bajo \Microsoft\) se ocultan salvo que las incluya. Una tarea se puede ejecutar, finalizar, habilitar, deshabilitar y eliminar; cada acción se audita. Agentes 0.12 y posteriores.</p>
