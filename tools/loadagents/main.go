@@ -93,7 +93,8 @@ func main() {
 // newAgent is a simulated Windows computer with a realistic inventory and
 // changing load.
 func newAgent(dir string, cfg *agent.Config, i int) *agent.Agent {
-	boot := time.Now().Add(-time.Duration(rand.IntN(72)) * time.Hour)
+	boot := time.Now().Add(-rand.N(72 * time.Hour)) // #nosec G404 -- simulated data
+	free := (150 + rnd(50)) << 30
 	host := fmt.Sprintf("LOAD-PC-%05d", i)
 	var sw []proto.Software
 	for j := 0; j < 150; j++ {
@@ -108,11 +109,15 @@ func newAgent(dir string, cfg *agent.Config, i int) *agent.Agent {
 			return &proto.Inventory{Hostname: host, OS: proto.OSInfo{Name: "Microsoft Windows 11 Pro", Version: "10.0.26100", Build: "26100", Arch: "64-bit"}, Software: sw}
 		},
 		Metrics: func(context.Context) *proto.Metrics {
-			rx.Add(uint64(rand.IntN(5_000_000)))
-			tx.Add(uint64(rand.IntN(1_000_000)))
-			free := uint64(200<<30) - uint64(i%50)<<30
-			return &proto.Metrics{CPU: float64(5 + rand.IntN(40)), MemTotal: 16 << 30, MemUsed: uint64(4+rand.IntN(8)) << 30,
+			rx.Add(rnd(5_000_000))
+			tx.Add(rnd(1_000_000))
+			return &proto.Metrics{CPU: float64(5 + rnd(40)), MemTotal: 16 << 30, MemUsed: (4 + rnd(8)) << 30,
 				Disks: []proto.Disk{{Drive: "C:", FS: "NTFS", Size: 475 << 30, Free: free}, {Drive: "D:", FS: "NTFS", Size: 1 << 40, Free: 600 << 30}},
-				NetRx: float64(rand.IntN(200_000)), NetTx: float64(rand.IntN(50_000))}
+				NetRx: float64(rnd(200_000)), NetTx: float64(rnd(50_000))}
 		}}
+}
+
+// rnd is a number below n for the simulated values.
+func rnd(n uint64) uint64 {
+	return rand.Uint64N(n) // #nosec G404 -- simulated data, not a secret
 }
