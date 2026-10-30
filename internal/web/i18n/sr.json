@@ -1731,5 +1731,9 @@
   "access denied (even SYSTEM may not open this key)": "pristup odbijen (ni SYSTEM ne sme da otvori ovaj ključ)",
   "this key is protected and cannot be deleted from the console": "ovaj ključ je zaštićen i ne može da se obriše iz konzole",
   "bad key name": "neispravno ime ključa",
-  "bad task name": "neispravno ime zadatka"
+  "bad task name": "neispravno ime zadatka",
+  "Update channel": "Kanal ažuriranja",
+  "Official releases": "Zvanična izdanja",
+  "Testing (release candidates, for test consoles)": "Testiranje (kandidati za izdanje, za test konzole)",
+  "Release candidates come before an official release so they can be tried on a test console. Keep production consoles on official releases.": "Kandidati za izdanje stižu pre zvaničnog izdanja da bi mogli da se isprobaju na test konzoli. Produkcijske konzole držite na zvaničnim izdanjima."
 }

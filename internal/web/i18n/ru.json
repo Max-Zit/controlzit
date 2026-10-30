@@ -1731,5 +1731,9 @@
   "access denied (even SYSTEM may not open this key)": "доступ запрещён (даже SYSTEM не может открыть этот раздел)",
   "this key is protected and cannot be deleted from the console": "этот раздел защищён и не может быть удалён из консоли",
   "bad key name": "неверное имя раздела",
-  "bad task name": "неверное имя задания"
+  "bad task name": "неверное имя задания",
+  "Update channel": "Канал обновлений",
+  "Official releases": "Официальные версии",
+  "Testing (release candidates, for test consoles)": "Тестовый (кандидаты в релиз, для тестовых консолей)",
+  "Release candidates come before an official release so they can be tried on a test console. Keep production consoles on official releases.": "Кандидаты в релиз выходят раньше официальной версии, чтобы их можно было проверить на тестовой консоли. Рабочие консоли держите на официальных версиях."
 }

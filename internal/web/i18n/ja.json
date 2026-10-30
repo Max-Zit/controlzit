@@ -1731,5 +1731,9 @@
   "access denied (even SYSTEM may not open this key)": "アクセスが拒否されました (SYSTEM でもこのキーは開けません)",
   "this key is protected and cannot be deleted from the console": "このキーは保護されているため、コンソールから削除できません",
   "bad key name": "キー名が不正です",
-  "bad task name": "タスク名が不正です"
+  "bad task name": "タスク名が不正です",
+  "Update channel": "更新チャネル",
+  "Official releases": "公式リリース",
+  "Testing (release candidates, for test consoles)": "テスト (リリース候補、テスト用コンソール向け)",
+  "Release candidates come before an official release so they can be tried on a test console. Keep production consoles on official releases.": "リリース候補は公式リリースの前に提供され、テスト用コンソールで試せます。本番のコンソールは公式リリースのままにしてください。"
 }

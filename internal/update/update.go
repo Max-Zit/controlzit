@@ -31,6 +31,19 @@ var TrustedKeys = []string{"PN4k0FwwUIjaVht58ouaDRmO6TzJPZiISY1TB47KmzI="}
 // DefaultSource is where releases are published.
 const DefaultSource = "https://github.com/Max-Zit/controlzit/releases"
 
+// TestingSource is the testing channel: the files of the current release
+// candidate, for test consoles.
+const TestingSource = "https://github.com/Max-Zit/controlzit/releases/download/testing"
+
+// ChannelSource is the release location of an update channel ("" or
+// "official": DefaultSource; "testing": TestingSource).
+func ChannelSource(channel string) string {
+	if channel == "testing" {
+		return TestingSource
+	}
+	return DefaultSource
+}
+
 // File is one file of a release.
 type File struct {
 	Name   string `json:"name"`
@@ -110,8 +123,8 @@ func (m *Manifest) Find(kind, format, platform string) *File {
 // Base is the download location of a version (latest when empty).
 func Base(source, version string) string {
 	source = strings.TrimRight(source, "/")
-	if !strings.HasPrefix(source, "https://github.com/") {
-		return source // a mirror or a local directory: files side by side
+	if !strings.HasPrefix(source, "https://github.com/") || strings.Contains(source, "/releases/download/") {
+		return source // a mirror, a local directory or a channel release: files side by side
 	}
 	if version == "" {
 		return source + "/latest/download"

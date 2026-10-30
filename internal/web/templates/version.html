@@ -32,6 +32,11 @@
   <form method="post" action="/settings/version/settings" class="stack">
     <label class="check"><input type="checkbox" name="auto" value="1" {{if .Data.S.Auto}}checked{{end}}>{{.T "Install new ControlZit versions automatically"}}</label>
     <label>{{.T "In the hour starting at (server time)"}}<select name="hour" class="narrow">{{range .Data.Hours}}<option value="{{.}}" {{if eq . $.Data.S.Hour}}selected{{end}}>{{printf "%02d:00" .}}</option>{{end}}</select></label>
+    <label>{{.T "Update channel"}}<select name="channel">
+      <option value="" {{if ne .Data.S.Channel "testing"}}selected{{end}}>{{.T "Official releases"}}</option>
+      <option value="testing" {{if eq .Data.S.Channel "testing"}}selected{{end}}>{{.T "Testing (release candidates, for test consoles)"}}</option>
+    </select></label>
+    <p class="small muted">{{.T "Release candidates come before an official release so they can be tried on a test console. Keep production consoles on official releases."}}</p>
     <div><button class="primary">{{.T "Save"}}</button></div>
   </form>
 </section>

@@ -1731,5 +1731,9 @@
   "access denied (even SYSTEM may not open this key)": "拒绝访问（即使 SYSTEM 也无法打开此键）",
   "this key is protected and cannot be deleted from the console": "此键受保护，无法从控制台删除",
   "bad key name": "键名无效",
-  "bad task name": "任务名无效"
+  "bad task name": "任务名无效",
+  "Update channel": "更新通道",
+  "Official releases": "正式版本",
+  "Testing (release candidates, for test consoles)": "测试（候选版本，用于测试控制台）",
+  "Release candidates come before an official release so they can be tried on a test console. Keep production consoles on official releases.": "候选版本会先于正式版本发布，以便在测试控制台上试用。生产控制台请保持使用正式版本。"
 }

@@ -1731,5 +1731,9 @@
   "access denied (even SYSTEM may not open this key)": "accès refusé (même SYSTEM ne peut pas ouvrir cette clé)",
   "this key is protected and cannot be deleted from the console": "cette clé est protégée et ne peut pas être supprimée depuis la console",
   "bad key name": "nom de clé invalide",
-  "bad task name": "nom de tâche invalide"
+  "bad task name": "nom de tâche invalide",
+  "Update channel": "Canal de mise à jour",
+  "Official releases": "Versions officielles",
+  "Testing (release candidates, for test consoles)": "Test (versions candidates, pour les consoles de test)",
+  "Release candidates come before an official release so they can be tried on a test console. Keep production consoles on official releases.": "Les versions candidates arrivent avant une version officielle pour être essayées sur une console de test. Gardez les consoles de production sur les versions officielles."
 }

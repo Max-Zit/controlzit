@@ -36,9 +36,11 @@ func (h *Helper) update(ctx context.Context, req Request, res Result) Result {
 		return fail("version %s is not newer than the installed %s", req.Version, installed)
 	}
 	env := h.env()
+	// The console names a channel, never a location: only the two fixed
+	// release locations (or the administrator's own in server.env).
 	source := env["CONTROLZIT_UPDATE_SOURCE"]
 	if source == "" {
-		source = update.DefaultSource
+		source = update.ChannelSource(req.Channel)
 	}
 	hc := &http.Client{Timeout: 10 * time.Minute}
 	m, _, _, err := update.Fetch(ctx, hc, source, req.Version)

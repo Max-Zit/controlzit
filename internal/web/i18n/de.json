@@ -1731,5 +1731,9 @@
   "access denied (even SYSTEM may not open this key)": "Zugriff verweigert (selbst SYSTEM darf diesen Schlüssel nicht öffnen)",
   "this key is protected and cannot be deleted from the console": "dieser Schlüssel ist geschützt und kann nicht aus der Konsole gelöscht werden",
   "bad key name": "ungültiger Schlüsselname",
-  "bad task name": "ungültiger Aufgabenname"
+  "bad task name": "ungültiger Aufgabenname",
+  "Update channel": "Update-Kanal",
+  "Official releases": "Offizielle Versionen",
+  "Testing (release candidates, for test consoles)": "Test (Release-Kandidaten, für Testkonsolen)",
+  "Release candidates come before an official release so they can be tried on a test console. Keep production consoles on official releases.": "Release-Kandidaten kommen vor einer offiziellen Version, damit sie auf einer Testkonsole ausprobiert werden können. Produktive Konsolen bleiben bei offiziellen Versionen."
 }

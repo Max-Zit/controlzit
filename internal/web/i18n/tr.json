@@ -1731,5 +1731,9 @@
   "access denied (even SYSTEM may not open this key)": "erişim reddedildi (SYSTEM bile bu anahtarı açamaz)",
   "this key is protected and cannot be deleted from the console": "bu anahtar korumalıdır ve konsoldan silinemez",
   "bad key name": "geçersiz anahtar adı",
-  "bad task name": "geçersiz görev adı"
+  "bad task name": "geçersiz görev adı",
+  "Update channel": "Güncelleme kanalı",
+  "Official releases": "Resmi sürümler",
+  "Testing (release candidates, for test consoles)": "Test (sürüm adayları, test konsolları için)",
+  "Release candidates come before an official release so they can be tried on a test console. Keep production consoles on official releases.": "Sürüm adayları, bir test konsolunda denenebilmeleri için resmi sürümden önce gelir. Üretim konsollarını resmi sürümlerde tutun."
 }

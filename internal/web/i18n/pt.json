@@ -1731,5 +1731,9 @@
   "access denied (even SYSTEM may not open this key)": "acesso negado (nem o SYSTEM pode abrir esta chave)",
   "this key is protected and cannot be deleted from the console": "esta chave está protegida e não pode ser eliminada a partir da consola",
   "bad key name": "nome de chave inválido",
-  "bad task name": "nome de tarefa inválido"
+  "bad task name": "nome de tarefa inválido",
+  "Update channel": "Canal de atualização",
+  "Official releases": "Versões oficiais",
+  "Testing (release candidates, for test consoles)": "Testes (versões candidatas, para consolas de teste)",
+  "Release candidates come before an official release so they can be tried on a test console. Keep production consoles on official releases.": "As versões candidatas chegam antes de uma versão oficial para poderem ser experimentadas numa consola de testes. Mantenha as consolas de produção nas versões oficiais."
 }

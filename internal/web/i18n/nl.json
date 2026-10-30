@@ -1731,5 +1731,9 @@
   "access denied (even SYSTEM may not open this key)": "toegang geweigerd (zelfs SYSTEM mag deze sleutel niet openen)",
   "this key is protected and cannot be deleted from the console": "deze sleutel is beveiligd en kan niet vanuit de console worden verwijderd",
   "bad key name": "ongeldige sleutelnaam",
-  "bad task name": "ongeldige taaknaam"
+  "bad task name": "ongeldige taaknaam",
+  "Update channel": "Updatekanaal",
+  "Official releases": "Officiële versies",
+  "Testing (release candidates, for test consoles)": "Test (releasekandidaten, voor testconsoles)",
+  "Release candidates come before an official release so they can be tried on a test console. Keep production consoles on official releases.": "Releasekandidaten komen vóór een officiële versie, zodat ze op een testconsole kunnen worden uitgeprobeerd. Houd productieconsoles op de officiële versies."
 }

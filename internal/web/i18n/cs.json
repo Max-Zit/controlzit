@@ -1731,5 +1731,9 @@
   "access denied (even SYSTEM may not open this key)": "přístup odepřen (ani SYSTEM nesmí tento klíč otevřít)",
   "this key is protected and cannot be deleted from the console": "tento klíč je chráněn a nelze jej z konzole smazat",
   "bad key name": "chybný název klíče",
-  "bad task name": "chybný název úlohy"
+  "bad task name": "chybný název úlohy",
+  "Update channel": "Kanál aktualizací",
+  "Official releases": "Oficiální verze",
+  "Testing (release candidates, for test consoles)": "Testování (kandidáti na vydání, pro testovací konzole)",
+  "Release candidates come before an official release so they can be tried on a test console. Keep production consoles on official releases.": "Kandidáti na vydání přicházejí před oficiální verzí, aby je bylo možné vyzkoušet na testovací konzoli. Produkční konzole nechte na oficiálních verzích."
 }
