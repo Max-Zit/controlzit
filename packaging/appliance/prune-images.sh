@@ -16,9 +16,9 @@ KEEP=${KEEP:-8}
 IMAGES='controlzit-appliance.iso controlzit-appliance.ova controlzit-appliance.qcow2 controlzit-appliance-vhdx.zip'
 freed=0
 n=0
-# Newest first (by creation time, drafts excluded).
+# Newest first (by creation time; drafts and the testing channel excluded).
 gh api --paginate "repos/$REPO/releases?per_page=100" \
-    --jq '[.[] | select(.draft | not)] | sort_by(.created_at) | reverse | .[] | .tag_name' > /tmp/cz-releases.$$
+    --jq '[.[] | select((.draft | not) and .tag_name != "testing")] | sort_by(.created_at) | reverse | .[] | .tag_name' > /tmp/cz-releases.$$
 trap 'rm -f /tmp/cz-releases.$$' EXIT
 while read -r tag; do
     n=$((n + 1))
