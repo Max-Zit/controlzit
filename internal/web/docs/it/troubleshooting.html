@@ -44,8 +44,8 @@
 <h3 id="faq-cloud">ControlZit ha bisogno di un servizio cloud?</h3>
 <p>No. Tutto gira sul tuo server; nulla viene inviato a MaxZit. Il server controlla soltanto GitHub per le nuove release.</p>
 <h3 id="faq-backup">Come faccio il backup di ControlZit?</h3>
-<p>Esegui il backup del database PostgreSQL (<code>pg_dump</code>) e della cartella <code>/var/lib/controlzit</code>. Senza la chiave segreta e i certificati lì contenuti, le password salvate non possono essere decifrate e gli agent non si fiderebbero di un nuovo server.</p>
+<p>In <a href="/settings/backup">Impostazioni → Backup della console</a> il server salva ogni giorno il database, la chiave segreta e i certificati, se si vuole cifrati e copiati su un server SFTP. Conservate una copia fuori dal server: senza la chiave segreta le password salvate non possono essere decifrate e gli agenti non si fiderebbero di un nuovo server.</p>
 <h3 id="faq-move">Posso spostare il server su una nuova macchina?</h3>
-<p>Sì: installa ControlZit sulla nuova macchina, ripristina il database e <code>/var/lib/controlzit</code> e mantieni lo stesso indirizzo (oppure cambia l'indirizzo pubblico degli agent e fai puntare il vecchio nome alla nuova macchina).</p>
+<p>Sì: installate ControlZit sulla nuova macchina e ripristinate lì un backup della console (<code>controlzit-server -restore FILE</code>, sull'appliance la voce 7 del menu di configurazione). Mantenete lo stesso indirizzo, oppure cambiate l'indirizzo pubblico degli agenti e puntate il vecchio nome alla nuova macchina; gli agenti continuano a funzionare perché il backup contiene i certificati del server.</p>
 <h3 id="faq-mac">Esiste un agent per macOS?</h3>
 <p>Non ancora. Sono supportati Windows e Linux (x86-64, ARM64).</p>

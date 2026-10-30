@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+	"unicode/utf8"
 )
 
 // Every page of the guide exists in every language, and a translation keeps
@@ -23,6 +24,9 @@ func TestDocsComplete(t *testing.T) {
 			want := strings.Join(flat(id.FindAllStringSubmatch(string(en), -1)), " ")
 			if got := strings.Join(flat(id.FindAllStringSubmatch(string(b), -1)), " "); got != want {
 				t.Errorf("%s/%s: anchors %q, English has %q", l.Code, p.Slug, got, want)
+			}
+			if !utf8.Valid(b) {
+				t.Errorf("%s/%s is not valid UTF-8", l.Code, p.Slug)
 			}
 			if strings.Contains(string(b), "{{") {
 				t.Errorf("%s/%s contains template syntax", l.Code, p.Slug)

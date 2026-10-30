@@ -44,8 +44,8 @@
 <h3 id="faq-cloud">ControlZit bir bulut hizmetine ihtiyaç duyar mı?</h3>
 <p>Hayır. Her şey sizin sunucunuzda çalışır; MaxZit'e hiçbir şey gönderilmez. Sunucu yalnızca yeni sürümler için GitHub'ı kontrol eder.</p>
 <h3 id="faq-backup">ControlZit'i nasıl yedeklerim?</h3>
-<p>PostgreSQL veritabanını (<code>pg_dump</code>) ve <code>/var/lib/controlzit</code> klasörünü yedekleyin. Oradaki gizli anahtar ve sertifikalar olmadan kayıtlı parolalar çözülemez ve ajanlar yeni bir sunucuya güvenmez.</p>
+<p><a href="/settings/backup">Ayarlar → Konsol yedeği</a> altında sunucu her gün veritabanını, gizli anahtarını ve sertifikalarını yedekler; isteğe bağlı olarak şifreler ve bir SFTP sunucusuna kopyalar. Sunucu dışında bir kopya saklayın: gizli anahtar olmadan kayıtlı parolalar çözülemez ve ajanlar yeni bir sunucuya güvenmez.</p>
 <h3 id="faq-move">Sunucuyu yeni bir makineye taşıyabilir miyim?</h3>
-<p>Evet: ControlZit'i yeni makineye kurun, veritabanını ve <code>/var/lib/controlzit</code> dizinini geri yükleyin ve aynı adresi koruyun (veya genel ajan adresini değiştirin ve eski adı yeni makineye yönlendirin).</p>
+<p>Evet: ControlZit'i yeni makineye kurun ve orada bir konsol yedeğini geri yükleyin (<code>controlzit-server -restore DOSYA</code>, appliance'ta kurulum menüsünün 7. öğesi). Aynı adresi koruyun ya da ajanların genel adresini değiştirip eski adı yeni makineye yönlendirin; yedek sunucunun sertifikalarını içerdiği için ajanlar çalışmaya devam eder.</p>
 <h3 id="faq-mac">macOS ajanı var mı?</h3>
 <p>Henüz yok. Windows ve Linux (x86-64, ARM64) desteklenir.</p>

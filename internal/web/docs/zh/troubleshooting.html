@@ -44,8 +44,8 @@
 <h3 id="faq-cloud">ControlZit 需要云服务吗？</h3>
 <p>不需要。一切都在您的服务器上运行；不会向 MaxZit 发送任何内容。服务器只会检查 GitHub 上是否有新版本。</p>
 <h3 id="faq-backup">如何备份 ControlZit？</h3>
-<p>备份 PostgreSQL 数据库（<code>pg_dump</code>）和 <code>/var/lib/controlzit</code> 文件夹。如果没有其中的密钥和证书，已保存的密码将无法解密，代理也不会信任新服务器。</p>
+<p>在<a href="/settings/backup">设置 → 控制台备份</a>中，服务器每天备份其数据库、密钥和证书，可选择加密并复制到 SFTP 服务器。请在服务器之外保留一份副本：没有密钥，已保存的密码无法解密，代理也不会信任新服务器。</p>
 <h3 id="faq-move">可以把服务器迁移到新机器吗？</h3>
-<p>可以：在新机器上安装 ControlZit，恢复数据库和 <code>/var/lib/controlzit</code>，并保持相同的地址（或更改代理公网地址，并将旧名称指向新机器）。</p>
+<p>可以：在新机器上安装 ControlZit，并在那里恢复控制台备份（<code>controlzit-server -restore 文件</code>，在设备镜像上为设置菜单第 7 项）。保持相同的地址，或修改代理的公共地址并将旧名称指向新机器；由于备份包含服务器证书，代理会继续工作。</p>
 <h3 id="faq-mac">有 macOS 代理吗？</h3>
 <p>暂时没有。支持 Windows 和 Linux（x86-64、ARM64）。</p>
