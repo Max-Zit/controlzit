@@ -147,7 +147,7 @@ func ValidTaskControl(t TaskControl) error {
 		return errors.New("unknown action")
 	}
 	if t.Name == "" || len(t.Name) > 260 || len(t.Path) > 500 || !strings.HasPrefix(t.Path, `\`) || !strings.HasSuffix(t.Path, `\`) ||
-		strings.ContainsAny(t.Name+t.Path, "\x00\r\n'\"`$") {
+		strings.ContainsAny(t.Name+t.Path, "\x00\r\n'\"`$‘’‚‛") { // PowerShell takes the typographic quotes as quotes too
 		return errors.New("bad task name")
 	}
 	return nil

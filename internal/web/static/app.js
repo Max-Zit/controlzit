@@ -194,6 +194,6 @@ document.addEventListener("input", function (ev) {
   if (!el) return;
   var target = document.querySelector(el.getAttribute("data-fill"));
   if (!target || !target.hasAttribute("data-template")) return;
-  var value = el.value.replace(/'/g, "''");
+  var value = el.value.replace(/['‘’‚‛]/g, function (q) { return q + q; }); // PowerShell takes the typographic quotes as quotes too
   target.textContent = target.getAttribute("data-template").split(el.getAttribute("data-token")).join(value);
 });
