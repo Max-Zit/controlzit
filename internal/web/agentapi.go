@@ -290,7 +290,9 @@ func (s *Server) handleConnect(w http.ResponseWriter, r *http.Request) {
 		agentError(w, http.StatusInternalServerError, "internal error")
 		return
 	}
-	ws, err := websocket.Accept(w, r, &websocket.AcceptOptions{CompressionMode: websocket.CompressionContextTakeover})
+	// No context takeover: a kept compression context costs 1.2 MB per agent;
+	// the server seldom writes to an agent, so a pooled compressor is enough.
+	ws, err := websocket.Accept(w, r, &websocket.AcceptOptions{CompressionMode: websocket.CompressionNoContextTakeover})
 	if err != nil {
 		return
 	}
