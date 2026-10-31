@@ -44,7 +44,7 @@ sudo dnf install ./rmmzit-server-X-1.x86_64.rpm     # AlmaLinux, Rocky Linux</pr
 <h2 id="docker">5. Docker</h2>
 <p>Den Server gibt es auch als Container-Image, <code>ghcr.io/max-zit/rmmzit</code>, gebaut aus demselben signierten Serverpaket wie die anderen Wege und mit PostgreSQL über Docker Compose betrieben. Laden Sie <a href="https://github.com/Max-Zit/rmmzit/tree/main/packaging/docker" target="_blank" rel="noopener">docker-compose.yml und .env.example</a> in einen Ordner, kopieren Sie <code>.env.example</code> nach <code>.env</code>, setzen Sie ein Datenbankpasswort (Buchstaben und Ziffern) und die Zeitzone, dann:</p>
 <pre>docker compose up -d
-docker compose exec rmmzit cat /var/lib/rmmzit/setup-token.txt</pre>
+docker compose exec rmmzit rmmzit-server -setup-token</pre>
 <p>Öffnen Sie <code>https://&lt;host&gt;:8443</code> und geben Sie das Setup-Token ein. Port 8444 ist der Agenten-Endpunkt; öffnen Sie ihn dort, von wo Agenten sich verbinden. Der Image-Tag in <code>.env</code> bestimmt, was läuft: <code>latest</code> für offizielle Versionen, <code>testing</code> für Release-Kandidaten.</p>
 <p>Aktualisieren Sie mit <code>docker compose pull &amp;&amp; docker compose up -d</code>. Bevor eine neue Version die Datenbank ändert, schreibt der Server eine Sicherung nach <a href="/settings/backup">Einstellungen → Konsolensicherung</a>. Um zurückzugehen, setzen Sie die vorherige Version als Image-Tag und stellen diese Datei wieder her: <code>docker compose stop rmmzit</code>, <code>docker compose run --rm rmmzit -restore /var/lib/rmmzit/backups/DATEI</code>, <code>docker compose up -d</code>. Im Container gehören Netzwerk und Zeitzone zum Docker-Host, nicht zur Konsole.</p>
 

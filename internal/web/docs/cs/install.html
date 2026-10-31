@@ -44,7 +44,7 @@ sudo dnf install ./rmmzit-server-X-1.x86_64.rpm     # AlmaLinux, Rocky Linux</pr
 <h2 id="docker">5. Docker</h2>
 <p>Server existuje také jako image kontejneru, <code>ghcr.io/max-zit/rmmzit</code>, sestavený ze stejného podepsaného balíčku serveru jako ostatní způsoby; běží s PostgreSQL přes Docker Compose. Stáhněte <a href="https://github.com/Max-Zit/rmmzit/tree/main/packaging/docker" target="_blank" rel="noopener">docker-compose.yml a .env.example</a> do složky, zkopírujte <code>.env.example</code> do <code>.env</code>, nastavte heslo databáze (písmena a číslice) a časové pásmo a potom:</p>
 <pre>docker compose up -d
-docker compose exec rmmzit cat /var/lib/rmmzit/setup-token.txt</pre>
+docker compose exec rmmzit rmmzit-server -setup-token</pre>
 <p>Otevřete <code>https://&lt;host&gt;:8443</code> a zadejte instalační token. Port 8444 je koncový bod agentů; otevřete ho tam, odkud se agenti připojují. Značka image v <code>.env</code> určuje, co běží: <code>latest</code> pro oficiální vydání, <code>testing</code> pro kandidáty na vydání.</p>
 <p>Aktualizujte příkazem <code>docker compose pull &amp;&amp; docker compose up -d</code>. Než nová verze změní databázi, server zapíše zálohu do <a href="/settings/backup">Nastavení → Záloha konzole</a>. Pro návrat nastavte předchozí verzi jako značku image a obnovte tento soubor: <code>docker compose stop rmmzit</code>, <code>docker compose run --rm rmmzit -restore /var/lib/rmmzit/backups/SOUBOR</code>, <code>docker compose up -d</code>. V kontejneru patří síť a časové pásmo hostiteli Docker, ne konzoli.</p>
 

@@ -72,6 +72,7 @@ func run() error {
 	restoreFile := flag.String("restore", "", "restore this backup file (database and data files) and exit; stop the server first")
 	restorePass := flag.String("restore-passphrase-file", "", "file with the passphrase of an encrypted backup (or set RMMZIT_BACKUP_PASSPHRASE)")
 	healthcheck := flag.Bool("healthcheck", false, "container image: exit 0 when the console answers (used by HEALTHCHECK)")
+	showToken := flag.Bool("setup-token", false, "print the setup token (until the first administrator exists) and exit")
 	flag.Parse()
 
 	if *showVersion {
@@ -80,6 +81,14 @@ func run() error {
 	}
 	if *healthcheck {
 		return checkHealth(*dataDir)
+	}
+	if *showToken {
+		b, err := os.ReadFile(filepath.Join(*dataDir, "setup-token.txt")) // #nosec G304 -- our data directory
+		if err != nil {
+			return errors.New("no setup token: the first administrator exists already (or the server has not started yet)")
+		}
+		fmt.Print(string(b))
+		return nil
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()

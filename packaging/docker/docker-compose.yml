@@ -3,7 +3,7 @@
 #   1. Put this file and .env (from .env.example) into a folder.
 #   2. docker compose up -d
 #   3. Open https://<this host>:8443 and finish the setup with the setup token:
-#      docker compose exec rmmzit cat /var/lib/rmmzit/setup-token.txt
+#      docker compose exec rmmzit rmmzit-server -setup-token
 #      (or: docker compose logs rmmzit)
 #
 # Update: docker compose pull && docker compose up -d

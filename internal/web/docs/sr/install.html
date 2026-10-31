@@ -44,7 +44,7 @@ sudo dnf install ./rmmzit-server-X-1.x86_64.rpm     # AlmaLinux, Rocky Linux</pr
 <h2 id="docker">5. Docker</h2>
 <p>Server postoji i kao container image, <code>ghcr.io/max-zit/rmmzit</code>, napravljen od istog potpisanog paketa servera kao i ostali načini; radi sa PostgreSQL-om preko Docker Compose-a. Preuzmite <a href="https://github.com/Max-Zit/rmmzit/tree/main/packaging/docker" target="_blank" rel="noopener">docker-compose.yml i .env.example</a> u jedan folder, kopirajte <code>.env.example</code> u <code>.env</code>, postavite lozinku baze (slova i cifre) i vremensku zonu, zatim:</p>
 <pre>docker compose up -d
-docker compose exec rmmzit cat /var/lib/rmmzit/setup-token.txt</pre>
+docker compose exec rmmzit rmmzit-server -setup-token</pre>
 <p>Otvorite <code>https://&lt;host&gt;:8443</code> i unesite setup token. Port 8444 je za agente; otvorite ga tamo odakle se agenti povezuju. Oznaka image-a u <code>.env</code> određuje šta radi: <code>latest</code> za zvanična izdanja, <code>testing</code> za kandidate.</p>
 <p>Ažurirajte sa <code>docker compose pull &amp;&amp; docker compose up -d</code>. Pre nego što nova verzija promeni bazu, server upisuje rezervnu kopiju u <a href="/settings/backup">Podešavanja → Rezervna kopija konzole</a>. Za povratak postavite prethodnu verziju kao oznaku image-a i vratite tu kopiju: <code>docker compose stop rmmzit</code>, <code>docker compose run --rm rmmzit -restore /var/lib/rmmzit/backups/FAJL</code>, <code>docker compose up -d</code>. U kontejneru mrežu i vremensku zonu podešava Docker host, a ne konzola.</p>
 

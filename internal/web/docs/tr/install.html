@@ -44,7 +44,7 @@ sudo dnf install ./rmmzit-server-X-1.x86_64.rpm     # AlmaLinux, Rocky Linux</pr
 <h2 id="docker">5. Docker</h2>
 <p>Sunucu, diğer yollarla aynı imzalı sunucu paketinden oluşturulan bir kapsayıcı imajı olarak da vardır: <code>ghcr.io/max-zit/rmmzit</code>; Docker Compose ile PostgreSQL'le birlikte çalışır. <a href="https://github.com/Max-Zit/rmmzit/tree/main/packaging/docker" target="_blank" rel="noopener">docker-compose.yml ve .env.example</a> dosyalarını bir klasöre indirin, <code>.env.example</code> dosyasını <code>.env</code> olarak kopyalayın, bir veritabanı parolası (harf ve rakam) ve saat dilimini ayarlayın, ardından:</p>
 <pre>docker compose up -d
-docker compose exec rmmzit cat /var/lib/rmmzit/setup-token.txt</pre>
+docker compose exec rmmzit rmmzit-server -setup-token</pre>
 <p><code>https://&lt;ana makine&gt;:8443</code> adresini açın ve kurulum belirtecini girin. 8444 numaralı bağlantı noktası ajanların uç noktasıdır; ajanların bağlandığı yerlerden açın. <code>.env</code> içindeki imaj etiketi neyin çalışacağını belirler: resmi sürümler için <code>latest</code>, sürüm adayları için <code>testing</code>.</p>
 <p><code>docker compose pull &amp;&amp; docker compose up -d</code> ile güncelleyin. Yeni bir sürüm veritabanını değiştirmeden önce sunucu <a href="/settings/backup">Ayarlar → Konsol yedeği</a> altına bir yedek yazar. Geri dönmek için önceki sürümü imaj etiketi olarak ayarlayın ve o dosyayı geri yükleyin: <code>docker compose stop rmmzit</code>, <code>docker compose run --rm rmmzit -restore /var/lib/rmmzit/backups/DOSYA</code>, <code>docker compose up -d</code>. Kapsayıcıda ağ ve saat dilimi konsola değil Docker ana makinesine aittir.</p>
 

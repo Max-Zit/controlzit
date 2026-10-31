@@ -44,7 +44,7 @@ sudo dnf install ./rmmzit-server-X-1.x86_64.rpm     # AlmaLinux, Rocky Linux</pr
 <h2 id="docker">5. Docker</h2>
 <p>サーバーはコンテナーイメージ <code>ghcr.io/max-zit/rmmzit</code> としても提供されます。ほかの方法と同じ署名済みサーバーパッケージから作られ、Docker Compose で PostgreSQL と一緒に動作します。<a href="https://github.com/Max-Zit/rmmzit/tree/main/packaging/docker" target="_blank" rel="noopener">docker-compose.yml と .env.example</a> をフォルダーにダウンロードし、<code>.env.example</code> を <code>.env</code> にコピーして、データベースのパスワード (英字と数字) とタイムゾーンを設定してから:</p>
 <pre>docker compose up -d
-docker compose exec rmmzit cat /var/lib/rmmzit/setup-token.txt</pre>
+docker compose exec rmmzit rmmzit-server -setup-token</pre>
 <p><code>https://&lt;ホスト&gt;:8443</code> を開き、セットアップトークンを入力します。ポート 8444 はエージェントの接続先です。エージェントが接続する場所から開放してください。<code>.env</code> のイメージタグで実行するものが決まります: 正式リリースは <code>latest</code>、リリース候補は <code>testing</code>。</p>
 <p><code>docker compose pull &amp;&amp; docker compose up -d</code> で更新します。新しいバージョンがデータベースを変更する前に、サーバーは <a href="/settings/backup">設定 → コンソールのバックアップ</a> にバックアップを書き込みます。元に戻すには、以前のバージョンをイメージタグに設定してそのファイルを復元します: <code>docker compose stop rmmzit</code>、<code>docker compose run --rm rmmzit -restore /var/lib/rmmzit/backups/ファイル</code>、<code>docker compose up -d</code>。コンテナーでは、ネットワークとタイムゾーンはコンソールではなく Docker ホストが管理します。</p>
 

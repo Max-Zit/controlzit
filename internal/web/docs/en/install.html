@@ -44,7 +44,7 @@ sudo dnf install ./rmmzit-server-X-1.x86_64.rpm     # AlmaLinux, Rocky Linux</pr
 <h2 id="docker">5. Docker</h2>
 <p>The server is also a container image, <code>ghcr.io/max-zit/rmmzit</code>, built from the same signed server package as the other ways; it runs with PostgreSQL through Docker Compose. Download <a href="https://github.com/Max-Zit/rmmzit/tree/main/packaging/docker" target="_blank" rel="noopener">docker-compose.yml and .env.example</a> into a folder, copy <code>.env.example</code> to <code>.env</code>, set a database password (letters and digits) and the time zone, then:</p>
 <pre>docker compose up -d
-docker compose exec rmmzit cat /var/lib/rmmzit/setup-token.txt</pre>
+docker compose exec rmmzit rmmzit-server -setup-token</pre>
 <p>Open <code>https://&lt;host&gt;:8443</code> and enter the setup token. Port 8444 is the agent endpoint; open it where agents connect from. The image tag in <code>.env</code> decides what runs: <code>latest</code> for official releases, <code>testing</code> for release candidates.</p>
 <p>Update with <code>docker compose pull &amp;&amp; docker compose up -d</code>. Before a new version changes the database, the server writes a backup to <a href="/settings/backup">Settings → Console backup</a>. To go back, set the previous version as the image tag and restore that file: <code>docker compose stop rmmzit</code>, <code>docker compose run --rm rmmzit -restore /var/lib/rmmzit/backups/FILE</code>, <code>docker compose up -d</code>. In a container the network and the time zone belong to the Docker host, not to the console.</p>
 

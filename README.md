@@ -127,7 +127,7 @@ The server is also a container image, `ghcr.io/max-zit/rmmzit`, built from the s
 
 ```
 docker compose up -d
-docker compose exec rmmzit cat /var/lib/rmmzit/setup-token.txt
+docker compose exec rmmzit rmmzit-server -setup-token
 ```
 
 Ports: 8443 (console), 8444 (agents). Update with `docker compose pull && docker compose up -d`; the server backs up its database before a new version changes it. The tag `latest` follows official releases, `testing` release candidates.

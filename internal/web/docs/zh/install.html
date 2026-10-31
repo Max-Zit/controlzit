@@ -44,7 +44,7 @@ sudo dnf install ./rmmzit-server-X-1.x86_64.rpm     # AlmaLinux, Rocky Linux</pr
 <h2 id="docker">5. Docker</h2>
 <p>服务器也提供容器镜像 <code>ghcr.io/max-zit/rmmzit</code>，它由与其他方式相同的已签名服务器软件包构建，通过 Docker Compose 与 PostgreSQL 一起运行。将 <a href="https://github.com/Max-Zit/rmmzit/tree/main/packaging/docker" target="_blank" rel="noopener">docker-compose.yml 和 .env.example</a> 下载到一个文件夹，把 <code>.env.example</code> 复制为 <code>.env</code>，设置数据库密码（字母和数字）和时区，然后：</p>
 <pre>docker compose up -d
-docker compose exec rmmzit cat /var/lib/rmmzit/setup-token.txt</pre>
+docker compose exec rmmzit rmmzit-server -setup-token</pre>
 <p>打开 <code>https://&lt;主机&gt;:8443</code> 并输入设置令牌。端口 8444 是代理的连接端点；在代理连接的来源处开放它。<code>.env</code> 中的镜像标签决定运行的版本：<code>latest</code> 表示正式版本，<code>testing</code> 表示候选版本。</p>
 <p>使用 <code>docker compose pull &amp;&amp; docker compose up -d</code> 更新。在新版本更改数据库之前，服务器会将备份写入<a href="/settings/backup">设置 → 控制台备份</a>。如需回退，将上一个版本设为镜像标签并恢复该文件：<code>docker compose stop rmmzit</code>、<code>docker compose run --rm rmmzit -restore /var/lib/rmmzit/backups/文件</code>、<code>docker compose up -d</code>。在容器中，网络和时区由 Docker 主机管理，而不是控制台。</p>
 
