@@ -15,7 +15,7 @@ func TestRenameLegacyBackups(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	s.RenameLegacyBackups()
+	s.renameLegacyBackupFiles()
 	for n, want := range map[string]bool{"rmmzit-backup-20261030-120000.rzb": true, "controlzit-backup-20261030-120000.czb": false, "other.txt": true} {
 		if _, err := os.Stat(filepath.Join(dir, n)); (err == nil) != want {
 			t.Errorf("%s exists=%v", n, err == nil)

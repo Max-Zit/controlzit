@@ -496,10 +496,20 @@ func backupStamp(n string) string {
 
 // RenameLegacyBackups gives the backups made by version 0.12 and earlier
 // the names of new backups (the format is the same).
-func (s *Server) RenameLegacyBackups() {
+func (s *Server) RenameLegacyBackups(ctx context.Context) {
 	if s.DataDir == "" {
 		return
 	}
+	if b := s.backupSettings(ctx); strings.HasPrefix(b.LastFile, legacyPrefix) {
+		if stamp := backupStamp(b.LastFile); stamp != "" {
+			b.LastFile = backupPrefix + stamp + backup.Ext
+			_ = s.store.SetSetting(ctx, settingBackup, b)
+		}
+	}
+	s.renameLegacyBackupFiles()
+}
+
+func (s *Server) renameLegacyBackupFiles() {
 	ents, err := os.ReadDir(s.backupDir())
 	if err != nil {
 		return

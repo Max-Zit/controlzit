@@ -192,7 +192,7 @@ func run() error {
 	srv.DataDir = *dataDir
 	srv.LogFile = srvLogFile
 	srv.Container = inContainer()
-	srv.RenameLegacyBackups()
+	srv.RenameLegacyBackups(ctx)
 	if *devNo2FA {
 		// For development and lab tests only: the console shows a red warning
 		// on every page and the audit log records each start in this mode.
