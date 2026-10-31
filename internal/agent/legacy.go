@@ -2,8 +2,10 @@ package agent
 
 import (
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
+	"time"
 )
 
 // Before the rename to RMMZit the agent was the ControlZit Agent. An agent
@@ -52,8 +54,20 @@ func AdoptLegacyDir() string {
 	case !exists(old):
 		return dir
 	case !exists(dir):
-		if os.Rename(old, dir) != nil {
-			return old
+		// Right after the installer replaced the old agent, its helpers
+		// (remote desktop, clipboard) may still hold files of the folder.
+		if runtime.GOOS == "windows" {
+			_ = exec.Command("taskkill", "/F", "/IM", "controlzit-agent.exe").Run() // #nosec G204 -- fixed command
+		}
+		var err error
+		for i := 0; i < 10; i++ {
+			if err = os.Rename(old, dir); err == nil {
+				break
+			}
+			time.Sleep(time.Second)
+		}
+		if err != nil {
+			return old // used where it is; the next start tries again
 		}
 		if exists(filepath.Join(dir, configFile)) {
 			markEnrolled(true) // under the new name, for the next installer
