@@ -7,13 +7,22 @@ set -e
 # helper restarts and checks the server under them.
 MIGRATED=
 if [ -d /var/lib/controlzit ] && [ ! -L /var/lib/controlzit ] && [ ! -e /var/lib/rmmzit ]; then
+    # dpkg only deconfigures the replaced package: its server still runs.
+    # (Not its helper: that one may be running this installation.)
+    if command -v systemctl >/dev/null 2>&1; then
+        systemctl stop controlzit-server.service controlzit-helper.path >/dev/null 2>&1 || true
+    fi
     mv /var/lib/controlzit /var/lib/rmmzit
     ln -s rmmzit /var/lib/controlzit
     MIGRATED=1
 fi
 if getent passwd controlzit >/dev/null && ! getent passwd rmmzit >/dev/null; then
-    usermod -l rmmzit -d /var/lib/rmmzit controlzit || true
-    getent group controlzit >/dev/null && groupmod -n rmmzit controlzit || true
+    # The same user under the new name (its files keep their owner).
+    if usermod -l rmmzit -d /var/lib/rmmzit controlzit 2>/dev/null; then
+        if getent group controlzit >/dev/null && ! getent group rmmzit >/dev/null; then
+            groupmod -n rmmzit controlzit || true
+        fi
+    fi
 fi
 if [ -f /etc/controlzit/server.env ] && grep -q 'CHANGE_ME' /etc/rmmzit/server.env; then
     # The settings as they are: RMMZit also reads the CONTROLZIT_ names.
@@ -27,8 +36,11 @@ if [ -n "$MIGRATED" ]; then
     [ -e /etc/systemd/system/controlzit-server.service ] || ln -s /usr/lib/systemd/system/rmmzit-server.service /etc/systemd/system/controlzit-server.service
 fi
 if ! getent passwd rmmzit >/dev/null; then
-    useradd --system --home-dir /var/lib/rmmzit --shell /usr/sbin/nologin rmmzit 2>/dev/null \
-      || useradd --system --home-dir /var/lib/rmmzit --shell /sbin/nologin rmmzit
+    group=
+    if getent group rmmzit >/dev/null; then group="-g rmmzit"; fi
+    # shellcheck disable=SC2086
+    useradd --system $group --home-dir /var/lib/rmmzit --shell /usr/sbin/nologin rmmzit 2>/dev/null \
+      || useradd --system $group --home-dir /var/lib/rmmzit --shell /sbin/nologin rmmzit
 fi
 install -d -m 0700 -o rmmzit -g rmmzit /var/lib/rmmzit
 if [ -n "$MIGRATED" ]; then chown -R rmmzit:rmmzit /var/lib/rmmzit; fi
@@ -47,6 +59,8 @@ if command -v systemctl >/dev/null 2>&1; then
     systemctl enable --now rmmzit-helper.path >/dev/null 2>&1 || true
     # An upgrade by hand (dpkg -i, rpm -U) runs the new version right away.
     systemctl try-restart rmmzit-server.service >/dev/null 2>&1 || true
+    # From ControlZit: the old server was stopped above; start the new one.
+    if [ -n "$MIGRATED" ]; then systemctl start rmmzit-server.service >/dev/null 2>&1 || true; fi
 fi
 if grep -q 'CHANGE_ME' /etc/rmmzit/server.env; then
     echo "RMMZit server installed. Set RMMZIT_DB in /etc/rmmzit/server.env,"
