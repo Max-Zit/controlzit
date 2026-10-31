@@ -45,6 +45,12 @@ func currentDir(dir string) string {
 // directory to the new place when that does not exist yet, and removes an
 // old directory that holds no enrollment any more.
 func AdoptLegacyDir() string {
+	if runtime.GOOS == "windows" {
+		// The status folder of the old tray.
+		if d := os.Getenv("ProgramData"); filepath.IsAbs(d) {
+			_ = os.RemoveAll(filepath.Join(d, "ControlZit")) // #nosec G703 -- a fixed folder under ProgramData
+		}
+	}
 	dir, old := newDir(), legacyDir()
 	oldEnrolled := exists(filepath.Join(old, configFile)) || exists(filepath.Join(old, keyFile))
 	switch {

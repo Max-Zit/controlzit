@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"runtime"
 	"syscall"
 	"time"
@@ -278,6 +279,10 @@ func wndProc(hwnd uintptr, m uint32, wp, lp uintptr) uintptr {
 func Run(statusPath string, open bool) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	// The window data of the tray of version 0.12 and earlier.
+	if d := os.Getenv("LOCALAPPDATA"); filepath.IsAbs(d) {
+		_ = os.RemoveAll(filepath.Join(d, "ControlZit")) // #nosec G703 -- a fixed folder in the user's own LOCALAPPDATA
+	}
 	mu, err := windows.CreateMutex(nil, false, utf16(`Local\RMMZitTray`))
 	if errors.Is(err, windows.ERROR_ALREADY_EXISTS) {
 		// Already running in this session: ask it to open the window.
