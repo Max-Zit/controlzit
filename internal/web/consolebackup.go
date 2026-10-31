@@ -493,3 +493,29 @@ func backupStamp(n string) string {
 	}
 	return ""
 }
+
+// RenameLegacyBackups gives the backups made by version 0.12 and earlier
+// the names of new backups (the format is the same).
+func (s *Server) RenameLegacyBackups() {
+	if s.DataDir == "" {
+		return
+	}
+	ents, err := os.ReadDir(s.backupDir())
+	if err != nil {
+		return
+	}
+	for _, e := range ents {
+		rest, ok := strings.CutPrefix(e.Name(), legacyPrefix)
+		if !ok || !e.Type().IsRegular() {
+			continue
+		}
+		if stamp, ok := strings.CutSuffix(rest, backup.LegacyExt); ok {
+			rest = stamp + backup.Ext
+		}
+		target := filepath.Join(s.backupDir(), backupPrefix+rest)
+		if _, err := os.Stat(target); err == nil {
+			continue
+		}
+		_ = os.Rename(filepath.Join(s.backupDir(), e.Name()), target) // #nosec G703 -- our own folder
+	}
+}
