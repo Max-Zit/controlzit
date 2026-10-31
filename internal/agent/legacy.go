@@ -2,10 +2,8 @@ package agent
 
 import (
 	"os"
-	"os/exec"
 	"path/filepath"
 	"runtime"
-	"time"
 )
 
 // Before the rename to RMMZit the agent was the ControlZit Agent. An agent
@@ -45,8 +43,7 @@ func currentDir(dir string) string {
 
 // AdoptLegacyDir is DefaultDir for the service: it moves the old data
 // directory to the new place when that does not exist yet, and removes an
-// old directory that holds no enrollment any more. When the move fails
-// (a file in use), the old directory is used where it is.
+// old directory that holds no enrollment any more.
 func AdoptLegacyDir() string {
 	dir, old := newDir(), legacyDir()
 	oldEnrolled := exists(filepath.Join(old, configFile)) || exists(filepath.Join(old, keyFile))
@@ -54,28 +51,56 @@ func AdoptLegacyDir() string {
 	case !exists(old):
 		return dir
 	case !exists(dir):
-		// Right after the installer replaced the old agent, its helpers
-		// (remote desktop, clipboard) may still hold files of the folder.
-		if runtime.GOOS == "windows" {
-			_ = exec.Command("taskkill", "/F", "/IM", "controlzit-agent.exe").Run() // #nosec G204 -- fixed command
-		}
-		var err error
-		for i := 0; i < 10; i++ {
-			if err = os.Rename(old, dir); err == nil {
-				break
+		// Right after an upgrade the installer still writes its log into
+		// the old folder (Windows), so it cannot be moved: copy it, and take
+		// the enrollment out of the old folder; the next start removes what
+		// is left of it.
+		if os.Rename(old, dir) != nil {
+			if err := copyDir(old, dir); err != nil {
+				_ = os.RemoveAll(dir)
+				return old // used where it is; the next start tries again
 			}
-			time.Sleep(time.Second)
-		}
-		if err != nil {
-			return old // used where it is; the next start tries again
+			_ = ProtectDir(dir)
+			_ = os.Remove(filepath.Join(old, configFile))
+			_ = os.Remove(filepath.Join(old, keyFile))
+			_ = os.RemoveAll(old)
 		}
 		if exists(filepath.Join(dir, configFile)) {
 			markEnrolled(true) // under the new name, for the next installer
 		}
 		return dir
 	case !oldEnrolled && exists(filepath.Join(dir, configFile)):
-		_ = os.RemoveAll(old) // left-overs (downloaded updates) of the old version
+		_ = os.RemoveAll(old) // left-overs (downloaded updates, logs) of the old version
 		return dir
 	}
 	return currentDir(dir)
+}
+
+// copyDir copies a directory tree. Files that cannot be read (in use) are
+// skipped, except the enrollment itself.
+func copyDir(src, dst string) error {
+	return filepath.WalkDir(src, func(p string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		rel, err := filepath.Rel(src, p)
+		if err != nil {
+			return err
+		}
+		target := filepath.Join(dst, rel)
+		if d.IsDir() {
+			return os.MkdirAll(target, 0o700)
+		}
+		if !d.Type().IsRegular() {
+			return nil
+		}
+		b, err := os.ReadFile(p) // #nosec G304 G122 -- the agent's own folder, writable only by SYSTEM and administrators
+		if err == nil {
+			err = os.WriteFile(target, b, 0o600) // #nosec G703 -- inside the agent's own folder
+		}
+		if err != nil && (rel == configFile || rel == keyFile) {
+			return err
+		}
+		return nil
+	})
 }
