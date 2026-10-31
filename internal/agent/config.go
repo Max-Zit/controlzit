@@ -50,7 +50,7 @@ const (
 
 // DefaultDir is the agent's data directory.
 func DefaultDir() string {
-	return adoptLegacyDir(newDir())
+	return currentDir(newDir())
 }
 
 func newDir() string {

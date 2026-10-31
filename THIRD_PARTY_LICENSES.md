@@ -1,6 +1,6 @@
 # Third-party licenses
 
-ControlZit is licensed under the GNU Affero General Public License v3.0 (see LICENSE).
+RMMZit is licensed under the GNU Affero General Public License v3.0 (see LICENSE).
 Its programs contain the following components under their own licenses, all compatible with the AGPL-3.0.
 
 | Component | Version | License |

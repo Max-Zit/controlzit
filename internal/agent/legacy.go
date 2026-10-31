@@ -1,15 +1,17 @@
 package agent
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
 	"runtime"
 )
 
 // Before the rename to RMMZit the agent was the ControlZit Agent. An agent
-// installed then keeps its enrollment: the first time the new version
-// looks for its data directory, the old one is moved to the new place.
+// installed then keeps its enrollment: when the new version starts as the
+// service, the old data directory is moved to the new place
+// (AdoptLegacyDir). Other commands only find it (DefaultDir): an agent of
+// the old version runs the new program ("version") before it installs it,
+// while it still uses the old directory itself.
 
 // legacyDir is the data directory of agents from before the rename.
 func legacyDir() string {
@@ -22,23 +24,44 @@ func legacyDir() string {
 	return "/var/lib/controlzit-agent"
 }
 
-// adoptLegacyDir moves the old data directory to dir when only the old one
-// exists. When it cannot be moved (another user, a file in use), the old
-// directory is used where it is.
-func adoptLegacyDir(dir string) string {
-	if _, err := os.Stat(dir); !errors.Is(err, os.ErrNotExist) {
-		return dir
-	}
+func exists(p string) bool { _, err := os.Stat(p); return err == nil }
+
+// currentDir is the directory that holds the enrollment: dir, or the old
+// one when only that one has it.
+func currentDir(dir string) string {
 	old := legacyDir()
-	fi, err := os.Stat(old)
-	if err != nil || !fi.IsDir() {
+	switch {
+	case exists(filepath.Join(dir, configFile)):
 		return dir
-	}
-	if os.Rename(old, dir) != nil {
+	case exists(filepath.Join(old, configFile)):
+		return old
+	case !exists(dir) && exists(old):
 		return old
 	}
-	if _, err := os.Stat(filepath.Join(dir, configFile)); err == nil {
-		markEnrolled(true) // under the new name, for the next installer
-	}
 	return dir
+}
+
+// AdoptLegacyDir is DefaultDir for the service: it moves the old data
+// directory to the new place when that does not exist yet, and removes an
+// old directory that holds no enrollment any more. When the move fails
+// (a file in use), the old directory is used where it is.
+func AdoptLegacyDir() string {
+	dir, old := newDir(), legacyDir()
+	oldEnrolled := exists(filepath.Join(old, configFile)) || exists(filepath.Join(old, keyFile))
+	switch {
+	case !exists(old):
+		return dir
+	case !exists(dir):
+		if os.Rename(old, dir) != nil {
+			return old
+		}
+		if exists(filepath.Join(dir, configFile)) {
+			markEnrolled(true) // under the new name, for the next installer
+		}
+		return dir
+	case !oldEnrolled && exists(filepath.Join(dir, configFile)):
+		_ = os.RemoveAll(old) // left-overs (downloaded updates) of the old version
+		return dir
+	}
+	return currentDir(dir)
 }

@@ -56,7 +56,7 @@ commands:
 
 func run(args []string) error {
 	if isService() {
-		return runService(agent.DefaultDir())
+		return runService(agent.AdoptLegacyDir())
 	}
 	if len(args) == 0 {
 		return usage()
@@ -154,6 +154,9 @@ func run(args []string) error {
 		e.SetIndent("", "  ")
 		return e.Encode(inv)
 	case "run":
+		if *dir == agent.DefaultDir() {
+			*dir = agent.AdoptLegacyDir() // the service (Linux): move the data of the old name
+		}
 		log := slog.New(slog.NewTextHandler(io.MultiWriter(os.Stderr, agent.OpenLog(*dir)), nil))
 		return runAgent(ctx, *dir, log)
 	case "rdhelper":
