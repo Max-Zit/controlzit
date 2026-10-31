@@ -145,7 +145,7 @@ func ShowBanner(text string) *Banner {
 			bannerFont, _, _ = pCreateFont.Call(^uintptr(17), 0, 0, 0, 600, 0, 0, 0, 1, 0, 0, 5, 0, uintptr(unsafe.Pointer(face))) // #nosec G103 -- height -18 px, semibold, ClearType
 		})
 		bannerText, _ = windows.UTF16FromString(text)
-		cls, _ := windows.UTF16PtrFromString("ControlZitNotice")
+		cls, _ := windows.UTF16PtrFromString("RMMZitNotice")
 		arrow, _, _ := pLoadCursor.Call(0, 32512)
 		wc := wndClassEx{WndProc: wndProcPtr, ClassName: cls, Cursor: windows.Handle(arrow), Instance: windows.Handle(inst)}
 		wc.Size = uint32(unsafe.Sizeof(wc))

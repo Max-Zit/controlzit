@@ -26,7 +26,7 @@ func startInstaller(bin, _ string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	out, err := exec.CommandContext(ctx, bin, "version").Output() // #nosec G204 -- the verified download
-	if err != nil || !strings.HasPrefix(string(out), "controlzit-agent ") {
+	if err != nil || !strings.HasPrefix(string(out), "rmmzit-agent ") && !strings.HasPrefix(string(out), "controlzit-agent ") {
 		return fmt.Errorf("the new agent does not start here: %v %s", err, strings.TrimSpace(string(out)))
 	}
 	exe, err := os.Executable()

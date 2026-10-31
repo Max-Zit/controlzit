@@ -10,10 +10,10 @@ import (
 )
 
 // TestPatchScan talks to the real Windows Update service; it needs
-// CONTROLZIT_TEST_WU=1 (a scan can take minutes and needs the service).
+// RMMZIT_TEST_WU=1 (a scan can take minutes and needs the service).
 func TestPatchScan(t *testing.T) {
-	if os.Getenv("CONTROLZIT_TEST_WU") == "" {
-		t.Skip("set CONTROLZIT_TEST_WU=1 to scan with Windows Update")
+	if os.Getenv("RMMZIT_TEST_WU") == "" {
+		t.Skip("set RMMZIT_TEST_WU=1 to scan with Windows Update")
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Minute)
 	defer cancel()
@@ -31,8 +31,8 @@ func TestPatchScan(t *testing.T) {
 // service with an update that is not offered: the whole script is parsed
 // and the search runs, nothing is installed.
 func TestPatchInstallNothing(t *testing.T) {
-	if os.Getenv("CONTROLZIT_TEST_WU") == "" {
-		t.Skip("set CONTROLZIT_TEST_WU=1 to talk to Windows Update")
+	if os.Getenv("RMMZIT_TEST_WU") == "" {
+		t.Skip("set RMMZIT_TEST_WU=1 to talk to Windows Update")
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Minute)
 	defer cancel()

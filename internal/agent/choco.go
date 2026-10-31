@@ -3,7 +3,7 @@ package agent
 import (
 	"strings"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // parseChoco reads the --limit-output lines of choco: "id|version" (search)

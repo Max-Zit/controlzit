@@ -1,4 +1,4 @@
-// Package backup writes and restores backups of a ControlZit server: the
+// Package backup writes and restores backups of an RMMZit server: the
 // database and the files of the data directory a new server needs to take
 // over (the secret key of the stored passwords, the agent and console
 // certificates with their keys, the software library).
@@ -38,8 +38,13 @@ const (
 	manifestName = "manifest.json"
 	databaseName = "database.czdb"
 	filesPrefix  = "files/"
-	// Ext is the file name ending of backups (.czb.enc when encrypted).
-	Ext = ".czb"
+	// manifestProduct names the product in backups: the name from before
+	// RMMZit, so a backup can also go back to a console of that time.
+	manifestProduct = "ControlZit"
+	// Ext is the file name ending of backups; LegacyExt the one from before
+	// the rename to RMMZit.
+	Ext       = ".rzb"
+	LegacyExt = ".czb"
 )
 
 // DataFiles are the parts of the data directory a backup holds.
@@ -70,7 +75,7 @@ func Create(ctx context.Context, db Dumper, dataDir, tmpDir, serverVersion, pass
 	if err != nil {
 		return nil, err
 	}
-	m := &Manifest{Format: 1, Product: "ControlZit", ServerVersion: serverVersion, Created: time.Now().UTC(), Files: files}
+	m := &Manifest{Format: 1, Product: manifestProduct, ServerVersion: serverVersion, Created: time.Now().UTC(), Files: files}
 
 	out := w
 	var enc io.WriteCloser
@@ -188,7 +193,7 @@ func open(r io.Reader, passphrase string) (*tar.Reader, error) {
 		if errors.Is(err, ErrPassphrase) {
 			return nil, err
 		}
-		return nil, errors.New("not a ControlZit backup")
+		return nil, errors.New("not an RMMZit backup")
 	}
 	return tar.NewReader(gz), nil
 }
@@ -200,11 +205,11 @@ func readManifest(tr *tar.Reader) (*Manifest, error) {
 		if errors.Is(err, ErrPassphrase) {
 			return nil, err
 		}
-		return nil, errors.New("not a ControlZit backup")
+		return nil, errors.New("not an RMMZit backup")
 	}
 	var m Manifest
-	if err := json.NewDecoder(io.LimitReader(tr, 1<<20)).Decode(&m); err != nil || m.Product != "ControlZit" {
-		return nil, errors.New("not a ControlZit backup")
+	if err := json.NewDecoder(io.LimitReader(tr, 1<<20)).Decode(&m); err != nil || m.Product != manifestProduct && m.Product != "RMMZit" {
+		return nil, errors.New("not an RMMZit backup")
 	}
 	if m.Format != 1 {
 		return nil, fmt.Errorf("backup format %d is not known to this version", m.Format)

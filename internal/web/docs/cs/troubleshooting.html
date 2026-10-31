@@ -3,9 +3,9 @@
 
 <h2 id="console">Nemohu se dostat do konzole</h2>
 <ul>
-  <li>Vaše adresa možná není v povolených sítích: spojení se zavře před TLS, takže prohlížeč ukáže chybu spojení. Spusťte na serveru <code>controlzit-server --reset-allowlist</code> (appliance: nabídka nastavení, položka 5), abyste znovu povolili všechny privátní sítě.</li>
+  <li>Vaše adresa možná není v povolených sítích: spojení se zavře před TLS, takže prohlížeč ukáže chybu spojení. Spusťte na serveru <code>rmmzit-server --reset-allowlist</code> (appliance: nabídka nastavení, položka 5), abyste znovu povolili všechny privátní sítě.</li>
   <li>Po změně portu otevřete konzoli na novém portu.</li>
-  <li>Zkontrolujte službu na serveru: <code>systemctl status controlzit-server</code> a <code>journalctl -u controlzit-server</code>.</li>
+  <li>Zkontrolujte službu na serveru: <code>systemctl status rmmzit-server</code> a <code>journalctl -u rmmzit-server</code>.</li>
 </ul>
 
 <h2 id="signin">Potíže s přihlášením</h2>
@@ -21,7 +21,7 @@
   <li>Dosáhne počítač na port agentů? Ve Windows: <code>Test-NetConnection rmm.example.com -Port 8444</code>.</li>
   <li>Je veřejná adresa pro agenty správná? Kódy vytvořené při konzoli otevřené přes localhost posílají agenta na špatný server; nastavte adresu a vytvořte nový kód.</li>
   <li>Je kód stále platný a nevyčerpaný?</li>
-  <li>Protokoly agenta: Windows <code>C:\ProgramData\ControlZit Agent\agent.log</code>, Linux <code>/var/lib/controlzit-agent/agent.log</code> a <code>journalctl -u controlzit-agent</code>; u připojeného zařízení je otevřete z konzole v <b>Soubory</b>. Ve Windows ikona vedle hodin ukazuje stav spojení.</li>
+  <li>Protokoly agenta: Windows <code>C:\ProgramData\RMMZit Agent\agent.log</code>, Linux <code>/var/lib/rmmzit-agent/agent.log</code> a <code>journalctl -u rmmzit-agent</code>; u připojeného zařízení je otevřete z konzole v <b>Soubory</b>. Ve Windows ikona vedle hodin ukazuje stav spojení.</li>
 </ul>
 
 <h2 id="rd">Vzdálená plocha nic neukazuje</h2>
@@ -41,11 +41,13 @@
 <p>Použijte <b>Odeslat testovací e-mail</b> v <a href="/settings/monitoring">Nastavení → Monitorování a upozornění</a>; zpráva ukáže odpověď serveru. Heslo se posílá jen přes STARTTLS nebo TLS.</p>
 
 <h2 id="faq">Časté dotazy</h2>
-<h3 id="faq-cloud">Potřebuje ControlZit cloudovou službu?</h3>
+<h3 id="faq-cloud">Potřebuje RMMZit cloudovou službu?</h3>
 <p>Ne. Vše běží na vašem serveru; nic se neposílá MaxZitu. Server jen kontroluje GitHub kvůli novým vydáním.</p>
-<h3 id="faq-backup">Jak ControlZit zálohovat?</h3>
+<h3 id="faq-backup">Jak RMMZit zálohovat?</h3>
 <p>V <a href="/settings/backup">Nastavení → Záloha konzole</a> server každý den zálohuje svou databázi, tajný klíč a certifikáty, volitelně šifrované a zkopírované na server SFTP. Uchovávejte kopii mimo server: bez tajného klíče nelze uložená hesla dešifrovat a agenti by novému serveru nedůvěřovali.</p>
 <h3 id="faq-move">Mohu server přesunout na nový stroj?</h3>
-<p>Ano: nainstalujte ControlZit na nový stroj a obnovte tam zálohu konzole (<code>controlzit-server -restore SOUBOR</code>, na appliance položka 7 nabídky nastavení). Ponechte stejnou adresu, nebo změňte veřejnou adresu pro agenty a nasměrujte starý název na nový stroj; agenti fungují dál, protože záloha obsahuje certifikáty serveru.</p>
+<p>Ano: nainstalujte RMMZit na nový stroj a obnovte tam zálohu konzole (<code>rmmzit-server -restore SOUBOR</code>, na appliance položka 7 nabídky nastavení). Ponechte stejnou adresu, nebo změňte veřejnou adresu pro agenty a nasměrujte starý název na nový stroj; agenti fungují dál, protože záloha obsahuje certifikáty serveru.</p>
+<h3 id="faq-name">Je RMMZit dřívější ControlZit?</h3>
+<p>Ano. Do verze 0.12 se RMMZit jmenoval ControlZit. Instalace ControlZit se aktualizují na RMMZit jako na každou novou verzi: data, agenti a jejich registrace i registrační kódy začínající <code>CZ1-</code> fungují dál.</p>
 <h3 id="faq-mac">Existuje agent pro macOS?</h3>
 <p>Zatím ne. Podporovány jsou Windows a Linux (x86-64, ARM64).</p>

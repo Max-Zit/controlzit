@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // The history page draws the load and network of the samples; a drive that

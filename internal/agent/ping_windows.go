@@ -35,7 +35,7 @@ func ping(ctx context.Context, host string) (time.Duration, error) {
 		return 0, fmt.Errorf("IcmpCreateFile: %w", err)
 	}
 	defer func() { _, _, _ = pIcmpCloseHndl.Call(h) }()
-	data := []byte("ControlZit")
+	data := []byte("RMMZit")
 	reply := make([]byte, 128) // ICMP_ECHO_REPLY, the data and room for an ICMP error
 	timeout := uint32(netCheckTimeout / time.Millisecond)
 	if dl, ok := ctx.Deadline(); ok {

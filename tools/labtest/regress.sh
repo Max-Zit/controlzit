@@ -1,6 +1,6 @@
 #!/bin/bash
 # Usage: DEV=<device id> VER=<agent version> bash tools/labtest/regress.sh  (credentials from .devdata/lab-server.txt; needs the lab, see NOTES.md)
-# Lab regression of ControlZit against the lab server (CT 9600) and bz-win11.
+# Lab regression of RMMZit against the lab server (CT 9600) and bz-win11.
 cd /c/Users/Mili/Ai/rmm || exit 1
 S=https://192.168.101.179:8443
 A=https://192.168.101.179:8444
@@ -95,8 +95,8 @@ $C -o /dev/null -d name=W32Time -d action=stop $S/devices/$DEV/services
 check "service stopped from the console" 'script powershell "(Get-Service W32Time).Status" | grep -q "id=\"run-output\">Stopped"'
 $C -o /dev/null -d name=W32Time -d action=start $S/devices/$DEV/services
 check "service started from the console" 'script powershell "(Get-Service W32Time).Status" | grep -q "id=\"run-output\">Running"'
-$C -o /dev/null -d name=ControlZitAgent -d action=stop $S/devices/$DEV/services
-check "agent refuses to stop its own service" 'script cmd "sc query ControlZitAgent" | grep -q "RUNNING"'
+$C -o /dev/null -d name=RMMZitAgent -d action=stop $S/devices/$DEV/services
+check "agent refuses to stop its own service" 'script cmd "sc query RMMZitAgent" | grep -q "RUNNING"'
 check "PowerShell script output, UTF-8 and exit code" 'script powershell "Write-Output \"lab čćž \$env:USERNAME\"; exit 5" | grep -q "lab čćž SYSTEM\|lab čćž DESKTOP" && $C "$S/audit?q=script.run" | grep -q "exit code 5"'
 check "cmd script output" 'script cmd "echo cmd-ok %COMPUTERNAME%" | grep -q "cmd-ok DESKTOP-NBB66OQ"'
 check "activity history lists the scripts" '$C "$S/devices/$DEV/activity" | grep -q "Run a cmd script"'
@@ -135,7 +135,7 @@ check "agent runs the installer version" '$C $S/settings/agents | grep -q "All a
 
 # --- event logs and programs (winget)
 check "System event log readable" '$C "$S/devices/$DEV/events?log=System&level=0&hours=720" | grep -q "events, newest first"'
-check "installed programs listed from the registry" '$C "$S/devices/$DEV/software?view=list" | grep -q "name=\"name\" value=\"ControlZit Agent\""'
+check "installed programs listed from the registry" '$C "$S/devices/$DEV/software?view=list" | grep -q "name=\"name\" value=\"RMMZit Agent\""'
 check "software library page with the Chocolatey setting" '$C "$S/software" | grep -q "name=\"chocolatey\""'
 check "policies page" '$C "$S/policies" | grep -q "/policies/new"'
 check "vulnerabilities page" '$C "$S/vulnerabilities" | grep -q "name=\"enabled\""'

@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // Windows Update: scans run every patchScanEvery and on request,

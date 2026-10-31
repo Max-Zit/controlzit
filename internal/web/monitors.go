@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // Monitors of policies: events of the Windows event logs (at least Count

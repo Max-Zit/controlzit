@@ -1,4 +1,4 @@
-name: controlzit-server
+name: rmmzit-server
 arch: ${ARCH}
 platform: linux
 version: ${VERSION}
@@ -6,11 +6,18 @@ section: admin
 priority: optional
 maintainer: MaxZit <office@maxzit.com>
 description: |
-  ControlZit server: web console for remote monitoring and management of
-  Windows and Linux computers, and the endpoint ControlZit agents connect to.
+  RMMZit server: web console for remote monitoring and management of
+  Windows and Linux computers, and the endpoint RMMZit agents connect to.
 vendor: MaxZit
-homepage: https://github.com/Max-Zit/controlzit
+homepage: https://github.com/Max-Zit/rmmzit
 license: AGPL-3.0-only
+# Before the rename to RMMZit the package was controlzit-server.
+replaces:
+  - controlzit-server
+conflicts:
+  - controlzit-server
+provides:
+  - controlzit-server
 overrides:
   deb:
     depends:
@@ -24,39 +31,39 @@ overrides:
       - postgresql-server
 contents:
   - src: ./LICENSE
-    dst: /usr/share/doc/controlzit-server/copyright
+    dst: /usr/share/doc/rmmzit-server/copyright
   - src: ./THIRD_PARTY_LICENSES.md
-    dst: /usr/share/doc/controlzit-server/THIRD_PARTY_LICENSES.md
-  - src: ./bin/pkg/controlzit-server
-    dst: /usr/bin/controlzit-server
+    dst: /usr/share/doc/rmmzit-server/THIRD_PARTY_LICENSES.md
+  - src: ./bin/pkg/rmmzit-server
+    dst: /usr/bin/rmmzit-server
     file_info:
       mode: 0755
   - src: ./bin/pkg/downloads/*
-    dst: /usr/share/controlzit/downloads/
-  - src: ./packaging/linux/controlzit-server.service
-    dst: /usr/lib/systemd/system/controlzit-server.service
-  - src: ./packaging/linux/controlzit-helper.path
-    dst: /usr/lib/systemd/system/controlzit-helper.path
-  - src: ./packaging/linux/controlzit-helper.service
-    dst: /usr/lib/systemd/system/controlzit-helper.service
-  - src: ./packaging/appliance/controlzit-setup
-    dst: /usr/share/controlzit/appliance/controlzit-setup
+    dst: /usr/share/rmmzit/downloads/
+  - src: ./packaging/linux/rmmzit-server.service
+    dst: /usr/lib/systemd/system/rmmzit-server.service
+  - src: ./packaging/linux/rmmzit-helper.path
+    dst: /usr/lib/systemd/system/rmmzit-helper.path
+  - src: ./packaging/linux/rmmzit-helper.service
+    dst: /usr/lib/systemd/system/rmmzit-helper.service
+  - src: ./packaging/appliance/rmmzit-setup
+    dst: /usr/share/rmmzit/appliance/rmmzit-setup
     file_info:
       mode: 0755
-  - src: ./packaging/appliance/controlzit-appliance-boot
-    dst: /usr/share/controlzit/appliance/controlzit-appliance-boot
+  - src: ./packaging/appliance/rmmzit-appliance-boot
+    dst: /usr/share/rmmzit/appliance/rmmzit-appliance-boot
     file_info:
       mode: 0755
-  - src: ./packaging/appliance/controlzit-appliance-boot.service
-    dst: /usr/share/controlzit/appliance/controlzit-appliance-boot.service
-  - src: ./packaging/appliance/controlzit-menu.sh
-    dst: /usr/share/controlzit/appliance/controlzit-menu.sh
-  - src: ./packaging/appliance/sudoers-controlzit-setup
-    dst: /usr/share/controlzit/appliance/sudoers-controlzit-setup
-  - src: ./packaging/appliance/sshd-controlzit.conf
-    dst: /usr/share/controlzit/appliance/sshd-controlzit.conf
+  - src: ./packaging/appliance/rmmzit-appliance-boot.service
+    dst: /usr/share/rmmzit/appliance/rmmzit-appliance-boot.service
+  - src: ./packaging/appliance/rmmzit-menu.sh
+    dst: /usr/share/rmmzit/appliance/rmmzit-menu.sh
+  - src: ./packaging/appliance/sudoers-rmmzit-setup
+    dst: /usr/share/rmmzit/appliance/sudoers-rmmzit-setup
+  - src: ./packaging/appliance/sshd-rmmzit.conf
+    dst: /usr/share/rmmzit/appliance/sshd-rmmzit.conf
   - src: ./packaging/linux/server.env
-    dst: /etc/controlzit/server.env
+    dst: /etc/rmmzit/server.env
     type: config|noreplace
     file_info:
       mode: 0640

@@ -1,5 +1,5 @@
 <h1>Windows-Updates und Software</h1>
-<p class="lead">ControlZit zeigt, welche Updates auf jedem Computer fehlen, und installiert sie von Hand oder nach Ihrem Zeitplan. Programme werden mit winget installiert und aktualisiert.</p>
+<p class="lead">RMMZit zeigt, welche Updates auf jedem Computer fehlen, und installiert sie von Hand oder nach Ihrem Zeitplan. Programme werden mit winget installiert und aktualisiert.</p>
 
 <h2 id="overview">Die Übersicht</h2>
 <p><a href="/updates">Updates</a> listet die Geräte mit fehlenden Updates (Sicherheitsupdates getrennt gezählt), Geräte, die auf einen Neustart warten, die letzte Installation und die letzte Suche. Agents suchen einige Minuten nach dem Start und dann zweimal täglich nach fehlenden Updates; <b>Jetzt suchen</b> startet sofort eine Suche.</p>
@@ -17,7 +17,7 @@
 </ul>
 <p>Wählen Sie die Tage und die Stunde (Serverzeit) oder <b>Im Wartungsfenster</b>. Geräte, die dann online sind, installieren einmal an diesem Tag; Geräte, die offline sind, warten auf den nächsten geplanten Tag.</p>
 <p><b>Update-Ring:</b> Mit einer Verzögerung von zum Beispiel 7 Tagen installiert ein Gerät ein Update erst 7 Tage, nachdem der Server es zuerst gesehen hat. Geben Sie den Testcomputern eine Richtlinie mit 0 Tagen und den anderen eine mit 7 Tagen, dann zeigen sich Probleme zuerst auf den Testcomputern. Defender-Definitionen warten nie.</p>
-<p><b>Neustart, wenn ein Update ihn braucht:</b> nie automatisch; automatisch 5 Minuten nach der Installation mit Hinweis; oder <b>Benutzer fragen</b>: Das ControlZit-Symbol bittet den angemeldeten Benutzer um einen Neustart, erneut alle 4 Stunden, und nach der Frist (die Tage, die der Benutzer verschieben darf) startet der Server den Computer mit 10 Minuten Vorwarnung neu, im Wartungsfenster, wenn das Gerät eines hat. Der Reiter <b>Richtlinie</b> des Geräts zeigt einen ausstehenden Neustart und seine Frist.</p>
+<p><b>Neustart, wenn ein Update ihn braucht:</b> nie automatisch; automatisch 5 Minuten nach der Installation mit Hinweis; oder <b>Benutzer fragen</b>: Das RMMZit-Symbol bittet den angemeldeten Benutzer um einen Neustart, erneut alle 4 Stunden, und nach der Frist (die Tage, die der Benutzer verschieben darf) startet der Server den Computer mit 10 Minuten Vorwarnung neu, im Wartungsfenster, wenn das Gerät eines hat. Der Reiter <b>Richtlinie</b> des Geräts zeigt einen ausstehenden Neustart und seine Frist.</p>
 <div class="callout"><p>Damit Updates nicht zu beliebigen Zeiten kommen, schaltet der Agent die automatische Installation von Windows Update per Richtlinie ab. Wird der Agent entfernt, kehren die früheren Einstellungen zurück.</p></div>
 
 <h2 id="linux">Linux</h2>

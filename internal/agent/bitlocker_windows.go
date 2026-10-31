@@ -8,7 +8,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // BitLocker through the BitLocker PowerShell module as SYSTEM: the volumes

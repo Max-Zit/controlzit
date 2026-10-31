@@ -234,7 +234,7 @@ func RestoreDump(ctx context.Context, url string, r io.Reader) error {
 	br := bufio.NewReaderSize(r, 1<<20)
 	magic := make([]byte, len(dumpMagic))
 	if _, err := io.ReadFull(br, magic); err != nil || string(magic) != dumpMagic {
-		return errors.New("not a ControlZit database dump")
+		return errors.New("not an RMMZit database dump")
 	}
 	typ, v, err := readFrame(br)
 	if err != nil || typ != frameVersion {
@@ -245,7 +245,7 @@ func RestoreDump(ctx context.Context, url string, r io.Reader) error {
 		return errors.New("database dump: bad schema version")
 	}
 	if version > SchemaVersion() {
-		return fmt.Errorf("the backup is from a newer ControlZit (database version %d, this program knows %d); install that version first", version, SchemaVersion())
+		return fmt.Errorf("the backup is from a newer RMMZit (database version %d, this program knows %d); install that version first", version, SchemaVersion())
 	}
 	conn, err := pgx.Connect(ctx, url)
 	if err != nil {

@@ -1,4 +1,4 @@
-// Package update finds and verifies ControlZit releases. Every release has
+// Package update finds and verifies RMMZit releases. Every release has
 // a manifest.json listing its files with their SHA-256, and
 // manifest.json.sig, an Ed25519 signature of the manifest made with the
 // offline release key. Consoles, the root helper and install.sh trust only
@@ -28,12 +28,16 @@ import (
 // added here one release before it signs.
 var TrustedKeys = []string{"PN4k0FwwUIjaVht58ouaDRmO6TzJPZiISY1TB47KmzI="}
 
+// ManifestProduct is the product name in release manifests. It stays the
+// name from before RMMZit, so consoles of that time accept the releases.
+const ManifestProduct = "controlzit"
+
 // DefaultSource is where releases are published.
-const DefaultSource = "https://github.com/Max-Zit/controlzit/releases"
+const DefaultSource = "https://github.com/Max-Zit/rmmzit/releases"
 
 // TestingSource is the testing channel: the files of the current release
 // candidate, for test consoles.
-const TestingSource = "https://github.com/Max-Zit/controlzit/releases/download/testing"
+const TestingSource = "https://github.com/Max-Zit/rmmzit/releases/download/testing"
 
 // ChannelSource is the release location of an update channel ("" or
 // "official": DefaultSource; "testing": TestingSource).
@@ -82,14 +86,14 @@ func Verify(raw, sig []byte, keys []string) (*Manifest, error) {
 		}
 	}
 	if !ok {
-		return nil, errors.New("the release is not signed with a ControlZit release key")
+		return nil, errors.New("the release is not signed with an RMMZit release key")
 	}
 	var m Manifest
 	if err := json.Unmarshal(raw, &m); err != nil {
 		return nil, fmt.Errorf("the release manifest is unreadable: %w", err)
 	}
-	if m.Product != "controlzit" || !versionRe.MatchString(m.Version) {
-		return nil, errors.New("the release manifest is not a ControlZit release")
+	if (m.Product != ManifestProduct && m.Product != "rmmzit") || !versionRe.MatchString(m.Version) {
+		return nil, errors.New("the release manifest is not an RMMZit release")
 	}
 	for _, f := range m.Files {
 		if !SafeName(f.Name) || len(f.SHA256) != 64 {
@@ -156,7 +160,7 @@ func get(ctx context.Context, hc *http.Client, url string, limit int64) ([]byte,
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("User-Agent", "ControlZit")
+	req.Header.Set("User-Agent", "RMMZit")
 	resp, err := hc.Do(req)
 	if err != nil {
 		return nil, err

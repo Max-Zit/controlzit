@@ -5,7 +5,7 @@ package agent
 import (
 	"testing"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 func TestSplitCommand(t *testing.T) {

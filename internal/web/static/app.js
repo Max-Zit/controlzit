@@ -1,4 +1,4 @@
-// ControlZit console: small progressive enhancements (the console works
+// RMMZit console: small progressive enhancements (the console works
 // without JavaScript). No inline scripts: the CSP allows only this file.
 (function () {
   "use strict";

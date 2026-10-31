@@ -13,9 +13,9 @@ import (
 
 	"github.com/coder/websocket"
 
-	"github.com/max-zit/controlzit/internal/auth"
-	"github.com/max-zit/controlzit/internal/proto"
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/auth"
+	"github.com/max-zit/rmmzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // Remote desktop relay. The technician's browser opens a WebSocket on the

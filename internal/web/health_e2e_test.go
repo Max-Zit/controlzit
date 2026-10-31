@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/max-zit/controlzit/internal/agent"
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/agent"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // Network checks of a policy run on the device and open alerts when they

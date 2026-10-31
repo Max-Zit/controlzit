@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/max-zit/controlzit/internal/proto"
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // The device list filters by system, alerts and custom fields and starts

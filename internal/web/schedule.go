@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // Program updates, update rings, restarts with a deadline and maintenance

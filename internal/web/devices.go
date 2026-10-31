@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // deviceFor loads a device whose customer the user may see.

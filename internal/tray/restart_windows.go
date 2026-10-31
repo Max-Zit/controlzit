@@ -11,7 +11,7 @@ import (
 
 	"golang.org/x/sys/windows"
 
-	"github.com/max-zit/controlzit/internal/agent"
+	"github.com/max-zit/rmmzit/internal/agent"
 )
 
 // The administrator's policy asks for a restart (updates need one): the
@@ -63,7 +63,7 @@ func askRestart(deadline time.Time) {
 	text := T("Your administrator needs to restart this computer to finish installing updates.") + "\n\n" +
 		T("It restarts automatically on %s.", deadline.Local().Format("2006-01-02 15:04")) + "\n\n" +
 		T("Restart now? Save your work first. Choose No to be reminded later.")
-	r, _, _ := pMessageBox.Call(0, uintptr(unsafe.Pointer(utf16(text))), uintptr(unsafe.Pointer(utf16(T("ControlZit: restart needed")))), // #nosec G103 -- Win32 strings
+	r, _, _ := pMessageBox.Call(0, uintptr(unsafe.Pointer(utf16(text))), uintptr(unsafe.Pointer(utf16(T("RMMZit: restart needed")))), // #nosec G103 -- Win32 strings
 		mbYesNo|mbIconInfo|mbTopMost|mbSetForegrnd)
 	if r != idYes {
 		return

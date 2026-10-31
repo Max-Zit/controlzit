@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // Metric history: the minute samples stay 7 days, hourly summaries 90 days.

@@ -1,1 +1,0 @@
-czadmin ALL=(root) NOPASSWD: /usr/local/sbin/controlzit-setup

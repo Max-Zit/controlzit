@@ -1,6 +1,6 @@
 {{template "guest" .}}
 {{define "content"}}
-<h1>{{.T "Set up ControlZit"}}</h1>
+<h1>{{.T "Set up RMMZit"}}</h1>
 <p class="muted">{{.T "Create the first administrator. Two-factor sign-in with an authenticator app is set up in the next step and is required for every account."}}</p>
 <form method="post" action="/setup" class="stack">
   {{if .Data.NeedToken}}<label>{{.T "Setup token"}}<input name="token" required autocomplete="off" spellcheck="false"><small>{{.T "It is in the file setup-token.txt in the server's data directory and in the server log."}}</small></label>{{end}}

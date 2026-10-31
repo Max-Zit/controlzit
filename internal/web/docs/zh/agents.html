@@ -8,35 +8,35 @@
 </ul>
 
 <h2 id="codes">注册码</h2>
-<p>代理通过注册码加入客户的某个<b>站点</b>。在<a href="/customers">客户</a>中打开站点，然后点击<b>创建注册码</b>。您可以选择有效期（1–365 天）以及可以使用它的计算机数量。代码（<code>CZ1-…</code>）包含服务器地址及其证书指纹，因此安装程序不需要其他任何信息。它只显示一次；不再需要时请撤销。</p>
+<p>代理通过注册码加入客户的某个<b>站点</b>。在<a href="/customers">客户</a>中打开站点，然后点击<b>创建注册码</b>。您可以选择有效期（1–365 天）以及可以使用它的计算机数量。代码（<code>RZ1-…</code>）包含服务器地址及其证书指纹，因此安装程序不需要其他任何信息。它只显示一次；不再需要时请撤销。</p>
 
 <h2 id="windows">Windows</h2>
 <p>在站点页面下载 MSI（<b>下载代理（MSI，64 位）</b>），双击并粘贴代码，或者通过组策略、Intune 或脚本静默安装：</p>
-<pre>msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="CZ1-…"</pre>
-<p>代理作为 Windows 服务 <i>ControlZit Agent</i> 运行。时钟旁的小图标显示它是否已连接（绿色），并可打开一个窗口，显示服务器以及由谁管理这台计算机。</p>
+<pre>msiexec /i rmmzit-agent-x64.msi /qn ENROLLCODE="RZ1-…"</pre>
+<p>代理作为 Windows 服务 <i>RMMZit Agent</i> 运行。时钟旁的小图标显示它是否已连接（绿色），并可打开一个窗口，显示服务器以及由谁管理这台计算机。</p>
 <p>图标、其窗口和重启询问使用用户 Windows 的显示语言（控制台的 14 种语言之一，否则为英语）。</p>
 <p>不使用 MSI（以管理员身份运行 PowerShell）：</p>
-<pre>.\controlzit-agent.exe enroll --code "CZ1-…"
-.\controlzit-agent.exe install</pre>
+<pre>.\rmmzit-agent.exe enroll --code "RZ1-…"
+.\rmmzit-agent.exe install</pre>
 
 <h2 id="linux">Linux</h2>
 <p>在站点页面下载 Linux 代理（x86-64，或用于 Raspberry Pi 和 ARM 服务器的 ARM64），复制到计算机并以 root 身份运行：</p>
-<pre>chmod +x controlzit-agent-linux-amd64
-sudo ./controlzit-agent-linux-amd64 install --code "CZ1-…"</pre>
-<p>它会将自身复制到 <code>/usr/local/bin/controlzit-agent</code>，完成注册并启动 systemd 服务 <code>controlzit-agent</code>。</p>
+<pre>chmod +x rmmzit-agent-linux-amd64
+sudo ./rmmzit-agent-linux-amd64 install --code "RZ1-…"</pre>
+<p>它会将自身复制到 <code>/usr/local/bin/rmmzit-agent</code>，完成注册并启动 systemd 服务 <code>rmmzit-agent</code>。</p>
 
 <h2 id="updates">代理更新</h2>
 <p>服务器自带与其版本相同的代理安装程序。在<a href="/settings/agents">设置 → 代理更新</a>中，您可以查看哪些代理已过时、一次性全部更新，或让过时的代理在连接时自动更新。单个代理可在其设备页面上更新。代理通过自己的加密连接下载安装程序，并且只有在与已签名更新命令中的 SHA-256 一致时才会安装。您也可以在那里上传其他安装程序（MSI 或 Linux 代理）。</p>
 
 <h2 id="windows-update">受管计算机上的 Windows 更新</h2>
-<p>代理通过策略关闭 Windows 更新的自动安装，使更新只来自 ControlZit，可以手动安装或按您的计划安装（请参阅<a href="/docs/updates">Windows 更新</a>）。之前的设置会被保存，并在移除代理时恢复。</p>
+<p>代理通过策略关闭 Windows 更新的自动安装，使更新只来自 RMMZit，可以手动安装或按您的计划安装（请参阅<a href="/docs/updates">Windows 更新</a>）。之前的设置会被保存，并在移除代理时恢复。</p>
 
 <h2 id="remove">移除代理</h2>
-<p>在设备页面上删除设备（<b>移除设备</b>）。如果设备在线，代理会在几秒内自行卸载，Windows 更新会恢复其自身的设置。离线计算机将无法再连接；请在其上手动卸载代理（Windows：<i>应用 → ControlZit Agent → 卸载</i>；Linux：<code>sudo controlzit-agent uninstall</code>）。</p>
+<p>在设备页面上删除设备（<b>移除设备</b>）。如果设备在线，代理会在几秒内自行卸载，Windows 更新会恢复其自身的设置。离线计算机将无法再连接；请在其上手动卸载代理（Windows：<i>应用 → RMMZit Agent → 卸载</i>；Linux：<code>sudo rmmzit-agent uninstall</code>）。</p>
 
 <h2 id="mass">大量计算机：组策略和 Intune</h2>
 <p>创建一个使用次数足够所有计算机的注册码；站点页面随后会显示以下内容（已填入该注册码）：</p>
 <ul>
-  <li><b>组策略</b>：一个 PowerShell 启动脚本。将 MSI 放到计算机帐户（Domain Computers）可读取的共享中，输入其路径，复制脚本并将其添加到 计算机配置 → 策略 → Windows 设置 → 脚本 → 启动 → PowerShell 脚本。已安装代理（服务 <code>ControlZitAgent</code>）的计算机会跳过；安装日志为 <code>%windir%\Temp\controlzit-agent-install.log</code>。</li>
-  <li><b>Microsoft Intune</b>：将代理添加为 Windows 应用（Win32）：用 Microsoft 的 IntuneWinAppUtil 打包 MSI，并使用站点页面上的安装和卸载命令、安装行为<i>系统</i>以及检测规则（文件 <code>C:\Program Files\ControlZit Agent\controlzit-agent.exe</code>）。不要作为业务线（LOB）MSI 添加：代理会自行更新，Intune 随后会重新安装旧版本。</li>
+  <li><b>组策略</b>：一个 PowerShell 启动脚本。将 MSI 放到计算机帐户（Domain Computers）可读取的共享中，输入其路径，复制脚本并将其添加到 计算机配置 → 策略 → Windows 设置 → 脚本 → 启动 → PowerShell 脚本。已安装代理（服务 <code>RMMZitAgent</code>）的计算机会跳过；安装日志为 <code>%windir%\Temp\rmmzit-agent-install.log</code>。</li>
+  <li><b>Microsoft Intune</b>：将代理添加为 Windows 应用（Win32）：用 Microsoft 的 IntuneWinAppUtil 打包 MSI，并使用站点页面上的安装和卸载命令、安装行为<i>系统</i>以及检测规则（文件 <code>C:\Program Files\RMMZit Agent\rmmzit-agent.exe</code>）。不要作为业务线（LOB）MSI 添加：代理会自行更新，Intune 随后会重新安装旧版本。</li>
 </ul>

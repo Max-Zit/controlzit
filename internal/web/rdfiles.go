@@ -68,8 +68,11 @@ func (s *Server) handleRDUpload(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		name := winBase(strings.ReplaceAll(part.FileName(), "/", `\`))
-		// Only the helper's staging folders, in a user's Temp.
-		if !isWinAbs(dir) || !strings.Contains(strings.ToLower(dir), `\appdata\local\temp\controlzit\`) || strings.Contains(dir, "..") || validName(name) != nil {
+		// Only the helper's staging folders, in a user's Temp (ControlZit:
+		// agents from before the rename to RMMZit).
+		low := strings.ToLower(dir)
+		staged := strings.Contains(low, `\appdata\local\temp\rmmzit\`) || strings.Contains(low, `\appdata\local\temp\controlzit\`)
+		if !isWinAbs(dir) || !staged || strings.Contains(dir, "..") || validName(name) != nil {
 			answer(http.StatusBadRequest, rdUploadResult{Error: "Choose a folder and a file with a valid name."})
 			return
 		}

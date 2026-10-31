@@ -1,4 +1,4 @@
-// ControlZit remote desktop viewer. Screen updates arrive as binary
+// RMMZit remote desktop viewer. Screen updates arrive as binary
 // WebSocket messages (see internal/proto/rd.go); input goes back as JSON.
 (function () {
   "use strict";

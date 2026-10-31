@@ -43,7 +43,7 @@ func TestBanner(t *testing.T) {
 	if os.Getenv("CZ_DESKTOP_TEST") == "" {
 		t.Skip("set CZ_DESKTOP_TEST=1 on a machine with a desktop")
 	}
-	b := ShowBanner("ControlZit test: a technician is connected")
+	b := ShowBanner("RMMZit test: a technician is connected")
 	if b.hwnd == 0 {
 		t.Fatal("no banner window")
 	}

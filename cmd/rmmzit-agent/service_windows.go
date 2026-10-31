@@ -11,12 +11,12 @@ import (
 	"os"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/agent"
+	"github.com/max-zit/rmmzit/internal/agent"
 )
 
 const (
-	serviceName = "ControlZitAgent"
-	serviceDesc = "ControlZit remote monitoring and management agent (MaxZit)."
+	serviceName = "RMMZitAgent"
+	serviceDesc = "RMMZit remote monitoring and management agent (MaxZit)."
 )
 
 func isService() bool {
@@ -87,7 +87,7 @@ func installService(string) error {
 		_ = s.Close()
 		return fmt.Errorf("service %s already exists", serviceName)
 	}
-	s, err := m.CreateService(serviceName, exe, mgr.Config{DisplayName: "ControlZit Agent", Description: serviceDesc,
+	s, err := m.CreateService(serviceName, exe, mgr.Config{DisplayName: "RMMZit Agent", Description: serviceDesc,
 		StartType: mgr.StartAutomatic, DelayedAutoStart: true})
 	if err != nil {
 		return err
@@ -126,3 +126,6 @@ func uninstallService() error {
 	fmt.Println("Service", serviceName, "removed.")
 	return nil
 }
+
+// migrateLegacyService is the MSI's work on Windows.
+func migrateLegacyService(interface{ Info(string, ...any) }) {}

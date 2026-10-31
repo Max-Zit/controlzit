@@ -14,17 +14,17 @@
 <p>In <a href="/users">Utenti</a> un amministratore aggiunge un utente con una password iniziale; l'utente deve cambiarla e configurare l'accesso a due fattori al primo accesso. Un amministratore può disattivare un utente (le sessioni aperte terminano), impostare una nuova password o reimpostare l'accesso a due fattori di un utente che ha perso telefono e codici di recupero. Resta sempre almeno un amministratore attivo.</p>
 
 <h2 id="2fa">Accesso a due fattori</h2>
-<p>ControlZit ha accesso da amministratore a ogni computer gestito, quindi ogni account locale e di directory richiede un'<b>app di autenticazione</b> (Microsoft Authenticator, Google Authenticator, Authy, 1Password, Bitwarden …). Ogni account riceve anche 10 <b>codici di recupero</b> monouso; quelli nuovi si creano in <a href="/account">Account</a>. Gli accessi falliti bloccano l'indirizzo per un po' (più a lungo dopo ogni blocco ripetuto); i limiti sono in <a href="/settings/security">Impostazioni → Accesso e sicurezza</a>, insieme alla durata della sessione e alla disconnessione dopo inattività.</p>
+<p>RMMZit ha accesso da amministratore a ogni computer gestito, quindi ogni account locale e di directory richiede un'<b>app di autenticazione</b> (Microsoft Authenticator, Google Authenticator, Authy, 1Password, Bitwarden …). Ogni account riceve anche 10 <b>codici di recupero</b> monouso; quelli nuovi si creano in <a href="/account">Account</a>. Gli accessi falliti bloccano l'indirizzo per un po' (più a lungo dopo ogni blocco ripetuto); i limiti sono in <a href="/settings/security">Impostazioni → Accesso e sicurezza</a>, insieme alla durata della sessione e alla disconnessione dopo inattività.</p>
 
 <h2 id="ldap">Active Directory / LDAP</h2>
-<p>In <a href="/settings/ldap">Impostazioni → Active Directory / LDAP</a> gli utenti accedono con il proprio account di directory. La directory verifica la password; ControlZit chiede comunque il proprio secondo fattore.</p>
+<p>In <a href="/settings/ldap">Impostazioni → Active Directory / LDAP</a> gli utenti accedono con il proprio account di directory. La directory verifica la password; RMMZit chiede comunque il proprio secondo fattore.</p>
 <ul>
   <li><b>Server:</b> <code>ldaps://dc1.example.local</code> (porta 636), oppure <code>ldap://</code> (389) con StartTLS — le password non attraversano mai la rete in chiaro. Aggiungi il certificato della CA se il certificato della directory proviene da una CA aziendale.</li>
   <li><b>Account di servizio</b> (DN o <code>utente@dominio</code>) e la sua password, il <b>DN di base</b> e il <b>filtro utenti</b>, ad es. <code>(&amp;(objectClass=user)(sAMAccountName={username}))</code> per Active Directory.</li>
   <li><b>Gruppi e ruoli:</b> associa i gruppi della directory ad Amministratore, Tecnico e Sola lettura; vince il ruolo più alto. I gruppi annidati di Active Directory possono essere inclusi.</li>
   <li><b>Gruppi di clienti:</b> righe <code>gruppo = cliente</code> limitano tecnici e utenti in sola lettura a quei clienti.</li>
 </ul>
-<p><b>Prova</b> verifica un account di directory con le impostazioni salvate, senza accedere, e mostra cosa ne farebbe ControlZit. Gli account di directory cambiano la password nella directory, non in ControlZit.</p>
+<p><b>Prova</b> verifica un account di directory con le impostazioni salvate, senza accedere, e mostra cosa ne farebbe RMMZit. Gli account di directory cambiano la password nella directory, non in RMMZit.</p>
 
 <h2 id="sso">Single Sign-On (OpenID Connect, SAML)</h2>
 <p>In <a href="/settings/sso">Impostazioni → Single Sign-On</a> gli utenti accedono con il proprio account presso un provider di identità: <b>OpenID Connect</b> (Microsoft Entra ID, Google, Okta, Keycloak …) o <b>SAML 2.0</b> (ADFS, Entra ID, Okta …). La pagina di accesso mostra allora un pulsante.</p>
@@ -32,7 +32,7 @@
   <li><b>OpenID Connect:</b> registra un'applicazione presso il provider con l'URI di reindirizzamento mostrato nella pagina, poi inserisci l'emittente (ad es. <code>https://login.microsoftonline.com/&lt;tenant&gt;/v2.0</code>), l'ID client e il segreto client.</li>
   <li><b>SAML:</b> fornisci al provider i metadati della console (link nella pagina) o il suo entity ID e indirizzo di risposta (ACS), poi inserisci l'URL dei metadati del provider o incolla il suo XML.</li>
   <li>Il <b>claim dei gruppi</b> porta i gruppi (nomi o ID; Entra ID invia ID di gruppo), associati a ruoli e clienti come con LDAP.</li>
-  <li>Vale il criterio multifattore del provider di identità; facoltativamente ControlZit chiede anche il proprio secondo fattore.</li>
+  <li>Vale il criterio multifattore del provider di identità; facoltativamente RMMZit chiede anche il proprio secondo fattore.</li>
 </ul>
 <div class="callout tip"><p>Gli account locali continuano a funzionare quando LDAP o Single Sign-On sono attivi, quindi un amministratore può sempre accedere. Tieni un amministratore locale per le emergenze.</p></div>
 

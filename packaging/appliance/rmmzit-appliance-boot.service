@@ -1,0 +1,11 @@
+[Unit]
+Description=RMMZit appliance start (disk size, login screen)
+After=local-fs.target rmmzit-server.service
+Before=getty@tty1.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/rmmzit-appliance-boot
+
+[Install]
+WantedBy=multi-user.target

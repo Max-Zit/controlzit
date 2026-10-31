@@ -4,7 +4,7 @@
 <div class="settings">
 {{template "settingstabs" .}}
 <div class="settings-body">
-{{if .Data.Restart}}<div class="flash warn" role="status">{{template "icon" "alert"}}<span>{{.T "The saved ports differ from the running ones (console %s, agents %s). Restart the ControlZit service to use the new ports." .Data.RunningMgmt .Data.RunningAgent}}</span></div>{{end}}
+{{if .Data.Restart}}<div class="flash warn" role="status">{{template "icon" "alert"}}<span>{{.T "The saved ports differ from the running ones (console %s, agents %s). Restart the RMMZit service to use the new ports." .Data.RunningMgmt .Data.RunningAgent}}</span></div>{{end}}
 {{if .Data.Override}}<div class="flash info" role="status">{{template "icon" "alert"}}<span>{{.T "The service runs with ports from its command line (console %s, agents %s). The addresses saved here are used when it starts without these options." .Data.RunningMgmt .Data.RunningAgent}}</span></div>{{end}}
 <form method="post" action="/settings/network" class="stack wide">
   <section class="panel">
@@ -27,7 +27,7 @@
     <ul class="tips">
       <li>{{.T "Allow the console port on the server's firewall only from your admin networks, and the agent port only where agents are."}}</li>
       <li>{{.T "For access from outside, use a VPN (for example WireGuard) instead of opening the console port to the internet."}}</li>
-      <li>{{.T "If you lock yourself out, run on the server: controlzit-server --reset-allowlist"}}</li>
+      <li>{{.T "If you lock yourself out, run on the server: rmmzit-server --reset-allowlist"}}</li>
     </ul>
   </section>
   <div><button class="primary">{{.T "Save"}}</button></div>
@@ -35,9 +35,9 @@
 {{with .Data.Last}}<div class="flash {{if eq .Status "done"}}ok{{else if eq .Status "running"}}info{{else}}err{{end}}" role="status">{{template "icon" "check"}}<span>{{$.T "Last change on the server"}} ({{$.Time .Started}}): {{.Message}}</span></div>{{end}}
 <section class="panel">
   <h2>{{template "icon" "refresh"}}{{.T "Restart"}}</h2>
-  <p class="muted">{{.T "New listen addresses and ports take effect after a restart of the ControlZit service. Agents reconnect by themselves."}}</p>
-  {{if .Data.HelperOK}}<form method="post" action="/settings/restart" data-confirm="{{.T "Restart the ControlZit service now? The console is away for a few seconds."}}"><button class="secondary">{{template "icon" "refresh"}}{{.T "Restart now"}}</button></form>
-  {{else}}<p class="small muted">{{.T "On this installation restart it on the server: systemctl restart controlzit-server"}}</p>{{end}}
+  <p class="muted">{{.T "New listen addresses and ports take effect after a restart of the RMMZit service. Agents reconnect by themselves."}}</p>
+  {{if .Data.HelperOK}}<form method="post" action="/settings/restart" data-confirm="{{.T "Restart the RMMZit service now? The console is away for a few seconds."}}"><button class="secondary">{{template "icon" "refresh"}}{{.T "Restart now"}}</button></form>
+  {{else}}<p class="small muted">{{.T "On this installation restart it on the server: systemctl restart rmmzit-server"}}</p>{{end}}
 </section>
 <section class="panel">
   <h2>{{template "icon" "clock"}}{{.T "Time zone"}}</h2>
@@ -66,7 +66,7 @@
     </fieldset>
     <div><button class="primary">{{.T "Apply"}}</button> <small class="muted">{{.T "If the gateway does not answer with the new settings, the previous ones come back by themselves."}}</small></div>
   </form>
-  {{else}}<p class="small muted">{{.T "The network of this server is managed by its operating system. On the ControlZit appliance it can be changed here."}}</p>{{end}}
+  {{else}}<p class="small muted">{{.T "The network of this server is managed by its operating system. On the RMMZit appliance it can be changed here."}}</p>{{end}}
 </section>
 </div>
 </div>

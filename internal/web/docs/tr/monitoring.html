@@ -35,7 +35,7 @@
 <ul>
   <li><b>Slack</b> — kanalın gelen webhook URL'si.</li>
   <li><b>Microsoft Teams</b> — <i>Bir Teams webhook isteği alındığında</i> kanal iş akışı ve URL'si.</li>
-  <li><b>Webhook</b> — JSON POST kabul eden herhangi bir HTTPS URL'si (bilet sistemi, otomasyon). Bir gizli anahtarla her istek <code>X-ControlZit-Signature: sha256=&lt;gövdenin HMAC'i&gt;</code> taşır; böylece alıcı isteğin sunucunuzdan geldiğini doğrulayabilir.</li>
+  <li><b>Webhook</b> — JSON POST kabul eden herhangi bir HTTPS URL'si (bilet sistemi, otomasyon). Bir gizli anahtarla her istek <code>X-RMMZit-Signature: sha256=&lt;gövdenin HMAC'i&gt;</code> taşır; böylece alıcı isteğin sunucunuzdan geldiğini doğrulayabilir.</li>
 </ul>
 <p>Her kanal için tüm uyarıları veya yalnızca kritik olanları ve çözülen uyarıların da gönderilip gönderilmeyeceğini seçin. <b>Test gönder</b> bir test iletisi gönderir. Kanal adresleri şifreli olarak saklanır.</p>
 

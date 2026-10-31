@@ -65,7 +65,7 @@ func SelfSigned(commonName string, years int) (certPEM, keyPEM []byte, err error
 	host, _ := os.Hostname()
 	tpl := &x509.Certificate{
 		SerialNumber:          serial,
-		Subject:               pkix.Name{CommonName: commonName, Organization: []string{"ControlZit"}},
+		Subject:               pkix.Name{CommonName: commonName, Organization: []string{"RMMZit"}},
 		NotBefore:             time.Now().Add(-time.Hour),
 		NotAfter:              time.Now().AddDate(years, 0, 0),
 		KeyUsage:              x509.KeyUsageDigitalSignature,

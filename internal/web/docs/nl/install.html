@@ -1,5 +1,5 @@
 <h1>De server installeren</h1>
-<p class="lead">Kies een van vier manieren. Het kant-en-klare VM-image is het snelst; het installatiescript past bij een bestaande Linux-server.</p>
+<p class="lead">Kies een van vijf manieren. Het kant-en-klare VM-image is het snelst; het installatiescript past bij een bestaande Linux-server, Docker bij een bestaande Docker-host.</p>
 
 <table>
   <tr><th>Manier</th><th>Het best voor</th><th>Nodig</th></tr>
@@ -7,52 +7,60 @@
   <tr><td><b>2. Appliance-ISO</b></td><td>een nieuwe VM of fysieke server, zonder tussenkomst</td><td>internettoegang tijdens de installatie</td></tr>
   <tr><td><b>3. Installatiescript</b></td><td>een bestaande Debian-, Ubuntu-, AlmaLinux- of Rocky Linux-server</td><td>root en internettoegang</td></tr>
   <tr><td><b>4. Pakketten met de hand</b></td><td>eigen PostgreSQL, configuratiebeheer, offline servers</td><td>het deb- of rpm-pakket van een release</td></tr>
+  <tr><td><b>5. Docker</b> (container-image)</td><td>een bestaande Docker-host, NAS of homelab</td><td>Docker met de Compose-plugin; internettoegang om de image te downloaden</td></tr>
 </table>
-<p>Alle bestanden staan op de <a href="https://github.com/Max-Zit/controlzit/releases/latest" target="_blank" rel="noopener">releasepagina</a>. Geef de server 2 vCPU, 2–4 GB RAM en een schijf van minstens 16 GB.</p>
+<p>Alle bestanden staan op de <a href="https://github.com/Max-Zit/rmmzit/releases/latest" target="_blank" rel="noopener">releasepagina</a>. Geef de server 2 vCPU, 2–4 GB RAM en een schijf van minstens 16 GB.</p>
 
 <h2 id="image">1. VM-image</h2>
 <ol>
   <li>Importeer het image:
     <ul>
-      <li><b>VMware ESXi / Workstation, VirtualBox:</b> implementeer <code>controlzit-appliance.ova</code> (<i>Create / Register VM → Deploy a virtual machine from an OVF or OVA file</i>).</li>
-      <li><b>Proxmox VE:</b> maak een VM zonder schijf (2 vCPU, 2–4 GB RAM, VirtIO-netwerk), kopieer <code>controlzit-appliance.qcow2</code> naar de node en voer <code>qm importdisk &lt;vmid&gt; controlzit-appliance.qcow2 local-lvm</code> uit; koppel de schijf als SCSI en maak hem de opstartschijf.</li>
-      <li><b>Hyper-V:</b> pak <code>controlzit-appliance-vhdx.zip</code> uit en maak een VM van <b>generatie 1</b> met de VHDX als schijf.</li>
+      <li><b>VMware ESXi / Workstation, VirtualBox:</b> implementeer <code>rmmzit-appliance.ova</code> (<i>Create / Register VM → Deploy a virtual machine from an OVF or OVA file</i>).</li>
+      <li><b>Proxmox VE:</b> maak een VM zonder schijf (2 vCPU, 2–4 GB RAM, VirtIO-netwerk), kopieer <code>rmmzit-appliance.qcow2</code> naar de node en voer <code>qm importdisk &lt;vmid&gt; rmmzit-appliance.qcow2 local-lvm</code> uit; koppel de schijf als SCSI en maak hem de opstartschijf.</li>
+      <li><b>Hyper-V:</b> pak <code>rmmzit-appliance-vhdx.zip</code> uit en maak een VM van <b>generatie 1</b> met de VHDX als schijf.</li>
     </ul>
   </li>
   <li>Start de VM. De schijf groeit vanzelf tot de grootte van de virtuele schijf. Het scherm van de VM toont <b>het adres van de console en het installatietoken</b>.</li>
   <li>Open <code>https://&lt;adres&gt;:8443</code>. De browser waarschuwt eenmaal voor het zelfondertekende certificaat (vervang het later onder <a href="/settings/certificate">Instellingen → Certificaat</a>). Voer het token in en maak de eerste beheerder aan.</li>
 </ol>
-<p>De appliance krijgt zijn adres via DHCP. Voor een vast adres, de servernaam of de tijdzone meldt u zich op het scherm van de VM aan als <code>czadmin</code> (eerste wachtwoord <code>controlzit</code>, moet worden gewijzigd): er opent een installatiemenu. Tijdzone en netwerk kunnen later ook in de console worden gewijzigd.</p>
+<p>De appliance krijgt zijn adres via DHCP. Voor een vast adres, de servernaam of de tijdzone meldt u zich op het scherm van de VM aan als <code>rzadmin</code> (eerste wachtwoord <code>rmmzit</code>, moet worden gewijzigd): er opent een installatiemenu. Tijdzone en netwerk kunnen later ook in de console worden gewijzigd.</p>
 
 <h2 id="iso">2. Appliance-ISO</h2>
 <ol>
-  <li>Start een VM of server vanaf <code>controlzit-appliance.iso</code>. Na 5 seconden begint de installatie vanzelf: ze <b>wist de eerste schijf</b>, installeert Debian, PostgreSQL en ControlZit en heeft internettoegang nodig (10–20 minuten).</li>
+  <li>Start een VM of server vanaf <code>rmmzit-appliance.iso</code>. Na 5 seconden begint de installatie vanzelf: ze <b>wist de eerste schijf</b>, installeert Debian, PostgreSQL en RMMZit en heeft internettoegang nodig (10–20 minuten).</li>
   <li>Na de herstart toont het scherm het consoleadres en het installatietoken, zoals bij het VM-image.</li>
 </ol>
 
 <h2 id="script">3. Installatiescript</h2>
 <p>Op een bestaande Linux-server, als root:</p>
-<pre>curl -fsSL https://github.com/Max-Zit/controlzit/releases/latest/download/install.sh | sudo sh</pre>
-<p>Het script installeert PostgreSQL, downloadt de nieuwste release, <b>controleert de handtekening</b>, maakt een database met een willekeurig wachtwoord en start de service. Opties (na <code>sh -s --</code>): <code>--version X</code>, <code>--db postgres://…</code> voor een bestaande database, <code>--no-auto-updates</code> om de automatische beveiligingsupdates van het besturingssysteem uit te laten. Opnieuw uitvoeren werkt ControlZit bij en behoudt de gegevens.</p>
+<pre>curl -fsSL https://github.com/Max-Zit/rmmzit/releases/latest/download/install.sh | sudo sh</pre>
+<p>Het script installeert PostgreSQL, downloadt de nieuwste release, <b>controleert de handtekening</b>, maakt een database met een willekeurig wachtwoord en start de service. Opties (na <code>sh -s --</code>): <code>--version X</code>, <code>--db postgres://…</code> voor een bestaande database, <code>--no-auto-updates</code> om de automatische beveiligingsupdates van het besturingssysteem uit te laten. Opnieuw uitvoeren werkt RMMZit bij en behoudt de gegevens.</p>
 
 <h2 id="packages">4. Pakketten met de hand</h2>
-<pre>sudo apt install ./controlzit-server_X_amd64.deb      # Debian, Ubuntu
-sudo dnf install ./controlzit-server-X-1.x86_64.rpm     # AlmaLinux, Rocky Linux</pre>
-<p>Zet daarna het databaseadres in <code>/etc/controlzit/server.env</code> (<code>CONTROLZIT_DB=postgres://…</code>) en start de service met <code>systemctl enable --now controlzit-server</code>.</p>
+<pre>sudo apt install ./rmmzit-server_X_amd64.deb      # Debian, Ubuntu
+sudo dnf install ./rmmzit-server-X-1.x86_64.rpm     # AlmaLinux, Rocky Linux</pre>
+<p>Zet daarna het databaseadres in <code>/etc/rmmzit/server.env</code> (<code>RMMZIT_DB=postgres://…</code>) en start de service met <code>systemctl enable --now rmmzit-server</code>.</p>
+
+<h2 id="docker">5. Docker</h2>
+<p>De server bestaat ook als container-image, <code>ghcr.io/max-zit/rmmzit</code>, gebouwd uit hetzelfde ondertekende serverpakket als de andere manieren; hij draait met PostgreSQL via Docker Compose. Download <a href="https://github.com/Max-Zit/rmmzit/tree/main/packaging/docker" target="_blank" rel="noopener">docker-compose.yml en .env.example</a> naar een map, kopieer <code>.env.example</code> naar <code>.env</code>, stel een databasewachtwoord (letters en cijfers) en de tijdzone in, en daarna:</p>
+<pre>docker compose up -d
+docker compose exec rmmzit cat /var/lib/rmmzit/setup-token.txt</pre>
+<p>Open <code>https://&lt;host&gt;:8443</code> en voer het installatietoken in. Poort 8444 is het eindpunt voor agents; open hem waar agents vandaan verbinden. De tag van de image in <code>.env</code> bepaalt wat er draait: <code>latest</code> voor officiële versies, <code>testing</code> voor releasekandidaten.</p>
+<p>Werk bij met <code>docker compose pull &amp;&amp; docker compose up -d</code>. Voordat een nieuwe versie de database wijzigt, schrijft de server een back-up naar <a href="/settings/backup">Instellingen → Back-up van de console</a>. Om terug te gaan, stelt u de vorige versie in als tag van de image en zet u dat bestand terug: <code>docker compose stop rmmzit</code>, <code>docker compose run --rm rmmzit -restore /var/lib/rmmzit/backups/BESTAND</code>, <code>docker compose up -d</code>. In een container horen het netwerk en de tijdzone bij de Docker-host, niet bij de console.</p>
 
 <h2 id="first-sign-in">Eerste aanmelding</h2>
 <ul>
-  <li>Het installatietoken staat in <code>/var/lib/controlzit/setup-token.txt</code> en in het serverlogboek (<code>journalctl -u controlzit-server</code>). Het werkt één keer.</li>
+  <li>Het installatietoken staat in <code>/var/lib/rmmzit/setup-token.txt</code> en in het serverlogboek (<code>journalctl -u rmmzit-server</code>). Het werkt één keer.</li>
   <li>Elk account heeft een <b>authenticator-app</b> (TOTP) nodig en krijgt 10 herstelcodes. Bewaar ze veilig.</li>
-  <li>De console accepteert standaard alleen verbindingen uit <b>privénetwerken</b>. Als u uzelf buitensluit, voer dan <code>controlzit-server --reset-allowlist</code> uit op de server (appliance: installatiemenu, item 5).</li>
+  <li>De console accepteert standaard alleen verbindingen uit <b>privénetwerken</b>. Als u uzelf buitensluit, voer dan <code>rmmzit-server --reset-allowlist</code> uit op de server (appliance: installatiemenu, item 5).</li>
 </ul>
 
 <h2 id="files">Waar alles staat</h2>
 <table>
   <tr><th>Pad</th><th>Wat</th></tr>
-  <tr><td><code>/etc/controlzit/server.env</code></td><td>configuratie: database, poorten, updatebron (alleen leesbaar voor root en de service)</td></tr>
-  <tr><td><code>/var/lib/controlzit</code></td><td>gegevensmap: certificaten, geheime sleutel, agent-installatieprogramma's (<code>downloads</code>), logboeken</td></tr>
-  <tr><td><code>/var/lib/controlzit/logs/server.log</code></td><td>serverlogboek; ook in <code>journalctl -u controlzit-server</code></td></tr>
-  <tr><td><code>/var/log/controlzit-helper</code></td><td>logboek van de root-helper (updates, tijdzone, netwerk)</td></tr>
+  <tr><td><code>/etc/rmmzit/server.env</code></td><td>configuratie: database, poorten, updatebron (alleen leesbaar voor root en de service)</td></tr>
+  <tr><td><code>/var/lib/rmmzit</code></td><td>gegevensmap: certificaten, geheime sleutel, agent-installatieprogramma's (<code>downloads</code>), logboeken</td></tr>
+  <tr><td><code>/var/lib/rmmzit/logs/server.log</code></td><td>serverlogboek; ook in <code>journalctl -u rmmzit-server</code></td></tr>
+  <tr><td><code>/var/log/rmmzit-helper</code></td><td>logboek van de root-helper (updates, tijdzone, netwerk)</td></tr>
 </table>
-<div class="callout warn"><p>Maak een back-up van de database samen met <code>/var/lib/controlzit</code>: de geheime sleutel daarin ontsleutelt de opgeslagen wachtwoorden en de certificaten identificeren de server bij zijn agents.</p></div>
+<div class="callout warn"><p>Maak een back-up van de database samen met <code>/var/lib/rmmzit</code>: de geheime sleutel daarin ontsleutelt de opgeslagen wachtwoorden en de certificaten identificeren de server bij zijn agents.</p></div>

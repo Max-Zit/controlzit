@@ -3,9 +3,9 @@
 
 <h2 id="console">Ik kan de console niet bereiken</h2>
 <ul>
-  <li>Uw adres staat mogelijk niet in de toegestane netwerken: de verbinding wordt vóór TLS gesloten, dus de browser toont een verbindingsfout. Voer <code>controlzit-server --reset-allowlist</code> uit op de server (appliance: installatiemenu, item 5) om alle privénetwerken weer toe te staan.</li>
+  <li>Uw adres staat mogelijk niet in de toegestane netwerken: de verbinding wordt vóór TLS gesloten, dus de browser toont een verbindingsfout. Voer <code>rmmzit-server --reset-allowlist</code> uit op de server (appliance: installatiemenu, item 5) om alle privénetwerken weer toe te staan.</li>
   <li>Open na een poortwijziging de console op de nieuwe poort.</li>
-  <li>Controleer de service op de server: <code>systemctl status controlzit-server</code> en <code>journalctl -u controlzit-server</code>.</li>
+  <li>Controleer de service op de server: <code>systemctl status rmmzit-server</code> en <code>journalctl -u rmmzit-server</code>.</li>
 </ul>
 
 <h2 id="signin">Problemen met aanmelden</h2>
@@ -21,7 +21,7 @@
   <li>Bereikt de computer de agentpoort? Op Windows: <code>Test-NetConnection rmm.example.com -Port 8444</code>.</li>
   <li>Klopt het openbare agentadres? Codes die zijn gemaakt terwijl de console via localhost open stond, sturen de agent naar de verkeerde server; stel het adres in en maak een nieuwe code.</li>
   <li>Is de code nog geldig en niet opgebruikt?</li>
-  <li>Agentlogboeken: Windows <code>C:\ProgramData\ControlZit Agent\agent.log</code>, Linux <code>/var/lib/controlzit-agent/agent.log</code> en <code>journalctl -u controlzit-agent</code>; open ze voor een verbonden apparaat in de console onder <b>Bestanden</b>. Op Windows toont het pictogram naast de klok de verbindingsstatus.</li>
+  <li>Agentlogboeken: Windows <code>C:\ProgramData\RMMZit Agent\agent.log</code>, Linux <code>/var/lib/rmmzit-agent/agent.log</code> en <code>journalctl -u rmmzit-agent</code>; open ze voor een verbonden apparaat in de console onder <b>Bestanden</b>. Op Windows toont het pictogram naast de klok de verbindingsstatus.</li>
 </ul>
 
 <h2 id="rd">Extern bureaublad toont niets</h2>
@@ -41,11 +41,13 @@
 <p>Gebruik <b>Testmail verzenden</b> onder <a href="/settings/monitoring">Instellingen → Bewaking en waarschuwingen</a>; het bericht toont het antwoord van de server. Een wachtwoord wordt alleen via STARTTLS of TLS verzonden.</p>
 
 <h2 id="faq">Veelgestelde vragen</h2>
-<h3 id="faq-cloud">Heeft ControlZit een clouddienst nodig?</h3>
+<h3 id="faq-cloud">Heeft RMMZit een clouddienst nodig?</h3>
 <p>Nee. Alles draait op uw server; er wordt niets naar MaxZit gestuurd. De server controleert alleen GitHub op nieuwe releases.</p>
-<h3 id="faq-backup">Hoe maak ik een back-up van ControlZit?</h3>
+<h3 id="faq-backup">Hoe maak ik een back-up van RMMZit?</h3>
 <p>Onder <a href="/settings/backup">Instellingen → Back-up van de console</a> maakt de server elke dag een back-up van zijn database, geheime sleutel en certificaten, desgewenst versleuteld en gekopieerd naar een SFTP-server. Bewaar een kopie buiten de server: zonder de geheime sleutel kunnen opgeslagen wachtwoorden niet worden ontsleuteld en zouden agents een nieuwe server niet vertrouwen.</p>
 <h3 id="faq-move">Kan ik de server naar een nieuwe machine verhuizen?</h3>
-<p>Ja: installeer ControlZit op de nieuwe machine en zet daar een back-up van de console terug (<code>controlzit-server -restore BESTAND</code>, op de appliance item 7 van het setupmenu). Houd hetzelfde adres, of wijzig het openbare agentadres en laat de oude naam naar de nieuwe machine wijzen; agents blijven werken omdat de back-up de certificaten van de server bevat.</p>
+<p>Ja: installeer RMMZit op de nieuwe machine en zet daar een back-up van de console terug (<code>rmmzit-server -restore BESTAND</code>, op de appliance item 7 van het setupmenu). Houd hetzelfde adres, of wijzig het openbare agentadres en laat de oude naam naar de nieuwe machine wijzen; agents blijven werken omdat de back-up de certificaten van de server bevat.</p>
+<h3 id="faq-name">Is RMMZit het vroegere ControlZit?</h3>
+<p>Ja. Tot versie 0.12 heette RMMZit ControlZit. Installaties van ControlZit worden net als naar elke nieuwe versie bijgewerkt naar RMMZit: de gegevens, de agents en hun registratie, en registratiecodes die met <code>CZ1-</code> beginnen, blijven werken.</p>
 <h3 id="faq-mac">Is er een macOS-agent?</h3>
 <p>Nog niet. Windows en Linux (x86-64, ARM64) worden ondersteund.</p>

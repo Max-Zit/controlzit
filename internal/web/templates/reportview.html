@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{.T "Report"}} · {{with .Data.Customer}}{{.}}{{else}}{{$.T "All customers"}}{{end}} · ControlZit</title>
+<title>{{.T "Report"}} · {{with .Data.Customer}}{{.}}{{else}}{{$.T "All customers"}}{{end}} · RMMZit</title>
 <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/static/app.css?v={{.Asset}}">
 <script src="/static/app.js?v={{.Asset}}" defer></script>
@@ -99,6 +99,6 @@
   <p class="small muted mt">{{.T "Missing: updates not installed (security updates in brackets)."}}</p>
   {{else}}<p class="muted">{{.T "No devices."}}</p>{{end}}
 </section>
-<footer class="report-foot small muted">{{.T "Created by ControlZit"}} {{.Version}} · {{.Time $r.To}}</footer>
+<footer class="report-foot small muted">{{.T "Created by RMMZit"}} {{.Version}} · {{.Time $r.To}}</footer>
 </body>
 </html>

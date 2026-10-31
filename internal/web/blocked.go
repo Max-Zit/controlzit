@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // Blocked programs of a policy: found in a device's inventory they open an

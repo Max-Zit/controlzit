@@ -5,7 +5,7 @@ import (
 	"image/jpeg"
 	"testing"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 func frame(w, h int, c byte) *Frame {

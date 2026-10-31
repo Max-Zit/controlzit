@@ -3,8 +3,8 @@ package web
 import (
 	"testing"
 
-	"github.com/max-zit/controlzit/internal/proto"
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // For each part, the device's policy beats the site's, which beats the

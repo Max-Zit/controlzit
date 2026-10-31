@@ -28,7 +28,7 @@ import (
 
 	"golang.org/x/crypto/acme"
 
-	"github.com/max-zit/controlzit/internal/tlsutil"
+	"github.com/max-zit/rmmzit/internal/tlsutil"
 )
 
 // Console certificate (Settings → Certificate). The console port serves
@@ -353,7 +353,7 @@ func (t *ConsoleTLS) obtain(ctx context.Context, c CertSettings, hc *http.Client
 	if dir == "" {
 		dir = letsEncryptURL
 	}
-	cl := &acme.Client{Key: key, DirectoryURL: dir, HTTPClient: hc, UserAgent: "ControlZit"}
+	cl := &acme.Client{Key: key, DirectoryURL: dir, HTTPClient: hc, UserAgent: "RMMZit"}
 	acct := &acme.Account{}
 	if c.ACMEEmail != "" {
 		acct.Contact = []string{"mailto:" + c.ACMEEmail}

@@ -1,12 +1,12 @@
 // Package helper is the root side of the console: the console runs as the
-// unprivileged controlzit user and asks for the few things that need root
+// unprivileged rmmzit user and asks for the few things that need root
 // (installing a new version, the time zone, the appliance's network) by
 // writing request.json into <data-dir>/helper. A systemd path unit then
-// starts "controlzit-server --helper", which does the work and writes
+// starts "rmmzit-server --helper", which does the work and writes
 // result.json.
 //
 // The helper trusts nothing in the request beyond the wish itself: a new
-// version must be a release signed with a ControlZit release key (checked
+// version must be a release signed with an RMMZit release key (checked
 // again here, on files only root can write) and newer than the installed
 // one; time zones and network settings are validated.
 package helper
@@ -71,11 +71,11 @@ type ServerInfo struct {
 // Helper does the work. The fields let tests use a temporary root and a
 // fake command runner.
 type Helper struct {
-	DataDir  string // /var/lib/controlzit
-	CacheDir string // /var/cache/controlzit (root only)
+	DataDir  string // /var/lib/rmmzit
+	CacheDir string // /var/cache/rmmzit (root only)
 	Root     string // "" in production
-	EnvFile  string // /etc/controlzit/server.env
-	Binary   string // /usr/bin/controlzit-server
+	EnvFile  string // /etc/rmmzit/server.env
+	Binary   string // /usr/bin/rmmzit-server
 	Source   string // release location (default update.DefaultSource)
 	Log      func(format string, args ...any)
 	Run      func(ctx context.Context, name string, args ...string) ([]byte, error)
@@ -149,7 +149,7 @@ func (h *Helper) Handle(ctx context.Context) error {
 	err = h.finish(res)
 	// The console reads the time zone and its ports when it starts.
 	if res.restart {
-		_, _ = h.Run(ctx, "systemctl", "restart", "controlzit-server")
+		_, _ = h.Run(ctx, "systemctl", "restart", "rmmzit-server")
 	}
 	return err
 }
@@ -218,7 +218,7 @@ func Submit(dataDir string, req Request) error {
 // Available reports whether this installation has the root helper (the
 // Linux packages install its systemd units).
 func Available() bool {
-	for _, p := range []string{"/usr/lib/systemd/system/controlzit-helper.path", "/lib/systemd/system/controlzit-helper.path", "/etc/systemd/system/controlzit-helper.path"} {
+	for _, p := range []string{"/usr/lib/systemd/system/rmmzit-helper.path", "/lib/systemd/system/rmmzit-helper.path", "/etc/systemd/system/rmmzit-helper.path"} {
 		if _, err := os.Stat(p); err == nil {
 			return true
 		}

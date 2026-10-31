@@ -6,12 +6,12 @@
 <ul>
   <li><b>Konsola</b> — adres i port nasłuchu (domyślnie <code>:8443</code>) oraz <b>dozwolone sieci</b>: jeden adres IP lub sieć w wierszu (CIDR). Połączenia z innych adresów są zamykane przed TLS; sam serwer (127.0.0.1) jest zawsze dozwolony. Zapis odrzuca listę, która zablokowałaby Twój adres.</li>
   <li><b>Punkt końcowy agentów</b> — adres i port nasłuchu (domyślnie <code>:8444</code>, inny niż konsoli), sieci, z których mogą łączyć się agenci (puste = wszystkie), oraz <b>publiczny adres agentów</b> wpisywany do instalatorów i kodów rejestracji.</li>
-  <li>Nowe porty działają po <b>Uruchom ponownie teraz</b> (restartuje usługę ControlZit; agenci łączą się ponownie sami).</li>
+  <li>Nowe porty działają po <b>Uruchom ponownie teraz</b> (restartuje usługę RMMZit; agenci łączą się ponownie sami).</li>
 </ul>
-<p>Jeśli się zablokujesz, uruchom <code>controlzit-server --reset-allowlist</code> na serwerze (urządzenie: menu konfiguracji, pozycja 5).</p>
+<p>Jeśli się zablokujesz, uruchom <code>rmmzit-server --reset-allowlist</code> na serwerze (urządzenie: menu konfiguracji, pozycja 5).</p>
 
 <h3 id="server-network">Sieć serwera (urządzenie)</h3>
-<p>Na urządzeniu ControlZit ustawiasz tu też sieć samego serwera: DHCP lub stały adres z rozmiarem sieci (np. <code>192.168.1.20/24</code>), bramę, od jednego do trzech serwerów DNS i nazwę serwera. Jeśli brama nie odpowie przy nowych ustawieniach, poprzednie wrócą same po 30 sekundach. W innych instalacjach siecią zarządza system operacyjny.</p>
+<p>Na urządzeniu RMMZit ustawiasz tu też sieć samego serwera: DHCP lub stały adres z rozmiarem sieci (np. <code>192.168.1.20/24</code>), bramę, od jednego do trzech serwerów DNS i nazwę serwera. Jeśli brama nie odpowie przy nowych ustawieniach, poprzednie wrócą same po 30 sekundach. W innych instalacjach siecią zarządza system operacyjny.</p>
 
 <h3 id="timezone">Strefa czasowa</h3>
 <p>Harmonogramy (aktualizacje, skrypty, raporty) i czasy w konsoli używają strefy czasowej serwera. Wybierz ją z listy i kliknij <b>Ustaw</b>; konsola uruchamia się ponownie i wraca po kilku sekundach. Bez pomocnika root (patrz niżej) ustaw ją na serwerze: <code>timedatectl set-timezone Europe/Warsaw</code>.</p>
@@ -30,7 +30,7 @@
 </ul>
 
 <h2 id="server-updates">Aktualizacje serwera</h2>
-<p><a href="/settings/version">Ustawienia → Aktualizacje ControlZit</a> pokazuje działającą wersję i najnowsze wydanie. <b>Zainstaluj</b> aktualizuje serwer: instalowane są tylko wydania podpisane kluczem wydań ControlZit; przed instalacją serwer tworzy kopię bazy danych i programu, a jeśli nowa wersja się nie uruchomi, sam wraca do starej. Konsola jest niedostępna przez minutę lub dwie. Opcjonalnie nowe wersje instalują się automatycznie w wybranej godzinie.</p>
+<p><a href="/settings/version">Ustawienia → Aktualizacje RMMZit</a> pokazuje działającą wersję i najnowsze wydanie. <b>Zainstaluj</b> aktualizuje serwer: instalowane są tylko wydania podpisane kluczem wydań RMMZit; przed instalacją serwer tworzy kopię bazy danych i programu, a jeśli nowa wersja się nie uruchomi, sam wraca do starej. Konsola jest niedostępna przez minutę lub dwie. Opcjonalnie nowe wersje instalują się automatycznie w wybranej godzinie.</p>
 <p><b>Kanał aktualizacji</b>: <i>Oficjalne wersje</i> (domyślnie) lub <i>Testowy</i>, który udostępnia kandydatów do wydania, zanim staną się oficjalne, dla konsoli testowej. Konsole produkcyjne trzymaj na oficjalnych wersjach.</p>
 <div class="callout"><p>Aktualizacje, strefa czasowa i sieć wymagają <b>pomocnika root</b> dostarczanego z pakietami dla Linuksa i urządzeniem. Bez niego (np. sam program) aktualizuj przez <code>install.sh</code> lub pakiet wydania.</p></div>
 
@@ -38,7 +38,7 @@
 <p>Zobacz <a href="/docs/agents#updates">Instalacja agentów → Aktualizacje agentów</a>.</p>
 
 <h2 id="diagnostics">Diagnostyka</h2>
-<p><a href="/settings/diagnostics">Ustawienia → Diagnostyka</a> pokazuje, gdzie ControlZit zapisuje dzienniki, najnowsze wiersze dziennika serwera (filtr według poziomu lub tekstu), dziennik pomocnika root i wersje. <b>Pobierz diagnostykę (ZIP)</b> tworzy plik dla wsparcia z dziennikami, wersjami i podsumowaniem ustawień, urządzeniami, alertami i dziennikiem audytu. Hasła, tokeny, kody rejestracji i klucze są usuwane ze wszystkiego, co jest pokazywane, i z pliku; skrypty i ich wyniki nie są dołączane.</p>
+<p><a href="/settings/diagnostics">Ustawienia → Diagnostyka</a> pokazuje, gdzie RMMZit zapisuje dzienniki, najnowsze wiersze dziennika serwera (filtr według poziomu lub tekstu), dziennik pomocnika root i wersje. <b>Pobierz diagnostykę (ZIP)</b> tworzy plik dla wsparcia z dziennikami, wersjami i podsumowaniem ustawień, urządzeniami, alertami i dziennikiem audytu. Hasła, tokeny, kody rejestracji i klucze są usuwane ze wszystkiego, co jest pokazywane, i z pliku; skrypty i ich wyniki nie są dołączane.</p>
 
 <h2 id="fields">Pola własne</h2>
 <p>W <a href="/settings/fields">Ustawienia → Pola własne</a> administratorzy dodają własne pola dla urządzeń i klientów — tekst, liczbę lub datę — na przykład numer inwentarzowy, koniec gwarancji lub umowę. Technicy wypełniają je na stronach urządzeń i klientów; API zwraca pola z każdym urządzeniem i ustawia je przez <code>PUT /api/v1/devices/{id}/fields</code>.</p>
@@ -47,7 +47,7 @@
 <p><a href="/settings/backup">Ustawienia → Kopia konsoli</a> tworzy kopię konsoli codziennie o wybranej godzinie albo od razu przyciskiem <b>Utwórz kopię teraz</b>. Kopia zawiera bazę danych, tajny klucz zapisanych haseł, certyfikaty i klucze, którym ufają agenci, oraz bibliotekę oprogramowania. Najnowsze kopie (tyle, ile wybierzesz) zostają w folderze <code>backups</code> katalogu danych i można je pobrać ze strony.</p>
 <p>Z <b>hasłem</b> pliki są szyfrowane (AES-256-GCM); przechowuj hasło w innym miejscu, bo bez niego kopii nie da się przywrócić. Kopia każdej kopii zapasowej może trafić do <b>folderu SFTP</b> na innym serwerze (hasło lub klucz prywatny). Pierwszy test połączenia pokazuje klucz hosta serwera do zaufania; kopie trafiają tylko na serwer z tym kluczem. Gdy kopia lub jej przesłanie się nie powiedzie, odbiorcy e-maili z alertami dostają e-mail.</p>
 <p><b>Przywracanie</b> odbywa się przy zatrzymanym serwerze: na appliance w menu konfiguracji (<b>Restore a backup</b>), z pakietami Linux:</p>
-<pre>sudo systemctl stop controlzit-server
-sudo -u controlzit sh -c 'set -a; . /etc/controlzit/server.env; controlzit-server -data-dir /var/lib/controlzit -restore /path/controlzit-backup-….czb'
-sudo systemctl start controlzit-server</pre>
-<p>Hasło zaszyfrowanej kopii jest odczytywane z <code>CONTROLZIT_BACKUP_PASSPHRASE</code> lub z pliku podanego przez <code>-restore-passphrase-file</code>. Baza danych jest przywracana w jednym kroku (gdy się to nie uda, nic się nie zmienia); nowsza wersja ControlZit aktualizuje przywróconą bazę przy starcie. Nowy serwer przywrócony z kopii zachowuje wszystkich agentów, bo ufają temu samemu certyfikatowi.</p>
+<pre>sudo systemctl stop rmmzit-server
+sudo -u rmmzit sh -c 'set -a; . /etc/rmmzit/server.env; rmmzit-server -data-dir /var/lib/rmmzit -restore /path/rmmzit-backup-….czb'
+sudo systemctl start rmmzit-server</pre>
+<p>Hasło zaszyfrowanej kopii jest odczytywane z <code>RMMZIT_BACKUP_PASSPHRASE</code> lub z pliku podanego przez <code>-restore-passphrase-file</code>. Baza danych jest przywracana w jednym kroku (gdy się to nie uda, nic się nie zmienia); nowsza wersja RMMZit aktualizuje przywróconą bazę przy starcie. Nowy serwer przywrócony z kopii zachowuje wszystkich agentów, bo ufają temu samemu certyfikatowi.</p>

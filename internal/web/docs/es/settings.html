@@ -6,12 +6,12 @@
 <ul>
   <li><b>Consola</b>: dirección y puerto de escucha (por defecto <code>:8443</code>) y las <b>redes permitidas</b>: una dirección IP o red por línea (CIDR). Las conexiones de otras direcciones se cierran antes de TLS; el propio servidor (127.0.0.1) siempre está permitido. Guardar rechaza una lista que dejaría fuera su propia dirección.</li>
   <li><b>Punto de conexión de agentes</b>: dirección y puerto de escucha (por defecto <code>:8444</code>, distinto del de la consola), las redes desde las que pueden llegar los agentes (vacío = todas) y la <b>dirección pública de agentes</b> que se incluye en instaladores y códigos de registro.</li>
-  <li>Los puertos nuevos se aplican tras <b>Reiniciar ahora</b> (reinicia el servicio ControlZit; los agentes se reconectan solos).</li>
+  <li>Los puertos nuevos se aplican tras <b>Reiniciar ahora</b> (reinicia el servicio RMMZit; los agentes se reconectan solos).</li>
 </ul>
-<p>Si se queda sin acceso, ejecute <code>controlzit-server --reset-allowlist</code> en el servidor (appliance: menú de configuración, opción 5).</p>
+<p>Si se queda sin acceso, ejecute <code>rmmzit-server --reset-allowlist</code> en el servidor (appliance: menú de configuración, opción 5).</p>
 
 <h3 id="server-network">Red del servidor (appliance)</h3>
-<p>En el appliance de ControlZit aquí también se configura la red del propio servidor: DHCP o una dirección fija con tamaño de red (p. ej. <code>192.168.1.20/24</code>), puerta de enlace, de uno a tres servidores DNS y el nombre del servidor. Si la puerta de enlace no responde con la nueva configuración, la anterior vuelve sola tras 30 segundos. En otras instalaciones la red la gestiona el sistema operativo.</p>
+<p>En el appliance de RMMZit aquí también se configura la red del propio servidor: DHCP o una dirección fija con tamaño de red (p. ej. <code>192.168.1.20/24</code>), puerta de enlace, de uno a tres servidores DNS y el nombre del servidor. Si la puerta de enlace no responde con la nueva configuración, la anterior vuelve sola tras 30 segundos. En otras instalaciones la red la gestiona el sistema operativo.</p>
 
 <h3 id="timezone">Zona horaria</h3>
 <p>Las programaciones (actualizaciones, scripts, informes) y las horas de la consola usan la zona horaria del servidor. Elíjala de la lista y haga clic en <b>Establecer</b>; la consola se reinicia y vuelve en unos segundos. Sin el asistente root (ver abajo), configúrela en el servidor: <code>timedatectl set-timezone Europe/Madrid</code>.</p>
@@ -30,7 +30,7 @@
 </ul>
 
 <h2 id="server-updates">Actualizaciones del servidor</h2>
-<p><a href="/settings/version">Configuración → Actualizaciones de ControlZit</a> muestra la versión en ejecución y la más reciente. <b>Instalar</b> actualiza el servidor: solo se instalan versiones firmadas con la clave de publicación de ControlZit; antes de instalar, el servidor hace una copia de su base de datos y su programa, y si la nueva versión no arranca vuelve sola a la anterior. La consola no está disponible uno o dos minutos. Opcionalmente las nuevas versiones se instalan automáticamente a una hora elegida.</p>
+<p><a href="/settings/version">Configuración → Actualizaciones de RMMZit</a> muestra la versión en ejecución y la más reciente. <b>Instalar</b> actualiza el servidor: solo se instalan versiones firmadas con la clave de publicación de RMMZit; antes de instalar, el servidor hace una copia de su base de datos y su programa, y si la nueva versión no arranca vuelve sola a la anterior. La consola no está disponible uno o dos minutos. Opcionalmente las nuevas versiones se instalan automáticamente a una hora elegida.</p>
 <p><b>Canal de actualización</b>: <i>Versiones oficiales</i> (predeterminado) o <i>Pruebas</i>, que ofrece las versiones candidatas antes de que sean oficiales, para una consola de pruebas. Mantenga las consolas de producción en las versiones oficiales.</p>
 <div class="callout"><p>Las actualizaciones, la zona horaria y la red necesitan el <b>asistente root</b> que viene con los paquetes de Linux y el appliance. Sin él (p. ej. el programa suelto), actualice con <code>install.sh</code> o el paquete de la versión.</p></div>
 
@@ -38,7 +38,7 @@
 <p>Consulte <a href="/docs/agents#updates">Instalar agentes → Actualizaciones de agentes</a>.</p>
 
 <h2 id="diagnostics">Diagnóstico</h2>
-<p><a href="/settings/diagnostics">Configuración → Diagnóstico</a> muestra dónde escribe ControlZit sus registros, las últimas líneas del registro del servidor (filtro por nivel o texto), el registro del asistente root y las versiones. <b>Descargar diagnóstico (ZIP)</b> crea un archivo para soporte con los registros, las versiones y un resumen de la configuración, los dispositivos, las alertas y el registro de auditoría. Las contraseñas, tokens, códigos de registro y claves se eliminan de todo lo que se muestra y del archivo; los scripts y su salida no se incluyen.</p>
+<p><a href="/settings/diagnostics">Configuración → Diagnóstico</a> muestra dónde escribe RMMZit sus registros, las últimas líneas del registro del servidor (filtro por nivel o texto), el registro del asistente root y las versiones. <b>Descargar diagnóstico (ZIP)</b> crea un archivo para soporte con los registros, las versiones y un resumen de la configuración, los dispositivos, las alertas y el registro de auditoría. Las contraseñas, tokens, códigos de registro y claves se eliminan de todo lo que se muestra y del archivo; los scripts y su salida no se incluyen.</p>
 
 <h2 id="fields">Campos personalizados</h2>
 <p>En <a href="/settings/fields">Configuración → Campos personalizados</a> los administradores añaden sus propios campos para dispositivos y clientes — texto, número o fecha —, por ejemplo un número de inventario, el fin de la garantía o un contrato. Los técnicos los rellenan en las páginas de dispositivos y clientes; la API devuelve los campos con cada dispositivo y los establece con <code>PUT /api/v1/devices/{id}/fields</code>.</p>
@@ -47,7 +47,7 @@
 <p><a href="/settings/backup">Configuración → Copia de la consola</a> hace una copia de la consola cada día a la hora elegida, o en el momento con <b>Hacer copia ahora</b>. Una copia contiene la base de datos, la clave secreta de las contraseñas guardadas, los certificados y claves en los que confían los agentes y la biblioteca de software. Las copias más recientes (tantas como elija) quedan en la carpeta <code>backups</code> del directorio de datos y se pueden descargar desde la página.</p>
 <p>Con una <b>frase de contraseña</b> los archivos se cifran (AES-256-GCM); guárdela en otro lugar, porque sin ella no se puede restaurar una copia. Una copia de cada copia de seguridad puede ir a una <b>carpeta SFTP</b> de otro servidor (contraseña o clave privada). La primera prueba de la conexión muestra la clave de host del servidor para confiar en ella; las copias solo van a un servidor con esa clave. Si una copia o su envío falla, los destinatarios de los correos de alerta reciben un correo.</p>
 <p>Una <b>restauración</b> se hace con el servidor detenido: en el appliance desde el menú de configuración (<b>Restore a backup</b>), con los paquetes de Linux:</p>
-<pre>sudo systemctl stop controlzit-server
-sudo -u controlzit sh -c 'set -a; . /etc/controlzit/server.env; controlzit-server -data-dir /var/lib/controlzit -restore /path/controlzit-backup-….czb'
-sudo systemctl start controlzit-server</pre>
-<p>La frase de contraseña de una copia cifrada se lee de <code>CONTROLZIT_BACKUP_PASSPHRASE</code> o de un archivo indicado con <code>-restore-passphrase-file</code>. La base de datos se restaura en un solo paso (si falla, nada cambia); una versión más reciente de ControlZit actualiza la base restaurada al arrancar. Un servidor nuevo restaurado desde una copia conserva todos los agentes, porque confían en el mismo certificado.</p>
+<pre>sudo systemctl stop rmmzit-server
+sudo -u rmmzit sh -c 'set -a; . /etc/rmmzit/server.env; rmmzit-server -data-dir /var/lib/rmmzit -restore /path/rmmzit-backup-….czb'
+sudo systemctl start rmmzit-server</pre>
+<p>La frase de contraseña de una copia cifrada se lee de <code>RMMZIT_BACKUP_PASSPHRASE</code> o de un archivo indicado con <code>-restore-passphrase-file</code>. La base de datos se restaura en un solo paso (si falla, nada cambia); una versión más reciente de RMMZit actualiza la base restaurada al arrancar. Un servidor nuevo restaurado desde una copia conserva todos los agentes, porque confían en el mismo certificado.</p>

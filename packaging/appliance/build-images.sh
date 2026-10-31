@@ -1,27 +1,27 @@
 #!/bin/sh
-# Makes the ControlZit appliance VM images on a Proxmox VE host: installs the
+# Makes the RMMZit appliance VM images on a Proxmox VE host: installs the
 # image installer (build-iso.sh with IMAGE=1) into a temporary VM, then
 # converts its disk:
-#   controlzit-appliance-X.ova    VMware ESXi / Workstation, VirtualBox
-#   controlzit-appliance-X.qcow2  Proxmox VE, KVM
-#   controlzit-appliance-X.vhdx   Hyper-V (generation 1)
-# and the installer ISO controlzit-appliance-X.iso; publish-images.sh
+#   rmmzit-appliance-X.ova    VMware ESXi / Workstation, VirtualBox
+#   rmmzit-appliance-X.qcow2  Proxmox VE, KVM
+#   rmmzit-appliance-X.vhdx   Hyper-V (generation 1)
+# and the installer ISO rmmzit-appliance-X.iso; publish-images.sh
 # uploads them to the GitHub release.
 #
-#   ./build-images.sh controlzit-server_X_amd64.deb
+#   ./build-images.sh rmmzit-server_X_amd64.deb
 #
 # Environment: VMID (9700), STORAGE (local-lvm), BRIDGE (vmbr0), OUTDIR (.).
 set -eu
 
-pkg=$(readlink -f "${1:?usage: build-images.sh controlzit-server_X_amd64.deb}")
-ver=$(basename "$pkg" | sed -n 's/^controlzit-server_\([0-9.]*\)_.*/\1/p')
+pkg=$(readlink -f "${1:?usage: build-images.sh rmmzit-server_X_amd64.deb}")
+ver=$(basename "$pkg" | sed -n 's/^rmmzit-server_\([0-9.]*\)_.*/\1/p')
 src=$(cd "$(dirname "$0")" && pwd)
 vmid=${VMID:-9700}
 storage=${STORAGE:-local-lvm}
 bridge=${BRIDGE:-vmbr0}
 outdir=$(readlink -f "${OUTDIR:-.}")
-base=controlzit-appliance-$ver
-iso=/var/lib/vz/template/iso/controlzit-image-installer-$ver.iso
+base=rmmzit-appliance-$ver
+iso=/var/lib/vz/template/iso/rmmzit-image-installer-$ver.iso
 gb=16
 
 finish() {
@@ -75,11 +75,11 @@ item() { # id type name quantity-or-extra
     <Network ovf:name="VM Network"><Description>The network of the console and the agents</Description></Network>
   </NetworkSection>
   <VirtualSystem ovf:id="$base">
-    <Info>ControlZit remote management appliance $ver</Info>
-    <Name>ControlZit</Name>
+    <Info>RMMZit remote management appliance $ver</Info>
+    <Name>RMMZit</Name>
     <AnnotationSection>
       <Info>Description</Info>
-      <Annotation>ControlZit $ver. The console address and the setup token are shown on the screen of the VM after the first start.</Annotation>
+      <Annotation>RMMZit $ver. The console address and the setup token are shown on the screen of the VM after the first start.</Annotation>
     </AnnotationSection>
     <OperatingSystemSection ovf:id="96" vmw:osType="debian12_64Guest"><Info>Debian Linux (64-bit)</Info></OperatingSystemSection>
     <VirtualHardwareSection>
@@ -87,7 +87,7 @@ item() { # id type name quantity-or-extra
       <System>
         <vssd:ElementName>Virtual Hardware Family</vssd:ElementName>
         <vssd:InstanceID>0</vssd:InstanceID>
-        <vssd:VirtualSystemIdentifier>ControlZit</vssd:VirtualSystemIdentifier>
+        <vssd:VirtualSystemIdentifier>RMMZit</vssd:VirtualSystemIdentifier>
         <vssd:VirtualSystemType>vmx-14</vssd:VirtualSystemType>
       </System>
 EOF

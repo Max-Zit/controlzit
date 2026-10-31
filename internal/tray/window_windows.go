@@ -12,10 +12,10 @@ import (
 	"unsafe"
 
 	"github.com/jchv/go-webview2"
-	"github.com/max-zit/controlzit/internal/agent"
+	"github.com/max-zit/rmmzit/internal/agent"
 )
 
-// The "Open ControlZit Agent" window: an overview page rendered with
+// The "Open RMMZit Agent" window: an overview page rendered with
 // WebView2 (part of Windows 10 and 11).
 
 //go:embed ui.html
@@ -40,7 +40,7 @@ var (
 
 // iconDir is where the icons are written for LoadImage.
 func iconDir() string {
-	d := filepath.Join(os.Getenv("LOCALAPPDATA"), "ControlZit")
+	d := filepath.Join(os.Getenv("LOCALAPPDATA"), "RMMZit")
 	_ = os.MkdirAll(d, 0o700) // #nosec G703 -- the user's own LOCALAPPDATA
 	return d
 }
@@ -112,7 +112,7 @@ func (v *window) run() {
 		DataPath:  filepath.Join(iconDir(), "WebView"),
 		AutoFocus: true,
 		WindowOptions: webview2.WindowOptions{
-			Title: "ControlZit Agent", Width: 760, Height: 420, Center: true,
+			Title: "RMMZit Agent", Width: 760, Height: 420, Center: true,
 		},
 	})
 	if w == nil {

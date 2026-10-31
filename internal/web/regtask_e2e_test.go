@@ -10,8 +10,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/max-zit/controlzit/internal/agent"
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/agent"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // The registry and task pages send the right commands, show the answers and

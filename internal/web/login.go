@@ -11,9 +11,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/auth"
-	"github.com/max-zit/controlzit/internal/netacl"
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/auth"
+	"github.com/max-zit/rmmzit/internal/netacl"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 type ctxKey int
@@ -157,7 +157,7 @@ func (s *Server) handleSetup(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
-	p := &Page{Title: "Set up ControlZit", Data: &setupData{NeedToken: s.setupToken != ""}}
+	p := &Page{Title: "Set up RMMZit", Data: &setupData{NeedToken: s.setupToken != ""}}
 	if r.Method == http.MethodGet {
 		s.render(w, r, http.StatusOK, "setup", p)
 		return

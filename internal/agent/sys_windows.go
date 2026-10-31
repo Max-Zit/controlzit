@@ -14,7 +14,7 @@ import (
 	"golang.org/x/sys/windows"
 	"golang.org/x/sys/windows/registry"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // protectDir gives only SYSTEM and Administrators access (no inherited
@@ -133,7 +133,8 @@ var hiddenProc = &syscall.SysProcAttr{HideWindow: true, CreationFlags: windows.C
 // markEnrolled records the enrollment in the registry, where the MSI looks
 // for it (an upgrade then does not ask for a code again).
 func markEnrolled(on bool) {
-	const path = `SOFTWARE\MaxZit\ControlZit Agent`
+	const path = `SOFTWARE\MaxZit\RMMZit Agent`
+	_ = registry.DeleteKey(registry.LOCAL_MACHINE, `SOFTWARE\MaxZit\ControlZit Agent`) // the marker from before the rename
 	if !on {
 		_ = registry.DeleteKey(registry.LOCAL_MACHINE, path)
 		return
@@ -201,7 +202,7 @@ func isLink(fi os.FileInfo) bool {
 	return false
 }
 
-// publicStatusDir is ProgramData\ControlZit, writable by SYSTEM and
+// publicStatusDir is ProgramData\RMMZit, writable by SYSTEM and
 // administrators and readable by users, when the agent runs as SYSTEM.
 func publicStatusDir() string {
 	if !isSystem() {
@@ -211,7 +212,7 @@ func publicStatusDir() string {
 	if pd == "" {
 		return ""
 	}
-	dir := filepath.Join(pd, "ControlZit")
+	dir := filepath.Join(pd, "RMMZit")
 	if err := os.MkdirAll(dir, 0o755); err != nil { // #nosec G703 G301 -- users read the public status
 		return ""
 	}

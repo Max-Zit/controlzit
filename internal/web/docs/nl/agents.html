@@ -8,35 +8,35 @@
 </ul>
 
 <h2 id="codes">Registratiecodes</h2>
-<p>Agents voegen zich bij een <b>locatie</b> van een klant met een registratiecode. Open de locatie onder <a href="/customers">Klanten</a> en klik op <b>Registratiecode aanmaken</b>. U kiest hoe lang hij geldig is (1–365 dagen) en hoeveel computers hem mogen gebruiken. De code (<code>CZ1-…</code>) bevat het serveradres en de vingerafdruk van het servercertificaat, dus het installatieprogramma heeft niets anders nodig. Hij wordt maar één keer getoond; trek hem in als u hem niet meer nodig hebt.</p>
+<p>Agents voegen zich bij een <b>locatie</b> van een klant met een registratiecode. Open de locatie onder <a href="/customers">Klanten</a> en klik op <b>Registratiecode aanmaken</b>. U kiest hoe lang hij geldig is (1–365 dagen) en hoeveel computers hem mogen gebruiken. De code (<code>RZ1-…</code>) bevat het serveradres en de vingerafdruk van het servercertificaat, dus het installatieprogramma heeft niets anders nodig. Hij wordt maar één keer getoond; trek hem in als u hem niet meer nodig hebt.</p>
 
 <h2 id="windows">Windows</h2>
 <p>Download de MSI op de locatiepagina (<b>Agent downloaden (MSI, 64-bit)</b>) en dubbelklik erop en plak de code, of installeer hem stil, bijvoorbeeld met Groepsbeleid, Intune of een script:</p>
-<pre>msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="CZ1-…"</pre>
-<p>De agent draait als Windows-service <i>ControlZit Agent</i>. Een klein pictogram naast de klok toont of hij verbonden is (groen) en opent een venster met de server en wie de computer beheert.</p>
+<pre>msiexec /i rmmzit-agent-x64.msi /qn ENROLLCODE="RZ1-…"</pre>
+<p>De agent draait als Windows-service <i>RMMZit Agent</i>. Een klein pictogram naast de klok toont of hij verbonden is (groen) en opent een venster met de server en wie de computer beheert.</p>
 <p>Het pictogram, het venster en de herstartvraag gebruiken de weergavetaal van de Windows van de gebruiker (een van de 14 talen van de console, anders Engels).</p>
 <p>Zonder de MSI (PowerShell als beheerder):</p>
-<pre>.\controlzit-agent.exe enroll --code "CZ1-…"
-.\controlzit-agent.exe install</pre>
+<pre>.\rmmzit-agent.exe enroll --code "RZ1-…"
+.\rmmzit-agent.exe install</pre>
 
 <h2 id="linux">Linux</h2>
 <p>Download de Linux-agent op de locatiepagina (x86-64, of ARM64 voor Raspberry Pi en ARM-servers), kopieer hem naar de machine en voer hem uit als root:</p>
-<pre>chmod +x controlzit-agent-linux-amd64
-sudo ./controlzit-agent-linux-amd64 install --code "CZ1-…"</pre>
-<p>Hij kopieert zichzelf naar <code>/usr/local/bin/controlzit-agent</code>, registreert zich en start de systemd-service <code>controlzit-agent</code>.</p>
+<pre>chmod +x rmmzit-agent-linux-amd64
+sudo ./rmmzit-agent-linux-amd64 install --code "RZ1-…"</pre>
+<p>Hij kopieert zichzelf naar <code>/usr/local/bin/rmmzit-agent</code>, registreert zich en start de systemd-service <code>rmmzit-agent</code>.</p>
 
 <h2 id="updates">Agent-updates</h2>
 <p>De server bevat de agent-installatieprogramma's van zijn eigen versie. Onder <a href="/settings/agents">Instellingen → Agent-updates</a> ziet u welke agents verouderd zijn, werkt u ze allemaal tegelijk bij of laat u verouderde agents zichzelf bijwerken als ze verbinden. Eén agent werkt u bij op de apparaatpagina. De agent downloadt het installatieprogramma via zijn eigen versleutelde verbinding en installeert het alleen als het overeenkomt met de SHA-256 in de ondertekende updateopdracht. U kunt daar ook een ander installatieprogramma uploaden (een MSI of een Linux-agent).</p>
 
 <h2 id="windows-update">Windows Update op beheerde computers</h2>
-<p>De agent schakelt via beleid de automatische installatie van Windows Update uit, zodat updates alleen via ControlZit komen, met de hand of volgens uw schema (zie <a href="/docs/updates">Windows-updates</a>). De vorige instellingen worden bewaard en komen terug als de agent wordt verwijderd.</p>
+<p>De agent schakelt via beleid de automatische installatie van Windows Update uit, zodat updates alleen via RMMZit komen, met de hand of volgens uw schema (zie <a href="/docs/updates">Windows-updates</a>). De vorige instellingen worden bewaard en komen terug als de agent wordt verwijderd.</p>
 
 <h2 id="remove">Een agent verwijderen</h2>
-<p>Verwijder het apparaat op de pagina (<b>Apparaat verwijderen</b>). Is het online, dan verwijdert de agent zichzelf binnen enkele seconden en krijgt Windows Update zijn eigen instellingen terug. Een offline computer kan geen verbinding meer maken; verwijder daar de agent met de hand (Windows: <i>Apps → ControlZit Agent → Verwijderen</i>; Linux: <code>sudo controlzit-agent uninstall</code>).</p>
+<p>Verwijder het apparaat op de pagina (<b>Apparaat verwijderen</b>). Is het online, dan verwijdert de agent zichzelf binnen enkele seconden en krijgt Windows Update zijn eigen instellingen terug. Een offline computer kan geen verbinding meer maken; verwijder daar de agent met de hand (Windows: <i>Apps → RMMZit Agent → Verwijderen</i>; Linux: <code>sudo rmmzit-agent uninstall</code>).</p>
 
 <h2 id="mass">Veel computers: groepsbeleid en Intune</h2>
 <p>Maak een registratiecode met genoeg gebruiken voor alle computers; de locatiepagina toont dan, ingevuld met die code:</p>
 <ul>
-  <li><b>Groepsbeleid</b>: een PowerShell-opstartscript. Zet de MSI op een share die de computeraccounts (Domain Computers) mogen lezen, vul het pad in, kopieer het script en voeg het toe onder Computerconfiguratie → Beleid → Windows-instellingen → Scripts → Opstarten → PowerShell-scripts. Computers met de agent (service <code>ControlZitAgent</code>) slaan het over; het installatielogboek is <code>%windir%\Temp\controlzit-agent-install.log</code>.</li>
-  <li><b>Microsoft Intune</b>: voeg de agent toe als Windows-app (Win32): verpak de MSI met IntuneWinAppUtil van Microsoft en gebruik de installatie- en verwijderopdrachten, het installatiegedrag <i>Systeem</i> en de detectieregel (bestand <code>C:\Program Files\ControlZit Agent\controlzit-agent.exe</code>) van de locatiepagina. Voeg hem niet toe als line-of-business-MSI: de agent werkt zichzelf bij, en Intune zou de oude versie opnieuw installeren.</li>
+  <li><b>Groepsbeleid</b>: een PowerShell-opstartscript. Zet de MSI op een share die de computeraccounts (Domain Computers) mogen lezen, vul het pad in, kopieer het script en voeg het toe onder Computerconfiguratie → Beleid → Windows-instellingen → Scripts → Opstarten → PowerShell-scripts. Computers met de agent (service <code>RMMZitAgent</code>) slaan het over; het installatielogboek is <code>%windir%\Temp\rmmzit-agent-install.log</code>.</li>
+  <li><b>Microsoft Intune</b>: voeg de agent toe als Windows-app (Win32): verpak de MSI met IntuneWinAppUtil van Microsoft en gebruik de installatie- en verwijderopdrachten, het installatiegedrag <i>Systeem</i> en de detectieregel (bestand <code>C:\Program Files\RMMZit Agent\rmmzit-agent.exe</code>) van de locatiepagina. Voeg hem niet toe als line-of-business-MSI: de agent werkt zichzelf bij, en Intune zou de oude versie opnieuw installeren.</li>
 </ul>

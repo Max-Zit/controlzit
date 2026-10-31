@@ -1,0 +1,3 @@
+rzadmin ALL=(root) NOPASSWD: /usr/local/sbin/rmmzit-setup
+# The administrator of appliances installed before the rename to RMMZit.
+czadmin ALL=(root) NOPASSWD: /usr/local/sbin/rmmzit-setup

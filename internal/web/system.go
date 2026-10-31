@@ -12,13 +12,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/helper"
-	"github.com/max-zit/controlzit/internal/update"
+	"github.com/max-zit/rmmzit/internal/helper"
+	"github.com/max-zit/rmmzit/internal/legacy"
+	"github.com/max-zit/rmmzit/internal/update"
 )
 
 // The parts of the server's own system the console manages through the
 // root helper (Linux packages): the time zone, the appliance's network, a
-// restart for new ports, and new ControlZit versions.
+// restart for new ports, and new RMMZit versions.
 
 // helperOK reports whether this installation has the root helper.
 func (s *Server) helperOK() bool {
@@ -31,7 +32,7 @@ func (s *Server) helperOK() bool {
 // submit hands a request to the root helper.
 func (s *Server) submit(r *http.Request, req helper.Request) error {
 	if !s.helperOK() || s.DataDir == "" {
-		return uiErr("This installation has no ControlZit helper (it comes with the Linux packages). Change it on the server itself.")
+		return uiErr("This installation has no RMMZit helper (it comes with the Linux packages). Change it on the server itself.")
 	}
 	if helper.Pending(s.DataDir) {
 		return uiErr("The server is still busy with the previous request. Try again in a minute.")
@@ -114,7 +115,7 @@ type serverNetwork struct {
 	Addresses []string
 	Hostname  string
 	Config    helper.NetworkConfig
-	Saved     bool // ControlZit's network file exists
+	Saved     bool // RMMZit's network file exists
 }
 
 func readServerNetwork() serverNetwork {
@@ -156,7 +157,7 @@ func readServerNetwork() serverNetwork {
 
 func (s *Server) handleServerNetwork(w http.ResponseWriter, r *http.Request) {
 	if !helper.IsAppliance("") {
-		s.redirectErr(w, r, "/settings/network", uiErr("The network of this server is managed by its operating system; it can be changed here only on the ControlZit appliance."))
+		s.redirectErr(w, r, "/settings/network", uiErr("The network of this server is managed by its operating system; it can be changed here only on the RMMZit appliance."))
 		return
 	}
 	c := helper.NetworkConfig{DHCP: r.FormValue("ipmode") == "dhcp", Hostname: strings.TrimSpace(r.FormValue("hostname"))}
@@ -191,7 +192,7 @@ func sentence(s string) string {
 	return strings.ToUpper(s[:1]) + s[1:] + "."
 }
 
-// ---- ControlZit updates
+// ---- RMMZit updates
 
 const settingUpdates = "server_updates"
 
@@ -221,10 +222,10 @@ func (s *Server) updateChannel(ctx context.Context) string {
 	return ""
 }
 
-// updateSource is where new versions come from: CONTROLZIT_UPDATE_SOURCE,
+// updateSource is where new versions come from: RMMZIT_UPDATE_SOURCE,
 // else the chosen channel.
 func (s *Server) updateSource(ctx context.Context) string {
-	if v := os.Getenv("CONTROLZIT_UPDATE_SOURCE"); v != "" {
+	if v := legacy.Getenv("UPDATE_SOURCE"); v != "" {
 		return v
 	}
 	return update.ChannelSource(s.updateChannel(ctx))
@@ -267,7 +268,7 @@ func (s *Server) RunUpdates(ctx context.Context) {
 				continue
 			}
 			if err := helper.Submit(s.DataDir, helper.Request{Action: helper.ActionUpdate, Version: latest.Version, Channel: u.Channel, RequestedBy: "automatic"}); err == nil {
-				_ = s.store.Audit(ctx, "-", "local", "server.update", "settings", "automatic installation of ControlZit "+latest.Version+" started")
+				_ = s.store.Audit(ctx, "-", "local", "server.update", "settings", "automatic installation of RMMZit "+latest.Version+" started")
 			}
 		}
 	}
@@ -286,10 +287,11 @@ type versionData struct {
 	Last       *helper.Result
 	Source     string
 	Unofficial bool
+	Container  bool
 }
 
 func (s *Server) handleVersion(w http.ResponseWriter, r *http.Request) {
-	d := &versionData{Version: s.Version, HelperOK: s.helperOK(), Source: s.updateSource(r.Context())}
+	d := &versionData{Version: s.Version, HelperOK: s.helperOK() && !s.Container, Container: s.Container, Source: s.updateSource(r.Context())}
 	d.Unofficial = d.Source != update.DefaultSource
 	_ = s.store.GetSetting(r.Context(), settingUpdates, &d.S)
 	for h := 0; h < 24; h++ {
@@ -305,7 +307,7 @@ func (s *Server) handleVersion(w http.ResponseWriter, r *http.Request) {
 	if res := s.lastHelperResult(); res != nil && res.Action == helper.ActionUpdate {
 		d.Last = res
 	}
-	s.render(w, r, http.StatusOK, "version", &Page{Title: "ControlZit updates", Nav: "settings", Data: d})
+	s.render(w, r, http.StatusOK, "version", &Page{Title: "RMMZit updates", Nav: "settings", Data: d})
 }
 
 func (s *Server) handleVersionCheck(w http.ResponseWriter, r *http.Request) {
@@ -333,7 +335,7 @@ func (s *Server) handleVersionInstall(w http.ResponseWriter, r *http.Request) {
 		s.redirectErr(w, r, "/settings/version", err)
 		return
 	}
-	s.audit(r, "server.update", "settings", "installation of ControlZit %s started (running %s)", v, s.Version)
+	s.audit(r, "server.update", "settings", "installation of RMMZit %s started (running %s)", v, s.Version)
 	s.redirect(w, r, "/settings/version", "The installation has started. The console restarts in a minute or two; reload this page then.")
 }
 
@@ -351,7 +353,7 @@ func (s *Server) handleVersionSettings(w http.ResponseWriter, r *http.Request) {
 		s.serverError(w, r, err)
 		return
 	}
-	s.audit(r, "settings.server-updates", "settings", "automatic ControlZit updates: %v at %02d:00, channel %s", u.Auto, u.Hour, map[bool]string{true: "testing", false: "official"}[u.Channel == "testing"])
+	s.audit(r, "settings.server-updates", "settings", "automatic RMMZit updates: %v at %02d:00, channel %s", u.Auto, u.Hour, map[bool]string{true: "testing", false: "official"}[u.Channel == "testing"])
 	if changed {
 		s.CheckUpdate(r.Context())
 	}

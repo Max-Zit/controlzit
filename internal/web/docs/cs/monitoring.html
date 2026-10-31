@@ -35,7 +35,7 @@
 <ul>
   <li><b>Slack</b> — URL příchozího webhooku kanálu.</li>
   <li><b>Microsoft Teams</b> — pracovní postup kanálu <i>Při přijetí požadavku webhooku Teams</i> a jeho URL.</li>
-  <li><b>Webhook</b> — libovolná HTTPS URL, která přijímá JSON POST (ticketovací systém, automatizace). S tajemstvím nese každý požadavek <code>X-ControlZit-Signature: sha256=&lt;HMAC těla&gt;</code>, takže příjemce může ověřit, že přišel z vašeho serveru.</li>
+  <li><b>Webhook</b> — libovolná HTTPS URL, která přijímá JSON POST (ticketovací systém, automatizace). S tajemstvím nese každý požadavek <code>X-RMMZit-Signature: sha256=&lt;HMAC těla&gt;</code>, takže příjemce může ověřit, že přišel z vašeho serveru.</li>
 </ul>
 <p>Pro každý kanál zvolte všechna upozornění nebo jen kritická a zda se posílají i vyřešená. <b>Odeslat test</b> pošle testovací zprávu. Adresy kanálů se ukládají šifrovaně.</p>
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/auth"
+	"github.com/max-zit/rmmzit/internal/auth"
 )
 
 // Session stages.

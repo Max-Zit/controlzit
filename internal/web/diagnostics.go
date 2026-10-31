@@ -14,9 +14,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/helper"
-	"github.com/max-zit/controlzit/internal/logfile"
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/helper"
+	"github.com/max-zit/rmmzit/internal/logfile"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // Settings → Diagnostics: where the logs are, their newest lines, and a
@@ -26,7 +26,7 @@ import (
 // included, and the zip has no secrets of the settings.
 
 // HelperLog is the root helper's log (only root writes it).
-const HelperLog = "/var/log/controlzit-helper/helper.log"
+const HelperLog = "/var/log/rmmzit-helper/helper.log"
 
 const diagLogMax = 20 << 20
 
@@ -43,8 +43,8 @@ var redactions = []struct {
 	// key=value, "key": "value" and \"key\":\"value\" (JSON inside a log
 	// line) for words that name a secret
 	{regexp.MustCompile(`(?i)((?:password|passwd|pass|pwd|secret|token|apikey|api_key|authorization|cookie)[\\"']*\s*[:=]\s*[\\"']*)[^\s"'\\,&;]+`), "${1}***"},
-	// ControlZit enrollment codes
-	{regexp.MustCompile(`CZ1-[A-Za-z0-9_=-]{10,}`), "CZ1-***"},
+	// RMMZit enrollment codes
+	{regexp.MustCompile(`[CR]Z1-[A-Za-z0-9_=-]{10,}`), "RZ1-***"},
 }
 
 var longToken = regexp.MustCompile(`[A-Za-z0-9+_=]{32,}`)
@@ -143,7 +143,7 @@ func (s *Server) handleDiagnosticsZip(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	now := s.now()
 	w.Header().Set("Content-Type", "application/zip")
-	w.Header().Set("Content-Disposition", `attachment; filename="controlzit-diagnostics-`+now.Format("20060102-1504")+`.zip"`)
+	w.Header().Set("Content-Disposition", `attachment; filename="rmmzit-diagnostics-`+now.Format("20060102-1504")+`.zip"`)
 	w.Header().Set("Cache-Control", "no-store")
 	z := zip.NewWriter(w)
 	add := func(name string, write func(io.Writer) error) {
@@ -156,7 +156,7 @@ func (s *Server) handleDiagnosticsZip(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	add("README.txt", func(w io.Writer) error {
-		_, err := io.WriteString(w, "ControlZit diagnostics. Passwords, tokens, enrollment codes and keys are removed;\r\nscripts and their output are not included.\r\n")
+		_, err := io.WriteString(w, "RMMZit diagnostics. Passwords, tokens, enrollment codes and keys are removed;\r\nscripts and their output are not included.\r\n")
 		return err
 	})
 	add("info.txt", func(w io.Writer) error { return s.diagInfo(ctx, w, now) })
@@ -181,7 +181,7 @@ func (s *Server) handleDiagnosticsZip(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) diagInfo(ctx context.Context, w io.Writer, now time.Time) error {
 	host, _ := os.Hostname()
-	fmt.Fprintf(w, "ControlZit server %s\r\nCreated: %s\r\nHost: %s (%s/%s, %s)\r\nTime zone: %s\r\nDatabase: %s\r\n",
+	fmt.Fprintf(w, "RMMZit server %s\r\nCreated: %s\r\nHost: %s (%s/%s, %s)\r\nTime zone: %s\r\nDatabase: %s\r\n",
 		s.Version, now.Format(time.RFC3339), host, runtime.GOOS, runtime.GOARCH, runtime.Version(), now.Format("MST -07:00"), s.store.DBInfo(ctx))
 	fmt.Fprintf(w, "Console: %s (running), agents: %s (running)\r\nRoot helper: %v\r\nAppliance: %v\r\n", s.RunningMgmt, s.RunningAgent, s.helperOK(), helper.IsAppliance(""))
 	n, _ := s.Network(ctx)

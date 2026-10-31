@@ -28,10 +28,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/agent"
-	"github.com/max-zit/controlzit/internal/proto"
-	"github.com/max-zit/controlzit/internal/store"
-	"github.com/max-zit/controlzit/internal/tlsutil"
+	"github.com/max-zit/rmmzit/internal/agent"
+	"github.com/max-zit/rmmzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/tlsutil"
 )
 
 // agentServer runs the agent endpoint over real TLS with client certificates.
@@ -403,7 +403,7 @@ func TestAlertsEndToEnd(t *testing.T) {
 		if r.URL.Path == "/hook" {
 			m := hmac.New(sha256.New, []byte("s3cret"))
 			m.Write(b)
-			if r.Header.Get("X-ControlZit-Signature") != "sha256="+hex.EncodeToString(m.Sum(nil)) {
+			if r.Header.Get("X-RMMZit-Signature") != "sha256="+hex.EncodeToString(m.Sum(nil)) {
 				sigOK = false
 			}
 		}

@@ -1,7 +1,7 @@
 <h1>Sicherheit</h1>
-<p class="lead">Ein RMM-Server kann jeden Computer steuern, den er verwaltet. ControlZit ist so gebaut, dass ein Angreifer, der die Konsole, das Netz oder sogar den Server erreicht, so wenig wie möglich bekommt.</p>
+<p class="lead">Ein RMM-Server kann jeden Computer steuern, den er verwaltet. RMMZit ist so gebaut, dass ein Angreifer, der die Konsole, das Netz oder sogar den Server erreicht, so wenig wie möglich bekommt.</p>
 
-<h2 id="design">Wie ControlZit Sie schützt</h2>
+<h2 id="design">Wie RMMZit Sie schützt</h2>
 <ul>
   <li><b>Zwei Ports.</b> Konsole und Agent-Endpunkt lauschen auf getrennten Ports. Die Konsole nimmt nur Verbindungen aus erlaubten Netzen an, geprüft vor TLS; der Agent-Port kann öffentlich sein, ohne die Konsole freizugeben.</li>
   <li><b>Ausgehende Agents.</b> Agents verbinden sich mit dem Server; verwaltete Computer brauchen keine offenen Ports. Agents fixieren das Serverzertifikat anhand seines Fingerabdrucks, sodass ein gefälschter Server sie nicht übernehmen kann.</li>
@@ -10,7 +10,7 @@
   <li><b>Browser-Schutz.</b> CSRF-Prüfungen bei jeder Änderung, eine strikte Content Security Policy ohne Inline-Skripte, <code>__Host-</code>-Sitzungscookies.</li>
   <li><b>Geringste Rechte.</b> Rollen und Zugriff pro Kunde; die Konsole läuft als nicht privilegierter Benutzer, und die wenigen Root-Aktionen (Updates, Netzwerk, Zeitzone) laufen über einen getrennten Root-Helfer, der nur feste, geprüfte Anfragen annimmt.</li>
   <li><b>Prüfung.</b> Ein per Hash verkettetes Prüfprotokoll jeder Änderung und jeder Fernaktion.</li>
-  <li><b>Signierte Versionen.</b> Server, Agents und <code>install.sh</code> installieren nur Versionen, die mit dem ControlZit-Release-Schlüssel signiert sind.</li>
+  <li><b>Signierte Versionen.</b> Server, Agents und <code>install.sh</code> installieren nur Versionen, die mit dem RMMZit-Release-Schlüssel signiert sind.</li>
   <li><b>Geheimnisse.</b> Gespeicherte Passwörter (E-Mail, LDAP, Kanäle, Cloudflare) werden mit dem geheimen Schlüssel des Servers verschlüsselt; die Diagnose entfernt Geheimnisse.</li>
 </ul>
 
@@ -21,10 +21,10 @@
   <li>Verwenden Sie ein Zertifikat, dem Browser vertrauen (Let's Encrypt oder Ihre CA), damit Benutzer sich nicht angewöhnen, Warnungen wegzuklicken.</li>
   <li>Geben Sie jeder Person ein eigenes Konto mit der kleinsten Rolle und nur den Kunden, die sie braucht; deaktivieren Sie Konten von Personen, die gehen.</li>
   <li>Behalten Sie einen lokalen Administrator für Notfälle, mit offline aufbewahrten Wiederherstellungscodes.</li>
-  <li>Installieren Sie ControlZit-Updates zügig (oder schalten Sie automatische Updates ein) und halten Sie das Betriebssystem des Servers aktuell; die Appliance installiert Debian-Sicherheitsupdates selbst.</li>
-  <li>Sichern Sie die Datenbank und <code>/var/lib/controlzit</code> regelmäßig und bewahren Sie die Sicherung getrennt vom Server auf.</li>
+  <li>Installieren Sie RMMZit-Updates zügig (oder schalten Sie automatische Updates ein) und halten Sie das Betriebssystem des Servers aktuell; die Appliance installiert Debian-Sicherheitsupdates selbst.</li>
+  <li>Sichern Sie die Datenbank und <code>/var/lib/rmmzit</code> regelmäßig und bewahren Sie die Sicherung getrennt vom Server auf.</li>
   <li>Prüfen Sie das Prüfprotokoll von Zeit zu Zeit und lassen Sie den Hinweis auf dem entfernten Bildschirm an, damit Benutzer wissen, wann jemand verbunden ist.</li>
 </ol>
 
 <h2 id="report">Eine Schwachstelle melden</h2>
-<p>Bitte melden Sie Sicherheitsprobleme vertraulich über <a href="https://github.com/Max-Zit/controlzit/security/advisories/new" target="_blank" rel="noopener">GitHub → Security → Report a vulnerability</a>, nicht in einem öffentlichen Issue.</p>
+<p>Bitte melden Sie Sicherheitsprobleme vertraulich über <a href="https://github.com/Max-Zit/rmmzit/security/advisories/new" target="_blank" rel="noopener">GitHub → Security → Report a vulnerability</a>, nicht in einem öffentlichen Issue.</p>

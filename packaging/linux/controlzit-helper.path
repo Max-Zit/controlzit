@@ -1,9 +1,0 @@
-[Unit]
-Description=Hand requests of the ControlZit console (updates, time zone, network) to the root helper
-
-[Path]
-PathExists=/var/lib/controlzit/helper/request.json
-Unit=controlzit-helper.service
-
-[Install]
-WantedBy=multi-user.target

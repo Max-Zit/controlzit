@@ -35,7 +35,7 @@
 <ul>
   <li><b>Slack</b> — de URL van een inkomende webhook van het kanaal.</li>
   <li><b>Microsoft Teams</b> — een kanaalwerkstroom <i>Wanneer een Teams-webhookaanvraag wordt ontvangen</i> en de URL daarvan.</li>
-  <li><b>Webhook</b> — elke HTTPS-URL die een JSON-POST accepteert (ticketsysteem, automatisering). Met een geheim bevat elk verzoek <code>X-ControlZit-Signature: sha256=&lt;HMAC van de inhoud&gt;</code>, zodat de ontvanger kan controleren dat het van uw server komt.</li>
+  <li><b>Webhook</b> — elke HTTPS-URL die een JSON-POST accepteert (ticketsysteem, automatisering). Met een geheim bevat elk verzoek <code>X-RMMZit-Signature: sha256=&lt;HMAC van de inhoud&gt;</code>, zodat de ontvanger kan controleren dat het van uw server komt.</li>
 </ul>
 <p>Kies per kanaal alle waarschuwingen of alleen kritieke, en of opgeloste waarschuwingen ook worden verzonden. <b>Test verzenden</b> verstuurt een testbericht. Kanaaladressen worden versleuteld opgeslagen.</p>
 

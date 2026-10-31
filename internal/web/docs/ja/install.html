@@ -1,5 +1,5 @@
 <h1>サーバーのインストール</h1>
-<p class="lead">4 つの方法から選べます。既製の VM イメージが最も速く、インストールスクリプトは既存の Linux サーバーに適しています。</p>
+<p class="lead">5 つの方法から選べます。既製の VM イメージが最も速く、インストールスクリプトは既存の Linux サーバーに、Docker は既存の Docker ホストに適しています。</p>
 
 <table>
   <tr><th>方法</th><th>適した用途</th><th>必要なもの</th></tr>
@@ -7,52 +7,60 @@
   <tr><td><b>2. アプライアンス ISO</b></td><td>新しい VM や物理サーバーへの無人インストール</td><td>インストール中のインターネット接続</td></tr>
   <tr><td><b>3. インストールスクリプト</b></td><td>既存の Debian、Ubuntu、AlmaLinux、Rocky Linux サーバー</td><td>root とインターネット接続</td></tr>
   <tr><td><b>4. パッケージを手動で</b></td><td>独自の PostgreSQL、構成管理、オフラインのサーバー</td><td>リリースの deb または rpm パッケージ</td></tr>
+  <tr><td><b>5. Docker</b> (コンテナーイメージ)</td><td>既存の Docker ホスト、NAS、ホームラボ</td><td>Compose プラグイン付きの Docker、イメージを取得するためのインターネット接続</td></tr>
 </table>
-<p>すべてのファイルは<a href="https://github.com/Max-Zit/controlzit/releases/latest" target="_blank" rel="noopener">リリースページ</a>にあります。サーバーには 2 vCPU、2～4 GB RAM、16 GB 以上のディスクを割り当ててください。</p>
+<p>すべてのファイルは<a href="https://github.com/Max-Zit/rmmzit/releases/latest" target="_blank" rel="noopener">リリースページ</a>にあります。サーバーには 2 vCPU、2～4 GB RAM、16 GB 以上のディスクを割り当ててください。</p>
 
 <h2 id="image">1. VM イメージ</h2>
 <ol>
   <li>イメージをインポートします:
     <ul>
-      <li><b>VMware ESXi / Workstation、VirtualBox:</b> <code>controlzit-appliance.ova</code> をデプロイします（<i>Create / Register VM → Deploy a virtual machine from an OVF or OVA file</i>）。</li>
-      <li><b>Proxmox VE:</b> ディスクなしの VM（2 vCPU、2～4 GB RAM、VirtIO ネットワーク）を作成し、<code>controlzit-appliance.qcow2</code> をノードにコピーして <code>qm importdisk &lt;vmid&gt; controlzit-appliance.qcow2 local-lvm</code> を実行します。ディスクを SCSI として接続し、起動ディスクにします。</li>
-      <li><b>Hyper-V:</b> <code>controlzit-appliance-vhdx.zip</code> を展開し、その VHDX をディスクとする<b>第 1 世代</b>の VM を作成します。</li>
+      <li><b>VMware ESXi / Workstation、VirtualBox:</b> <code>rmmzit-appliance.ova</code> をデプロイします（<i>Create / Register VM → Deploy a virtual machine from an OVF or OVA file</i>）。</li>
+      <li><b>Proxmox VE:</b> ディスクなしの VM（2 vCPU、2～4 GB RAM、VirtIO ネットワーク）を作成し、<code>rmmzit-appliance.qcow2</code> をノードにコピーして <code>qm importdisk &lt;vmid&gt; rmmzit-appliance.qcow2 local-lvm</code> を実行します。ディスクを SCSI として接続し、起動ディスクにします。</li>
+      <li><b>Hyper-V:</b> <code>rmmzit-appliance-vhdx.zip</code> を展開し、その VHDX をディスクとする<b>第 1 世代</b>の VM を作成します。</li>
     </ul>
   </li>
   <li>VM を起動します。ディスクは仮想ディスクのサイズまで自動で拡張されます。VM の画面に<b>コンソールのアドレスとセットアップトークン</b>が表示されます。</li>
   <li><code>https://&lt;アドレス&gt;:8443</code> を開きます。ブラウザーが自己署名証明書について一度警告します（後で<a href="/settings/certificate">設定 → 証明書</a>で置き換えてください）。トークンを入力し、最初の管理者を作成します。</li>
 </ol>
-<p>アプライアンスは DHCP でアドレスを取得します。固定アドレス、サーバー名、タイムゾーンを設定するには、VM の画面で <code>czadmin</code>（初期パスワード <code>controlzit</code>、変更が必要）としてサインインすると、セットアップメニューが開きます。タイムゾーンとネットワークは後でコンソールからも変更できます。</p>
+<p>アプライアンスは DHCP でアドレスを取得します。固定アドレス、サーバー名、タイムゾーンを設定するには、VM の画面で <code>rzadmin</code>（初期パスワード <code>rmmzit</code>、変更が必要）としてサインインすると、セットアップメニューが開きます。タイムゾーンとネットワークは後でコンソールからも変更できます。</p>
 
 <h2 id="iso">2. アプライアンス ISO</h2>
 <ol>
-  <li>VM またはサーバーを <code>controlzit-appliance.iso</code> から起動します。5 秒後にインストールが自動で始まり、<b>最初のディスクを消去</b>して Debian、PostgreSQL、ControlZit をインストールします。インターネット接続が必要です（10～20 分）。</li>
+  <li>VM またはサーバーを <code>rmmzit-appliance.iso</code> から起動します。5 秒後にインストールが自動で始まり、<b>最初のディスクを消去</b>して Debian、PostgreSQL、RMMZit をインストールします。インターネット接続が必要です（10～20 分）。</li>
   <li>再起動後、VM イメージと同様に画面にコンソールのアドレスとセットアップトークンが表示されます。</li>
 </ol>
 
 <h2 id="script">3. インストールスクリプト</h2>
 <p>既存の Linux サーバーで root として実行します:</p>
-<pre>curl -fsSL https://github.com/Max-Zit/controlzit/releases/latest/download/install.sh | sudo sh</pre>
-<p>スクリプトは PostgreSQL をインストールし、最新リリースをダウンロードして<b>署名を検証</b>し、ランダムなパスワードでデータベースを作成してサービスを開始します。オプション（<code>sh -s --</code> の後）: <code>--version X</code>、既存のデータベース用の <code>--db postgres://…</code>、OS の自動セキュリティ更新をオフのままにする <code>--no-auto-updates</code>。再実行すると ControlZit を更新し、データは保持されます。</p>
+<pre>curl -fsSL https://github.com/Max-Zit/rmmzit/releases/latest/download/install.sh | sudo sh</pre>
+<p>スクリプトは PostgreSQL をインストールし、最新リリースをダウンロードして<b>署名を検証</b>し、ランダムなパスワードでデータベースを作成してサービスを開始します。オプション（<code>sh -s --</code> の後）: <code>--version X</code>、既存のデータベース用の <code>--db postgres://…</code>、OS の自動セキュリティ更新をオフのままにする <code>--no-auto-updates</code>。再実行すると RMMZit を更新し、データは保持されます。</p>
 
 <h2 id="packages">4. パッケージを手動で</h2>
-<pre>sudo apt install ./controlzit-server_X_amd64.deb      # Debian, Ubuntu
-sudo dnf install ./controlzit-server-X-1.x86_64.rpm     # AlmaLinux, Rocky Linux</pre>
-<p>次にデータベースのアドレスを <code>/etc/controlzit/server.env</code>（<code>CONTROLZIT_DB=postgres://…</code>）に書き、<code>systemctl enable --now controlzit-server</code> でサービスを開始します。</p>
+<pre>sudo apt install ./rmmzit-server_X_amd64.deb      # Debian, Ubuntu
+sudo dnf install ./rmmzit-server-X-1.x86_64.rpm     # AlmaLinux, Rocky Linux</pre>
+<p>次にデータベースのアドレスを <code>/etc/rmmzit/server.env</code>（<code>RMMZIT_DB=postgres://…</code>）に書き、<code>systemctl enable --now rmmzit-server</code> でサービスを開始します。</p>
+
+<h2 id="docker">5. Docker</h2>
+<p>サーバーはコンテナーイメージ <code>ghcr.io/max-zit/rmmzit</code> としても提供されます。ほかの方法と同じ署名済みサーバーパッケージから作られ、Docker Compose で PostgreSQL と一緒に動作します。<a href="https://github.com/Max-Zit/rmmzit/tree/main/packaging/docker" target="_blank" rel="noopener">docker-compose.yml と .env.example</a> をフォルダーにダウンロードし、<code>.env.example</code> を <code>.env</code> にコピーして、データベースのパスワード (英字と数字) とタイムゾーンを設定してから:</p>
+<pre>docker compose up -d
+docker compose exec rmmzit cat /var/lib/rmmzit/setup-token.txt</pre>
+<p><code>https://&lt;ホスト&gt;:8443</code> を開き、セットアップトークンを入力します。ポート 8444 はエージェントの接続先です。エージェントが接続する場所から開放してください。<code>.env</code> のイメージタグで実行するものが決まります: 正式リリースは <code>latest</code>、リリース候補は <code>testing</code>。</p>
+<p><code>docker compose pull &amp;&amp; docker compose up -d</code> で更新します。新しいバージョンがデータベースを変更する前に、サーバーは <a href="/settings/backup">設定 → コンソールのバックアップ</a> にバックアップを書き込みます。元に戻すには、以前のバージョンをイメージタグに設定してそのファイルを復元します: <code>docker compose stop rmmzit</code>、<code>docker compose run --rm rmmzit -restore /var/lib/rmmzit/backups/ファイル</code>、<code>docker compose up -d</code>。コンテナーでは、ネットワークとタイムゾーンはコンソールではなく Docker ホストが管理します。</p>
 
 <h2 id="first-sign-in">最初のサインイン</h2>
 <ul>
-  <li>セットアップトークンは <code>/var/lib/controlzit/setup-token.txt</code> とサーバーログ（<code>journalctl -u controlzit-server</code>）にあります。使えるのは 1 回だけです。</li>
+  <li>セットアップトークンは <code>/var/lib/rmmzit/setup-token.txt</code> とサーバーログ（<code>journalctl -u rmmzit-server</code>）にあります。使えるのは 1 回だけです。</li>
   <li>すべてのアカウントに<b>認証アプリ</b>（TOTP）が必要で、10 個の回復コードが発行されます。安全に保管してください。</li>
-  <li>既定ではコンソールは<b>プライベートネットワーク</b>からの接続のみ受け付けます。締め出された場合は、サーバーで <code>controlzit-server --reset-allowlist</code> を実行します（アプライアンス: セットアップメニューの項目 5）。</li>
+  <li>既定ではコンソールは<b>プライベートネットワーク</b>からの接続のみ受け付けます。締め出された場合は、サーバーで <code>rmmzit-server --reset-allowlist</code> を実行します（アプライアンス: セットアップメニューの項目 5）。</li>
 </ul>
 
 <h2 id="files">ファイルの場所</h2>
 <table>
   <tr><th>パス</th><th>内容</th></tr>
-  <tr><td><code>/etc/controlzit/server.env</code></td><td>構成: データベース、ポート、更新元（root とサービスのみ読み取り可能）</td></tr>
-  <tr><td><code>/var/lib/controlzit</code></td><td>データディレクトリ: 証明書、秘密鍵、エージェントのインストーラー（<code>downloads</code>）、ログ</td></tr>
-  <tr><td><code>/var/lib/controlzit/logs/server.log</code></td><td>サーバーログ。<code>journalctl -u controlzit-server</code> にも記録</td></tr>
-  <tr><td><code>/var/log/controlzit-helper</code></td><td>root ヘルパーのログ（更新、タイムゾーン、ネットワーク）</td></tr>
+  <tr><td><code>/etc/rmmzit/server.env</code></td><td>構成: データベース、ポート、更新元（root とサービスのみ読み取り可能）</td></tr>
+  <tr><td><code>/var/lib/rmmzit</code></td><td>データディレクトリ: 証明書、秘密鍵、エージェントのインストーラー（<code>downloads</code>）、ログ</td></tr>
+  <tr><td><code>/var/lib/rmmzit/logs/server.log</code></td><td>サーバーログ。<code>journalctl -u rmmzit-server</code> にも記録</td></tr>
+  <tr><td><code>/var/log/rmmzit-helper</code></td><td>root ヘルパーのログ（更新、タイムゾーン、ネットワーク）</td></tr>
 </table>
-<div class="callout warn"><p>データベースは <code>/var/lib/controlzit</code> と一緒にバックアップしてください。そこにある秘密鍵が保存済みパスワードを復号し、証明書がエージェントに対してサーバーを識別します。</p></div>
+<div class="callout warn"><p>データベースは <code>/var/lib/rmmzit</code> と一緒にバックアップしてください。そこにある秘密鍵が保存済みパスワードを復号し、証明書がエージェントに対してサーバーを識別します。</p></div>

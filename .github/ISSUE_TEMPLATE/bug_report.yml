@@ -5,11 +5,11 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for reporting! **Security problems** must not be reported here — use [Report a vulnerability](https://github.com/Max-Zit/controlzit/security/advisories/new) instead.
+        Thanks for reporting! **Security problems** must not be reported here — use [Report a vulnerability](https://github.com/Max-Zit/rmmzit/security/advisories/new) instead.
   - type: input
     id: version
     attributes:
-      label: ControlZit version
+      label: RMMZit version
       description: Server version (bottom of the sidebar) and, if relevant, the agent version (device page).
       placeholder: "server 0.3.0, agent 0.3.0"
     validations:

@@ -17,7 +17,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // Linux: everything comes from /proc, /sys, /etc/os-release and the

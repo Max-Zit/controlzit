@@ -3,9 +3,9 @@
 
 <h2 id="console">Ich erreiche die Konsole nicht</h2>
 <ul>
-  <li>Ihre Adresse ist eventuell nicht in den erlaubten Netzen: Die Verbindung wird vor TLS geschlossen, der Browser zeigt also einen Verbindungsfehler. Führen Sie <code>controlzit-server --reset-allowlist</code> auf dem Server aus (Appliance: Einrichtungsmenü, Punkt 5), um wieder alle privaten Netze zu erlauben.</li>
+  <li>Ihre Adresse ist eventuell nicht in den erlaubten Netzen: Die Verbindung wird vor TLS geschlossen, der Browser zeigt also einen Verbindungsfehler. Führen Sie <code>rmmzit-server --reset-allowlist</code> auf dem Server aus (Appliance: Einrichtungsmenü, Punkt 5), um wieder alle privaten Netze zu erlauben.</li>
   <li>Nach einer Portänderung öffnen Sie die Konsole auf dem neuen Port.</li>
-  <li>Prüfen Sie den Dienst auf dem Server: <code>systemctl status controlzit-server</code> und <code>journalctl -u controlzit-server</code>.</li>
+  <li>Prüfen Sie den Dienst auf dem Server: <code>systemctl status rmmzit-server</code> und <code>journalctl -u rmmzit-server</code>.</li>
 </ul>
 
 <h2 id="signin">Probleme bei der Anmeldung</h2>
@@ -21,7 +21,7 @@
   <li>Erreicht der Computer den Agent-Port? Unter Windows: <code>Test-NetConnection rmm.example.com -Port 8444</code>.</li>
   <li>Stimmt die öffentliche Agent-Adresse? Codes, die bei über localhost geöffneter Konsole erstellt wurden, schicken den Agent zum falschen Server; setzen Sie die Adresse und erstellen Sie einen neuen Code.</li>
   <li>Ist der Code noch gültig und nicht aufgebraucht?</li>
-  <li>Agent-Protokolle: Windows <code>C:\ProgramData\ControlZit Agent\agent.log</code>, Linux <code>/var/lib/controlzit-agent/agent.log</code> und <code>journalctl -u controlzit-agent</code>; bei einem verbundenen Gerät öffnen Sie sie in der Konsole unter <b>Dateien</b>. Unter Windows zeigt das Symbol neben der Uhr den Verbindungsstatus.</li>
+  <li>Agent-Protokolle: Windows <code>C:\ProgramData\RMMZit Agent\agent.log</code>, Linux <code>/var/lib/rmmzit-agent/agent.log</code> und <code>journalctl -u rmmzit-agent</code>; bei einem verbundenen Gerät öffnen Sie sie in der Konsole unter <b>Dateien</b>. Unter Windows zeigt das Symbol neben der Uhr den Verbindungsstatus.</li>
 </ul>
 
 <h2 id="rd">Die Fernsteuerung zeigt nichts</h2>
@@ -41,11 +41,13 @@
 <p>Verwenden Sie <b>Test-E-Mail senden</b> unter <a href="/settings/monitoring">Einstellungen → Überwachung und Alarme</a>; die Meldung zeigt die Antwort des Servers. Ein Passwort wird nur über STARTTLS oder TLS gesendet.</p>
 
 <h2 id="faq">FAQ</h2>
-<h3 id="faq-cloud">Braucht ControlZit einen Cloud-Dienst?</h3>
+<h3 id="faq-cloud">Braucht RMMZit einen Cloud-Dienst?</h3>
 <p>Nein. Alles läuft auf Ihrem Server; nichts wird an MaxZit gesendet. Der Server prüft nur GitHub auf neue Versionen.</p>
-<h3 id="faq-backup">Wie sichere ich ControlZit?</h3>
+<h3 id="faq-backup">Wie sichere ich RMMZit?</h3>
 <p>Unter <a href="/settings/backup">Einstellungen → Konsolensicherung</a> sichert der Server täglich seine Datenbank, den geheimen Schlüssel und die Zertifikate, auf Wunsch verschlüsselt und auf einen SFTP-Server kopiert. Bewahren Sie eine Kopie außerhalb des Servers auf: Ohne den geheimen Schlüssel lassen sich gespeicherte Kennwörter nicht entschlüsseln, und Agenten würden einem neuen Server nicht vertrauen.</p>
 <h3 id="faq-move">Kann ich den Server auf einen neuen Rechner umziehen?</h3>
-<p>Ja: Installieren Sie ControlZit auf dem neuen Rechner und stellen Sie dort eine Konsolensicherung wieder her (<code>controlzit-server -restore DATEI</code>, auf der Appliance Punkt 7 des Setup-Menüs). Behalten Sie dieselbe Adresse oder ändern Sie die öffentliche Agentenadresse und leiten Sie den alten Namen auf den neuen Rechner; die Agenten arbeiten weiter, weil die Sicherung die Zertifikate des Servers enthält.</p>
+<p>Ja: Installieren Sie RMMZit auf dem neuen Rechner und stellen Sie dort eine Konsolensicherung wieder her (<code>rmmzit-server -restore DATEI</code>, auf der Appliance Punkt 7 des Setup-Menüs). Behalten Sie dieselbe Adresse oder ändern Sie die öffentliche Agentenadresse und leiten Sie den alten Namen auf den neuen Rechner; die Agenten arbeiten weiter, weil die Sicherung die Zertifikate des Servers enthält.</p>
+<h3 id="faq-name">Ist RMMZit das frühere ControlZit?</h3>
+<p>Ja. Bis Version 0.12 hieß RMMZit ControlZit. Installationen von ControlZit werden wie auf jede neue Version auf RMMZit aktualisiert: Die Daten, die Agenten und ihre Registrierung sowie Registrierungscodes mit <code>CZ1-</code> funktionieren weiter.</p>
 <h3 id="faq-mac">Gibt es einen macOS-Agent?</h3>
 <p>Noch nicht. Unterstützt werden Windows und Linux (x86-64, ARM64).</p>

@@ -6,12 +6,12 @@
 <ul>
   <li><b>Console</b> — luisteradres en poort (standaard <code>:8443</code>) en de <b>toegestane netwerken</b>: één IP-adres of netwerk per regel (CIDR). Verbindingen van andere adressen worden vóór TLS gesloten; de server zelf (127.0.0.1) is altijd toegestaan. Opslaan weigert een lijst die uw eigen adres zou buitensluiten.</li>
   <li><b>Agent-eindpunt</b> — luisteradres en poort (standaard <code>:8444</code>, anders dan de console), de netwerken waaruit agents mogen komen (leeg = alle) en het <b>openbare agentadres</b> dat in installatieprogramma's en registratiecodes komt.</li>
-  <li>Nieuwe poorten gelden na <b>Nu herstarten</b> (herstart de ControlZit-service; agents maken vanzelf opnieuw verbinding).</li>
+  <li>Nieuwe poorten gelden na <b>Nu herstarten</b> (herstart de RMMZit-service; agents maken vanzelf opnieuw verbinding).</li>
 </ul>
-<p>Als u uzelf buitensluit, voer dan <code>controlzit-server --reset-allowlist</code> uit op de server (appliance: installatiemenu, item 5).</p>
+<p>Als u uzelf buitensluit, voer dan <code>rmmzit-server --reset-allowlist</code> uit op de server (appliance: installatiemenu, item 5).</p>
 
 <h3 id="server-network">Netwerk van de server (appliance)</h3>
-<p>Op de ControlZit-appliance stelt u hier ook het netwerk van de server zelf in: DHCP of een vast adres met netwerkgrootte (bijv. <code>192.168.1.20/24</code>), gateway, één tot drie DNS-servers en de servernaam. Antwoordt de gateway niet met de nieuwe instellingen, dan komen de vorige na 30 seconden vanzelf terug. Bij andere installaties beheert het besturingssysteem het netwerk.</p>
+<p>Op de RMMZit-appliance stelt u hier ook het netwerk van de server zelf in: DHCP of een vast adres met netwerkgrootte (bijv. <code>192.168.1.20/24</code>), gateway, één tot drie DNS-servers en de servernaam. Antwoordt de gateway niet met de nieuwe instellingen, dan komen de vorige na 30 seconden vanzelf terug. Bij andere installaties beheert het besturingssysteem het netwerk.</p>
 
 <h3 id="timezone">Tijdzone</h3>
 <p>Schema's (updates, scripts, rapporten) en de tijden in de console gebruiken de tijdzone van de server. Kies hem uit de lijst en klik op <b>Instellen</b>; de console herstart en is binnen enkele seconden terug. Zonder de root-helper (zie hieronder) stelt u hem in op de server: <code>timedatectl set-timezone Europe/Amsterdam</code>.</p>
@@ -30,7 +30,7 @@
 </ul>
 
 <h2 id="server-updates">Updates van de server</h2>
-<p><a href="/settings/version">Instellingen → ControlZit-updates</a> toont de actieve versie en de nieuwste release. <b>Installeren</b> werkt de server bij: alleen releases die zijn ondertekend met de ControlZit-releasesleutel worden geïnstalleerd; vóór de installatie maakt de server een back-up van database en programma, en start de nieuwe versie niet, dan gaat hij vanzelf terug naar de oude. De console is een of twee minuten weg. Optioneel worden nieuwe versies automatisch geïnstalleerd in een gekozen uur.</p>
+<p><a href="/settings/version">Instellingen → RMMZit-updates</a> toont de actieve versie en de nieuwste release. <b>Installeren</b> werkt de server bij: alleen releases die zijn ondertekend met de RMMZit-releasesleutel worden geïnstalleerd; vóór de installatie maakt de server een back-up van database en programma, en start de nieuwe versie niet, dan gaat hij vanzelf terug naar de oude. De console is een of twee minuten weg. Optioneel worden nieuwe versies automatisch geïnstalleerd in een gekozen uur.</p>
 <p><b>Updatekanaal</b>: <i>Officiële versies</i> (standaard) of <i>Test</i>, dat releasekandidaten aanbiedt voordat ze officieel worden, voor een testconsole. Houd productieconsoles op de officiële versies.</p>
 <div class="callout"><p>Updates, tijdzone en netwerk hebben de <b>root-helper</b> nodig die met de Linux-pakketten en de appliance meekomt. Zonder (bijv. het losse programma) werkt u bij met <code>install.sh</code> of het pakket van de release.</p></div>
 
@@ -38,7 +38,7 @@
 <p>Zie <a href="/docs/agents#updates">Agents installeren → Agent-updates</a>.</p>
 
 <h2 id="diagnostics">Diagnose</h2>
-<p><a href="/settings/diagnostics">Instellingen → Diagnose</a> toont waar ControlZit zijn logboeken schrijft, de nieuwste regels van het serverlogboek (filter op niveau of tekst), het logboek van de root-helper en de versies. <b>Diagnose downloaden (ZIP)</b> maakt een bestand voor ondersteuning met de logboeken, de versies en een samenvatting van de instellingen, de apparaten, de waarschuwingen en het auditlogboek. Wachtwoorden, tokens, registratiecodes en sleutels worden verwijderd uit alles wat wordt getoond en uit het bestand; scripts en hun uitvoer zijn niet inbegrepen.</p>
+<p><a href="/settings/diagnostics">Instellingen → Diagnose</a> toont waar RMMZit zijn logboeken schrijft, de nieuwste regels van het serverlogboek (filter op niveau of tekst), het logboek van de root-helper en de versies. <b>Diagnose downloaden (ZIP)</b> maakt een bestand voor ondersteuning met de logboeken, de versies en een samenvatting van de instellingen, de apparaten, de waarschuwingen en het auditlogboek. Wachtwoorden, tokens, registratiecodes en sleutels worden verwijderd uit alles wat wordt getoond en uit het bestand; scripts en hun uitvoer zijn niet inbegrepen.</p>
 
 <h2 id="fields">Eigen velden</h2>
 <p>Onder <a href="/settings/fields">Instellingen → Eigen velden</a> voegen beheerders eigen velden toe voor apparaten en klanten — tekst, getal of datum —, bijvoorbeeld een inventarisnummer, het einde van de garantie of een contract. Technici vullen ze in op de pagina's van apparaten en klanten; de API geeft de velden mee met elk apparaat en zet ze met <code>PUT /api/v1/devices/{id}/fields</code>.</p>
@@ -47,7 +47,7 @@
 <p><a href="/settings/backup">Instellingen → Back-up van de console</a> maakt elke dag op het gekozen uur een back-up van de console, of meteen met <b>Nu back-up maken</b>. Een back-up bevat de database, de geheime sleutel van de opgeslagen wachtwoorden, de certificaten en sleutels die de agents vertrouwen en de softwarebibliotheek. De nieuwste back-ups (zoveel als u kiest) blijven in de map <code>backups</code> van de datamap en zijn te downloaden vanaf de pagina.</p>
 <p>Met een <b>wachtzin</b> worden de bestanden versleuteld (AES-256-GCM); bewaar de wachtzin ergens anders, want zonder kan een back-up niet worden hersteld. Een kopie van elke back-up kan naar een <b>SFTP-map</b> op een andere server (wachtwoord of privésleutel). De eerste test van de verbinding toont de hostsleutel van de server om te vertrouwen; kopieën gaan alleen naar een server met die sleutel. Mislukt een back-up of de kopie, dan krijgen de ontvangers van de waarschuwingsmails een e-mail.</p>
 <p>Een <b>herstel</b> draait terwijl de server gestopt is: op de appliance in het setupmenu (<b>Restore a backup</b>), met de Linux-pakketten:</p>
-<pre>sudo systemctl stop controlzit-server
-sudo -u controlzit sh -c 'set -a; . /etc/controlzit/server.env; controlzit-server -data-dir /var/lib/controlzit -restore /path/controlzit-backup-….czb'
-sudo systemctl start controlzit-server</pre>
-<p>De wachtzin van een versleutelde back-up wordt gelezen uit <code>CONTROLZIT_BACKUP_PASSPHRASE</code> of uit een bestand opgegeven met <code>-restore-passphrase-file</code>. De database wordt in één stap hersteld (mislukt dat, dan verandert er niets); een nieuwere ControlZit werkt de herstelde database bij bij het starten. Een nieuwe server die uit een back-up is hersteld, houdt alle agents, omdat ze hetzelfde certificaat vertrouwen.</p>
+<pre>sudo systemctl stop rmmzit-server
+sudo -u rmmzit sh -c 'set -a; . /etc/rmmzit/server.env; rmmzit-server -data-dir /var/lib/rmmzit -restore /path/rmmzit-backup-….czb'
+sudo systemctl start rmmzit-server</pre>
+<p>De wachtzin van een versleutelde back-up wordt gelezen uit <code>RMMZIT_BACKUP_PASSPHRASE</code> of uit een bestand opgegeven met <code>-restore-passphrase-file</code>. De database wordt in één stap hersteld (mislukt dat, dan verandert er niets); een nieuwere RMMZit werkt de herstelde database bij bij het starten. Een nieuwe server die uit een back-up is hersteld, houdt alle agents, omdat ze hetzelfde certificaat vertrouwen.</p>

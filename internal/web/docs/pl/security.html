@@ -1,7 +1,7 @@
 <h1>Bezpieczeństwo</h1>
-<p class="lead">Serwer RMM może sterować każdym komputerem, którym zarządza. ControlZit zbudowano tak, aby atakujący, który dotrze do konsoli, sieci, a nawet serwera, zyskał jak najmniej.</p>
+<p class="lead">Serwer RMM może sterować każdym komputerem, którym zarządza. RMMZit zbudowano tak, aby atakujący, który dotrze do konsoli, sieci, a nawet serwera, zyskał jak najmniej.</p>
 
-<h2 id="design">Jak ControlZit Cię chroni</h2>
+<h2 id="design">Jak RMMZit Cię chroni</h2>
 <ul>
   <li><b>Dwa porty.</b> Konsola i punkt końcowy agentów nasłuchują na osobnych portach. Konsola przyjmuje połączenia tylko z dozwolonych sieci, sprawdzane przed TLS; port agentów może być publiczny bez wystawiania konsoli.</li>
   <li><b>Agenci łączą się wychodząco.</b> Zarządzane komputery nie potrzebują otwartych portów. Agenci przypinają certyfikat serwera po odcisku, więc fałszywy serwer nie może ich przejąć.</li>
@@ -10,7 +10,7 @@
   <li><b>Ochrona przeglądarki.</b> Kontrole CSRF przy każdej zmianie, ścisła Content Security Policy bez skryptów inline, ciasteczka sesji <code>__Host-</code>.</li>
   <li><b>Najmniejsze uprawnienia.</b> Role i dostęp per klient; konsola działa jako użytkownik bez uprawnień, a nieliczne akcje root (aktualizacje, sieć, strefa czasowa) przechodzą przez osobnego pomocnika root, który przyjmuje tylko stałe, sprawdzone żądania.</li>
   <li><b>Audyt.</b> Dziennik audytu połączony łańcuchem skrótów dla każdej zmiany i każdej akcji zdalnej.</li>
-  <li><b>Podpisane wydania.</b> Serwer, agenci i <code>install.sh</code> instalują tylko wydania podpisane kluczem wydań ControlZit.</li>
+  <li><b>Podpisane wydania.</b> Serwer, agenci i <code>install.sh</code> instalują tylko wydania podpisane kluczem wydań RMMZit.</li>
   <li><b>Sekrety.</b> Zapisane hasła (poczta, LDAP, kanały, Cloudflare) są szyfrowane kluczem tajnym serwera; diagnostyka usuwa sekrety.</li>
 </ul>
 
@@ -21,10 +21,10 @@
   <li>Używaj certyfikatu zaufanego przez przeglądarki (Let's Encrypt lub Twoje CA), aby użytkownicy nie przyzwyczajali się do klikania ostrzeżeń.</li>
   <li>Daj każdej osobie własne konto z najmniejszą rolą i tylko potrzebnymi klientami; wyłączaj konta osób, które odchodzą.</li>
   <li>Zachowaj jednego lokalnego administratora na wypadek awarii, z kodami odzyskiwania przechowywanymi offline.</li>
-  <li>Szybko instaluj aktualizacje ControlZit (lub włącz automatyczne) i aktualizuj system serwera; urządzenie samo instaluje aktualizacje zabezpieczeń Debiana.</li>
-  <li>Regularnie twórz kopie bazy danych i <code>/var/lib/controlzit</code> i przechowuj je z dala od serwera.</li>
+  <li>Szybko instaluj aktualizacje RMMZit (lub włącz automatyczne) i aktualizuj system serwera; urządzenie samo instaluje aktualizacje zabezpieczeń Debiana.</li>
+  <li>Regularnie twórz kopie bazy danych i <code>/var/lib/rmmzit</code> i przechowuj je z dala od serwera.</li>
   <li>Od czasu do czasu przeglądaj dziennik audytu i zostaw włączone powiadomienie na zdalnym ekranie, aby użytkownicy wiedzieli, kiedy ktoś jest połączony.</li>
 </ol>
 
 <h2 id="report">Zgłaszanie podatności</h2>
-<p>Zgłaszaj problemy bezpieczeństwa poufnie przez <a href="https://github.com/Max-Zit/controlzit/security/advisories/new" target="_blank" rel="noopener">GitHub → Security → Report a vulnerability</a>, a nie w publicznym zgłoszeniu.</p>
+<p>Zgłaszaj problemy bezpieczeństwa poufnie przez <a href="https://github.com/Max-Zit/rmmzit/security/advisories/new" target="_blank" rel="noopener">GitHub → Security → Report a vulnerability</a>, a nie w publicznym zgłoszeniu.</p>

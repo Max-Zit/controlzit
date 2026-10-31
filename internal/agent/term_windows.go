@@ -14,7 +14,7 @@ import (
 
 	"golang.org/x/sys/windows"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // On Windows the terminal is Windows PowerShell as SYSTEM on a pseudo
@@ -86,7 +86,7 @@ func (t *conShell) start(technician string) error {
 	if err != nil {
 		return err
 	}
-	env := envBlock(append(os.Environ(), "CONTROLZIT_TECHNICIAN="+technician))
+	env := envBlock(append(os.Environ(), "RMMZIT_TECHNICIAN="+technician))
 	si := windows.StartupInfoEx{ProcThreadAttributeList: attrs.List()}
 	si.Cb = uint32(unsafe.Sizeof(si)) // #nosec G103 -- the size the API asks for
 	// Empty standard handles: without them the shell would write to the

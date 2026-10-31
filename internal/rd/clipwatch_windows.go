@@ -18,7 +18,7 @@ import (
 // The helper runs as SYSTEM, and Windows does not show a SYSTEM process the
 // files that Explorer (or any program of the user) puts on the clipboard
 // through OLE: text arrives, CF_HDROP does not. So a small process of the
-// signed-in user (controlzit-agent clipwatch) watches for copied files and
+// signed-in user (rmmzit-agent clipwatch) watches for copied files and
 // reports them to the helper as JSON lines on its standard output.
 
 // WatchFiles is the clipwatch command: it writes one JSON array of paths per

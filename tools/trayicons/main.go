@@ -1,8 +1,8 @@
-// trayicons draws the tray icon states from the ControlZit icon: the icon
+// trayicons draws the tray icon states from the RMMZit icon: the icon
 // with a green (connected) or grey (not connected) dot, as .ico files with
 // 16, 20, 24, 32 and 48 pixel images.
 //
-//	go run ./tools/trayicons brand/controlzit-icon-256.png internal/tray/icons
+//	go run ./tools/trayicons brand/rmmzit-icon-256.png internal/tray/icons
 package main
 
 import (

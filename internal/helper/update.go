@@ -19,7 +19,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/update"
+	"github.com/max-zit/rmmzit/internal/legacy"
+	"github.com/max-zit/rmmzit/internal/update"
 )
 
 // update installs a newer signed release: download and verify the package,
@@ -38,7 +39,7 @@ func (h *Helper) update(ctx context.Context, req Request, res Result) Result {
 	env := h.env()
 	// The console names a channel, never a location: only the two fixed
 	// release locations (or the administrator's own in server.env).
-	source := env["CONTROLZIT_UPDATE_SOURCE"]
+	source := legacy.Lookup(env, "UPDATE_SOURCE")
 	if source == "" {
 		source = update.ChannelSource(req.Channel)
 	}
@@ -73,16 +74,16 @@ func (h *Helper) update(ctx context.Context, req Request, res Result) Result {
 		return fail("%v", err)
 	}
 	stamp := time.Now().UTC().Format("20060102-150405")
-	dump := filepath.Join(bdir, "controlzit-"+installed+"-"+stamp+".dump")
+	dump := filepath.Join(bdir, "rmmzit-"+installed+"-"+stamp+".dump")
 	h.logf("backing up the database to %s", dump)
 	dumpFn, restoreFn := h.dumpDB, h.restoreDB
 	if h.Dump != nil {
 		dumpFn, restoreFn = h.Dump, h.Restore
 	}
-	if err := dumpFn(ctx, env["CONTROLZIT_DB"], dump); err != nil {
+	if err := dumpFn(ctx, legacy.Lookup(env, "DB"), dump); err != nil {
 		return fail("database backup failed, nothing was changed: %v", err)
 	}
-	prevBin := filepath.Join(bdir, "controlzit-server-"+installed)
+	prevBin := filepath.Join(bdir, "rmmzit-server-"+installed)
 	if err := copyFile(h.path(h.Binary), prevBin, 0o700); err != nil {
 		return fail("cannot keep the current program, nothing was changed: %v", err)
 	}
@@ -95,26 +96,26 @@ func (h *Helper) update(ctx context.Context, req Request, res Result) Result {
 		_, ierr = h.Run(ctx, "dnf", "install", "-y", "-q", pkg)
 	}
 	if ierr == nil {
-		_, ierr = h.Run(ctx, "systemctl", "restart", "controlzit-server")
+		_, ierr = h.Run(ctx, "systemctl", "restart", "rmmzit-server")
 	}
 	if ierr == nil {
 		ierr = h.healthy(ctx, req.Version)
 	}
 	if ierr == nil {
-		res.Status, res.Message = "done", "ControlZit "+req.Version+" is installed"
+		res.Status, res.Message = "done", "RMMZit "+req.Version+" is installed"
 		return res
 	}
 	// Roll back: the previous program and the database as it was.
 	h.logf("update failed (%v); rolling back to %s", ierr, installed)
-	_, _ = h.Run(ctx, "systemctl", "stop", "controlzit-server")
+	_, _ = h.Run(ctx, "systemctl", "stop", "rmmzit-server")
 	rb := []string{}
 	if err := copyFile(prevBin, h.path(h.Binary), 0o755); err != nil {
 		rb = append(rb, "program: "+err.Error())
 	}
-	if err := restoreFn(ctx, env["CONTROLZIT_DB"], dump); err != nil {
+	if err := restoreFn(ctx, legacy.Lookup(env, "DB"), dump); err != nil {
 		rb = append(rb, "database: "+err.Error())
 	}
-	_, _ = h.Run(ctx, "systemctl", "start", "controlzit-server")
+	_, _ = h.Run(ctx, "systemctl", "start", "rmmzit-server")
 	res.Status = "rolled-back"
 	res.Message = fmt.Sprintf("the update to %s failed (%v); version %s is running again", req.Version, ierr, installed)
 	if len(rb) > 0 {
@@ -162,7 +163,7 @@ func (h *Helper) env() map[string]string {
 func pgEnv(dbURL string) ([]string, error) {
 	u, err := url.Parse(dbURL)
 	if err != nil || (u.Scheme != "postgres" && u.Scheme != "postgresql") {
-		return nil, errors.New("CONTROLZIT_DB is not a postgres:// URL")
+		return nil, errors.New("RMMZIT_DB is not a postgres:// URL")
 	}
 	host, port, err := net.SplitHostPort(u.Host)
 	if err != nil {
@@ -211,13 +212,13 @@ func (h *Helper) restoreDB(ctx context.Context, dbURL, path string) error {
 
 // prune keeps the three newest database backups and programs.
 func (h *Helper) prune(dir string) {
-	for _, prefix := range []string{"controlzit-server-", "controlzit-"} {
+	for _, prefix := range []string{"rmmzit-server-", "rmmzit-"} {
 		ents, _ := os.ReadDir(dir)
 		var names []string
 		for _, e := range ents {
 			n := e.Name()
-			isProg := strings.HasPrefix(n, "controlzit-server-")
-			if strings.HasPrefix(n, prefix) && isProg == (prefix == "controlzit-server-") {
+			isProg := strings.HasPrefix(n, "rmmzit-server-")
+			if strings.HasPrefix(n, prefix) && isProg == (prefix == "rmmzit-server-") {
 				names = append(names, n)
 			}
 		}

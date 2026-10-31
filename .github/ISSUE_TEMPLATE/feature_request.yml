@@ -1,5 +1,5 @@
 name: Feature request
-description: Suggest something ControlZit should do
+description: Suggest something RMMZit should do
 labels: [enhancement]
 body:
   - type: textarea
@@ -12,7 +12,7 @@ body:
   - type: textarea
     id: idea
     attributes:
-      label: How could ControlZit help?
+      label: How could RMMZit help?
   - type: textarea
     id: alternatives
     attributes:

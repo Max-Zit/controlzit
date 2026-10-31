@@ -6,11 +6,11 @@
 #   bash tools/release/promote.sh 0.12.1
 set -euo pipefail
 V=${1:?version}
-REPO=Max-Zit/controlzit
+REPO=Max-Zit/rmmzit
 cd "$(dirname "$0")/../.."
 gh release view "v$V" --repo "$REPO" --json isPrerelease --jq .isPrerelease | grep -q true ||
     { echo "v$V is not a release candidate" >&2; exit 1; }
-gh release edit "v$V" --repo "$REPO" --prerelease=false --latest --title "ControlZit $V"
+gh release edit "v$V" --repo "$REPO" --prerelease=false --latest --title "RMMZit $V"
 git fetch -q origin
 git switch -q main
 git merge -q --ff-only "v$V"

@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 func kinds(conds []store.Condition) map[string]store.Condition {
@@ -150,14 +150,14 @@ func TestSendMail(t *testing.T) {
 	for _, c := range port {
 		p = p*10 + int(c-'0')
 	}
-	e := EmailSettings{Host: host, Port: p, Security: "none", From: "ControlZit <rmm@example.com>"}
+	e := EmailSettings{Host: host, Port: p, Security: "none", From: "RMMZit <rmm@example.com>"}
 	devs := map[int64]store.MonitorState{7: {ID: 7, Hostname: "PC-07", Customer: "Acme", Site: "HQ"}}
 	subject, body := alertEmail([]store.Alert{{DeviceID: 7, Kind: AlertDisk, Key: "C:", Severity: "critical", Message: "0.5 GB free", OpenedAt: time.Now()}}, devs)
 	if err := sendMail(context.Background(), e, []string{"it@example.com"}, subject, body); err != nil {
 		t.Fatal(err)
 	}
 	msg := <-got
-	for _, want := range []string{"Subject: ControlZit critical: Low disk space on PC-07", "PC-07", "Acme / HQ", "0.5 GB free", "To: it@example.com"} {
+	for _, want := range []string{"Subject: RMMZit critical: Low disk space on PC-07", "PC-07", "Acme / HQ", "0.5 GB free", "To: it@example.com"} {
 		if !strings.Contains(msg, want) {
 			t.Errorf("mail lacks %q:\n%s", want, msg)
 		}

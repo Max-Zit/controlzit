@@ -1,6 +1,6 @@
 //go:build !windows
 
-// Package tray is the ControlZit icon in the notification area (Windows).
+// Package tray is the RMMZit icon in the notification area (Windows).
 package tray
 
 import "errors"

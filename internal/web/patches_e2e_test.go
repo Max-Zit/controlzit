@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/agent"
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/agent"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 const (

@@ -14,7 +14,7 @@ import (
 
 	"golang.org/x/sys/unix"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // openPTY opens a new pseudo-terminal: the master (non-blocking, so a
@@ -98,7 +98,7 @@ func startTerminal(a proto.TermStart) (terminal, error) {
 		lang = "C.UTF-8"
 	}
 	cmd.Env = []string{"TERM=xterm-256color", "COLORTERM=truecolor", "HOME=" + cmd.Dir, "USER=root", "LOGNAME=root", "SHELL=" + shell, "LANG=" + lang,
-		"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin", "CONTROLZIT_TECHNICIAN=" + a.Technician}
+		"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin", "RMMZIT_TECHNICIAN=" + a.Technician}
 	cmd.Stdin, cmd.Stdout, cmd.Stderr = slave, slave, slave
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true, Setctty: true, Ctty: 0}
 	if err := cmd.Start(); err != nil {

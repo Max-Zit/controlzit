@@ -17,7 +17,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // Remote actions on Linux: systemd services, processes from /proc, power
@@ -79,8 +79,8 @@ func controlUnit(ctx context.Context, raw json.RawMessage) (any, error) {
 	if a.Name == "" || strings.HasPrefix(a.Name, "-") || strings.ContainsAny(a.Name, " /\x00") || len(a.Name) > 200 {
 		return nil, errors.New("no such service")
 	}
-	if a.Name == "controlzit-agent" && a.Action != "start" {
-		return nil, errors.New("the ControlZit agent cannot stop itself from the console")
+	if (a.Name == "rmmzit-agent" || a.Name == "controlzit-agent") && a.Action != "start" {
+		return nil, errors.New("the RMMZit agent cannot stop itself from the console")
 	}
 	switch a.Action {
 	case "start", "stop", "restart":
@@ -154,7 +154,7 @@ func killProc(ctx context.Context, raw json.RawMessage) (any, error) {
 	if name != a.Name {
 		return nil, errors.New("the process has changed; refresh the list")
 	}
-	if name == "systemd" || name == "init" || name == "kthreadd" || name == "controlzit-agen" {
+	if name == "systemd" || name == "init" || name == "kthreadd" || name == "rmmzit-agent" || name == "controlzit-agen" {
 		return nil, errors.New("this process cannot be ended from the console")
 	}
 	if err := syscall.Kill(int(a.PID), syscall.SIGTERM); err != nil {

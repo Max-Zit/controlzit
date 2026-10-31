@@ -3,9 +3,9 @@
 
 <h2 id="console">Konsola ulaşamıyorum</h2>
 <ul>
-  <li>Adresiniz izin verilen ağlarda olmayabilir: bağlantı TLS'den önce kapatılır, bu yüzden tarayıcı bir bağlantı hatası gösterir. Tüm özel ağlara yeniden izin vermek için sunucuda <code>controlzit-server --reset-allowlist</code> çalıştırın (cihaz: kurulum menüsü, madde 5).</li>
+  <li>Adresiniz izin verilen ağlarda olmayabilir: bağlantı TLS'den önce kapatılır, bu yüzden tarayıcı bir bağlantı hatası gösterir. Tüm özel ağlara yeniden izin vermek için sunucuda <code>rmmzit-server --reset-allowlist</code> çalıştırın (cihaz: kurulum menüsü, madde 5).</li>
   <li>Portu değiştirdikten sonra konsolu yeni portta açın.</li>
-  <li>Sunucudaki hizmeti kontrol edin: <code>systemctl status controlzit-server</code> ve <code>journalctl -u controlzit-server</code>.</li>
+  <li>Sunucudaki hizmeti kontrol edin: <code>systemctl status rmmzit-server</code> ve <code>journalctl -u rmmzit-server</code>.</li>
 </ul>
 
 <h2 id="signin">Giriş sorunları</h2>
@@ -21,7 +21,7 @@
   <li>Bilgisayar ajan portuna ulaşabiliyor mu? Windows'ta: <code>Test-NetConnection rmm.example.com -Port 8444</code>.</li>
   <li>Genel ajan adresi doğru mu? Konsol localhost üzerinden açıkken oluşturulan kodlar ajanı yanlış sunucuya gönderir; adresi ayarlayın ve yeni bir kod oluşturun.</li>
   <li>Kod hâlâ geçerli ve tükenmemiş mi?</li>
-  <li>Ajan günlükleri: Windows <code>C:\ProgramData\ControlZit Agent\agent.log</code>, Linux <code>/var/lib/controlzit-agent/agent.log</code> ve <code>journalctl -u controlzit-agent</code>; bağlı bir cihaz için bunları konsolda <b>Dosyalar</b> altından açın. Windows'ta saatin yanındaki simge bağlantı durumunu gösterir.</li>
+  <li>Ajan günlükleri: Windows <code>C:\ProgramData\RMMZit Agent\agent.log</code>, Linux <code>/var/lib/rmmzit-agent/agent.log</code> ve <code>journalctl -u rmmzit-agent</code>; bağlı bir cihaz için bunları konsolda <b>Dosyalar</b> altından açın. Windows'ta saatin yanındaki simge bağlantı durumunu gösterir.</li>
 </ul>
 
 <h2 id="rd">Uzak masaüstü hiçbir şey göstermiyor</h2>
@@ -41,11 +41,13 @@
 <p><a href="/settings/monitoring">Ayarlar → İzleme ve uyarılar</a> altında <b>Test e-postası gönder</b>'i kullanın; ileti sunucunun yanıtını gösterir. Parola yalnızca STARTTLS veya TLS üzerinden gönderilir.</p>
 
 <h2 id="faq">SSS</h2>
-<h3 id="faq-cloud">ControlZit bir bulut hizmetine ihtiyaç duyar mı?</h3>
+<h3 id="faq-cloud">RMMZit bir bulut hizmetine ihtiyaç duyar mı?</h3>
 <p>Hayır. Her şey sizin sunucunuzda çalışır; MaxZit'e hiçbir şey gönderilmez. Sunucu yalnızca yeni sürümler için GitHub'ı kontrol eder.</p>
-<h3 id="faq-backup">ControlZit'i nasıl yedeklerim?</h3>
+<h3 id="faq-backup">RMMZit'i nasıl yedeklerim?</h3>
 <p><a href="/settings/backup">Ayarlar → Konsol yedeği</a> altında sunucu her gün veritabanını, gizli anahtarını ve sertifikalarını yedekler; isteğe bağlı olarak şifreler ve bir SFTP sunucusuna kopyalar. Sunucu dışında bir kopya saklayın: gizli anahtar olmadan kayıtlı parolalar çözülemez ve ajanlar yeni bir sunucuya güvenmez.</p>
 <h3 id="faq-move">Sunucuyu yeni bir makineye taşıyabilir miyim?</h3>
-<p>Evet: ControlZit'i yeni makineye kurun ve orada bir konsol yedeğini geri yükleyin (<code>controlzit-server -restore DOSYA</code>, appliance'ta kurulum menüsünün 7. öğesi). Aynı adresi koruyun ya da ajanların genel adresini değiştirip eski adı yeni makineye yönlendirin; yedek sunucunun sertifikalarını içerdiği için ajanlar çalışmaya devam eder.</p>
+<p>Evet: RMMZit'i yeni makineye kurun ve orada bir konsol yedeğini geri yükleyin (<code>rmmzit-server -restore DOSYA</code>, appliance'ta kurulum menüsünün 7. öğesi). Aynı adresi koruyun ya da ajanların genel adresini değiştirip eski adı yeni makineye yönlendirin; yedek sunucunun sertifikalarını içerdiği için ajanlar çalışmaya devam eder.</p>
+<h3 id="faq-name">RMMZit eski ControlZit mi?</h3>
+<p>Evet. 0.12 sürümüne kadar RMMZit'in adı ControlZit'ti. ControlZit kurulumları her yeni sürümde olduğu gibi RMMZit'e güncellenir: veriler, ajanlar ve kayıtları ile <code>CZ1-</code> ile başlayan kayıt kodları çalışmaya devam eder.</p>
 <h3 id="faq-mac">macOS ajanı var mı?</h3>
 <p>Henüz yok. Windows ve Linux (x86-64, ARM64) desteklenir.</p>

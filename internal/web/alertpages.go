@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/netacl"
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/netacl"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // AlertTitle is the translated name of an alert kind.
@@ -150,7 +150,7 @@ func (s *Server) handleEmailTest(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx, cancel := context.WithTimeout(r.Context(), 60*time.Second)
 	defer cancel()
-	err := sendMail(ctx, e, to, "ControlZit test email", "This is a test email from the ControlZit console.\nAlert emails will arrive like this one.\n")
+	err := sendMail(ctx, e, to, "RMMZit test email", "This is a test email from the RMMZit console.\nAlert emails will arrive like this one.\n")
 	if err != nil {
 		s.audit(r, "settings.email.test", "settings", "test email failed: %v", err)
 		s.redirect(w, r, "/settings/monitoring", "The test email failed: "+err.Error())

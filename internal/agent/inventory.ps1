@@ -1,4 +1,4 @@
-# ControlZit agent inventory: prints one JSON object (proto.Inventory).
+# RMMZit agent inventory: prints one JSON object (proto.Inventory).
 # Windows PowerShell 4.0+ (Windows 8.1 / Server 2012 R2 and newer).
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'

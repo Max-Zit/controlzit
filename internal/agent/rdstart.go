@@ -13,8 +13,8 @@ import (
 
 	"github.com/coder/websocket"
 
-	"github.com/max-zit/controlzit/internal/proto"
-	"github.com/max-zit/controlzit/internal/rd"
+	"github.com/max-zit/rmmzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/rd"
 )
 
 // The service cannot see the desktop (it runs in session 0), so rd.start
@@ -84,7 +84,7 @@ func dialStream(ctx context.Context, dir, session, token string) (*websocket.Con
 	defer cancel()
 	ws, _, err := websocket.Dial(dctx, cfg.ServerURL+proto.PathStream+"?session="+url.QueryEscape(session), &websocket.DialOptions{
 		HTTPClient: hc,
-		HTTPHeader: http.Header{"User-Agent": {"controlzit-agent/" + Version}, "X-Cz-Session-Token": {strings.TrimSpace(token)}},
+		HTTPHeader: http.Header{"User-Agent": {"rmmzit-agent/" + Version}, "X-Cz-Session-Token": {strings.TrimSpace(token)}},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("stream: %w", err)

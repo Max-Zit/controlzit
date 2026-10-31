@@ -1,5 +1,5 @@
 <h1>安装服务器</h1>
-<p class="lead">从四种方式中选择一种。现成的虚拟机镜像最快；安装脚本适用于现有的 Linux 服务器。</p>
+<p class="lead">从五种方式中选择一种。现成的虚拟机镜像最快；安装脚本适用于现有的 Linux 服务器，Docker 适用于现有的 Docker 主机。</p>
 
 <table>
   <tr><th>方式</th><th>最适合</th><th>需要</th></tr>
@@ -7,52 +7,60 @@
   <tr><td><b>2. 设备 ISO</b></td><td>新虚拟机或物理服务器，无人值守</td><td>安装期间可访问互联网</td></tr>
   <tr><td><b>3. 安装脚本</b></td><td>现有的 Debian、Ubuntu、AlmaLinux 或 Rocky Linux 服务器</td><td>root 权限和互联网访问</td></tr>
   <tr><td><b>4. 手动安装软件包</b></td><td>自有 PostgreSQL、配置管理、离线服务器</td><td>某个版本的 deb 或 rpm 软件包</td></tr>
+  <tr><td><b>5. Docker</b>（容器镜像）</td><td>现有的 Docker 主机、NAS 或家庭实验室</td><td>带 Compose 插件的 Docker；拉取镜像需要互联网访问</td></tr>
 </table>
-<p>所有文件都在<a href="https://github.com/Max-Zit/controlzit/releases/latest" target="_blank" rel="noopener">版本页面</a>上。请为服务器分配 2 个 vCPU、2–4 GB 内存和至少 16 GB 磁盘。</p>
+<p>所有文件都在<a href="https://github.com/Max-Zit/rmmzit/releases/latest" target="_blank" rel="noopener">版本页面</a>上。请为服务器分配 2 个 vCPU、2–4 GB 内存和至少 16 GB 磁盘。</p>
 
 <h2 id="image">1. 虚拟机镜像</h2>
 <ol>
   <li>导入镜像：
     <ul>
-      <li><b>VMware ESXi / Workstation、VirtualBox：</b>部署 <code>controlzit-appliance.ova</code>（<i>Create / Register VM → Deploy a virtual machine from an OVF or OVA file</i>）。</li>
-      <li><b>Proxmox VE：</b>创建一台没有磁盘的虚拟机（2 个 vCPU、2–4 GB 内存、VirtIO 网络），将 <code>controlzit-appliance.qcow2</code> 复制到节点并运行 <code>qm importdisk &lt;vmid&gt; controlzit-appliance.qcow2 local-lvm</code>；将磁盘作为 SCSI 挂载并设为启动盘。</li>
-      <li><b>Hyper-V：</b>解压 <code>controlzit-appliance-vhdx.zip</code>，创建一台以该 VHDX 为磁盘的<b>第 1 代</b>虚拟机。</li>
+      <li><b>VMware ESXi / Workstation、VirtualBox：</b>部署 <code>rmmzit-appliance.ova</code>（<i>Create / Register VM → Deploy a virtual machine from an OVF or OVA file</i>）。</li>
+      <li><b>Proxmox VE：</b>创建一台没有磁盘的虚拟机（2 个 vCPU、2–4 GB 内存、VirtIO 网络），将 <code>rmmzit-appliance.qcow2</code> 复制到节点并运行 <code>qm importdisk &lt;vmid&gt; rmmzit-appliance.qcow2 local-lvm</code>；将磁盘作为 SCSI 挂载并设为启动盘。</li>
+      <li><b>Hyper-V：</b>解压 <code>rmmzit-appliance-vhdx.zip</code>，创建一台以该 VHDX 为磁盘的<b>第 1 代</b>虚拟机。</li>
     </ul>
   </li>
   <li>启动虚拟机。磁盘会自动扩展到虚拟磁盘的大小。虚拟机屏幕会显示<b>控制台地址和设置令牌</b>。</li>
   <li>打开 <code>https://&lt;地址&gt;:8443</code>。浏览器会对自签名证书提示一次警告（之后可在<a href="/settings/certificate">设置 → 证书</a>中替换）。输入令牌并创建第一个管理员。</li>
 </ol>
-<p>设备通过 DHCP 获取地址。如需设置固定地址、服务器名称或时区，请在虚拟机屏幕上以 <code>czadmin</code> 登录（初始密码为 <code>controlzit</code>，必须更改）：将打开设置菜单。时区和网络之后也可以在控制台中更改。</p>
+<p>设备通过 DHCP 获取地址。如需设置固定地址、服务器名称或时区，请在虚拟机屏幕上以 <code>rzadmin</code> 登录（初始密码为 <code>rmmzit</code>，必须更改）：将打开设置菜单。时区和网络之后也可以在控制台中更改。</p>
 
 <h2 id="iso">2. 设备 ISO</h2>
 <ol>
-  <li>从 <code>controlzit-appliance.iso</code> 启动虚拟机或服务器。5 秒后安装会自动开始：它会<b>清除第一块磁盘</b>，安装 Debian、PostgreSQL 和 ControlZit，并需要访问互联网（10–20 分钟）。</li>
+  <li>从 <code>rmmzit-appliance.iso</code> 启动虚拟机或服务器。5 秒后安装会自动开始：它会<b>清除第一块磁盘</b>，安装 Debian、PostgreSQL 和 RMMZit，并需要访问互联网（10–20 分钟）。</li>
   <li>重启后，屏幕会像虚拟机镜像一样显示控制台地址和设置令牌。</li>
 </ol>
 
 <h2 id="script">3. 安装脚本</h2>
 <p>在现有的 Linux 服务器上以 root 身份运行：</p>
-<pre>curl -fsSL https://github.com/Max-Zit/controlzit/releases/latest/download/install.sh | sudo sh</pre>
-<p>该脚本会安装 PostgreSQL、下载最新版本、<b>验证其签名</b>、创建带随机密码的数据库并启动服务。选项（位于 <code>sh -s --</code> 之后）：<code>--version X</code>；<code>--db postgres://…</code> 用于现有数据库；<code>--no-auto-updates</code> 使操作系统的自动安全更新保持关闭。再次运行会更新 ControlZit 并保留数据。</p>
+<pre>curl -fsSL https://github.com/Max-Zit/rmmzit/releases/latest/download/install.sh | sudo sh</pre>
+<p>该脚本会安装 PostgreSQL、下载最新版本、<b>验证其签名</b>、创建带随机密码的数据库并启动服务。选项（位于 <code>sh -s --</code> 之后）：<code>--version X</code>；<code>--db postgres://…</code> 用于现有数据库；<code>--no-auto-updates</code> 使操作系统的自动安全更新保持关闭。再次运行会更新 RMMZit 并保留数据。</p>
 
 <h2 id="packages">4. 手动安装软件包</h2>
-<pre>sudo apt install ./controlzit-server_X_amd64.deb      # Debian, Ubuntu
-sudo dnf install ./controlzit-server-X-1.x86_64.rpm     # AlmaLinux, Rocky Linux</pre>
-<p>然后将数据库地址写入 <code>/etc/controlzit/server.env</code>（<code>CONTROLZIT_DB=postgres://…</code>），并使用 <code>systemctl enable --now controlzit-server</code> 启动服务。</p>
+<pre>sudo apt install ./rmmzit-server_X_amd64.deb      # Debian, Ubuntu
+sudo dnf install ./rmmzit-server-X-1.x86_64.rpm     # AlmaLinux, Rocky Linux</pre>
+<p>然后将数据库地址写入 <code>/etc/rmmzit/server.env</code>（<code>RMMZIT_DB=postgres://…</code>），并使用 <code>systemctl enable --now rmmzit-server</code> 启动服务。</p>
+
+<h2 id="docker">5. Docker</h2>
+<p>服务器也提供容器镜像 <code>ghcr.io/max-zit/rmmzit</code>，它由与其他方式相同的已签名服务器软件包构建，通过 Docker Compose 与 PostgreSQL 一起运行。将 <a href="https://github.com/Max-Zit/rmmzit/tree/main/packaging/docker" target="_blank" rel="noopener">docker-compose.yml 和 .env.example</a> 下载到一个文件夹，把 <code>.env.example</code> 复制为 <code>.env</code>，设置数据库密码（字母和数字）和时区，然后：</p>
+<pre>docker compose up -d
+docker compose exec rmmzit cat /var/lib/rmmzit/setup-token.txt</pre>
+<p>打开 <code>https://&lt;主机&gt;:8443</code> 并输入设置令牌。端口 8444 是代理的连接端点；在代理连接的来源处开放它。<code>.env</code> 中的镜像标签决定运行的版本：<code>latest</code> 表示正式版本，<code>testing</code> 表示候选版本。</p>
+<p>使用 <code>docker compose pull &amp;&amp; docker compose up -d</code> 更新。在新版本更改数据库之前，服务器会将备份写入<a href="/settings/backup">设置 → 控制台备份</a>。如需回退，将上一个版本设为镜像标签并恢复该文件：<code>docker compose stop rmmzit</code>、<code>docker compose run --rm rmmzit -restore /var/lib/rmmzit/backups/文件</code>、<code>docker compose up -d</code>。在容器中，网络和时区由 Docker 主机管理，而不是控制台。</p>
 
 <h2 id="first-sign-in">首次登录</h2>
 <ul>
-  <li>设置令牌位于 <code>/var/lib/controlzit/setup-token.txt</code> 和服务器日志中（<code>journalctl -u controlzit-server</code>）。只能使用一次。</li>
+  <li>设置令牌位于 <code>/var/lib/rmmzit/setup-token.txt</code> 和服务器日志中（<code>journalctl -u rmmzit-server</code>）。只能使用一次。</li>
   <li>每个账户都需要<b>身份验证器应用</b>（TOTP），并获得 10 个恢复码。请妥善保管。</li>
-  <li>默认情况下，控制台只接受来自<b>私有网络</b>的连接。如果把自己锁在外面，请在服务器上运行 <code>controlzit-server --reset-allowlist</code>（设备：设置菜单第 5 项）。</li>
+  <li>默认情况下，控制台只接受来自<b>私有网络</b>的连接。如果把自己锁在外面，请在服务器上运行 <code>rmmzit-server --reset-allowlist</code>（设备：设置菜单第 5 项）。</li>
 </ul>
 
 <h2 id="files">文件位置</h2>
 <table>
   <tr><th>路径</th><th>内容</th></tr>
-  <tr><td><code>/etc/controlzit/server.env</code></td><td>配置：数据库、端口、更新来源（仅 root 和服务可读）</td></tr>
-  <tr><td><code>/var/lib/controlzit</code></td><td>数据目录：证书、密钥、代理安装程序（<code>downloads</code>）、日志</td></tr>
-  <tr><td><code>/var/lib/controlzit/logs/server.log</code></td><td>服务器日志；也可在 <code>journalctl -u controlzit-server</code> 中查看</td></tr>
-  <tr><td><code>/var/log/controlzit-helper</code></td><td>root 助手的日志（更新、时区、网络）</td></tr>
+  <tr><td><code>/etc/rmmzit/server.env</code></td><td>配置：数据库、端口、更新来源（仅 root 和服务可读）</td></tr>
+  <tr><td><code>/var/lib/rmmzit</code></td><td>数据目录：证书、密钥、代理安装程序（<code>downloads</code>）、日志</td></tr>
+  <tr><td><code>/var/lib/rmmzit/logs/server.log</code></td><td>服务器日志；也可在 <code>journalctl -u rmmzit-server</code> 中查看</td></tr>
+  <tr><td><code>/var/log/rmmzit-helper</code></td><td>root 助手的日志（更新、时区、网络）</td></tr>
 </table>
-<div class="callout warn"><p>请将数据库与 <code>/var/lib/controlzit</code> 一起备份：其中的密钥用于解密已保存的密码，证书用于向代理证明服务器身份。</p></div>
+<div class="callout warn"><p>请将数据库与 <code>/var/lib/rmmzit</code> 一起备份：其中的密钥用于解密已保存的密码，证书用于向代理证明服务器身份。</p></div>

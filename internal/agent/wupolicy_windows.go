@@ -11,7 +11,7 @@ import (
 	"golang.org/x/sys/windows/registry"
 )
 
-// ControlZit installs Windows updates on its own schedule, so the agent
+// RMMZit installs Windows updates on its own schedule, so the agent
 // switches off the automatic installation and restarts of Windows Update
 // (by policy, as Group Policy would). The values it finds first are saved
 // and put back when the agent is removed.

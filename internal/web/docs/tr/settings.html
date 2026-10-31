@@ -6,12 +6,12 @@
 <ul>
   <li><b>Konsol</b> — dinleme adresi ve portu (varsayılan <code>:8443</code>) ve <b>izin verilen ağlar</b>: her satıra bir IP adresi veya ağ (CIDR). Diğer adreslerden gelen bağlantılar TLS'den önce kapatılır; sunucunun kendisine (127.0.0.1) her zaman izin verilir. Kaydetme, kendi adresinizi dışarıda bırakacak bir listeyi reddeder.</li>
   <li><b>Ajan uç noktası</b> — dinleme adresi ve portu (varsayılan <code>:8444</code>, konsoldan farklı olmalı), ajanların gelebileceği ağlar (boş = tümü) ve yükleyicilere ve kayıt kodlarına yazılan <b>genel ajan adresi</b>.</li>
-  <li>Yeni portlar <b>Şimdi yeniden başlat</b>'tan sonra geçerli olur (ControlZit hizmetini yeniden başlatır; ajanlar kendiliğinden yeniden bağlanır).</li>
+  <li>Yeni portlar <b>Şimdi yeniden başlat</b>'tan sonra geçerli olur (RMMZit hizmetini yeniden başlatır; ajanlar kendiliğinden yeniden bağlanır).</li>
 </ul>
-<p>Kendinizi dışarıda bırakırsanız sunucuda <code>controlzit-server --reset-allowlist</code> çalıştırın (cihaz: kurulum menüsü, madde 5).</p>
+<p>Kendinizi dışarıda bırakırsanız sunucuda <code>rmmzit-server --reset-allowlist</code> çalıştırın (cihaz: kurulum menüsü, madde 5).</p>
 
 <h3 id="server-network">Sunucunun ağı (cihaz)</h3>
-<p>ControlZit cihazında sunucunun kendi ağı da burada ayarlanır: DHCP veya ağ boyutuyla sabit bir adres (ör. <code>192.168.1.20/24</code>), ağ geçidi, bir ile üç arası DNS sunucusu ve sunucu adı. Ağ geçidi yeni ayarlarla yanıt vermezse önceki ayarlar 30 saniye sonra kendiliğinden geri gelir. Diğer kurulumlarda ağı işletim sistemi yönetir.</p>
+<p>RMMZit cihazında sunucunun kendi ağı da burada ayarlanır: DHCP veya ağ boyutuyla sabit bir adres (ör. <code>192.168.1.20/24</code>), ağ geçidi, bir ile üç arası DNS sunucusu ve sunucu adı. Ağ geçidi yeni ayarlarla yanıt vermezse önceki ayarlar 30 saniye sonra kendiliğinden geri gelir. Diğer kurulumlarda ağı işletim sistemi yönetir.</p>
 
 <h3 id="timezone">Saat dilimi</h3>
 <p>Zamanlamalar (güncellemeler, betikler, raporlar) ve konsoldaki saatler sunucunun saat dilimini kullanır. Listeden seçin ve <b>Ayarla</b>'ya tıklayın; konsol yeniden başlar ve birkaç saniye içinde geri gelir. Root yardımcısı yoksa (aşağıya bakın) sunucuda ayarlayın: <code>timedatectl set-timezone Europe/Istanbul</code>.</p>
@@ -30,7 +30,7 @@
 </ul>
 
 <h2 id="server-updates">Sunucu güncellemeleri</h2>
-<p><a href="/settings/version">Ayarlar → ControlZit güncellemeleri</a> çalışan sürümü ve en yeni sürümü gösterir. <b>Kur</b> sunucuyu günceller: yalnızca ControlZit sürüm anahtarıyla imzalanmış sürümler kurulur; kurmadan önce sunucu veritabanını ve programını yedekler ve yeni sürüm başlamazsa kendiliğinden eskisine döner. Konsol bir iki dakika erişilemez. İsteğe bağlı olarak yeni sürümler seçilen bir saatte otomatik kurulur.</p>
+<p><a href="/settings/version">Ayarlar → RMMZit güncellemeleri</a> çalışan sürümü ve en yeni sürümü gösterir. <b>Kur</b> sunucuyu günceller: yalnızca RMMZit sürüm anahtarıyla imzalanmış sürümler kurulur; kurmadan önce sunucu veritabanını ve programını yedekler ve yeni sürüm başlamazsa kendiliğinden eskisine döner. Konsol bir iki dakika erişilemez. İsteğe bağlı olarak yeni sürümler seçilen bir saatte otomatik kurulur.</p>
 <p><b>Güncelleme kanalı</b>: <i>Resmi sürümler</i> (varsayılan) veya resmileşmeden önce sürüm adaylarını sunan <i>Test</i> kanalı (bir test konsolu için). Üretim konsollarını resmi sürümlerde tutun.</p>
 <div class="callout"><p>Güncellemeler, saat dilimi ve ağ, Linux paketleri ve cihazla gelen <b>root yardımcısını</b> gerektirir. O yoksa (ör. yalnızca program), <code>install.sh</code> veya sürümün paketiyle güncelleyin.</p></div>
 
@@ -38,7 +38,7 @@
 <p>Bkz. <a href="/docs/agents#updates">Ajanları kurma → Ajan güncellemeleri</a>.</p>
 
 <h2 id="diagnostics">Tanılama</h2>
-<p><a href="/settings/diagnostics">Ayarlar → Tanılama</a>, ControlZit'in günlüklerini nereye yazdığını, sunucu günlüğünün en yeni satırlarını (düzey veya metne göre filtre), root yardımcısının günlüğünü ve sürümleri gösterir. <b>Tanılamayı indir (ZIP)</b>, günlükler, sürümler ve ayarların özeti, cihazlar, uyarılar ve denetim günlüğüyle destek için bir dosya oluşturur. Parolalar, belirteçler, kayıt kodları ve anahtarlar gösterilen her şeyden ve dosyadan çıkarılır; betikler ve çıktıları dahil edilmez.</p>
+<p><a href="/settings/diagnostics">Ayarlar → Tanılama</a>, RMMZit'in günlüklerini nereye yazdığını, sunucu günlüğünün en yeni satırlarını (düzey veya metne göre filtre), root yardımcısının günlüğünü ve sürümleri gösterir. <b>Tanılamayı indir (ZIP)</b>, günlükler, sürümler ve ayarların özeti, cihazlar, uyarılar ve denetim günlüğüyle destek için bir dosya oluşturur. Parolalar, belirteçler, kayıt kodları ve anahtarlar gösterilen her şeyden ve dosyadan çıkarılır; betikler ve çıktıları dahil edilmez.</p>
 
 <h2 id="fields">Özel alanlar</h2>
 <p><a href="/settings/fields">Ayarlar → Özel alanlar</a> altında yöneticiler cihazlar ve müşteriler için kendi alanlarını ekler — metin, sayı veya tarih — örneğin bir demirbaş numarası, garanti bitişi veya bir sözleşme. Teknisyenler bunları cihaz ve müşteri sayfalarında doldurur; API alanları her cihazla birlikte döndürür ve <code>PUT /api/v1/devices/{id}/fields</code> ile ayarlar.</p>
@@ -47,7 +47,7 @@
 <p><a href="/settings/backup">Ayarlar → Konsol yedeği</a> konsolu her gün seçilen saatte veya <b>Şimdi yedekle</b> ile hemen yedekler. Bir yedek; veritabanını, kayıtlı parolaların gizli anahtarını, ajanların güvendiği sertifika ve anahtarları ve yazılım kitaplığını içerir. En yeni yedekler (seçtiğiniz sayıda) veri dizinindeki <code>backups</code> klasöründe kalır ve sayfadan indirilebilir.</p>
 <p><b>Parola</b> ile dosyalar şifrelenir (AES-256-GCM); parolayı başka bir yerde saklayın, çünkü parola olmadan yedek geri yüklenemez. Her yedeğin bir kopyası başka bir sunucudaki <b>SFTP klasörüne</b> gidebilir (parola veya özel anahtar). Bağlantının ilk testi, güvenilecek sunucu ana makine anahtarını gösterir; kopyalar yalnızca bu anahtara sahip sunucuya gider. Bir yedek veya kopyası başarısız olursa uyarı e-postası alıcılarına e-posta gönderilir.</p>
 <p><b>Geri yükleme</b> sunucu durdurulmuşken yapılır: appliance'ta kurulum menüsünden (<b>Restore a backup</b>), Linux paketleriyle:</p>
-<pre>sudo systemctl stop controlzit-server
-sudo -u controlzit sh -c 'set -a; . /etc/controlzit/server.env; controlzit-server -data-dir /var/lib/controlzit -restore /path/controlzit-backup-….czb'
-sudo systemctl start controlzit-server</pre>
-<p>Şifreli bir yedeğin parolası <code>CONTROLZIT_BACKUP_PASSPHRASE</code> değişkeninden veya <code>-restore-passphrase-file</code> ile verilen dosyadan okunur. Veritabanı tek adımda geri yüklenir (başarısız olursa hiçbir şey değişmez); daha yeni bir ControlZit sürümü geri yüklenen veritabanını başlarken günceller. Yedekten geri yüklenen yeni bir sunucu tüm ajanları korur, çünkü aynı sertifikaya güvenirler.</p>
+<pre>sudo systemctl stop rmmzit-server
+sudo -u rmmzit sh -c 'set -a; . /etc/rmmzit/server.env; rmmzit-server -data-dir /var/lib/rmmzit -restore /path/rmmzit-backup-….czb'
+sudo systemctl start rmmzit-server</pre>
+<p>Şifreli bir yedeğin parolası <code>RMMZIT_BACKUP_PASSPHRASE</code> değişkeninden veya <code>-restore-passphrase-file</code> ile verilen dosyadan okunur. Veritabanı tek adımda geri yüklenir (başarısız olursa hiçbir şey değişmez); daha yeni bir RMMZit sürümü geri yüklenen veritabanını başlarken günceller. Yedekten geri yüklenen yeni bir sunucu tüm ajanları korur, çünkü aynı sertifikaya güvenirler.</p>

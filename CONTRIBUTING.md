@@ -1,10 +1,10 @@
-# Contributing to ControlZit
+# Contributing to RMMZit
 
-Thank you for helping! ControlZit is free software under the GNU AGPLv3.
+Thank you for helping! RMMZit is free software under the GNU AGPLv3.
 
 ## Questions, bugs and ideas
 
-- **Bugs:** open an [issue](https://github.com/Max-Zit/controlzit/issues) (or click *Report a bug* in the console) with the ControlZit version, the operating system of the server and the agent, what you did, what happened and what you expected. *Settings → Diagnostics* in the console shows the server log without secrets.
+- **Bugs:** open an [issue](https://github.com/Max-Zit/rmmzit/issues) (or click *Report a bug* in the console) with the RMMZit version, the operating system of the server and the agent, what you did, what happened and what you expected. *Settings → Diagnostics* in the console shows the server log without secrets.
 - **Ideas:** open an issue that describes the problem you want to solve.
 - **Security problems:** do not open a public issue; see [SECURITY.md](SECURITY.md).
 

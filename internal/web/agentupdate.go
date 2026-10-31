@@ -16,8 +16,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // Agent updates: the installer in <data-dir>/downloads is the version the
@@ -61,9 +61,9 @@ type AgentPackage struct {
 
 // packageFiles are the installer and its version file per platform.
 var packageFiles = map[string][2]string{
-	proto.PlatformWindows:    {AgentMSIName, "controlzit-agent-x64.json"},
-	proto.PlatformLinuxAMD64: {"controlzit-agent-linux-amd64", "controlzit-agent-linux-amd64.json"},
-	proto.PlatformLinuxARM64: {"controlzit-agent-linux-arm64", "controlzit-agent-linux-arm64.json"},
+	proto.PlatformWindows:    {AgentMSIName, "rmmzit-agent-x64.json"},
+	proto.PlatformLinuxAMD64: {"rmmzit-agent-linux-amd64", "rmmzit-agent-linux-amd64.json"},
+	proto.PlatformLinuxARM64: {"rmmzit-agent-linux-arm64", "rmmzit-agent-linux-arm64.json"},
 }
 
 var platformOrder = []string{proto.PlatformWindows, proto.PlatformLinuxAMD64, proto.PlatformLinuxARM64}

@@ -16,7 +16,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // self is the running agent (set by Run) for commands that need its
@@ -82,7 +82,7 @@ func (a *Agent) downloadPackage(ctx context.Context, u proto.AgentUpdate, want [
 	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return "", err
 	}
-	path := filepath.Join(dir, "controlzit-agent-"+u.Version+packageExt)
+	path := filepath.Join(dir, "rmmzit-agent-"+u.Version+packageExt)
 	return path, a.fetchVerified(ctx, proto.PathPackage+"?platform="+proto.Platform(runtime.GOOS, runtime.GOARCH), path, u.Size, want, 10*time.Minute)
 }
 
@@ -99,7 +99,7 @@ func (a *Agent) fetchVerified(ctx context.Context, urlPath, path string, size in
 	if err != nil {
 		return err
 	}
-	req.Header.Set("User-Agent", "controlzit-agent/"+Version)
+	req.Header.Set("User-Agent", "rmmzit-agent/"+Version)
 	resp, err := hc.Do(req)
 	if err != nil {
 		return fmt.Errorf("download: %w", err)

@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // The scan finds a Windows program's CVEs in NVD (version ranges checked by

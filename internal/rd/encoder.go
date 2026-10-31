@@ -1,4 +1,4 @@
-// Package rd is the remote desktop of the ControlZit agent: screen
+// Package rd is the remote desktop of the RMMZit agent: screen
 // capture, change detection, encoding and input injection.
 package rd
 
@@ -9,7 +9,7 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // TileSize is the edge of the change-detection grid.

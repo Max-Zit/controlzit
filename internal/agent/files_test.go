@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 func call(t *testing.T, kind string, a any) (any, error) {
@@ -39,7 +39,7 @@ func TestFileOperations(t *testing.T) {
 	dir := t.TempDir()
 	// Upload in two chunks.
 	target := filepath.Join(dir, "report.bin")
-	data := bytes.Repeat([]byte("controlzit"), 200000) // 2 MB
+	data := bytes.Repeat([]byte("rmmzit"), 200000) // 2 MB
 	half := proto.FSChunk
 	if _, err := call(t, proto.KindFSWrite, proto.FSWrite{Path: target, Offset: 0, Data: data[:half]}); err != nil {
 		t.Fatal(err)

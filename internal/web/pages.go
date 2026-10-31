@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // An agent counts as online when it was heard from in the last 3 minutes.
@@ -400,8 +400,8 @@ func (d *siteData) Online(x *store.Device) bool { return x.Online(d.Now, onlineW
 
 // The Linux agents offered for download (64-bit x86 and ARM).
 const (
-	AgentLinuxName      = "controlzit-agent-linux-amd64"
-	AgentLinuxARM64Name = "controlzit-agent-linux-arm64"
+	AgentLinuxName      = "rmmzit-agent-linux-amd64"
+	AgentLinuxARM64Name = "rmmzit-agent-linux-arm64"
 )
 
 // download returns the path of a file in the downloads folder, or "".
@@ -431,7 +431,7 @@ func (s *Server) agentLinux(name string) http.HandlerFunc {
 
 // AgentMSIName is the installer the console offers for download; put it
 // into <data-dir>/downloads (release packages will do this).
-const AgentMSIName = "controlzit-agent-x64.msi"
+const AgentMSIName = "rmmzit-agent-x64.msi"
 
 func (s *Server) agentMSI() string {
 	if s.DownloadsDir == "" {

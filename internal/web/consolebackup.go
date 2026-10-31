@@ -15,18 +15,19 @@ import (
 	"sync"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/backup"
+	"github.com/max-zit/rmmzit/internal/backup"
 )
 
 // Backups of the console itself: the database with the secret key, the
 // certificates and the software library, written to data-dir/backups on a
 // schedule (and on request), optionally encrypted and copied to an SFTP
-// folder. A restore runs with the server stopped (controlzit-server
+// folder. A restore runs with the server stopped (rmmzit-server
 // -restore, or the appliance's setup menu).
 
 const (
 	settingBackup = "backup"
-	backupPrefix  = "controlzit-backup-"
+	backupPrefix  = "rmmzit-backup-"
+	legacyPrefix  = "controlzit-backup-" // backups made before the rename to RMMZit
 	sealBackupKey = "settings.backup.passphrase"
 	sealSFTPPass  = "settings.backup.sftp.password"
 	sealSFTPKey   = "settings.backup.sftp.key"
@@ -145,10 +146,10 @@ func (s *Server) runBackup(ctx context.Context, by string) {
 	case err != nil:
 		s.log.Error("console backup failed", "err", err)
 		_ = s.store.Audit(ctx, by, "", "backup.failed", "settings", "console backup failed: "+b.LastError)
-		s.mailAdmins(ctx, "ControlZit: the console backup failed", "The backup of "+start.Local().Format("2006-01-02 15:04")+" failed:\n\n"+b.LastError+"\n\nSettings → Console backup shows the details.\n")
+		s.mailAdmins(ctx, "RMMZit: the console backup failed", "The backup of "+start.Local().Format("2006-01-02 15:04")+" failed:\n\n"+b.LastError+"\n\nSettings → Console backup shows the details.\n")
 	case b.LastCopy != "" && b.LastCopy != "ok":
 		_ = s.store.Audit(ctx, by, "", "backup.create", "settings", "console backup "+name+" ("+formatBytes(uint64(size))+"); copy failed: "+b.LastCopy) // #nosec G115 -- a file size
-		s.mailAdmins(ctx, "ControlZit: the backup copy failed", "The backup "+name+" was written on the server, but the copy to the SFTP folder failed:\n\n"+b.LastCopy+"\n")
+		s.mailAdmins(ctx, "RMMZit: the backup copy failed", "The backup "+name+" was written on the server, but the copy to the SFTP folder failed:\n\n"+b.LastCopy+"\n")
 	default:
 		_ = s.store.Audit(ctx, by, "", "backup.create", "settings", "console backup "+name+" ("+formatBytes(uint64(size))+")") // #nosec G115 -- a file size
 	}
@@ -223,7 +224,7 @@ func (s *Server) localBackups() []backupFile {
 	var out []backupFile
 	for _, e := range ents {
 		n := e.Name()
-		if !e.Type().IsRegular() || !strings.HasPrefix(n, backupPrefix) || !strings.HasSuffix(n, backup.Ext) {
+		if !e.Type().IsRegular() || backupStamp(n) == "" {
 			continue
 		}
 		info, err := e.Info()
@@ -239,7 +240,7 @@ func (s *Server) localBackups() []backupFile {
 		}
 		out = append(out, bf)
 	}
-	slices.SortFunc(out, func(a, b backupFile) int { return strings.Compare(b.Name, a.Name) })
+	slices.SortFunc(out, func(a, b backupFile) int { return strings.Compare(backupStamp(b.Name), backupStamp(a.Name)) })
 	return out
 }
 
@@ -475,3 +476,20 @@ func (s *Server) handleBackupDelete(w http.ResponseWriter, r *http.Request) {
 
 // LastBytes is the size of the last backup, for the page.
 func (b BackupSettings) LastBytes() uint64 { return uint64(max(b.LastSize, 0)) } // #nosec G115 -- non-negative
+
+// backupStamp is the time part (YYYYMMDD-HHMMSS) of a backup's file name,
+// or "" when the name is not one of a backup.
+func backupStamp(n string) string {
+	for _, p := range []string{backupPrefix, legacyPrefix} {
+		rest, ok := strings.CutPrefix(n, p)
+		if !ok {
+			continue
+		}
+		for _, ext := range []string{backup.Ext, backup.LegacyExt} {
+			if stamp, ok := strings.CutSuffix(rest, ext); ok {
+				return stamp
+			}
+		}
+	}
+	return ""
+}

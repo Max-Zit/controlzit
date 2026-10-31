@@ -15,7 +15,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // The Windows Update Agent API (COM) from PowerShell, which every Windows has.
@@ -28,7 +28,7 @@ function Write-Result($o) { $stdout.Write(($o | ConvertTo-Json -Depth 6 -Compres
 `
 
 const patchCommon = patchCommonOut + `$session = New-Object -ComObject Microsoft.Update.Session
-$session.ClientApplicationID = 'ControlZit'
+$session.ClientApplicationID = 'RMMZit'
 $searcher = $session.CreateUpdateSearcher()
 `
 

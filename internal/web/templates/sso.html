@@ -35,7 +35,7 @@
       <label>{{.T "User name claim"}} <small>{{.T "optional"}}</small><input name="username_claim" value="{{.Data.S.UsernameClaim}}" class="mono" spellcheck="false" placeholder="preferred_username"></label>
       <label>{{.T "Groups claim"}} <small>{{.T "optional"}}</small><input name="groups_claim" value="{{.Data.S.GroupsClaim}}" class="mono" spellcheck="false" placeholder="groups"></label>
     </div>
-    <label class="check"><input type="checkbox" name="require_totp" value="1" {{if .Data.S.RequireTOTP}}checked{{end}}>{{.T "Also ask for ControlZit's own second factor (otherwise the identity provider's sign-in, with its multi-factor policy, is enough)"}}</label>
+    <label class="check"><input type="checkbox" name="require_totp" value="1" {{if .Data.S.RequireTOTP}}checked{{end}}>{{.T "Also ask for RMMZit's own second factor (otherwise the identity provider's sign-in, with its multi-factor policy, is enough)"}}</label>
     {{template "groupmapping" (groupMapping . .Data.S.Groups .Data.Groups)}}
     <div><button class="primary">{{.T "Save"}}</button></div>
   </form>

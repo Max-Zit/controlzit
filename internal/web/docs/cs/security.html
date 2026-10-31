@@ -1,7 +1,7 @@
 <h1>Bezpečnost</h1>
-<p class="lead">RMM server může ovládat každý počítač, který spravuje. ControlZit je postaven tak, aby útočník, který se dostane ke konzoli, do sítě nebo dokonce na server, získal co nejméně.</p>
+<p class="lead">RMM server může ovládat každý počítač, který spravuje. RMMZit je postaven tak, aby útočník, který se dostane ke konzoli, do sítě nebo dokonce na server, získal co nejméně.</p>
 
-<h2 id="design">Jak vás ControlZit chrání</h2>
+<h2 id="design">Jak vás RMMZit chrání</h2>
 <ul>
   <li><b>Dva porty.</b> Konzole a koncový bod agentů naslouchají na oddělených portech. Konzole přijímá spojení jen z povolených sítí, ověřená před TLS; port agentů může být veřejný, aniž by odhalil konzoli.</li>
   <li><b>Odchozí agenti.</b> Agenti se připojují k serveru; spravované počítače nepotřebují otevřené porty. Agenti si připnou certifikát serveru podle otisku, takže falešný server je nepřevezme.</li>
@@ -10,7 +10,7 @@
   <li><b>Ochrany prohlížeče.</b> Kontroly CSRF při každé změně, přísná Content Security Policy bez vložených skriptů, cookies relace <code>__Host-</code>.</li>
   <li><b>Nejmenší oprávnění.</b> Role a přístup podle zákazníka; konzole běží jako neprivilegovaný uživatel a několik root akcí (aktualizace, síť, časové pásmo) jde přes samostatného root pomocníka, který přijímá jen pevné, ověřené požadavky.</li>
   <li><b>Audit.</b> Auditní protokol zřetězený haši pro každou změnu a každou vzdálenou akci.</li>
-  <li><b>Podepsaná vydání.</b> Server, agenti a <code>install.sh</code> instalují jen vydání podepsaná klíčem vydání ControlZit.</li>
+  <li><b>Podepsaná vydání.</b> Server, agenti a <code>install.sh</code> instalují jen vydání podepsaná klíčem vydání RMMZit.</li>
   <li><b>Tajemství.</b> Uložená hesla (e-mail, LDAP, kanály, Cloudflare) se šifrují tajným klíčem serveru; diagnostika tajemství odstraňuje.</li>
 </ul>
 
@@ -21,10 +21,10 @@
   <li>Používejte certifikát, kterému prohlížeče důvěřují (Let's Encrypt nebo vaše CA), aby si uživatelé nezvykli přeskakovat varování.</li>
   <li>Dejte každé osobě vlastní účet s nejmenší rolí a jen potřebnými zákazníky; vypínejte účty lidí, kteří odcházejí.</li>
   <li>Ponechte si jednoho místního správce pro nouzové situace se záložními kódy uloženými offline.</li>
-  <li>Instalujte aktualizace ControlZit včas (nebo zapněte automatické) a udržujte operační systém serveru aktuální; appliance instaluje bezpečnostní aktualizace Debianu sama.</li>
-  <li>Pravidelně zálohujte databázi a <code>/var/lib/controlzit</code> a zálohu uchovávejte mimo server.</li>
+  <li>Instalujte aktualizace RMMZit včas (nebo zapněte automatické) a udržujte operační systém serveru aktuální; appliance instaluje bezpečnostní aktualizace Debianu sama.</li>
+  <li>Pravidelně zálohujte databázi a <code>/var/lib/rmmzit</code> a zálohu uchovávejte mimo server.</li>
   <li>Občas projděte auditní protokol a ponechte zapnuté upozornění na vzdálené obrazovce, aby uživatelé věděli, kdy je někdo připojen.</li>
 </ol>
 
 <h2 id="report">Nahlášení zranitelnosti</h2>
-<p>Bezpečnostní problémy hlaste soukromě přes <a href="https://github.com/Max-Zit/controlzit/security/advisories/new" target="_blank" rel="noopener">GitHub → Security → Report a vulnerability</a>, ne ve veřejném issue.</p>
+<p>Bezpečnostní problémy hlaste soukromě přes <a href="https://github.com/Max-Zit/rmmzit/security/advisories/new" target="_blank" rel="noopener">GitHub → Security → Report a vulnerability</a>, ne ve veřejném issue.</p>

@@ -26,8 +26,8 @@ import (
 	"github.com/crewjam/saml"
 	"golang.org/x/oauth2"
 
-	"github.com/max-zit/controlzit/internal/auth"
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/auth"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // Single sign-on (Settings → Single sign-on): OpenID Connect (Microsoft
@@ -57,7 +57,7 @@ type SSOSettings struct {
 	// Claims or attributes with the user name and the groups.
 	UsernameClaim string `json:"username_claim,omitempty"`
 	GroupsClaim   string `json:"groups_claim,omitempty"`
-	// RequireTOTP also asks for ControlZit's own second factor.
+	// RequireTOTP also asks for RMMZit's own second factor.
 	RequireTOTP bool         `json:"require_totp,omitempty"`
 	Groups      GroupMapping `json:"groups"`
 }
@@ -267,7 +267,7 @@ func newSPKey() (keyPEM, certPEM string, err error) {
 	if err != nil {
 		return "", "", err
 	}
-	tpl := &x509.Certificate{SerialNumber: big.NewInt(time.Now().UnixNano()), Subject: pkix.Name{CommonName: "ControlZit console (SAML)"},
+	tpl := &x509.Certificate{SerialNumber: big.NewInt(time.Now().UnixNano()), Subject: pkix.Name{CommonName: "RMMZit console (SAML)"},
 		NotBefore: time.Now().Add(-time.Hour), NotAfter: time.Now().AddDate(20, 0, 0), KeyUsage: x509.KeyUsageDigitalSignature}
 	der, err := x509.CreateCertificate(rand.Reader, tpl, tpl, &k.PublicKey, k)
 	if err != nil {
@@ -469,7 +469,7 @@ func (s *Server) ssoSignIn(w http.ResponseWriter, r *http.Request, c SSOSettings
 	u, err := s.store.UpsertDirectoryUser(ctx, store.DirectoryUser{Source: "sso", Username: name, DisplayName: display, Email: email, Role: role, AllCustomers: all, CustomerIDs: ids})
 	if errors.Is(err, store.ErrOtherSource) {
 		s.auditAs(r, name, "login.failed", "user:"+name, "single sign-on for an account of another sign-in method")
-		s.ssoFailed(w, r, uiErrf("The user %s exists in ControlZit with another sign-in method.", name))
+		s.ssoFailed(w, r, uiErrf("The user %s exists in RMMZit with another sign-in method.", name))
 		return
 	}
 	if err != nil {

@@ -27,7 +27,7 @@
 <p><b>Soubory</b> procházejí jednotky počítače bez připojení k obrazovce. Nahrávejte soubory (až 4 GB), stahujte soubory, stáhněte složku nebo výběr jako ZIP, vytvářejte složky, přejmenovávejte a mažte. Agent provádí každou operaci se soubory jako SYSTEM (Windows) nebo root (Linux); každá se zapisuje do auditního protokolu s vaším jménem.</p>
 
 <h2 id="processes">Procesy a služby</h2>
-<p><b>Procesy</b> ukazují běžící programy s pamětí, vlákny a relací a ukončí proces. <b>Služby</b> ukazují služby (služby Windows nebo jednotky systemd) a spouštějí, zastavují nebo restartují je. Agent ControlZit chrání sám sebe: z konzole jej nelze zastavit ani ukončit.</p>
+<p><b>Procesy</b> ukazují běžící programy s pamětí, vlákny a relací a ukončí proces. <b>Služby</b> ukazují služby (služby Windows nebo jednotky systemd) a spouštějí, zastavují nebo restartují je. Agent RMMZit chrání sám sebe: z konzole jej nelze zastavit ani ukončit.</p>
 
 <h2 id="registry">Editor registru (Windows)</h2>
 <p>Karta <b>Registry</b> zařízení s Windows prochází registr: otevřete klíč podle cesty (například <code>HKLM\SOFTWARE\Vendor</code>) nebo procházejte klíče od kořenů HKLM, HKU, HKCR a HKCC. Hodnoty lze přidat, změnit a smazat (REG_SZ, REG_EXPAND_SZ, REG_DWORD, REG_QWORD, REG_MULTI_SZ; čísla desítkově nebo šestnáctkově s 0x); binární hodnoty se zobrazují šestnáctkově. Klíče lze vytvořit a smazat se vším obsahem; kořeny, klíče přímo pod nimi a vlastní větve systému jsou chráněny. Každá změna se zapíše do auditního protokolu s nahrazenou hodnotou. Registry uživatelů jsou pod HKU (podle SID); HKCU by patřil účtu SYSTEM. Agenti 0.12 a novější.</p>

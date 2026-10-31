@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // Reports: the state of a customer's devices over a period — devices,
@@ -365,7 +365,7 @@ func (s *Server) emailReport(ctx context.Context, cid int64, to []string, mode s
 	if err != nil {
 		return err
 	}
-	subject := p.T("ControlZit report: %s, last %d days", reportName(rep), rep.Days)
+	subject := p.T("RMMZit report: %s, last %d days", reportName(rep), rep.Days)
 	text := p.T("The report is in the HTML part of this email.")
 	return sendMailHTML(ctx, e, to, subject, text, html)
 }

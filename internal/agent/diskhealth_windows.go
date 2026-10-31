@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // Disk health on Windows: the physical disks with their storage reliability

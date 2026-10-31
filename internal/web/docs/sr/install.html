@@ -1,5 +1,5 @@
 <h1>Instalacija servera</h1>
-<p class="lead">Izaberite jedan od četiri načina. Gotova slika virtuelne mašine je najbrža; skripta za instalaciju odgovara postojećem Linux serveru.</p>
+<p class="lead">Izaberite jedan od pet načina. Gotova slika virtuelne mašine je najbrža; skripta za instalaciju odgovara postojećem Linux serveru, a Docker postojećem Docker hostu.</p>
 
 <table>
   <tr><th>Način</th><th>Najbolje za</th><th>Potrebno</th></tr>
@@ -7,52 +7,60 @@
   <tr><td><b>2. Instalacioni ISO</b></td><td>nova VM ili fizički server, bez pitanja</td><td>pristup internetu tokom instalacije</td></tr>
   <tr><td><b>3. Skripta za instalaciju</b></td><td>postojeći Debian, Ubuntu, AlmaLinux ili Rocky Linux server</td><td>root i pristup internetu</td></tr>
   <tr><td><b>4. Paketi ručno</b></td><td>sopstveni PostgreSQL, upravljanje konfiguracijom, serveri bez interneta</td><td>deb ili rpm paket izdanja</td></tr>
+  <tr><td><b>5. Docker</b> (container image)</td><td>postojeći Docker host, NAS ili kućna laboratorija</td><td>Docker sa Compose dodatkom; pristup internetu za preuzimanje image-a</td></tr>
 </table>
-<p>Svi fajlovi su na <a href="https://github.com/Max-Zit/controlzit/releases/latest" target="_blank" rel="noopener">stranici izdanja</a>. Serveru dajte 2 vCPU, 2–4 GB RAM i disk od 16 GB ili veći.</p>
+<p>Svi fajlovi su na <a href="https://github.com/Max-Zit/rmmzit/releases/latest" target="_blank" rel="noopener">stranici izdanja</a>. Serveru dajte 2 vCPU, 2–4 GB RAM i disk od 16 GB ili veći.</p>
 
 <h2 id="image">1. Slika virtuelne mašine</h2>
 <ol>
   <li>Uvezite sliku:
     <ul>
-      <li><b>VMware ESXi / Workstation, VirtualBox:</b> uvezite <code>controlzit-appliance.ova</code> (<i>Create / Register VM → Deploy a virtual machine from an OVF or OVA file</i>).</li>
-      <li><b>Proxmox VE:</b> napravite VM bez diska (2 vCPU, 2–4 GB RAM, VirtIO mreža), kopirajte <code>controlzit-appliance.qcow2</code> na čvor i pokrenite <code>qm importdisk &lt;vmid&gt; controlzit-appliance.qcow2 local-lvm</code>; zakačite disk kao SCSI i postavite ga za disk za pokretanje.</li>
-      <li><b>Hyper-V:</b> raspakujte <code>controlzit-appliance-vhdx.zip</code> i napravite VM <b>prve generacije</b> sa tim VHDX-om kao diskom.</li>
+      <li><b>VMware ESXi / Workstation, VirtualBox:</b> uvezite <code>rmmzit-appliance.ova</code> (<i>Create / Register VM → Deploy a virtual machine from an OVF or OVA file</i>).</li>
+      <li><b>Proxmox VE:</b> napravite VM bez diska (2 vCPU, 2–4 GB RAM, VirtIO mreža), kopirajte <code>rmmzit-appliance.qcow2</code> na čvor i pokrenite <code>qm importdisk &lt;vmid&gt; rmmzit-appliance.qcow2 local-lvm</code>; zakačite disk kao SCSI i postavite ga za disk za pokretanje.</li>
+      <li><b>Hyper-V:</b> raspakujte <code>rmmzit-appliance-vhdx.zip</code> i napravite VM <b>prve generacije</b> sa tim VHDX-om kao diskom.</li>
     </ul>
   </li>
   <li>Pokrenite VM. Disk se sam proširi na veličinu virtuelnog diska. Ekran VM-a pokazuje <b>adresu konzole i token za podešavanje</b>.</li>
   <li>Otvorite <code>https://&lt;adresa&gt;:8443</code>. Pregledač jednom upozori na samopotpisani sertifikat (kasnije ga zamenite u <a href="/settings/certificate">Podešavanja → Sertifikat</a>). Unesite token i napravite prvog administratora.</li>
 </ol>
-<p>Uređaj dobija adresu preko DHCP-a. Za fiksnu adresu, ime servera ili vremensku zonu prijavite se na samom ekranu VM-a kao <code>czadmin</code> (prva lozinka <code>controlzit</code>, mora se promeniti): otvara se meni za podešavanje. Vremenska zona i mreža mogu se kasnije menjati i u konzoli.</p>
+<p>Uređaj dobija adresu preko DHCP-a. Za fiksnu adresu, ime servera ili vremensku zonu prijavite se na samom ekranu VM-a kao <code>rzadmin</code> (prva lozinka <code>rmmzit</code>, mora se promeniti): otvara se meni za podešavanje. Vremenska zona i mreža mogu se kasnije menjati i u konzoli.</p>
 
 <h2 id="iso">2. Instalacioni ISO</h2>
 <ol>
-  <li>Pokrenite VM ili server sa <code>controlzit-appliance.iso</code>. Posle 5 sekundi instalacija kreće sama: <b>briše prvi disk</b>, instalira Debian, PostgreSQL i ControlZit i traži pristup internetu (10–20 minuta).</li>
+  <li>Pokrenite VM ili server sa <code>rmmzit-appliance.iso</code>. Posle 5 sekundi instalacija kreće sama: <b>briše prvi disk</b>, instalira Debian, PostgreSQL i RMMZit i traži pristup internetu (10–20 minuta).</li>
   <li>Posle restarta ekran pokazuje adresu konzole i token za podešavanje, kao kod slike VM.</li>
 </ol>
 
 <h2 id="script">3. Skripta za instalaciju</h2>
 <p>Na postojećem Linux serveru, kao root:</p>
-<pre>curl -fsSL https://github.com/Max-Zit/controlzit/releases/latest/download/install.sh | sudo sh</pre>
-<p>Skripta instalira PostgreSQL, preuzima najnovije izdanje, <b>proverava njegov potpis</b>, pravi bazu sa nasumičnom lozinkom i pokreće servis. Opcije (posle <code>sh -s --</code>): <code>--version X</code>, <code>--db postgres://…</code> za postojeću bazu, <code>--no-auto-updates</code> da automatska bezbednosna ažuriranja operativnog sistema ostanu isključena. Ponovno pokretanje ažurira ControlZit i čuva podatke.</p>
+<pre>curl -fsSL https://github.com/Max-Zit/rmmzit/releases/latest/download/install.sh | sudo sh</pre>
+<p>Skripta instalira PostgreSQL, preuzima najnovije izdanje, <b>proverava njegov potpis</b>, pravi bazu sa nasumičnom lozinkom i pokreće servis. Opcije (posle <code>sh -s --</code>): <code>--version X</code>, <code>--db postgres://…</code> za postojeću bazu, <code>--no-auto-updates</code> da automatska bezbednosna ažuriranja operativnog sistema ostanu isključena. Ponovno pokretanje ažurira RMMZit i čuva podatke.</p>
 
 <h2 id="packages">4. Paketi ručno</h2>
-<pre>sudo apt install ./controlzit-server_X_amd64.deb      # Debian, Ubuntu
-sudo dnf install ./controlzit-server-X-1.x86_64.rpm     # AlmaLinux, Rocky Linux</pre>
-<p>Zatim upišite adresu baze u <code>/etc/controlzit/server.env</code> (<code>CONTROLZIT_DB=postgres://…</code>) i pokrenite servis sa <code>systemctl enable --now controlzit-server</code>.</p>
+<pre>sudo apt install ./rmmzit-server_X_amd64.deb      # Debian, Ubuntu
+sudo dnf install ./rmmzit-server-X-1.x86_64.rpm     # AlmaLinux, Rocky Linux</pre>
+<p>Zatim upišite adresu baze u <code>/etc/rmmzit/server.env</code> (<code>RMMZIT_DB=postgres://…</code>) i pokrenite servis sa <code>systemctl enable --now rmmzit-server</code>.</p>
+
+<h2 id="docker">5. Docker</h2>
+<p>Server postoji i kao container image, <code>ghcr.io/max-zit/rmmzit</code>, napravljen od istog potpisanog paketa servera kao i ostali načini; radi sa PostgreSQL-om preko Docker Compose-a. Preuzmite <a href="https://github.com/Max-Zit/rmmzit/tree/main/packaging/docker" target="_blank" rel="noopener">docker-compose.yml i .env.example</a> u jedan folder, kopirajte <code>.env.example</code> u <code>.env</code>, postavite lozinku baze (slova i cifre) i vremensku zonu, zatim:</p>
+<pre>docker compose up -d
+docker compose exec rmmzit cat /var/lib/rmmzit/setup-token.txt</pre>
+<p>Otvorite <code>https://&lt;host&gt;:8443</code> i unesite setup token. Port 8444 je za agente; otvorite ga tamo odakle se agenti povezuju. Oznaka image-a u <code>.env</code> određuje šta radi: <code>latest</code> za zvanična izdanja, <code>testing</code> za kandidate.</p>
+<p>Ažurirajte sa <code>docker compose pull &amp;&amp; docker compose up -d</code>. Pre nego što nova verzija promeni bazu, server upisuje rezervnu kopiju u <a href="/settings/backup">Podešavanja → Rezervna kopija konzole</a>. Za povratak postavite prethodnu verziju kao oznaku image-a i vratite tu kopiju: <code>docker compose stop rmmzit</code>, <code>docker compose run --rm rmmzit -restore /var/lib/rmmzit/backups/FAJL</code>, <code>docker compose up -d</code>. U kontejneru mrežu i vremensku zonu podešava Docker host, a ne konzola.</p>
 
 <h2 id="first-sign-in">Prva prijava</h2>
 <ul>
-  <li>Token za podešavanje je u <code>/var/lib/controlzit/setup-token.txt</code> i u dnevniku servera (<code>journalctl -u controlzit-server</code>). Važi jednom.</li>
+  <li>Token za podešavanje je u <code>/var/lib/rmmzit/setup-token.txt</code> i u dnevniku servera (<code>journalctl -u rmmzit-server</code>). Važi jednom.</li>
   <li>Svaki nalog traži <b>aplikaciju za autentifikaciju</b> (TOTP) i dobija 10 rezervnih kodova. Čuvajte ih na sigurnom.</li>
-  <li>Konzola podrazumevano prihvata veze samo iz <b>privatnih mreža</b>. Ako se zaključate, pokrenite <code>controlzit-server --reset-allowlist</code> na serveru (na uređaju: meni za podešavanje, stavka 5).</li>
+  <li>Konzola podrazumevano prihvata veze samo iz <b>privatnih mreža</b>. Ako se zaključate, pokrenite <code>rmmzit-server --reset-allowlist</code> na serveru (na uređaju: meni za podešavanje, stavka 5).</li>
 </ul>
 
 <h2 id="files">Gde je šta</h2>
 <table>
   <tr><th>Putanja</th><th>Šta</th></tr>
-  <tr><td><code>/etc/controlzit/server.env</code></td><td>konfiguracija: baza, portovi, izvor ažuriranja (čitaju je samo root i servis)</td></tr>
-  <tr><td><code>/var/lib/controlzit</code></td><td>direktorijum podataka: sertifikati, tajni ključ, instalacije agenata (<code>downloads</code>), dnevnici</td></tr>
-  <tr><td><code>/var/lib/controlzit/logs/server.log</code></td><td>dnevnik servera; i u <code>journalctl -u controlzit-server</code></td></tr>
-  <tr><td><code>/var/log/controlzit-helper</code></td><td>dnevnik root pomoćnika (ažuriranja, vremenska zona, mreža)</td></tr>
+  <tr><td><code>/etc/rmmzit/server.env</code></td><td>konfiguracija: baza, portovi, izvor ažuriranja (čitaju je samo root i servis)</td></tr>
+  <tr><td><code>/var/lib/rmmzit</code></td><td>direktorijum podataka: sertifikati, tajni ključ, instalacije agenata (<code>downloads</code>), dnevnici</td></tr>
+  <tr><td><code>/var/lib/rmmzit/logs/server.log</code></td><td>dnevnik servera; i u <code>journalctl -u rmmzit-server</code></td></tr>
+  <tr><td><code>/var/log/rmmzit-helper</code></td><td>dnevnik root pomoćnika (ažuriranja, vremenska zona, mreža)</td></tr>
 </table>
-<div class="callout warn"><p>Bazu pravite rezervnu kopiju zajedno sa <code>/var/lib/controlzit</code>: tajni ključ odatle dešifruje sačuvane lozinke, a sertifikati predstavljaju server njegovim agentima.</p></div>
+<div class="callout warn"><p>Bazu pravite rezervnu kopiju zajedno sa <code>/var/lib/rmmzit</code>: tajni ključ odatle dešifruje sačuvane lozinke, a sertifikati predstavljaju server njegovim agentima.</p></div>

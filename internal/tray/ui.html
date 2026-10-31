@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>ControlZit Agent</title>
+<title>RMMZit Agent</title>
 <style>
 :root {
   --bg: #f4f6fb; --panel: #fff; --panel-2: #f8fafc; --text: #0f172a; --muted: #64748b; --line: #e2e8f0;
@@ -96,7 +96,7 @@ function render(s) {
   $("connText").textContent = on ? t("Connected") : (s.running ? t("Not connected") : t("Agent not running"));
   $("hero").className = "hero" + (on ? " on" : "");
   $("badge").innerHTML = on ? icons.on : icons.off;
-  $("headline").textContent = on ? t("This computer is managed and protected") : (s.running ? t("The agent cannot reach the server") : t("The ControlZit Agent service is not running"));
+  $("headline").textContent = on ? t("This computer is managed and protected") : (s.running ? t("The agent cannot reach the server") : t("The RMMZit Agent service is not running"));
   $("detail").textContent = on ? t("Connected since %s.", new Date(s.since).toLocaleString()) : (s.last_contact ? t("Last contact %s. It keeps trying.", ago(s.last_contact)) : "");
   $("host").textContent = [s.hostname, s.os].filter(Boolean).join(" · ") || " ";
   $("server").textContent = s.server || "—";

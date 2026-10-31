@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/auth"
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/auth"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // Device is a managed machine.

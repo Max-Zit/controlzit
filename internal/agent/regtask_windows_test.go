@@ -10,7 +10,7 @@ import (
 
 	"golang.org/x/sys/windows"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 func callKind(t *testing.T, fn func(context.Context, json.RawMessage) (any, error), a any) (any, error) {
@@ -27,10 +27,10 @@ func TestRegistryEditor(t *testing.T) {
 		t.Fatal(err)
 	}
 	base := `HKU\` + u.User.Sid.String() + `\Software`
-	if _, err := callKind(t, regNewKey, proto.RegNewKey{Path: base, Name: "ControlZitTest"}); err != nil {
+	if _, err := callKind(t, regNewKey, proto.RegNewKey{Path: base, Name: "RMMZitTest"}); err != nil {
 		t.Fatal(err)
 	}
-	key := base + `\ControlZitTest`
+	key := base + `\RMMZitTest`
 	defer func() { _, _ = callKind(t, regDelete, proto.RegDelete{Path: key, Key: true}) }()
 	if _, err := callKind(t, regNewKey, proto.RegNewKey{Path: key, Name: "Sub"}); err != nil {
 		t.Fatal(err)
@@ -96,7 +96,7 @@ func TestTaskList(t *testing.T) {
 	if _, err := callKind(t, taskControl, proto.TaskControl{Path: `\`, Name: "x'; Remove-Item C:\\", Action: "run"}); err == nil {
 		t.Fatal("a name with a quote accepted")
 	}
-	if _, err := callKind(t, taskControl, proto.TaskControl{Path: `\`, Name: "ControlZitNoSuchTask", Action: "run"}); err == nil {
+	if _, err := callKind(t, taskControl, proto.TaskControl{Path: `\`, Name: "RMMZitNoSuchTask", Action: "run"}); err == nil {
 		t.Fatal("a missing task ran")
 	}
 }

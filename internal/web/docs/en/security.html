@@ -1,7 +1,7 @@
 <h1>Security</h1>
-<p class="lead">An RMM server can control every computer it manages. ControlZit is built so that an attacker who reaches the console, the network or even the server gets as little as possible.</p>
+<p class="lead">An RMM server can control every computer it manages. RMMZit is built so that an attacker who reaches the console, the network or even the server gets as little as possible.</p>
 
-<h2 id="design">How ControlZit protects you</h2>
+<h2 id="design">How RMMZit protects you</h2>
 <ul>
   <li><b>Two ports.</b> The console and the agent endpoint listen on separate ports. The console accepts connections only from allowed networks, checked before TLS; the agent port can be public without exposing the console.</li>
   <li><b>Outbound agents.</b> Agents connect to the server; managed computers need no open ports. Agents pin the server certificate by its fingerprint, so a fake server cannot take them over.</li>
@@ -10,7 +10,7 @@
   <li><b>Browser protections.</b> CSRF checks on every change, a strict Content Security Policy without inline scripts, <code>__Host-</code> session cookies.</li>
   <li><b>Least privilege.</b> Roles and per-customer access; the console runs as an unprivileged user, and the few root actions (updates, network, time zone) go through a separate root helper that accepts only fixed, validated requests.</li>
   <li><b>Audit.</b> A hash-chained audit log of every change and every remote action.</li>
-  <li><b>Signed releases.</b> The server, the agents and <code>install.sh</code> install only releases signed with the ControlZit release key.</li>
+  <li><b>Signed releases.</b> The server, the agents and <code>install.sh</code> install only releases signed with the RMMZit release key.</li>
   <li><b>Secrets.</b> Stored passwords (email, LDAP, channels, Cloudflare) are encrypted with the server's secret key; diagnostics remove secrets.</li>
 </ul>
 
@@ -21,10 +21,10 @@
   <li>Use a certificate browsers trust (Let's Encrypt or your CA) so that users learn not to click through warnings.</li>
   <li>Give each person their own account with the smallest role and only the customers they need; disable accounts of people who leave.</li>
   <li>Keep one local administrator for emergencies, with its recovery codes stored offline.</li>
-  <li>Install ControlZit updates soon (or switch on automatic updates) and keep the server's operating system updated; the appliance installs Debian security updates by itself.</li>
-  <li>Back up the database and <code>/var/lib/controlzit</code> regularly, and keep the backup away from the server.</li>
+  <li>Install RMMZit updates soon (or switch on automatic updates) and keep the server's operating system updated; the appliance installs Debian security updates by itself.</li>
+  <li>Back up the database and <code>/var/lib/rmmzit</code> regularly, and keep the backup away from the server.</li>
   <li>Check the audit log from time to time, and leave the notice on the remote screen on so users know when someone is connected.</li>
 </ol>
 
 <h2 id="report">Reporting a vulnerability</h2>
-<p>Please report security problems privately through <a href="https://github.com/Max-Zit/controlzit/security/advisories/new" target="_blank" rel="noopener">GitHub → Security → Report a vulnerability</a>, not in a public issue.</p>
+<p>Please report security problems privately through <a href="https://github.com/Max-Zit/rmmzit/security/advisories/new" target="_blank" rel="noopener">GitHub → Security → Report a vulnerability</a>, not in a public issue.</p>

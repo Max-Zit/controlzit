@@ -3,9 +3,9 @@
 
 <h2 id="console">I cannot reach the console</h2>
 <ul>
-  <li>Your address may not be in the allowed networks: the connection is closed before TLS, so the browser shows a connection error. Run <code>controlzit-server --reset-allowlist</code> on the server (appliance: setup menu, item 5) to allow all private networks again.</li>
+  <li>Your address may not be in the allowed networks: the connection is closed before TLS, so the browser shows a connection error. Run <code>rmmzit-server --reset-allowlist</code> on the server (appliance: setup menu, item 5) to allow all private networks again.</li>
   <li>After changing the port, open the console on the new port.</li>
-  <li>Check the service on the server: <code>systemctl status controlzit-server</code> and <code>journalctl -u controlzit-server</code>.</li>
+  <li>Check the service on the server: <code>systemctl status rmmzit-server</code> and <code>journalctl -u rmmzit-server</code>.</li>
 </ul>
 
 <h2 id="signin">Sign-in problems</h2>
@@ -21,7 +21,7 @@
   <li>Can the computer reach the agent port? On Windows: <code>Test-NetConnection rmm.example.com -Port 8444</code>.</li>
   <li>Is the public agent address right? Codes created while the console was opened on localhost point the agent at the wrong server; set the address and create a new code.</li>
   <li>Is the code still valid and not used up?</li>
-  <li>Agent logs: Windows <code>C:\ProgramData\ControlZit Agent\agent.log</code>, Linux <code>/var/lib/controlzit-agent/agent.log</code> and <code>journalctl -u controlzit-agent</code>; for a connected device, open them from the console under <b>Files</b>. On Windows, the icon next to the clock shows the connection state.</li>
+  <li>Agent logs: Windows <code>C:\ProgramData\RMMZit Agent\agent.log</code>, Linux <code>/var/lib/rmmzit-agent/agent.log</code> and <code>journalctl -u rmmzit-agent</code>; for a connected device, open them from the console under <b>Files</b>. On Windows, the icon next to the clock shows the connection state.</li>
 </ul>
 
 <h2 id="rd">Remote desktop shows nothing</h2>
@@ -41,11 +41,13 @@
 <p>Use <b>Send a test email</b> under <a href="/settings/monitoring">Settings → Monitoring and alerts</a>; the message shows the server's answer. A password is sent only over STARTTLS or TLS.</p>
 
 <h2 id="faq">FAQ</h2>
-<h3 id="faq-cloud">Does ControlZit need a cloud service?</h3>
+<h3 id="faq-cloud">Does RMMZit need a cloud service?</h3>
 <p>No. Everything runs on your server; nothing is sent to MaxZit. The server only checks GitHub for new releases.</p>
-<h3 id="faq-backup">How do I back up ControlZit?</h3>
+<h3 id="faq-backup">How do I back up RMMZit?</h3>
 <p>Under <a href="/settings/backup">Settings → Console backup</a> the server backs up its database, secret key and certificates every day, optionally encrypted and copied to an SFTP server. Keep a copy outside the server: without the secret key, stored passwords cannot be decrypted and agents would not trust a new server.</p>
 <h3 id="faq-move">Can I move the server to a new machine?</h3>
-<p>Yes: install ControlZit on the new machine and restore a console backup there (<code>controlzit-server -restore FILE</code>, on the appliance item 7 of the setup menu). Keep the same address, or update the public agent address and point the old name to the new machine; agents keep working because the backup holds the server's certificates.</p>
+<p>Yes: install RMMZit on the new machine and restore a console backup there (<code>rmmzit-server -restore FILE</code>, on the appliance item 7 of the setup menu). Keep the same address, or update the public agent address and point the old name to the new machine; agents keep working because the backup holds the server's certificates.</p>
+<h3 id="faq-name">Is RMMZit the former ControlZit?</h3>
+<p>Yes. Until version 0.12 RMMZit was called ControlZit. Installations of ControlZit update to RMMZit like to any new version: the data, the agents and their enrollment, and enrollment codes starting with <code>CZ1-</code> keep working.</p>
 <h3 id="faq-mac">Is there a macOS agent?</h3>
 <p>Not yet. Windows and Linux (x86-64, ARM64) are supported.</p>

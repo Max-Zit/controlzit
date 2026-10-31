@@ -12,7 +12,7 @@ import (
 
 	"github.com/coder/websocket"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // X11 reads the whole screen per frame, so it paces a little slower than
@@ -31,7 +31,7 @@ func Serve(ctx context.Context, ws *websocket.Conn, technician string, notice, _
 	}
 	defer d.Close()
 	if notice {
-		b, err := showXBanner("ControlZit: " + technician + " is connected to this computer")
+		b, err := showXBanner("RMMZit: " + technician + " is connected to this computer")
 		if err != nil {
 			log.Error("the on-screen notice could not be shown", "err", err)
 		}

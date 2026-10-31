@@ -31,7 +31,7 @@
     <div class="cols">
       <label>{{.T "Username"}} <small>{{.T "optional"}}</small><input name="username" value="{{.Data.E.Username}}" autocomplete="off" spellcheck="false"></label>
       <label>{{.T "Password"}} <small>{{if .Data.HasPass}}{{.T "stored; leave empty to keep it"}}{{else}}{{.T "optional"}}{{end}}</small><input type="password" name="password" autocomplete="new-password"></label>
-      <label>{{.T "Sender"}}<input name="from" value="{{.Data.E.From}}" spellcheck="false" placeholder="ControlZit &lt;rmm@example.com&gt;"></label>
+      <label>{{.T "Sender"}}<input name="from" value="{{.Data.E.From}}" spellcheck="false" placeholder="RMMZit &lt;rmm@example.com&gt;"></label>
     </div>
     <p class="small muted">{{.T "Leave the SMTP server empty to switch emails off. The password is stored encrypted."}}</p>
     <div class="row"><button class="primary">{{.T "Save"}}</button></div>
@@ -64,7 +64,7 @@
         <label>{{.T "Type"}}<select name="kind"><option value="slack">Slack</option><option value="teams">Microsoft Teams</option><option value="webhook">{{.T "Webhook (JSON)"}}</option></select></label>
       </div>
       <label>{{.T "Webhook URL"}}<input name="url" required spellcheck="false" placeholder="https://"><small>{{.T "Slack: an incoming webhook. Teams: a channel workflow 'When a Teams webhook request is received'. Webhook: any URL that accepts a JSON POST."}}</small></label>
-      <label>{{.T "Signing secret"}} <small>{{.T "webhook only, optional: requests then carry X-ControlZit-Signature: sha256=HMAC of the body"}}</small><input name="secret" autocomplete="off"></label>
+      <label>{{.T "Signing secret"}} <small>{{.T "webhook only, optional: requests then carry X-RMMZit-Signature: sha256=HMAC of the body"}}</small><input name="secret" autocomplete="off"></label>
       <label class="check"><input type="checkbox" name="critical" value="1">{{.T "Only critical alerts"}}</label>
       <label class="check"><input type="checkbox" name="on_resolve" value="1" checked>{{.T "Also when an alert is resolved"}}</label>
       <div><button class="primary sm">{{.T "Add channel"}}</button></div>

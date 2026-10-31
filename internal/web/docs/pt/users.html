@@ -14,17 +14,17 @@
 <p>Em <a href="/users">Utilizadores</a> um administrador adiciona um utilizador com uma palavra-passe inicial; o utilizador tem de a alterar e configurar o início de sessão em dois passos no primeiro acesso. Um administrador pode desativar um utilizador (as sessões abertas terminam), definir uma nova palavra-passe ou repor o início de sessão em dois passos de um utilizador que perdeu o telemóvel e os códigos de recuperação. Fica sempre pelo menos um administrador ativo.</p>
 
 <h2 id="2fa">Início de sessão em dois passos</h2>
-<p>O ControlZit tem acesso de administrador a cada computador gerido, por isso cada conta local e de diretório precisa de uma <b>aplicação de autenticação</b> (Microsoft Authenticator, Google Authenticator, Authy, 1Password, Bitwarden …). Cada conta recebe também 10 <b>códigos de recuperação</b> de uso único; criam-se novos em <a href="/account">Conta</a>. Os inícios de sessão falhados bloqueiam o endereço durante algum tempo (mais longo após cada bloqueio repetido); os limites estão em <a href="/settings/security">Definições → Início de sessão e segurança</a>, juntamente com a duração da sessão e o fim de sessão após inatividade.</p>
+<p>O RMMZit tem acesso de administrador a cada computador gerido, por isso cada conta local e de diretório precisa de uma <b>aplicação de autenticação</b> (Microsoft Authenticator, Google Authenticator, Authy, 1Password, Bitwarden …). Cada conta recebe também 10 <b>códigos de recuperação</b> de uso único; criam-se novos em <a href="/account">Conta</a>. Os inícios de sessão falhados bloqueiam o endereço durante algum tempo (mais longo após cada bloqueio repetido); os limites estão em <a href="/settings/security">Definições → Início de sessão e segurança</a>, juntamente com a duração da sessão e o fim de sessão após inatividade.</p>
 
 <h2 id="ldap">Active Directory / LDAP</h2>
-<p>Em <a href="/settings/ldap">Definições → Active Directory / LDAP</a> os utilizadores iniciam sessão com a sua conta de diretório. O diretório verifica a palavra-passe; o ControlZit continua a pedir o seu próprio segundo fator.</p>
+<p>Em <a href="/settings/ldap">Definições → Active Directory / LDAP</a> os utilizadores iniciam sessão com a sua conta de diretório. O diretório verifica a palavra-passe; o RMMZit continua a pedir o seu próprio segundo fator.</p>
 <ul>
   <li><b>Servidor:</b> <code>ldaps://dc1.example.local</code> (porta 636), ou <code>ldap://</code> (389) com StartTLS — as palavras-passe nunca atravessam a rede sem encriptação. Adicione o certificado da CA se o certificado do diretório vier de uma CA da empresa.</li>
   <li><b>Conta de serviço</b> (DN ou <code>utilizador@domínio</code>) e a sua palavra-passe, o <b>DN base</b> e o <b>filtro de utilizadores</b>, p. ex. <code>(&amp;(objectClass=user)(sAMAccountName={username}))</code> para o Active Directory.</li>
   <li><b>Grupos e funções:</b> associe grupos do diretório a Administrador, Técnico e Só leitura; vence a função mais alta. Os grupos aninhados do Active Directory podem ser incluídos.</li>
   <li><b>Grupos de clientes:</b> linhas <code>grupo = cliente</code> limitam técnicos e utilizadores só de leitura a esses clientes.</li>
 </ul>
-<p><b>Testar</b> verifica uma conta de diretório com as definições guardadas, sem iniciar sessão, e mostra o que o ControlZit faria com ela. As contas de diretório alteram a palavra-passe no diretório, não no ControlZit.</p>
+<p><b>Testar</b> verifica uma conta de diretório com as definições guardadas, sem iniciar sessão, e mostra o que o RMMZit faria com ela. As contas de diretório alteram a palavra-passe no diretório, não no RMMZit.</p>
 
 <h2 id="sso">Início de sessão único (OpenID Connect, SAML)</h2>
 <p>Em <a href="/settings/sso">Definições → Início de sessão único</a> os utilizadores iniciam sessão com a sua conta num fornecedor de identidade: <b>OpenID Connect</b> (Microsoft Entra ID, Google, Okta, Keycloak …) ou <b>SAML 2.0</b> (ADFS, Entra ID, Okta …). A página de início de sessão mostra então um botão.</p>
@@ -32,7 +32,7 @@
   <li><b>OpenID Connect:</b> registe uma aplicação no fornecedor com o URI de redirecionamento mostrado na página e introduza o emissor (p. ex. <code>https://login.microsoftonline.com/&lt;tenant&gt;/v2.0</code>), o ID de cliente e o segredo de cliente.</li>
   <li><b>SAML:</b> dê ao fornecedor os metadados da consola (ligação na página) ou o seu entity ID e endereço de resposta (ACS), e introduza o URL de metadados do fornecedor ou cole o seu XML.</li>
   <li>O <b>claim de grupos</b> transporta os grupos (nomes ou IDs; o Entra ID envia IDs de grupo), associados a funções e clientes como no LDAP.</li>
-  <li>Aplica-se a política multifator do fornecedor de identidade; opcionalmente o ControlZit pede também o seu próprio segundo fator.</li>
+  <li>Aplica-se a política multifator do fornecedor de identidade; opcionalmente o RMMZit pede também o seu próprio segundo fator.</li>
 </ul>
 <div class="callout tip"><p>As contas locais continuam a funcionar quando o LDAP ou o início de sessão único estão ativos, por isso um administrador pode sempre iniciar sessão. Mantenha um administrador local para emergências.</p></div>
 

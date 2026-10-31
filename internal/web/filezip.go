@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // Download a folder as one ZIP file (built while it is sent).
@@ -57,7 +57,7 @@ func (s *Server) handleFolderZip(w http.ResponseWriter, r *http.Request) {
 	j := &zipJob{s: s, r: r, d: d, zw: zip.NewWriter(w)}
 	j.folder(r.Context(), top, "", 0)
 	if len(j.failed) > 0 {
-		if f, err := j.zw.Create("_controlzit-skipped.txt"); err == nil {
+		if f, err := j.zw.Create("_rmmzit-skipped.txt"); err == nil {
 			for _, p := range j.failed {
 				_, _ = f.Write([]byte(p + "\r\n"))
 			}
@@ -175,7 +175,7 @@ func (s *Server) zipSelection(w http.ResponseWriter, r *http.Request, d *store.D
 		j.folder(r.Context(), sel, "", 0)
 	}
 	if len(j.failed) > 0 {
-		if f, err := j.zw.Create("_controlzit-skipped.txt"); err == nil {
+		if f, err := j.zw.Create("_rmmzit-skipped.txt"); err == nil {
 			for _, p := range j.failed {
 				_, _ = f.Write([]byte(p + "\r\n"))
 			}

@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/auth"
-	"github.com/max-zit/controlzit/internal/store"
-	"github.com/max-zit/controlzit/internal/testdb"
+	"github.com/max-zit/rmmzit/internal/auth"
+	"github.com/max-zit/rmmzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/testdb"
 )
 
 func TestMain(m *testing.M) { os.Exit(testdb.Main(m)) }

@@ -1,6 +1,6 @@
 //go:build windows
 
-// Package tray is the ControlZit icon in the notification area: it shows
+// Package tray is the RMMZit icon in the notification area: it shows
 // that the computer is managed and whether the agent is connected.
 package tray
 
@@ -15,7 +15,7 @@ import (
 
 	"golang.org/x/sys/windows"
 
-	"github.com/max-zit/controlzit/internal/agent"
+	"github.com/max-zit/rmmzit/internal/agent"
 )
 
 var (
@@ -120,7 +120,7 @@ type msg struct {
 
 const callbackMsg = wmApp + 1
 
-// openMsg asks a running tray to open its window (controlzit-tray --open).
+// openMsg asks a running tray to open its window (rmmzit-tray --open).
 const openMsg = wmApp + 2
 
 type trayState struct {
@@ -143,7 +143,7 @@ func utf16(s string) *uint16 {
 // statusLines describes the agent for the menu and the tooltip.
 func statusLines() (title, state, place string) {
 	s, err := agent.ReadStatus(st.statusPath)
-	title = "ControlZit Agent"
+	title = "RMMZit Agent"
 	if err != nil {
 		return title, T("Agent status unknown (is the service running?)"), ""
 	}
@@ -222,7 +222,7 @@ func showMenu() {
 	add := func(flags uintptr, id uintptr, text string) {
 		_, _, _ = pAppendMenu.Call(m, flags, id, uintptr(unsafe.Pointer(utf16(text)))) // #nosec G103 -- Win32 string
 	}
-	add(mfString, cmdOpen, T("Open ControlZit Agent"))
+	add(mfString, cmdOpen, T("Open RMMZit Agent"))
 	_, _, _ = pSetMenuDefault.Call(m, cmdOpen, 0)
 	_, _, _ = pAppendMenu.Call(m, mfSeparator, 0, 0)
 	add(mfString|mfGrayed, 1, title)
@@ -278,11 +278,11 @@ func wndProc(hwnd uintptr, m uint32, wp, lp uintptr) uintptr {
 func Run(statusPath string, open bool) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	mu, err := windows.CreateMutex(nil, false, utf16(`Local\ControlZitTray`))
+	mu, err := windows.CreateMutex(nil, false, utf16(`Local\RMMZitTray`))
 	if errors.Is(err, windows.ERROR_ALREADY_EXISTS) {
 		// Already running in this session: ask it to open the window.
 		if open {
-			if h, _, _ := pFindWindow.Call(uintptr(unsafe.Pointer(utf16("ControlZitTray"))), 0); h != 0 { // #nosec G103 -- Win32 string
+			if h, _, _ := pFindWindow.Call(uintptr(unsafe.Pointer(utf16("RMMZitTray"))), 0); h != 0 { // #nosec G103 -- Win32 string
 				_, _, _ = pPostMessage.Call(h, openMsg, 0, 0)
 			}
 		}
@@ -303,7 +303,7 @@ func Run(statusPath string, open bool) error {
 	st.icon = small
 	st.iconOn = loadIcon("connected.ico", icoConnected, smallIconSize())
 	st.iconOff = loadIcon("offline.ico", icoOffline, smallIconSize())
-	cls := utf16("ControlZitTray")
+	cls := utf16("RMMZitTray")
 	wc := wndClassEx{WndProc: syscall.NewCallback(wndProc), Instance: windows.Handle(inst), ClassName: cls}
 	wc.Size = uint32(unsafe.Sizeof(wc))
 	if r, _, err := pRegisterClassEx.Call(uintptr(unsafe.Pointer(&wc))); r == 0 { // #nosec G103 -- Win32 struct

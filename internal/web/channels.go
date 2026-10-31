@@ -16,8 +16,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/auth"
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/auth"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // Chat and webhook channels: alerts also go to Slack, Microsoft Teams or
@@ -112,7 +112,7 @@ func payload(kind string, events []alertEvent) ([]byte, error) {
 			"content":     map[string]any{"type": "AdaptiveCard", "version": "1.4", "$schema": "http://adaptivecards.io/schemas/adaptive-card.json", "body": body},
 		}}})
 	default:
-		return json.Marshal(map[string]any{"source": "ControlZit", "events": events})
+		return json.Marshal(map[string]any{"source": "RMMZit", "events": events})
 	}
 }
 
@@ -133,13 +133,13 @@ func (s *Server) postChannel(ctx context.Context, c Channel, events []alertEvent
 		return err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("User-Agent", "ControlZit/"+s.Version)
+	req.Header.Set("User-Agent", "RMMZit/"+s.Version)
 	if c.Kind == ChannelWebhook && c.Secret != "" {
 		secret, err := s.store.OpenSecret("settings.channel.secret."+c.ID, c.Secret)
 		if err == nil {
 			m := hmac.New(sha256.New, []byte(secret))
 			m.Write(body)
-			req.Header.Set("X-ControlZit-Signature", "sha256="+hex.EncodeToString(m.Sum(nil)))
+			req.Header.Set("X-RMMZit-Signature", "sha256="+hex.EncodeToString(m.Sum(nil)))
 		}
 	}
 	resp, err := channelClient.Do(req)
@@ -271,8 +271,8 @@ func (s *Server) handleChannels(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		c := list[idx]
-		ev := alertEvent{Event: "test", Severity: "warning", Kind: "test", Title: "Test notification", Message: "ControlZit can post to this channel.",
-			Device: "TEST-PC", Customer: "ControlZit", Site: "-", Opened: s.now()}
+		ev := alertEvent{Event: "test", Severity: "warning", Kind: "test", Title: "Test notification", Message: "RMMZit can post to this channel.",
+			Device: "TEST-PC", Customer: "RMMZit", Site: "-", Opened: s.now()}
 		err := s.postChannel(r.Context(), c, []alertEvent{ev})
 		s.audit(r, "channel.test", "settings", "test notification to %q: %v", c.Name, errOrOK(err))
 		if err != nil {

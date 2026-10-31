@@ -17,8 +17,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/store"
-	"github.com/max-zit/controlzit/internal/web"
+	"github.com/max-zit/rmmzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/web"
 )
 
 // A policy made in the console, assigned to a customer: the device page

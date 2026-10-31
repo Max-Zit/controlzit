@@ -1,0 +1,9 @@
+[Unit]
+Description=Hand requests of the RMMZit console (updates, time zone, network) to the root helper
+
+[Path]
+PathExists=/var/lib/rmmzit/helper/request.json
+Unit=rmmzit-helper.service
+
+[Install]
+WantedBy=multi-user.target

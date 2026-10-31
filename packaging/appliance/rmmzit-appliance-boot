@@ -1,10 +1,10 @@
 #!/bin/sh
-# Runs at every start of the ControlZit appliance (as root):
+# Runs at every start of the RMMZit appliance (as root):
 #  - grows the root file system when the VM disk was enlarged,
 #  - writes the text of the login screen (/etc/issue).
-# "controlzit-appliance-boot issue" only rewrites the screen text.
+# "rmmzit-appliance-boot issue" only rewrites the screen text.
 
-log() { echo "controlzit-appliance-boot: $*"; }
+log() { echo "rmmzit-appliance-boot: $*"; }
 
 # grow_root extends the partition of the root file system (and the extended
 # partition around it on MBR disks), the LVM volume group and the root
@@ -49,22 +49,27 @@ grow_root() {
 # write_issue shows the console's address and, until the first
 # administrator exists, the setup token.
 write_issue() {
-    tok=/var/lib/controlzit/setup-token.txt
+    tok=/var/lib/rmmzit/setup-token.txt
     if [ -f "$tok" ]; then
         setup="Setup token:   $(cat "$tok")
                  Open the console, enter the token and create the first
                  administrator."
     else
-        setup="Sign in with your ControlZit account."
+        setup="Sign in with your RMMZit account."
+    fi
+    # Appliances from before the rename to RMMZit have the user czadmin.
+    admin=rzadmin first=rmmzit
+    if ! id rzadmin >/dev/null 2>&1 && id czadmin >/dev/null 2>&1; then
+        admin=czadmin first=controlzit
     fi
     # \4 is the current IPv4 address, filled in by the login prompt.
     cat > /etc/issue <<ISSUE
-ControlZit appliance - \n
+RMMZit appliance - \n
 
   Web console:   https://\4:8443
   $setup
 
-  Setup menu:    sign in here as czadmin (first password: controlzit,
+  Setup menu:    sign in here as $admin (first password: $first,
                  must be changed) - network, server name, time zone.
 
 ISSUE

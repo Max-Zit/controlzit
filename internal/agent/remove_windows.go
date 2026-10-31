@@ -15,7 +15,7 @@ import (
 
 func installedService() bool { return isSystem() }
 
-// startUninstall runs msiexec /x for the installed ControlZit Agent product
+// startUninstall runs msiexec /x for the installed RMMZit Agent product
 // on its own: it stops and removes this service.
 func startUninstall() error {
 	code, err := productCode()
@@ -54,9 +54,9 @@ func productCode() (string, error) {
 		}
 		name, _, _ := sk.GetStringValue("DisplayName")
 		_ = sk.Close()
-		if name == "ControlZit Agent" {
+		if name == "RMMZit Agent" || name == "ControlZit Agent" { // ControlZit: the name before RMMZit
 			return n, nil
 		}
 	}
-	return "", errors.New("the ControlZit Agent product is not in the uninstall list")
+	return "", errors.New("the RMMZit Agent product is not in the uninstall list")
 }

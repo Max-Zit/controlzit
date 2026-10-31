@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // RunMonitor runs the background work of the server until ctx ends. Each
@@ -140,12 +140,12 @@ func alertEmail(alerts []store.Alert, devs map[int64]store.MonitorState) (subjec
 	}
 	switch {
 	case open == 0:
-		subject = fmt.Sprintf("ControlZit: %d alert(s) resolved", len(alerts))
+		subject = fmt.Sprintf("RMMZit: %d alert(s) resolved", len(alerts))
 	case len(alerts) == 1:
 		a := alerts[0]
-		subject = fmt.Sprintf("ControlZit %s: %s on %s", a.Severity, alertTitles[a.Kind], devs[a.DeviceID].Hostname)
+		subject = fmt.Sprintf("RMMZit %s: %s on %s", a.Severity, alertTitles[a.Kind], devs[a.DeviceID].Hostname)
 	default:
-		subject = fmt.Sprintf("ControlZit: %d new alert(s), %d critical", open, crit)
+		subject = fmt.Sprintf("RMMZit: %d new alert(s), %d critical", open, crit)
 	}
 	var b strings.Builder
 	for _, a := range alerts {
@@ -161,7 +161,7 @@ func alertEmail(alerts []store.Alert, devs map[int64]store.MonitorState) (subjec
 		fmt.Fprintf(&b, "[%s] %s\n  Device:   %s\n  Customer: %s / %s\n  Details:  %s\n  Since:    %s\n\n",
 			state, title, d.Hostname, d.Customer, d.Site, a.Message, a.OpenedAt.Local().Format("2006-01-02 15:04"))
 	}
-	b.WriteString("-- \nControlZit · sent because alert emails are switched on in Settings → Monitoring.\n")
+	b.WriteString("-- \nRMMZit · sent because alert emails are switched on in Settings → Monitoring.\n")
 	return subject, b.String()
 }
 

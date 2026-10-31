@@ -1,7 +1,7 @@
 <h1>Segurança</h1>
-<p class="lead">Um servidor RMM pode controlar cada computador que gere. O ControlZit foi feito para que um atacante que chegue à consola, à rede ou até ao servidor obtenha o mínimo possível.</p>
+<p class="lead">Um servidor RMM pode controlar cada computador que gere. O RMMZit foi feito para que um atacante que chegue à consola, à rede ou até ao servidor obtenha o mínimo possível.</p>
 
-<h2 id="design">Como o ControlZit o protege</h2>
+<h2 id="design">Como o RMMZit o protege</h2>
 <ul>
   <li><b>Duas portas.</b> A consola e o ponto de ligação dos agentes escutam em portas separadas. A consola só aceita ligações de redes permitidas, verificadas antes do TLS; a porta dos agentes pode ser pública sem expor a consola.</li>
   <li><b>Agentes de saída.</b> Os agentes ligam-se ao servidor; os computadores geridos não precisam de portas abertas. Os agentes fixam o certificado do servidor pela impressão digital, por isso um servidor falso não os consegue controlar.</li>
@@ -10,7 +10,7 @@
   <li><b>Proteções do navegador.</b> Verificações CSRF em cada alteração, uma Content Security Policy rigorosa sem scripts inline, cookies de sessão <code>__Host-</code>.</li>
   <li><b>Privilégio mínimo.</b> Funções e acesso por cliente; a consola corre como utilizador sem privilégios, e as poucas ações root (atualizações, rede, fuso horário) passam por um auxiliar root separado que só aceita pedidos fixos e validados.</li>
   <li><b>Auditoria.</b> Um registo de auditoria encadeado por hash de cada alteração e de cada ação remota.</li>
-  <li><b>Versões assinadas.</b> O servidor, os agentes e o <code>install.sh</code> só instalam versões assinadas com a chave de publicação do ControlZit.</li>
+  <li><b>Versões assinadas.</b> O servidor, os agentes e o <code>install.sh</code> só instalam versões assinadas com a chave de publicação do RMMZit.</li>
   <li><b>Segredos.</b> As palavras-passe guardadas (e-mail, LDAP, canais, Cloudflare) são encriptadas com a chave secreta do servidor; o diagnóstico remove os segredos.</li>
 </ul>
 
@@ -21,10 +21,10 @@
   <li>Use um certificado em que os navegadores confiem (Let's Encrypt ou a sua CA), para que os utilizadores não se habituem a ignorar avisos.</li>
   <li>Dê a cada pessoa a sua própria conta com a função mínima e apenas os clientes necessários; desative as contas de quem sai.</li>
   <li>Mantenha um administrador local para emergências, com os códigos de recuperação guardados offline.</li>
-  <li>Instale cedo as atualizações do ControlZit (ou ative as automáticas) e mantenha atualizado o sistema operativo do servidor; o appliance instala sozinho as atualizações de segurança do Debian.</li>
-  <li>Faça cópias regulares da base de dados e de <code>/var/lib/controlzit</code> e guarde-as longe do servidor.</li>
+  <li>Instale cedo as atualizações do RMMZit (ou ative as automáticas) e mantenha atualizado o sistema operativo do servidor; o appliance instala sozinho as atualizações de segurança do Debian.</li>
+  <li>Faça cópias regulares da base de dados e de <code>/var/lib/rmmzit</code> e guarde-as longe do servidor.</li>
   <li>Consulte a auditoria de vez em quando e deixe ligado o aviso no ecrã remoto, para que os utilizadores saibam quando alguém está ligado.</li>
 </ol>
 
 <h2 id="report">Comunicar uma vulnerabilidade</h2>
-<p>Comunique problemas de segurança em privado através de <a href="https://github.com/Max-Zit/controlzit/security/advisories/new" target="_blank" rel="noopener">GitHub → Security → Report a vulnerability</a>, não num issue público.</p>
+<p>Comunique problemas de segurança em privado através de <a href="https://github.com/Max-Zit/rmmzit/security/advisories/new" target="_blank" rel="noopener">GitHub → Security → Report a vulnerability</a>, não num issue público.</p>

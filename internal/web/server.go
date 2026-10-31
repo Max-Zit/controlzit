@@ -1,5 +1,5 @@
 // Package web is the management console (HTML + later JSON API) and the
-// agent endpoint of the ControlZit server. They are served on separate
+// agent endpoint of the RMMZit server. They are served on separate
 // listeners: the agent endpoint may be public, the console is reachable
 // only from the allowed networks.
 package web
@@ -21,9 +21,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/netacl"
-	"github.com/max-zit/controlzit/internal/proto"
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/netacl"
+	"github.com/max-zit/rmmzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // Server serves the console and the agent endpoint.
@@ -85,6 +85,9 @@ type Server struct {
 	DataDir string
 	// LogFile is the server's log file (Settings → Diagnostics).
 	LogFile string
+	// Container: the server runs from the container image; it is updated by
+	// pulling a new image.
+	Container bool
 	// HelperAvailable overrides the check for the root helper (tests).
 	HelperAvailable func() bool
 	upd             updateState
@@ -500,7 +503,7 @@ func (s *Server) AgentHandler() http.Handler {
 	mux.HandleFunc("GET "+proto.PathLibrary, s.handleLibraryFile)
 	mux.HandleFunc("GET "+proto.PathHealth, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(`{"status":"ok","product":"controlzit"}`))
+		_, _ = w.Write([]byte(`{"status":"ok","product":"rmmzit"}`))
 	})
 	return agentHeaders(s.aclCheck(s.AgentACL, mux))
 }

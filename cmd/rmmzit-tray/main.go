@@ -1,4 +1,4 @@
-// controlzit-tray shows the ControlZit icon in the notification area of a
+// rmmzit-tray shows the RMMZit icon in the notification area of a
 // user session: the computer is managed, and whether the agent is connected.
 // The MSI starts it at every sign-in; the agent service starts it for the
 // signed-in user after installation.
@@ -9,11 +9,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/max-zit/controlzit/internal/tray"
+	"github.com/max-zit/rmmzit/internal/tray"
 )
 
 func main() {
-	def := filepath.Join(os.Getenv("ProgramData"), "ControlZit", "agent-status.json")
+	def := filepath.Join(os.Getenv("ProgramData"), "RMMZit", "agent-status.json")
 	status := flag.String("status", def, "status file written by the agent service")
 	open := flag.Bool("open", false, "open the agent window (also when the icon is already running)")
 	flag.Parse()

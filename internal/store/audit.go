@@ -28,7 +28,7 @@ type AuditEntry struct {
 	Hash     string
 }
 
-const auditGenesis = "controlzit-audit-v1"
+const auditGenesis = "controlzit-audit-v1" // the name before RMMZit; existing chains start from it
 
 func auditHash(e *AuditEntry) string {
 	// JSON of an array: unambiguous field boundaries.

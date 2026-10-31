@@ -9,7 +9,7 @@ import (
 
 	"golang.org/x/sys/windows"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // Capturer grabs the whole virtual screen (all monitors) with GDI. It must

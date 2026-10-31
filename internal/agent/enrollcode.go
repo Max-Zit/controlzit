@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // EnrollCodePrefix and EnrollData are defined in proto (the console makes codes).
@@ -25,10 +25,14 @@ func MakeEnrollCode(d EnrollData) string { return proto.MakeEnrollCode(d) }
 func ParseEnrollCode(code string) (EnrollData, error) {
 	var d EnrollData
 	code = strings.TrimSpace(code)
-	if !strings.HasPrefix(code, EnrollCodePrefix) {
+	body, ok := strings.CutPrefix(code, EnrollCodePrefix)
+	if !ok {
+		body, ok = strings.CutPrefix(code, proto.LegacyEnrollCodePrefix)
+	}
+	if !ok {
 		return d, errors.New("an enrollment code starts with " + EnrollCodePrefix)
 	}
-	b, err := base64.RawURLEncoding.DecodeString(strings.TrimPrefix(code, EnrollCodePrefix))
+	b, err := base64.RawURLEncoding.DecodeString(body)
 	if err != nil || json.Unmarshal(b, &d) != nil {
 		return d, errors.New("the enrollment code is damaged; copy it again from the console")
 	}

@@ -2,6 +2,7 @@
 //
 //	go run ./tools/relsign keygen -out release.key        new key; prints the public key
 //	go run ./tools/relsign sign -key release.key -version 0.3.0 -dir dist/release-0.3.0 [-notes notes.md]
+//	go run ./tools/relsign verify -dir DIR -file NAME                 checks a downloaded file against the signed manifest in DIR
 //
 // sign lists every file of the directory with its SHA-256 (kind, format and
 // platform from the file name), writes manifest.json and manifest.json.sig.
@@ -24,12 +25,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/update"
+	"github.com/max-zit/rmmzit/internal/update"
 )
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: relsign keygen|sign …")
+		fmt.Fprintln(os.Stderr, "usage: relsign keygen|sign|verify …|sign …")
 		os.Exit(2)
 	}
 	fs := flag.NewFlagSet(os.Args[1], flag.ExitOnError)
@@ -38,6 +39,7 @@ func main() {
 	version := fs.String("version", "", "release version (sign)")
 	dir := fs.String("dir", "", "directory with the release files (sign)")
 	notes := fs.String("notes", "", "release notes file (sign)")
+	file := fs.String("file", "", "release file to check (verify)")
 	_ = fs.Parse(os.Args[2:])
 	switch os.Args[1] {
 	case "keygen":
@@ -57,7 +59,7 @@ func main() {
 			check(fmt.Errorf("bad key file"))
 		}
 		key := ed25519.NewKeyFromSeed(seed)
-		m := update.Manifest{Product: "controlzit", Version: *version, Released: time.Now().UTC().Truncate(time.Second)}
+		m := update.Manifest{Product: update.ManifestProduct, Version: *version, Released: time.Now().UTC().Truncate(time.Second)}
 		if *notes != "" {
 			b, err := os.ReadFile(*notes) // #nosec G304 G703 -- the operator's notes file
 			check(err)
@@ -84,6 +86,25 @@ func main() {
 		check(os.WriteFile(filepath.Join(*dir, "manifest.json"), b, 0o644))                       // #nosec G306 G703 -- published
 		check(os.WriteFile(filepath.Join(*dir, "manifest.json.sig"), update.Sign(b, key), 0o644)) // #nosec G306 G703 -- published
 		fmt.Printf("signed %d files of %s\n", len(m.Files), *version)
+	case "verify":
+		// The manifest must carry a signature of a trusted release key, and the
+		// file the size and SHA-256 the manifest lists for it.
+		raw, err := os.ReadFile(filepath.Join(*dir, "manifest.json")) // #nosec G304 G703 -- the operator's files
+		check(err)
+		sig, err := os.ReadFile(filepath.Join(*dir, "manifest.json.sig")) // #nosec G304 G703 -- the operator's files
+		check(err)
+		m, err := update.Verify(raw, sig, update.TrustedKeys)
+		check(err)
+		for _, f := range m.Files {
+			if f.Name == *file {
+				if h, n := sum(filepath.Join(*dir, f.Name)); h != f.SHA256 || n != f.Size {
+					check(fmt.Errorf("%s does not match the signed manifest", f.Name))
+				}
+				fmt.Printf("%s of %s: signature and checksum OK\n", f.Name, m.Version)
+				return
+			}
+		}
+		check(fmt.Errorf("%s is not in the manifest of %s", *file, m.Version))
 	default:
 		check(fmt.Errorf("unknown command %s", os.Args[1]))
 	}
@@ -93,9 +114,9 @@ func main() {
 func describe(n string) update.File {
 	f := update.File{Name: n, Kind: "other"}
 	switch {
-	case strings.HasPrefix(n, "controlzit-server"):
+	case strings.HasPrefix(n, "rmmzit-server"):
 		f.Kind = "server"
-	case strings.HasPrefix(n, "controlzit-agent"):
+	case strings.HasPrefix(n, "rmmzit-agent"):
 		f.Kind = "agent"
 	}
 	switch {

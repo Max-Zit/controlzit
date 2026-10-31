@@ -8,35 +8,35 @@
 </ul>
 
 <h2 id="codes">Registrierungscodes</h2>
-<p>Agents treten einem <b>Standort</b> eines Kunden mit einem Registrierungscode bei. Öffnen Sie den Standort unter <a href="/customers">Kunden</a> und klicken Sie auf <b>Registrierungscode erstellen</b>. Sie wählen, wie lange er gilt (1–365 Tage) und wie viele Computer ihn verwenden dürfen. Der Code (<code>CZ1-…</code>) enthält die Serveradresse und den Fingerabdruck des Serverzertifikats, das Installationsprogramm braucht also nichts weiter. Er wird nur einmal angezeigt; widerrufen Sie ihn, wenn er nicht mehr gebraucht wird.</p>
+<p>Agents treten einem <b>Standort</b> eines Kunden mit einem Registrierungscode bei. Öffnen Sie den Standort unter <a href="/customers">Kunden</a> und klicken Sie auf <b>Registrierungscode erstellen</b>. Sie wählen, wie lange er gilt (1–365 Tage) und wie viele Computer ihn verwenden dürfen. Der Code (<code>RZ1-…</code>) enthält die Serveradresse und den Fingerabdruck des Serverzertifikats, das Installationsprogramm braucht also nichts weiter. Er wird nur einmal angezeigt; widerrufen Sie ihn, wenn er nicht mehr gebraucht wird.</p>
 
 <h2 id="windows">Windows</h2>
 <p>Laden Sie das MSI auf der Standortseite herunter (<b>Agent herunterladen (MSI, 64-Bit)</b>) und doppelklicken Sie es und fügen den Code ein, oder installieren Sie es still, zum Beispiel per Gruppenrichtlinie, Intune oder Skript:</p>
-<pre>msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="CZ1-…"</pre>
-<p>Der Agent läuft als Windows-Dienst <i>ControlZit Agent</i>. Ein kleines Symbol neben der Uhr zeigt, ob er verbunden ist (grün), und öffnet ein Fenster mit dem Server und wer den Computer verwaltet.</p>
+<pre>msiexec /i rmmzit-agent-x64.msi /qn ENROLLCODE="RZ1-…"</pre>
+<p>Der Agent läuft als Windows-Dienst <i>RMMZit Agent</i>. Ein kleines Symbol neben der Uhr zeigt, ob er verbunden ist (grün), und öffnet ein Fenster mit dem Server und wer den Computer verwaltet.</p>
 <p>Das Symbol, sein Fenster und die Neustartfrage verwenden die Anzeigesprache des Windows des Benutzers (eine der 14 Sprachen der Konsole, sonst Englisch).</p>
 <p>Ohne MSI (PowerShell als Administrator):</p>
-<pre>.\controlzit-agent.exe enroll --code "CZ1-…"
-.\controlzit-agent.exe install</pre>
+<pre>.\rmmzit-agent.exe enroll --code "RZ1-…"
+.\rmmzit-agent.exe install</pre>
 
 <h2 id="linux">Linux</h2>
 <p>Laden Sie den Linux-Agent auf der Standortseite herunter (x86-64 oder ARM64 für Raspberry Pi und ARM-Server), kopieren Sie ihn auf den Rechner und führen Sie ihn als root aus:</p>
-<pre>chmod +x controlzit-agent-linux-amd64
-sudo ./controlzit-agent-linux-amd64 install --code "CZ1-…"</pre>
-<p>Er kopiert sich nach <code>/usr/local/bin/controlzit-agent</code>, registriert sich und startet den systemd-Dienst <code>controlzit-agent</code>.</p>
+<pre>chmod +x rmmzit-agent-linux-amd64
+sudo ./rmmzit-agent-linux-amd64 install --code "RZ1-…"</pre>
+<p>Er kopiert sich nach <code>/usr/local/bin/rmmzit-agent</code>, registriert sich und startet den systemd-Dienst <code>rmmzit-agent</code>.</p>
 
 <h2 id="updates">Agent-Updates</h2>
 <p>Der Server bringt die Agent-Installationsprogramme seiner eigenen Version mit. Unter <a href="/settings/agents">Einstellungen → Agent-Updates</a> sehen Sie, welche Agents veraltet sind, aktualisieren alle auf einmal oder lassen veraltete Agents sich beim Verbinden selbst aktualisieren. Ein einzelner Agent wird auf seiner Geräteseite aktualisiert. Der Agent lädt das Installationsprogramm über seine eigene verschlüsselte Verbindung und installiert es nur, wenn es zum SHA-256 im signierten Update-Befehl passt. Dort können Sie auch ein anderes Installationsprogramm hochladen (ein MSI oder einen Linux-Agent).</p>
 
 <h2 id="windows-update">Windows Update auf verwalteten Computern</h2>
-<p>Der Agent schaltet die automatische Installation von Windows Update per Richtlinie ab, sodass Updates nur von ControlZit kommen, von Hand oder nach Ihrem Zeitplan (siehe <a href="/docs/updates">Windows-Updates</a>). Die vorherigen Einstellungen werden gespeichert und kehren zurück, wenn der Agent entfernt wird.</p>
+<p>Der Agent schaltet die automatische Installation von Windows Update per Richtlinie ab, sodass Updates nur von RMMZit kommen, von Hand oder nach Ihrem Zeitplan (siehe <a href="/docs/updates">Windows-Updates</a>). Die vorherigen Einstellungen werden gespeichert und kehren zurück, wenn der Agent entfernt wird.</p>
 
 <h2 id="remove">Einen Agent entfernen</h2>
-<p>Löschen Sie das Gerät auf seiner Seite (<b>Gerät entfernen</b>). Ist es online, deinstalliert sich der Agent innerhalb von Sekunden und Windows Update erhält seine eigenen Einstellungen zurück. Ein Offline-Computer kann sich nicht mehr verbinden; deinstallieren Sie den Agent dort von Hand (Windows: <i>Apps → ControlZit Agent → Deinstallieren</i>; Linux: <code>sudo controlzit-agent uninstall</code>).</p>
+<p>Löschen Sie das Gerät auf seiner Seite (<b>Gerät entfernen</b>). Ist es online, deinstalliert sich der Agent innerhalb von Sekunden und Windows Update erhält seine eigenen Einstellungen zurück. Ein Offline-Computer kann sich nicht mehr verbinden; deinstallieren Sie den Agent dort von Hand (Windows: <i>Apps → RMMZit Agent → Deinstallieren</i>; Linux: <code>sudo rmmzit-agent uninstall</code>).</p>
 
 <h2 id="mass">Viele Computer: Gruppenrichtlinie und Intune</h2>
 <p>Erstellen Sie einen Registrierungscode mit genug Verwendungen für alle Computer; die Standortseite zeigt dann, mit diesem Code ausgefüllt:</p>
 <ul>
-  <li><b>Gruppenrichtlinie</b>: ein PowerShell-Startskript. Legen Sie das MSI auf eine Freigabe, die die Computerkonten (Domänencomputer) lesen dürfen, geben Sie den Pfad ein, kopieren Sie das Skript und fügen Sie es unter Computerkonfiguration → Richtlinien → Windows-Einstellungen → Skripts → Starten → PowerShell-Skripts hinzu. Computer mit dem Agenten (Dienst <code>ControlZitAgent</code>) überspringen es; das Installationsprotokoll ist <code>%windir%\Temp\controlzit-agent-install.log</code>.</li>
-  <li><b>Microsoft Intune</b>: Fügen Sie den Agenten als Windows-App (Win32) hinzu: Packen Sie das MSI mit Microsofts IntuneWinAppUtil und verwenden Sie die Installations- und Deinstallationsbefehle, das Installationsverhalten <i>System</i> und die Erkennungsregel (Datei <code>C:\Program Files\ControlZit Agent\controlzit-agent.exe</code>) von der Standortseite. Nicht als Branchen-MSI hinzufügen: Der Agent aktualisiert sich selbst, und Intune würde wieder die alte Version installieren.</li>
+  <li><b>Gruppenrichtlinie</b>: ein PowerShell-Startskript. Legen Sie das MSI auf eine Freigabe, die die Computerkonten (Domänencomputer) lesen dürfen, geben Sie den Pfad ein, kopieren Sie das Skript und fügen Sie es unter Computerkonfiguration → Richtlinien → Windows-Einstellungen → Skripts → Starten → PowerShell-Skripts hinzu. Computer mit dem Agenten (Dienst <code>RMMZitAgent</code>) überspringen es; das Installationsprotokoll ist <code>%windir%\Temp\rmmzit-agent-install.log</code>.</li>
+  <li><b>Microsoft Intune</b>: Fügen Sie den Agenten als Windows-App (Win32) hinzu: Packen Sie das MSI mit Microsofts IntuneWinAppUtil und verwenden Sie die Installations- und Deinstallationsbefehle, das Installationsverhalten <i>System</i> und die Erkennungsregel (Datei <code>C:\Program Files\RMMZit Agent\rmmzit-agent.exe</code>) von der Standortseite. Nicht als Branchen-MSI hinzufügen: Der Agent aktualisiert sich selbst, und Intune würde wieder die alte Version installieren.</li>
 </ul>

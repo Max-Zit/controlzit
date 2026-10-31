@@ -6,12 +6,12 @@
 <ul>
   <li><b>Konzole</b> — adresa a port naslouchání (výchozí <code>:8443</code>) a <b>povolené sítě</b>: jedna IP adresa nebo síť na řádek (CIDR). Spojení z jiných adres se zavřou před TLS; samotný server (127.0.0.1) je vždy povolen. Uložení odmítne seznam, který by zablokoval vaši adresu.</li>
   <li><b>Koncový bod agentů</b> — adresa a port naslouchání (výchozí <code>:8444</code>, jiný než konzole), sítě, ze kterých smějí agenti přicházet (prázdné = všechny), a <b>veřejná adresa pro agenty</b>, která se vkládá do instalátorů a registračních kódů.</li>
-  <li>Nové porty platí po <b>Restartovat nyní</b> (restartuje službu ControlZit; agenti se připojí sami).</li>
+  <li>Nové porty platí po <b>Restartovat nyní</b> (restartuje službu RMMZit; agenti se připojí sami).</li>
 </ul>
-<p>Pokud se zablokujete, spusťte na serveru <code>controlzit-server --reset-allowlist</code> (appliance: nabídka nastavení, položka 5).</p>
+<p>Pokud se zablokujete, spusťte na serveru <code>rmmzit-server --reset-allowlist</code> (appliance: nabídka nastavení, položka 5).</p>
 
 <h3 id="server-network">Síť serveru (appliance)</h3>
-<p>Na appliance ControlZit se zde nastavuje i síť samotného serveru: DHCP nebo pevná adresa s velikostí sítě (např. <code>192.168.1.20/24</code>), brána, jeden až tři servery DNS a název serveru. Pokud brána s novým nastavením neodpoví, předchozí se po 30 sekundách samo vrátí. U jiných instalací síť spravuje operační systém.</p>
+<p>Na appliance RMMZit se zde nastavuje i síť samotného serveru: DHCP nebo pevná adresa s velikostí sítě (např. <code>192.168.1.20/24</code>), brána, jeden až tři servery DNS a název serveru. Pokud brána s novým nastavením neodpoví, předchozí se po 30 sekundách samo vrátí. U jiných instalací síť spravuje operační systém.</p>
 
 <h3 id="timezone">Časové pásmo</h3>
 <p>Plány (aktualizace, skripty, zprávy) a časy v konzoli používají časové pásmo serveru. Vyberte jej ze seznamu a klikněte na <b>Nastavit</b>; konzole se restartuje a za několik sekund je zpět. Bez root pomocníka (viz níže) jej nastavte na serveru: <code>timedatectl set-timezone Europe/Prague</code>.</p>
@@ -30,7 +30,7 @@
 </ul>
 
 <h2 id="server-updates">Aktualizace serveru</h2>
-<p><a href="/settings/version">Nastavení → Aktualizace ControlZit</a> ukazuje běžící verzi a nejnovější vydání. <b>Nainstalovat</b> aktualizuje server: instalují se jen vydání podepsaná klíčem vydání ControlZit; před instalací server zálohuje databázi a program, a pokud se nová verze nespustí, sám se vrátí ke staré. Konzole je minutu či dvě nedostupná. Volitelně se nové verze instalují automaticky ve zvolené hodině.</p>
+<p><a href="/settings/version">Nastavení → Aktualizace RMMZit</a> ukazuje běžící verzi a nejnovější vydání. <b>Nainstalovat</b> aktualizuje server: instalují se jen vydání podepsaná klíčem vydání RMMZit; před instalací server zálohuje databázi a program, a pokud se nová verze nespustí, sám se vrátí ke staré. Konzole je minutu či dvě nedostupná. Volitelně se nové verze instalují automaticky ve zvolené hodině.</p>
 <p><b>Kanál aktualizací</b>: <i>Oficiální verze</i> (výchozí) nebo <i>Testování</i>, který nabízí kandidáty na vydání dříve, než se stanou oficiálními, pro testovací konzoli. Produkční konzole nechte na oficiálních verzích.</p>
 <div class="callout"><p>Aktualizace, časové pásmo a síť potřebují <b>root pomocníka</b>, který je součástí balíčků pro Linux a appliance. Bez něj (např. samostatný program) aktualizujte pomocí <code>install.sh</code> nebo balíčku vydání.</p></div>
 
@@ -38,7 +38,7 @@
 <p>Viz <a href="/docs/agents#updates">Instalace agentů → Aktualizace agentů</a>.</p>
 
 <h2 id="diagnostics">Diagnostika</h2>
-<p><a href="/settings/diagnostics">Nastavení → Diagnostika</a> ukazuje, kam ControlZit zapisuje protokoly, nejnovější řádky protokolu serveru (filtr podle úrovně nebo textu), protokol root pomocníka a verze. <b>Stáhnout diagnostiku (ZIP)</b> vytvoří soubor pro podporu s protokoly, verzemi a souhrnem nastavení, zařízeními, upozorněními a auditním protokolem. Hesla, tokeny, registrační kódy a klíče se odstraňují ze všeho zobrazeného i ze souboru; skripty a jejich výstup nejsou zahrnuty.</p>
+<p><a href="/settings/diagnostics">Nastavení → Diagnostika</a> ukazuje, kam RMMZit zapisuje protokoly, nejnovější řádky protokolu serveru (filtr podle úrovně nebo textu), protokol root pomocníka a verze. <b>Stáhnout diagnostiku (ZIP)</b> vytvoří soubor pro podporu s protokoly, verzemi a souhrnem nastavení, zařízeními, upozorněními a auditním protokolem. Hesla, tokeny, registrační kódy a klíče se odstraňují ze všeho zobrazeného i ze souboru; skripty a jejich výstup nejsou zahrnuty.</p>
 
 <h2 id="fields">Vlastní pole</h2>
 <p>V <a href="/settings/fields">Nastavení → Vlastní pole</a> správci přidávají vlastní pole pro zařízení a zákazníky — text, číslo nebo datum — například inventární číslo, konec záruky nebo smlouvu. Technici je vyplňují na stránkách zařízení a zákazníků; API vrací pole s každým zařízením a nastavuje je přes <code>PUT /api/v1/devices/{id}/fields</code>.</p>
@@ -47,7 +47,7 @@
 <p><a href="/settings/backup">Nastavení → Záloha konzole</a> zálohuje konzoli každý den ve zvolenou hodinu, nebo hned tlačítkem <b>Zálohovat nyní</b>. Záloha obsahuje databázi, tajný klíč uložených hesel, certifikáty a klíče, kterým agenti důvěřují, a knihovnu softwaru. Nejnovější zálohy (kolik zvolíte) zůstávají ve složce <code>backups</code> datového adresáře a lze je stáhnout ze stránky.</p>
 <p>S <b>heslem</b> jsou soubory šifrované (AES-256-GCM); heslo uchovávejte jinde, protože bez něj zálohu nelze obnovit. Kopie každé zálohy může jít do <b>složky SFTP</b> na jiném serveru (heslo nebo soukromý klíč). První test spojení ukáže klíč hostitele serveru, kterému máte důvěřovat; kopie jdou jen na server s tímto klíčem. Když záloha nebo její kopie selže, příjemci e-mailů s upozorněními dostanou e-mail.</p>
 <p><b>Obnovení</b> se spouští při zastaveném serveru: na appliance v nabídce nastavení (<b>Restore a backup</b>), s balíčky pro Linux:</p>
-<pre>sudo systemctl stop controlzit-server
-sudo -u controlzit sh -c 'set -a; . /etc/controlzit/server.env; controlzit-server -data-dir /var/lib/controlzit -restore /path/controlzit-backup-….czb'
-sudo systemctl start controlzit-server</pre>
-<p>Heslo šifrované zálohy se čte z <code>CONTROLZIT_BACKUP_PASSPHRASE</code> nebo ze souboru zadaného přes <code>-restore-passphrase-file</code>. Databáze se obnoví v jednom kroku (když selže, nic se nezmění); novější ControlZit obnovenou databázi při spuštění aktualizuje. Nový server obnovený ze zálohy si ponechá všechny agenty, protože důvěřují stejnému certifikátu.</p>
+<pre>sudo systemctl stop rmmzit-server
+sudo -u rmmzit sh -c 'set -a; . /etc/rmmzit/server.env; rmmzit-server -data-dir /var/lib/rmmzit -restore /path/rmmzit-backup-….czb'
+sudo systemctl start rmmzit-server</pre>
+<p>Heslo šifrované zálohy se čte z <code>RMMZIT_BACKUP_PASSPHRASE</code> nebo ze souboru zadaného přes <code>-restore-passphrase-file</code>. Databáze se obnoví v jednom kroku (když selže, nic se nezmění); novější RMMZit obnovenou databázi při spuštění aktualizuje. Nový server obnovený ze zálohy si ponechá všechny agenty, protože důvěřují stejnému certifikátu.</p>

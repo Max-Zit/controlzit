@@ -1,5 +1,5 @@
 // msiart draws the installer images (WiX dialog and banner bitmaps) from
-// the ControlZit icon: go run ./tools/msiart brand/controlzit-icon-256.png packaging/windows
+// the RMMZit icon: go run ./tools/msiart brand/rmmzit-icon-256.png packaging/windows
 package main
 
 import (

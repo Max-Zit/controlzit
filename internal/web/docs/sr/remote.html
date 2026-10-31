@@ -27,7 +27,7 @@
 <p><b>Fajlovi</b> pregledaju diskove računara bez povezivanja na ekran. Otpremajte fajlove (do 4 GB), preuzimajte fajlove, preuzmite folder ili izbor kao ZIP, pravite foldere, preimenujte i brišite. Agent svaku radnju sa fajlovima obavlja kao SYSTEM (Windows) ili root (Linux); svaka se upisuje u dnevnik izmena sa vašim imenom.</p>
 
 <h2 id="processes">Procesi i servisi</h2>
-<p><b>Procesi</b> pokazuju pokrenute programe sa memorijom, nitima i sesijom i prekidaju proces. <b>Servisi</b> pokazuju servise (Windows servise ili systemd jedinice) i pokreću, zaustavljaju ili restartuju ih. ControlZit agent štiti sam sebe: ne može se zaustaviti ili prekinuti iz konzole.</p>
+<p><b>Procesi</b> pokazuju pokrenute programe sa memorijom, nitima i sesijom i prekidaju proces. <b>Servisi</b> pokazuju servise (Windows servise ili systemd jedinice) i pokreću, zaustavljaju ili restartuju ih. RMMZit agent štiti sam sebe: ne može se zaustaviti ili prekinuti iz konzole.</p>
 
 <h2 id="registry">Uređivač registra (Windows)</h2>
 <p>Kartica <b>Registry</b> na Windows uređaju pregleda registar: otvorite ključ po putanji (na primer <code>HKLM\SOFTWARE\Vendor</code>) ili idite kroz ključeve od korena HKLM, HKU, HKCR i HKCC. Vrednosti se mogu dodati, menjati i brisati (REG_SZ, REG_EXPAND_SZ, REG_DWORD, REG_QWORD, REG_MULTI_SZ; brojevi decimalno ili heksadecimalno sa 0x); binarne vrednosti se prikazuju heksadecimalno. Ključevi se mogu napraviti i obrisati sa svim sadržajem; koreni, ključevi odmah ispod njih i sistemske grane su zaštićeni. Svaka izmena se upisuje u audit log sa vrednošću koju je zamenila. Registri korisnika su pod HKU (po njihovom SID-u); HKCU bi bio od SYSTEM naloga. Agenti 0.12 i noviji.</p>

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/auth"
+	"github.com/max-zit/rmmzit/internal/auth"
 )
 
 // TokenPrefix starts every API token.

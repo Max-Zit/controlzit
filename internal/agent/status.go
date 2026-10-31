@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // Status is what the service publishes for the tray icon. It holds no
@@ -44,7 +44,7 @@ type UpdateSummary struct {
 const statusFile = "agent-status.json"
 
 // StatusPath is where the service writes its status: a folder all users can
-// read (ProgramData\ControlZit) when running as the service, else the data
+// read (ProgramData\RMMZit) when running as the service, else the data
 // directory (test runs).
 func StatusPath(dir string) string {
 	if p := publicStatusDir(); p != "" {

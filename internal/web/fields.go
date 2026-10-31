@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // Custom fields of devices and customers: defined by administrators under

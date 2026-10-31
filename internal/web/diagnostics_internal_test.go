@@ -7,14 +7,14 @@ import (
 
 func TestRedact(t *testing.T) {
 	for _, c := range []struct{ in, gone, kept string }{
-		{"db=postgres://controlzit:S3cretPass99@127.0.0.1/controlzit", "S3cretPass99", "postgres://controlzit:***@127.0.0.1"},
+		{"db=postgres://rmmzit:S3cretPass99@127.0.0.1/rmmzit", "S3cretPass99", "postgres://rmmzit:***@127.0.0.1"},
 		{`level=INFO msg=login password=hunter2hunter user=pera`, "hunter2hunter", "user=pera"},
 		{`args="{\"session\":\"abc\",\"token\":\"tkn-123456\"}"`, "tkn-123456", "session"},
 		{"Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.abcdef", "eyJhbGciOiJIUzI1NiJ9", "Authorization: "},
-		{"code CZ1-eyJ1IjoiaHR0cHM6Ly9sb2NhbGhvc3Q6ODQ0NCIsImYiOi used", "eyJ1Ijoi", "CZ1-***"},
+		{"code CZ1-eyJ1IjoiaHR0cHM6Ly9sb2NhbGhvc3Q6ODQ0NCIsImYiOi used", "eyJ1Ijoi", "RZ1-***"},
 		{"-----BEGIN EC PRIVATE KEY-----\nMHcCAQEEI\n-----END EC PRIVATE KEY-----", "MHcCAQEEI", "PEM block removed"},
 		{"secret key PN4k0FwwUIjaVht58ouaDRmO6TzJPZiISY1TB47KmzI3", "PN4k0Fww", "secret"},
-		{"file /var/lib/controlzit/downloads/controlzit-agent-linux-amd64.json", "", "/var/lib/controlzit/downloads/controlzit-agent-linux-amd64.json"},
+		{"file /var/lib/rmmzit/downloads/rmmzit-agent-linux-amd64.json", "", "/var/lib/rmmzit/downloads/rmmzit-agent-linux-amd64.json"},
 		{"device DESKTOP-NBB66OQ online, version 0.2.33", "", "DESKTOP-NBB66OQ online, version 0.2.33"},
 	} {
 		got := redact(c.in)

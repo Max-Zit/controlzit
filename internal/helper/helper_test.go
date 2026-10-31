@@ -18,7 +18,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/max-zit/controlzit/internal/update"
+	"github.com/max-zit/rmmzit/internal/update"
 )
 
 type fakeSys struct {
@@ -32,8 +32,8 @@ func (f *fakeSys) run(_ context.Context, name string, args ...string) ([]byte, e
 	defer f.mu.Unlock()
 	line := name + " " + strings.Join(args, " ")
 	f.cmds = append(f.cmds, line)
-	if strings.HasSuffix(name, "controlzit-server") && len(args) == 1 && args[0] == "-version" {
-		return []byte("controlzit-server " + f.ver), nil
+	if strings.HasSuffix(name, "rmmzit-server") && len(args) == 1 && args[0] == "-version" {
+		return []byte("rmmzit-server " + f.ver), nil
 	}
 	return nil, nil
 }
@@ -52,15 +52,15 @@ func (f *fakeSys) ran(sub string) bool {
 func newHelper(t *testing.T) (*Helper, *fakeSys) {
 	t.Helper()
 	root := t.TempDir()
-	data := filepath.Join(root, "var/lib/controlzit")
+	data := filepath.Join(root, "var/lib/rmmzit")
 	_ = os.MkdirAll(filepath.Join(root, "usr/bin"), 0o755)
-	_ = os.WriteFile(filepath.Join(root, "usr/bin/controlzit-server"), []byte("old program"), 0o755)
+	_ = os.WriteFile(filepath.Join(root, "usr/bin/rmmzit-server"), []byte("old program"), 0o755)
 	_ = os.WriteFile(filepath.Join(root, "usr/bin/dpkg"), nil, 0o755)
-	_ = os.MkdirAll(filepath.Join(root, "etc/controlzit"), 0o755)
-	_ = os.WriteFile(filepath.Join(root, "etc/controlzit/server.env"), []byte("# config\nCONTROLZIT_DB=postgres://cz:pw@localhost/cz\n"), 0o600)
+	_ = os.MkdirAll(filepath.Join(root, "etc/rmmzit"), 0o755)
+	_ = os.WriteFile(filepath.Join(root, "etc/rmmzit/server.env"), []byte("# config\nRMMZIT_DB=postgres://cz:pw@localhost/cz\n"), 0o600)
 	fs := &fakeSys{ver: "0.3.0"}
-	h := &Helper{DataDir: data, CacheDir: filepath.Join(root, "var/cache/controlzit"), Root: root, EnvFile: "/etc/controlzit/server.env",
-		Binary: "/usr/bin/controlzit-server", Run: fs.run,
+	h := &Helper{DataDir: data, CacheDir: filepath.Join(root, "var/cache/rmmzit"), Root: root, EnvFile: "/etc/rmmzit/server.env",
+		Binary: "/usr/bin/rmmzit-server", Run: fs.run,
 		Dump: func(_ context.Context, url, path string) error {
 			return os.WriteFile(path, []byte("dump of "+url), 0o600)
 		},
@@ -90,8 +90,8 @@ func releaseServer(t *testing.T, version string, pkg []byte) (string, func()) {
 	t.Helper()
 	pub, priv, _ := ed25519.GenerateKey(rand.Reader)
 	sum := sha256.Sum256(pkg)
-	name := "controlzit-server_" + version + "_" + runtime.GOARCH + ".deb"
-	m := update.Manifest{Product: "controlzit", Version: version, Files: []update.File{{Name: name, SHA256: hex.EncodeToString(sum[:]), Size: int64(len(pkg)), Kind: "server", Format: "deb", Platform: "linux-" + runtime.GOARCH}}}
+	name := "rmmzit-server_" + version + "_" + runtime.GOARCH + ".deb"
+	m := update.Manifest{Product: "rmmzit", Version: version, Files: []update.File{{Name: name, SHA256: hex.EncodeToString(sum[:]), Size: int64(len(pkg)), Kind: "server", Format: "deb", Platform: "linux-" + runtime.GOARCH}}}
 	raw, _ := json.Marshal(m)
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch {
@@ -114,13 +114,13 @@ func TestUpdateInstalls(t *testing.T) {
 	h, fs := newHelper(t)
 	src, done := releaseServer(t, "0.4.0", []byte("new package"))
 	defer done()
-	_ = os.WriteFile(filepath.Join(h.Root, "etc/controlzit/server.env"), []byte("CONTROLZIT_DB=postgres://cz:pw@localhost/cz\nCONTROLZIT_UPDATE_SOURCE="+src+"\n"), 0o600)
+	_ = os.WriteFile(filepath.Join(h.Root, "etc/rmmzit/server.env"), []byte("RMMZIT_DB=postgres://cz:pw@localhost/cz\nRMMZIT_UPDATE_SOURCE="+src+"\n"), 0o600)
 	h.Healthy = func(context.Context) error { return nil }
 	r := h.submit(t, Request{Action: ActionUpdate, Version: "0.4.0", RequestedBy: "admin"})
 	if r.Status != "done" {
 		t.Fatalf("result %+v", r)
 	}
-	if !fs.ran("apt-get install -y -q --allow-downgrades "+filepath.Join(h.CacheDir, "packages")) || !fs.ran("systemctl restart controlzit-server") {
+	if !fs.ran("apt-get install -y -q --allow-downgrades "+filepath.Join(h.CacheDir, "packages")) || !fs.ran("systemctl restart rmmzit-server") {
 		t.Fatalf("commands %v", fs.cmds)
 	}
 	backups, _ := os.ReadDir(filepath.Join(h.CacheDir, "backups"))
@@ -133,14 +133,14 @@ func TestUpdateRollsBack(t *testing.T) {
 	h, fs := newHelper(t)
 	src, done := releaseServer(t, "0.4.0", []byte("new package"))
 	defer done()
-	_ = os.WriteFile(filepath.Join(h.Root, "etc/controlzit/server.env"), []byte("CONTROLZIT_DB=postgres://cz:pw@localhost/cz\nCONTROLZIT_UPDATE_SOURCE="+src+"\n"), 0o600)
+	_ = os.WriteFile(filepath.Join(h.Root, "etc/rmmzit/server.env"), []byte("RMMZIT_DB=postgres://cz:pw@localhost/cz\nRMMZIT_UPDATE_SOURCE="+src+"\n"), 0o600)
 	h.Healthy = func(context.Context) error { return errors.New("no answer") }
 	restored := false
 	h.Restore = func(context.Context, string, string) error { restored = true; return nil }
 	// The package "installs" a new program; the rollback puts the old one back.
 	h.Run = func(ctx context.Context, name string, args ...string) ([]byte, error) {
 		if name == "env" {
-			_ = os.WriteFile(filepath.Join(h.Root, "usr/bin/controlzit-server"), []byte("new program"), 0o755)
+			_ = os.WriteFile(filepath.Join(h.Root, "usr/bin/rmmzit-server"), []byte("new program"), 0o755)
 		}
 		return fs.run(ctx, name, args...)
 	}
@@ -148,7 +148,7 @@ func TestUpdateRollsBack(t *testing.T) {
 	if r.Status != "rolled-back" || !restored {
 		t.Fatalf("result %+v (restored %v)", r, restored)
 	}
-	if b, _ := os.ReadFile(filepath.Join(h.Root, "usr/bin/controlzit-server")); string(b) != "old program" {
+	if b, _ := os.ReadFile(filepath.Join(h.Root, "usr/bin/rmmzit-server")); string(b) != "old program" {
 		t.Fatalf("program after the rollback: %q", b)
 	}
 }
@@ -161,7 +161,7 @@ func TestUpdateRefused(t *testing.T) {
 	src, done := releaseServer(t, "0.4.0", []byte("pkg"))
 	defer done()
 	update.TrustedKeys = []string{base64.StdEncoding.EncodeToString(make([]byte, 32))} // another key
-	_ = os.WriteFile(filepath.Join(h.Root, "etc/controlzit/server.env"), []byte("CONTROLZIT_UPDATE_SOURCE="+src+"\n"), 0o600)
+	_ = os.WriteFile(filepath.Join(h.Root, "etc/rmmzit/server.env"), []byte("RMMZIT_UPDATE_SOURCE="+src+"\n"), 0o600)
 	if r := h.submit(t, Request{Action: ActionUpdate, Version: "0.4.0"}); r.Status != "failed" || !strings.Contains(r.Message, "not signed") {
 		t.Fatalf("unsigned: %+v", r)
 	}

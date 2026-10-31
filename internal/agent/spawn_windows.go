@@ -12,10 +12,10 @@ import (
 
 	"golang.org/x/sys/windows"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
-// startHelper launches "controlzit-agent rdhelper" in the console session.
+// startHelper launches "rmmzit-agent rdhelper" in the console session.
 // As SYSTEM (the service) it uses a copy of its own token moved to that
 // session, so the helper can also capture the sign-in screen and UAC
 // prompts; otherwise (a test run as a user) it starts a normal child.
@@ -93,7 +93,7 @@ func isSystem() bool {
 	return err == nil && tu.User.Sid.IsWellKnown(windows.WinLocalSystemSid)
 }
 
-// StartTray starts controlzit-tray.exe (next to the agent) for the user
+// StartTray starts rmmzit-tray.exe (next to the agent) for the user
 // signed in at the console, so the icon appears right after installation.
 // Later sign-ins start it from the Run key. It is a no-op when nobody is
 // signed in or the icon already runs in that session.
@@ -102,7 +102,7 @@ func StartTray() error {
 	if err != nil {
 		return err
 	}
-	tray := filepath.Join(filepath.Dir(exe), "controlzit-tray.exe")
+	tray := filepath.Join(filepath.Dir(exe), "rmmzit-tray.exe")
 	if _, err := os.Stat(tray); err != nil {
 		return nil // not installed (test runs)
 	}

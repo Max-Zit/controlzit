@@ -35,7 +35,7 @@
 <ul>
   <li><b>Slack</b> — チャネルの受信 Webhook の URL。</li>
   <li><b>Microsoft Teams</b> — チャネルのワークフロー「Teams Webhook 要求を受信したとき」とその URL。</li>
-  <li><b>Webhook</b> — JSON の POST を受け付ける任意の HTTPS URL（チケットシステム、自動化）。シークレットを設定すると、各要求に <code>X-ControlZit-Signature: sha256=&lt;本文の HMAC&gt;</code> が付き、受信側はサーバーから送られたことを確認できます。</li>
+  <li><b>Webhook</b> — JSON の POST を受け付ける任意の HTTPS URL（チケットシステム、自動化）。シークレットを設定すると、各要求に <code>X-RMMZit-Signature: sha256=&lt;本文の HMAC&gt;</code> が付き、受信側はサーバーから送られたことを確認できます。</li>
 </ul>
 <p>チャネルごとにすべてのアラートか重大なアラートのみか、解決済みも送るかを選びます。<b>テストを送信</b>でテストメッセージを送ります。チャネルのアドレスは暗号化して保存されます。</p>
 

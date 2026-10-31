@@ -37,7 +37,7 @@
         <label class="check"><input type="radio" name="restart_mode" value="never" {{if eq .Data.Updates.RestartMode "never"}}checked{{end}}>{{.T "Never automatically"}}</label>
         <label class="check"><input type="radio" name="restart_mode" value="auto" {{if eq .Data.Updates.RestartMode "auto"}}checked{{end}}>{{.T "Automatically 5 minutes after the installation, with a notice to the signed-in user"}}</label>
         <label class="check"><input type="radio" name="restart_mode" value="deadline" {{if eq .Data.Updates.RestartMode "deadline"}}checked{{end}}>{{.T "Ask the user; restart automatically after the deadline"}}</label>
-        <label>{{.T "Deadline (days the user may postpone)"}}<input type="number" name="deadline_days" value="{{.Data.Updates.DeadlineDays}}" min="0" max="30" class="narrow"><small>{{.T "The ControlZit icon asks the signed-in user to restart, again every 4 hours. At the deadline the server restarts the computer with a 10-minute notice, in the maintenance window if the device has one."}}</small></label>
+        <label>{{.T "Deadline (days the user may postpone)"}}<input type="number" name="deadline_days" value="{{.Data.Updates.DeadlineDays}}" min="0" max="30" class="narrow"><small>{{.T "The RMMZit icon asks the signed-in user to restart, again every 4 hours. At the deadline the server restarts the computer with a 10-minute notice, in the maintenance window if the device has one."}}</small></label>
       </fieldset>
     </div>
   </section>

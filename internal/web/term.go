@@ -9,8 +9,8 @@ import (
 
 	"github.com/coder/websocket"
 
-	"github.com/max-zit/controlzit/internal/auth"
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/auth"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // Terminal: a root shell (Linux) or PowerShell as SYSTEM (Windows, agents

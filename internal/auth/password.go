@@ -83,7 +83,7 @@ func VerifyPassword(encoded, pw string) (bool, error) {
 
 // dummyHash is verified against when a username does not exist, so the
 // time of a failed sign-in does not tell whether the user exists.
-var dummyHash, _ = HashPassword("controlzit-no-such-user")
+var dummyHash, _ = HashPassword("rmmzit-no-such-user")
 
 // BurnTime spends the time of one password verification.
 func BurnTime(pw string) { _, _ = VerifyPassword(dummyHash, pw) }

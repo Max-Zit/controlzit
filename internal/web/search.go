@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // The search of the header (Ctrl+K): devices by name, user, serial number,

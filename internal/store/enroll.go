@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/auth"
+	"github.com/max-zit/rmmzit/internal/auth"
 )
 
 // EnrollToken lets agent installers join devices to a site. Only its

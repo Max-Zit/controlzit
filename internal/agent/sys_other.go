@@ -9,7 +9,7 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 func basicInfo() SysInfo { return SysInfo{OS: BasicOS()} }

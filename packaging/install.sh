@@ -1,10 +1,10 @@
 #!/bin/sh
-# Installs the ControlZit server on an existing Linux server: PostgreSQL,
-# the newest signed ControlZit release, a database with a random password
+# Installs the RMMZit server on an existing Linux server: PostgreSQL,
+# the newest signed RMMZit release, a database with a random password
 # and the configuration. Run as root on Debian 12+, Ubuntu 22.04+,
 # AlmaLinux / Rocky Linux 9+:
 #
-#   curl -fsSL https://github.com/Max-Zit/controlzit/releases/latest/download/install.sh | sudo sh
+#   curl -fsSL https://github.com/Max-Zit/rmmzit/releases/latest/download/install.sh | sudo sh
 #
 # Options (sh -s -- OPTIONS when piped):
 #   --version X        install release X instead of the newest one
@@ -13,11 +13,11 @@
 #   --no-auto-updates  do not switch on automatic security updates of the OS
 #   --source URL       release location (default: the official GitHub releases)
 #
-# Running it again on an installed server updates ControlZit and keeps the
+# Running it again on an installed server updates RMMZit and keeps the
 # configuration and the data.
 set -eu
 
-SOURCE=https://github.com/Max-Zit/controlzit/releases
+SOURCE=https://github.com/Max-Zit/rmmzit/releases
 VERSION=""
 DB_URL=""
 AUTO_UPDATES=1
@@ -39,7 +39,7 @@ while [ $# -gt 0 ]; do
 done
 
 [ "$(id -u)" = 0 ] || die "run as root (sudo sh)"
-[ "$(uname -m)" = x86_64 ] || die "the ControlZit server packages are built for x86_64 (amd64)"
+[ "$(uname -m)" = x86_64 ] || die "the RMMZit server packages are built for x86_64 (amd64)"
 [ -r /etc/os-release ] || die "unknown Linux distribution"
 OS_IDS=$(. /etc/os-release; echo "${ID:-} ${ID_LIKE:-}")
 OS_NAME=$(. /etc/os-release; echo "${PRETTY_NAME:-$ID}")
@@ -89,7 +89,7 @@ for k in $KEYS; do
         break
     fi
 done
-[ $OK = 1 ] || die "the release is not signed with a ControlZit release key"
+[ $OK = 1 ] || die "the release is not signed with an RMMZit release key"
 
 # The server package of this distribution's format, with its checksum (the
 # manifest has one "key": value per line).
@@ -105,14 +105,14 @@ eval "$(awk -v fmt="$FORMAT" '
 ' "$WORK/manifest.json")"
 case "$REL_VERSION" in *[!0-9.]*|"") die "the release manifest has no valid version" ;; esac
 case "$PKG" in ""|*/*|*..*) die "the release has no $FORMAT server package" ;; esac
-say "ControlZit $REL_VERSION: $PKG"
+say "RMMZit $REL_VERSION: $PKG"
 curl -fsSL -o "$WORK/$PKG" "$BASE/$PKG" || die "download of $PKG failed"
 echo "$PKG_SHA  $WORK/$PKG" | sha256sum -c - >/dev/null || die "the checksum of $PKG does not match the signed release"
 
 FRESH=1
-[ -f /etc/controlzit/server.env ] && ! grep -q 'CHANGE_ME' /etc/controlzit/server.env && FRESH=0
+[ -f /etc/rmmzit/server.env ] && ! grep -q 'CHANGE_ME' /etc/rmmzit/server.env && FRESH=0
 
-say "Installing ControlZit $REL_VERSION"
+say "Installing RMMZit $REL_VERSION"
 chmod 644 "$WORK/$PKG"
 if [ $PM = apt ]; then
     apt-get install -y -q "$WORK/$PKG"
@@ -121,7 +121,7 @@ else
 fi
 
 if [ $FRESH = 1 ]; then
-    ENV=/etc/controlzit/server.env
+    ENV=/etc/rmmzit/server.env
     if [ -z "$DB_URL" ]; then
         say "Setting up PostgreSQL"
         if [ $PM = dnf ] && [ ! -f /var/lib/pgsql/data/PG_VERSION ]; then
@@ -131,16 +131,16 @@ if [ $FRESH = 1 ]; then
         fi
         systemctl enable --now postgresql
         DB_PASS=$(head -c 32 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c 24)
-        su postgres -s /bin/sh -c "cd /; psql -qc \"SET password_encryption = 'scram-sha-256'; CREATE USER controlzit PASSWORD '$DB_PASS';\"" 2>/dev/null ||
-            su postgres -s /bin/sh -c "cd /; psql -qc \"SET password_encryption = 'scram-sha-256'; ALTER USER controlzit PASSWORD '$DB_PASS';\""
-        su postgres -s /bin/sh -c "cd /; createdb -O controlzit controlzit" 2>/dev/null || true
-        DB_URL="postgres://controlzit:$DB_PASS@127.0.0.1:5432/controlzit?sslmode=disable"
+        su postgres -s /bin/sh -c "cd /; psql -qc \"SET password_encryption = 'scram-sha-256'; CREATE USER rmmzit PASSWORD '$DB_PASS';\"" 2>/dev/null ||
+            su postgres -s /bin/sh -c "cd /; psql -qc \"SET password_encryption = 'scram-sha-256'; ALTER USER rmmzit PASSWORD '$DB_PASS';\""
+        su postgres -s /bin/sh -c "cd /; createdb -O rmmzit rmmzit" 2>/dev/null || true
+        DB_URL="postgres://rmmzit:$DB_PASS@127.0.0.1:5432/rmmzit?sslmode=disable"
     fi
     tmp=$(mktemp)
-    grep -v '^CONTROLZIT_DB=' "$ENV" > "$tmp" || true
-    { cat "$tmp"; echo "CONTROLZIT_DB=$DB_URL"; } > "$ENV"
+    grep -v '^RMMZIT_DB=' "$ENV" > "$tmp" || true
+    { cat "$tmp"; echo "RMMZIT_DB=$DB_URL"; } > "$ENV"
     rm -f "$tmp"
-    chown root:controlzit "$ENV"
+    chown root:rmmzit "$ENV"
     chmod 640 "$ENV"
 fi
 
@@ -160,20 +160,20 @@ elif command -v ufw >/dev/null 2>&1 && ufw status 2>/dev/null | grep -q 'Status:
     ufw allow 8443/tcp >/dev/null && ufw allow 8444/tcp >/dev/null
 fi
 
-systemctl enable controlzit-server >/dev/null 2>&1 || true
-systemctl restart controlzit-server
+systemctl enable rmmzit-server >/dev/null 2>&1 || true
+systemctl restart rmmzit-server
 for i in $(seq 60); do
     curl -fsk -o /dev/null https://127.0.0.1:8443/login && break
     sleep 1
 done
-curl -fsk -o /dev/null https://127.0.0.1:8443/login || die "the console did not start; see: journalctl -u controlzit-server"
+curl -fsk -o /dev/null https://127.0.0.1:8443/login || die "the console did not start; see: journalctl -u rmmzit-server"
 
 IP=$(ip -4 route get 1.1.1.1 2>/dev/null | awk '{for (i = 1; i <= NF; i++) if ($i == "src") print $(i + 1)}')
 echo
-say "ControlZit $REL_VERSION is running"
+say "RMMZit $REL_VERSION is running"
 echo "  Web console:  https://${IP:-<this server>}:8443"
-if [ -f /var/lib/controlzit/setup-token.txt ]; then
-    echo "  Setup token:  $(cat /var/lib/controlzit/setup-token.txt)"
+if [ -f /var/lib/rmmzit/setup-token.txt ]; then
+    echo "  Setup token:  $(cat /var/lib/rmmzit/setup-token.txt)"
     echo "  Open the console, enter the setup token and create the first administrator."
 fi
 echo "  The browser warns about the certificate once; see Settings -> Certificate for a trusted one."

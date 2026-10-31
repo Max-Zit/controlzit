@@ -1,27 +1,27 @@
 #!/bin/sh
-# Makes the ControlZit appliance installer: the official Debian netinst ISO
+# Makes the RMMZit appliance installer: the official Debian netinst ISO
 # with an unattended installation (preseed.cfg) that installs Debian,
-# PostgreSQL and the given ControlZit server package.
+# PostgreSQL and the given RMMZit server package.
 #
-#   ./build-iso.sh controlzit-server_X_amd64.deb [debian-netinst.iso]
+#   ./build-iso.sh rmmzit-server_X_amd64.deb [debian-netinst.iso]
 #
 # OUT=file chooses the output, IMAGE=1 makes the variant build-images.sh
 # installs into a VM (it powers off at the end instead of restarting).
 # Needs xorriso, isolinux, cpio, gzip and wget (Debian / Proxmox host).
 set -eu
 
-pkg=$(readlink -f "${1:?usage: build-iso.sh controlzit-server_X_amd64.deb [debian-netinst.iso]}")
-ver=$(basename "$pkg" | sed -n 's/^controlzit-server_\([0-9.]*\)_.*/\1/p')
-[ -n "$ver" ] || { echo "not a controlzit-server package: $pkg" >&2; exit 1; }
+pkg=$(readlink -f "${1:?usage: build-iso.sh rmmzit-server_X_amd64.deb [debian-netinst.iso]}")
+ver=$(basename "$pkg" | sed -n 's/^rmmzit-server_\([0-9.]*\)_.*/\1/p')
+[ -n "$ver" ] || { echo "not a rmmzit-server package: $pkg" >&2; exit 1; }
 src=$(cd "$(dirname "$0")" && pwd)
-out=${OUT:-$PWD/controlzit-appliance-$ver.iso}
+out=${OUT:-$PWD/rmmzit-appliance-$ver.iso}
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 
 # fetch_netinst downloads the current Debian netinst ISO once (cached) and
 # checks it against Debian's SHA256SUMS.
 fetch_netinst() {
-    cache=/var/cache/controlzit-appliance/debian-netinst.iso
+    cache=/var/cache/rmmzit-appliance/debian-netinst.iso
     if [ ! -f "$cache" ]; then
         mkdir -p "$(dirname "$cache")"
         mirror=https://cdimage.debian.org/debian-cd/current/amd64/iso-cd
@@ -39,12 +39,12 @@ xorriso -osirrox on -indev "$netinst" -extract / "$tmp/cd" >/dev/null 2>&1
 chmod -R u+w "$tmp/cd"
 
 # Our files on the CD; the preseed copies them into the new system.
-mkdir "$tmp/cd/controlzit"
-cp "$pkg" "$src/install.sh" "$src/controlzit-firstboot" "$src/controlzit-firstboot.service" "$src/SOURCE-CODE.txt" "$tmp/cd/controlzit/"
+mkdir "$tmp/cd/rmmzit"
+cp "$pkg" "$src/install.sh" "$src/rmmzit-firstboot" "$src/rmmzit-firstboot.service" "$src/SOURCE-CODE.txt" "$tmp/cd/rmmzit/"
 cp "$src/SOURCE-CODE.txt" "$tmp/cd/"
 cp "$src/preseed.cfg" "$tmp/preseed.cfg"
 if [ "${IMAGE:-0}" = 1 ]; then
-    touch "$tmp/cd/controlzit/IMAGE"
+    touch "$tmp/cd/rmmzit/IMAGE"
     sed -i 's#^d-i debian-installer/exit/poweroff boolean false#d-i debian-installer/exit/poweroff boolean true#' "$tmp/preseed.cfg"
 fi
 
@@ -56,15 +56,15 @@ cp "$tmp/preseed.cfg" "$tmp/initrd/preseed.cfg"
 
 # Boot menus for BIOS (isolinux) and UEFI (grub): the installation starts
 # by itself after 5 seconds.
-title="ControlZit appliance $ver (erases the first disk)"
+title="RMMZit appliance $ver (erases the first disk)"
 printf 'path\ninclude menu.cfg\ndefault vesamenu.c32\nprompt 0\ntimeout 50\n' > "$tmp/cd/isolinux/isolinux.cfg"
 cat > "$tmp/cd/isolinux/menu.cfg" <<EOF
 menu hshift 4
 menu width 70
-menu title ControlZit appliance installer
+menu title RMMZit appliance installer
 include stdmenu.cfg
-default controlzit
-label controlzit
+default rmmzit
+label rmmzit
 	menu label ^Install $title
 	menu default
 	kernel /install.amd/vmlinuz
@@ -81,7 +81,7 @@ menuentry "Install $title" {
 EOF
 
 (cd "$tmp/cd" && find . -type f ! -name md5sum.txt ! -path './isolinux/*' -print0 | xargs -0 md5sum > md5sum.txt)
-xorriso -as mkisofs -r -V "ControlZit $ver" -o "$out" -J -joliet-long -cache-inodes \
+xorriso -as mkisofs -r -V "RMMZit $ver" -o "$out" -J -joliet-long -cache-inodes \
     -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin \
     -b isolinux/isolinux.bin -c isolinux/boot.cat -boot-load-size 4 -boot-info-table -no-emul-boot \
     -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat \

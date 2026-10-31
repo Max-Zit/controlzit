@@ -13,7 +13,7 @@ import (
 
 	"github.com/coder/websocket"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // Pacing: at most this many frames per second, and at most maxInFlight
@@ -29,7 +29,7 @@ const (
 func Serve(ctx context.Context, ws *websocket.Conn, technician string, notice, clipboard bool, log *slog.Logger) error {
 	setDPIAware()
 	if notice {
-		banner := ShowBanner("ControlZit: " + technician + " is connected to this computer")
+		banner := ShowBanner("RMMZit: " + technician + " is connected to this computer")
 		defer banner.Close()
 		if banner.hwnd == 0 {
 			log.Error("the on-screen notice could not be shown", "err", banner.Err)

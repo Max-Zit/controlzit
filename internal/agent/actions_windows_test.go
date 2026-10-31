@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 func TestListServicesAndProcesses(t *testing.T) {

@@ -24,7 +24,7 @@ func signed(t *testing.T, m Manifest) ([]byte, []byte, string) {
 }
 
 func TestVerify(t *testing.T) {
-	m := Manifest{Product: "controlzit", Version: "0.3.0", Files: []File{{Name: "controlzit-server_0.3.0_amd64.deb", SHA256: strings.Repeat("a", 64), Kind: "server", Format: "deb"}}}
+	m := Manifest{Product: "rmmzit", Version: "0.3.0", Files: []File{{Name: "rmmzit-server_0.3.0_amd64.deb", SHA256: strings.Repeat("a", 64), Kind: "server", Format: "deb"}}}
 	raw, sig, key := signed(t, m)
 	got, err := Verify(raw, sig, []string{key})
 	if err != nil || got.Version != "0.3.0" || got.Find("server", "deb", "") == nil {
@@ -39,8 +39,8 @@ func TestVerify(t *testing.T) {
 	}
 	for _, bad := range []Manifest{
 		{Product: "backupzit", Version: "0.3.0"},
-		{Product: "controlzit", Version: "0.3.0; rm -rf /"},
-		{Product: "controlzit", Version: "0.3.0", Files: []File{{Name: "../evil.deb", SHA256: strings.Repeat("a", 64)}}},
+		{Product: "rmmzit", Version: "0.3.0; rm -rf /"},
+		{Product: "rmmzit", Version: "0.3.0", Files: []File{{Name: "../evil.deb", SHA256: strings.Repeat("a", 64)}}},
 	} {
 		raw, sig, key := signed(t, bad)
 		if _, err := Verify(raw, sig, []string{key}); err == nil {
@@ -53,7 +53,7 @@ func TestFetchAndDownload(t *testing.T) {
 	pkg := []byte("package bytes")
 	h := sha256.Sum256(pkg)
 	pub, priv, _ := ed25519.GenerateKey(rand.Reader)
-	m := Manifest{Product: "controlzit", Version: "0.4.0", Files: []File{{Name: "controlzit-server_0.4.0_amd64.deb", SHA256: hex.EncodeToString(h[:]), Size: int64(len(pkg)), Kind: "server", Format: "deb"}}}
+	m := Manifest{Product: "rmmzit", Version: "0.4.0", Files: []File{{Name: "rmmzit-server_0.4.0_amd64.deb", SHA256: hex.EncodeToString(h[:]), Size: int64(len(pkg)), Kind: "server", Format: "deb"}}}
 	raw, _ := json.Marshal(m)
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch {

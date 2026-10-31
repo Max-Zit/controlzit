@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // severityRank orders severities (for filters and sorting).

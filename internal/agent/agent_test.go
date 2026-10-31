@@ -65,14 +65,18 @@ func TestKeyPersists(t *testing.T) {
 func TestEnrollCode(t *testing.T) {
 	d := EnrollData{Server: "https://rmm.example.com:8444/", Fingerprint: strings.Repeat("AB", 32), Token: "czet_x"}
 	code := MakeEnrollCode(d)
-	if !strings.HasPrefix(code, "CZ1-") || strings.ContainsAny(code, "+/= ") {
+	if !strings.HasPrefix(code, "RZ1-") || strings.ContainsAny(code, "+/= ") {
 		t.Fatalf("code %q", code)
 	}
 	got, err := ParseEnrollCode(" " + code + "\n")
 	if err != nil || got.Server != "https://rmm.example.com:8444" || got.Fingerprint != strings.Repeat("ab", 32) || got.Token != "czet_x" {
 		t.Fatalf("parse: %+v %v", got, err)
 	}
-	for _, bad := range []string{"", "CZ1-", "CZ1-!!!", "BZ1-abc", MakeEnrollCode(EnrollData{Server: "http://x:1", Fingerprint: d.Fingerprint, Token: "t"})} {
+	// Codes of consoles from before the rename to RMMZit.
+	if got, err := ParseEnrollCode("CZ1-" + strings.TrimPrefix(code, "RZ1-")); err != nil || got.Token != "czet_x" {
+		t.Fatalf("old code: %+v %v", got, err)
+	}
+	for _, bad := range []string{"", "RZ1-", "RZ1-!!!", "CZ1-", "BZ1-abc", MakeEnrollCode(EnrollData{Server: "http://x:1", Fingerprint: d.Fingerprint, Token: "t"})} {
 		if _, err := ParseEnrollCode(bad); err == nil {
 			t.Errorf("%q accepted", bad)
 		}

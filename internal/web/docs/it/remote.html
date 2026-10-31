@@ -27,7 +27,7 @@
 <p><b>File</b> esplora le unità del computer senza collegarsi allo schermo. Carica file (fino a 4 GB), scarica file, scarica una cartella o una selezione come ZIP, crea cartelle, rinomina ed elimina. L'agent esegue ogni operazione sui file come SYSTEM (Windows) o root (Linux); ognuna viene scritta nel log di audit con il tuo nome.</p>
 
 <h2 id="processes">Processi e servizi</h2>
-<p><b>Processi</b> elenca i programmi in esecuzione con memoria, thread e sessione e termina un processo. <b>Servizi</b> elenca i servizi (servizi Windows o unità systemd) e li avvia, arresta o riavvia. L'agent ControlZit si protegge da solo: non può essere arrestato o terminato dalla console.</p>
+<p><b>Processi</b> elenca i programmi in esecuzione con memoria, thread e sessione e termina un processo. <b>Servizi</b> elenca i servizi (servizi Windows o unità systemd) e li avvia, arresta o riavvia. L'agent RMMZit si protegge da solo: non può essere arrestato o terminato dalla console.</p>
 
 <h2 id="registry">Editor del registro (Windows)</h2>
 <p>La scheda <b>Registry</b> di un dispositivo Windows sfoglia il registro: apri una chiave dal suo percorso (per esempio <code>HKLM\SOFTWARE\Vendor</code>) o naviga dalle radici HKLM, HKU, HKCR e HKCC. I valori si possono aggiungere, modificare ed eliminare (REG_SZ, REG_EXPAND_SZ, REG_DWORD, REG_QWORD, REG_MULTI_SZ; numeri in decimale o in esadecimale 0x); i valori binari sono mostrati in esadecimale. Le chiavi si possono creare ed eliminare con tutto il contenuto; le radici, le chiavi subito sotto e i rami propri del sistema sono protetti. Ogni modifica viene scritta nel registro di controllo con il valore sostituito. I registri degli utenti sono sotto HKU (per SID); HKCU sarebbe quello di SYSTEM. Agenti 0.12 e successivi.</p>

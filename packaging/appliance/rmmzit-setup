@@ -1,10 +1,10 @@
 #!/bin/sh
-# ControlZit appliance setup menu (on the server's own screen, as root via
+# RMMZit appliance setup menu (on the server's own screen, as root via
 # sudo). Network and time zone go through the same root helper as the web
 # console, so the checks and the automatic undo are the same.
-DATA=/var/lib/controlzit
+DATA=/var/lib/rmmzit
 HELPER=$DATA/helper
-T="ControlZit appliance"
+T="RMMZit appliance"
 
 msg() { whiptail --title "$T" --msgbox "$1" 16 74; }
 
@@ -13,10 +13,10 @@ ask_helper() {
     mkdir -p "$HELPER"
     before=$(stat -c %Y "$HELPER/result.json" 2>/dev/null || echo 0)
     printf '%s' "$1" > "$HELPER/request.json.tmp" && mv "$HELPER/request.json.tmp" "$HELPER/request.json"
-    chown controlzit:controlzit "$HELPER/request.json" 2>/dev/null
-    # The helper starts by itself (controlzit-helper.path); run it here too
+    chown rmmzit:rmmzit "$HELPER/request.json" 2>/dev/null
+    # The helper starts by itself (rmmzit-helper.path); run it here too
     # in case the path unit is not active.
-    /usr/bin/controlzit-server --helper --data-dir "$DATA" >/dev/null 2>&1
+    /usr/bin/rmmzit-server --helper --data-dir "$DATA" >/dev/null 2>&1
     i=0
     while [ $i -lt 90 ]; do
         now=$(stat -c %Y "$HELPER/result.json" 2>/dev/null || echo 0)
@@ -80,18 +80,18 @@ $tok"
 
 
 restore_backup() {
-    newest=$(ls -1t "$DATA"/backups/controlzit-backup-*.czb 2>/dev/null | head -1)
+    newest=$(ls -1t "$DATA"/backups/rmmzit-backup-*.czb 2>/dev/null | head -1)
     f=$(whiptail --title "$T" --inputbox "Backup file to restore (copy it to the appliance first, e.g. with scp to /tmp)" 10 74 "$newest" 3>&1 1>&2 2>&3) || return
     [ -f "$f" ] || { msg "No such file: $f"; return; }
     pass=$(whiptail --title "$T" --passwordbox "Passphrase of the backup (empty when it is not encrypted)" 10 74 3>&1 1>&2 2>&3) || return
     whiptail --title "$T" --yesno "Replace the whole console (database, keys, certificates) with this backup?\n\n$f" 12 74 || return
-    work=$(mktemp -d "$DATA/restore.XXXXXX") && chown controlzit "$work" && chmod 700 "$work" || { msg "Cannot prepare the restore."; return; }
-    cp "$f" "$work/backup.czb" && printf '%s' "$pass" > "$work/pass" && chown controlzit "$work/backup.czb" "$work/pass" && chmod 600 "$work/pass"
-    systemctl stop controlzit-server
-    if out=$(su controlzit -s /bin/sh -c "set -a; . /etc/controlzit/server.env; /usr/bin/controlzit-server --data-dir $DATA --restore $work/backup.czb --restore-passphrase-file $work/pass" 2>&1); then
-        rm -rf "$work"; systemctl start controlzit-server; msg "$out"
+    work=$(mktemp -d "$DATA/restore.XXXXXX") && chown rmmzit "$work" && chmod 700 "$work" || { msg "Cannot prepare the restore."; return; }
+    cp "$f" "$work/backup.czb" && printf '%s' "$pass" > "$work/pass" && chown rmmzit "$work/backup.czb" "$work/pass" && chmod 600 "$work/pass"
+    systemctl stop rmmzit-server
+    if out=$(su rmmzit -s /bin/sh -c "set -a; . /etc/rmmzit/server.env; /usr/bin/rmmzit-server --data-dir $DATA --restore $work/backup.czb --restore-passphrase-file $work/pass" 2>&1); then
+        rm -rf "$work"; systemctl start rmmzit-server; msg "$out"
     else
-        rm -rf "$work"; systemctl start controlzit-server; msg "The restore failed:\n\n$(echo "$out" | tail -5)"
+        rm -rf "$work"; systemctl start rmmzit-server; msg "The restore failed:\n\n$(echo "$out" | tail -5)"
     fi
 }
 
@@ -102,7 +102,7 @@ while true; do
         3 "Time zone" \
         4 "Console address and setup token" \
         5 "Allow the console from all private networks again" \
-        6 "Restart ControlZit" \
+        6 "Restart RMMZit" \
         7 "Restore a backup" \
         8 "Command line" \
         9 "Restart the appliance" \
@@ -112,9 +112,9 @@ while true; do
     2) server_name ;;
     3) time_zone ;;
     4) console_info ;;
-    5) su controlzit -s /bin/sh -c "set -a; . /etc/controlzit/server.env; /usr/bin/controlzit-server --data-dir $DATA --reset-allowlist" >/dev/null 2>&1 &&
-           systemctl restart controlzit-server && msg "The console allows the private networks again." || msg "That did not work; see journalctl -u controlzit-server." ;;
-    6) systemctl restart controlzit-server && msg "ControlZit restarted." ;;
+    5) su rmmzit -s /bin/sh -c "set -a; . /etc/rmmzit/server.env; /usr/bin/rmmzit-server --data-dir $DATA --reset-allowlist" >/dev/null 2>&1 &&
+           systemctl restart rmmzit-server && msg "The console allows the private networks again." || msg "That did not work; see journalctl -u rmmzit-server." ;;
+    6) systemctl restart rmmzit-server && msg "RMMZit restarted." ;;
     7) restore_backup ;;
     8) exit 0 ;;
     9) whiptail --title "$T" --yesno "Restart the appliance now?" 8 60 && systemctl reboot ;;

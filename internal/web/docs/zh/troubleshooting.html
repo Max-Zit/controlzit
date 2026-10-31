@@ -3,9 +3,9 @@
 
 <h2 id="console">无法访问控制台</h2>
 <ul>
-  <li>您的地址可能不在允许的网络中：连接在 TLS 之前即被关闭，因此浏览器显示连接错误。在服务器上运行 <code>controlzit-server --reset-allowlist</code>（设备：设置菜单第 5 项）可重新允许所有私有网络。</li>
+  <li>您的地址可能不在允许的网络中：连接在 TLS 之前即被关闭，因此浏览器显示连接错误。在服务器上运行 <code>rmmzit-server --reset-allowlist</code>（设备：设置菜单第 5 项）可重新允许所有私有网络。</li>
   <li>更改端口后，请在新端口上打开控制台。</li>
-  <li>检查服务器上的服务：<code>systemctl status controlzit-server</code> 和 <code>journalctl -u controlzit-server</code>。</li>
+  <li>检查服务器上的服务：<code>systemctl status rmmzit-server</code> 和 <code>journalctl -u rmmzit-server</code>。</li>
 </ul>
 
 <h2 id="signin">登录问题</h2>
@@ -21,7 +21,7 @@
   <li>计算机能否访问代理端口？在 Windows 上：<code>Test-NetConnection rmm.example.com -Port 8444</code>。</li>
   <li>代理公网地址是否正确？在通过 localhost 打开控制台时创建的注册码会把代理指向错误的服务器；请设置地址并创建新的注册码。</li>
   <li>注册码是否仍然有效且未用完？</li>
-  <li>代理日志：Windows <code>C:\ProgramData\ControlZit Agent\agent.log</code>，Linux <code>/var/lib/controlzit-agent/agent.log</code> 和 <code>journalctl -u controlzit-agent</code>；对于已连接的设备，可在控制台的<b>文件</b>中打开。在 Windows 上，时钟旁的图标显示连接状态。</li>
+  <li>代理日志：Windows <code>C:\ProgramData\RMMZit Agent\agent.log</code>，Linux <code>/var/lib/rmmzit-agent/agent.log</code> 和 <code>journalctl -u rmmzit-agent</code>；对于已连接的设备，可在控制台的<b>文件</b>中打开。在 Windows 上，时钟旁的图标显示连接状态。</li>
 </ul>
 
 <h2 id="rd">远程桌面什么都不显示</h2>
@@ -41,11 +41,13 @@
 <p>在<a href="/settings/monitoring">设置 → 监控与警报</a>中使用<b>发送测试邮件</b>；消息会显示服务器的响应。密码只通过 STARTTLS 或 TLS 发送。</p>
 
 <h2 id="faq">常见问题</h2>
-<h3 id="faq-cloud">ControlZit 需要云服务吗？</h3>
+<h3 id="faq-cloud">RMMZit 需要云服务吗？</h3>
 <p>不需要。一切都在您的服务器上运行；不会向 MaxZit 发送任何内容。服务器只会检查 GitHub 上是否有新版本。</p>
-<h3 id="faq-backup">如何备份 ControlZit？</h3>
+<h3 id="faq-backup">如何备份 RMMZit？</h3>
 <p>在<a href="/settings/backup">设置 → 控制台备份</a>中，服务器每天备份其数据库、密钥和证书，可选择加密并复制到 SFTP 服务器。请在服务器之外保留一份副本：没有密钥，已保存的密码无法解密，代理也不会信任新服务器。</p>
 <h3 id="faq-move">可以把服务器迁移到新机器吗？</h3>
-<p>可以：在新机器上安装 ControlZit，并在那里恢复控制台备份（<code>controlzit-server -restore 文件</code>，在设备镜像上为设置菜单第 7 项）。保持相同的地址，或修改代理的公共地址并将旧名称指向新机器；由于备份包含服务器证书，代理会继续工作。</p>
+<p>可以：在新机器上安装 RMMZit，并在那里恢复控制台备份（<code>rmmzit-server -restore 文件</code>，在设备镜像上为设置菜单第 7 项）。保持相同的地址，或修改代理的公共地址并将旧名称指向新机器；由于备份包含服务器证书，代理会继续工作。</p>
+<h3 id="faq-name">RMMZit 就是以前的 ControlZit 吗？</h3>
+<p>是的。在 0.12 版本之前，RMMZit 名为 ControlZit。ControlZit 的安装会像升级到任何新版本一样更新到 RMMZit：数据、代理及其注册，以及以 <code>CZ1-</code> 开头的注册码都会继续有效。</p>
 <h3 id="faq-mac">有 macOS 代理吗？</h3>
 <p>暂时没有。支持 Windows 和 Linux（x86-64、ARM64）。</p>

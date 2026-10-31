@@ -6,7 +6,7 @@
 <div class="settings-body">
 <section class="panel">
   <h2>{{template "icon" "users"}}{{.T "Active Directory / LDAP"}}</h2>
-  <p class="muted">{{.T "Users sign in with their directory account. The directory checks the password; ControlZit still asks for its own second factor. Local accounts keep working, so an administrator can always sign in."}}</p>
+  <p class="muted">{{.T "Users sign in with their directory account. The directory checks the password; RMMZit still asks for its own second factor. Local accounts keep working, so an administrator can always sign in."}}</p>
   <form method="post" action="/settings/ldap" class="stack">
     <label class="check"><input type="checkbox" name="enabled" value="1" {{if .Data.S.Enabled}}checked{{end}}>{{.T "Sign-in with the directory"}}</label>
     <div class="cols">
@@ -15,7 +15,7 @@
     </div>
     <label>{{.T "CA certificate"}} <small>{{.T "optional: when the directory's certificate comes from a company CA"}}</small><textarea name="ca_cert" rows="3" class="mono" spellcheck="false" placeholder="-----BEGIN CERTIFICATE-----">{{.Data.S.CACert}}</textarea></label>
     <div class="cols">
-      <label>{{.T "Service account (DN or user@domain)"}}<input name="bind_dn" value="{{.Data.S.BindDN}}" class="mono" spellcheck="false" placeholder="svc-controlzit@example.local"></label>
+      <label>{{.T "Service account (DN or user@domain)"}}<input name="bind_dn" value="{{.Data.S.BindDN}}" class="mono" spellcheck="false" placeholder="svc-rmmzit@example.local"></label>
       <label>{{.T "Its password"}} <small>{{if .Data.HasPass}}{{.T "saved; enter a new one to replace it"}}{{end}}</small><input type="password" name="bind_password" autocomplete="new-password"></label>
     </div>
     <label>{{.T "Base DN"}}<input name="base_dn" value="{{.Data.S.BaseDN}}" class="mono" spellcheck="false" placeholder="DC=example,DC=local"></label>
@@ -27,7 +27,7 @@
 </section>
 <section class="panel">
   <h2>{{.T "Test"}}</h2>
-  <p class="muted small">{{.T "Checks a directory account with the saved settings, without signing in: what ControlZit would make of it."}}</p>
+  <p class="muted small">{{.T "Checks a directory account with the saved settings, without signing in: what RMMZit would make of it."}}</p>
   <form method="post" action="/settings/ldap/test" class="row">
     <input name="test_user" placeholder="{{.T "Username"}}" aria-label="{{.T "Username"}}" autocomplete="off" spellcheck="false">
     <input type="password" name="test_password" placeholder="{{.T "Password"}}" aria-label="{{.T "Password"}}" autocomplete="off">

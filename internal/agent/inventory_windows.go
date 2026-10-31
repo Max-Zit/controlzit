@@ -14,7 +14,7 @@ import (
 	"time"
 	"unicode/utf16"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 //go:embed inventory.ps1

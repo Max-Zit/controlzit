@@ -1,4 +1,4 @@
-// Package proto defines the messages between the ControlZit agent and
+// Package proto defines the messages between the RMMZit agent and
 // server.
 //
 // Enrollment: the agent creates an ed25519 key and a self-signed client
@@ -217,7 +217,11 @@ func NormalizeFingerprint(s string) string {
 
 // EnrollCodePrefix marks an enrollment code: everything an installer needs
 // (server address, certificate fingerprint, token) in one string.
-const EnrollCodePrefix = "CZ1-"
+const EnrollCodePrefix = "RZ1-"
+
+// LegacyEnrollCodePrefix marks the codes of consoles from before RMMZit;
+// agents still accept them.
+const LegacyEnrollCodePrefix = "CZ1-"
 
 // EnrollData is what an enrollment code carries.
 type EnrollData struct {
@@ -226,7 +230,7 @@ type EnrollData struct {
 	Token       string `json:"t"`
 }
 
-// MakeEnrollCode encodes the data as CZ1-<base64url JSON>.
+// MakeEnrollCode encodes the data as RZ1-<base64url JSON>.
 func MakeEnrollCode(d EnrollData) string {
 	b, _ := json.Marshal(d)
 	return EnrollCodePrefix + base64.RawURLEncoding.EncodeToString(b)

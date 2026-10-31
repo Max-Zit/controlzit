@@ -6,12 +6,12 @@
 <ul>
   <li><b>控制台</b>——监听地址和端口（默认 <code>:8443</code>）以及<b>允许的网络</b>：每行一个 IP 地址或网络（CIDR）。来自其他地址的连接在 TLS 之前即被关闭；服务器本身（127.0.0.1）始终允许。保存时会拒绝会把您自己的地址锁在外面的列表。</li>
   <li><b>代理端点</b>——监听地址和端口（默认 <code>:8444</code>，必须与控制台不同）、允许代理来源的网络（留空 = 全部），以及写入安装程序和注册码的<b>代理公网地址</b>。</li>
-  <li>新端口在<b>立即重启</b>后生效（重启 ControlZit 服务；代理会自动重新连接）。</li>
+  <li>新端口在<b>立即重启</b>后生效（重启 RMMZit 服务；代理会自动重新连接）。</li>
 </ul>
-<p>如果把自己锁在外面，请在服务器上运行 <code>controlzit-server --reset-allowlist</code>（设备：设置菜单第 5 项）。</p>
+<p>如果把自己锁在外面，请在服务器上运行 <code>rmmzit-server --reset-allowlist</code>（设备：设置菜单第 5 项）。</p>
 
 <h3 id="server-network">服务器网络（设备）</h3>
-<p>在 ControlZit 设备上，这里还可以设置服务器本身的网络：DHCP 或带网络大小的固定地址（例如 <code>192.168.1.20/24</code>）、网关、一到三个 DNS 服务器以及服务器名称。如果网关在新设置下没有响应，30 秒后会自动恢复之前的设置。在其他安装中，网络由操作系统管理。</p>
+<p>在 RMMZit 设备上，这里还可以设置服务器本身的网络：DHCP 或带网络大小的固定地址（例如 <code>192.168.1.20/24</code>）、网关、一到三个 DNS 服务器以及服务器名称。如果网关在新设置下没有响应，30 秒后会自动恢复之前的设置。在其他安装中，网络由操作系统管理。</p>
 
 <h3 id="timezone">时区</h3>
 <p>计划（更新、脚本、报告）以及控制台中的时间都使用服务器的时区。从列表中选择并点击<b>设置</b>；控制台会重启并在几秒后恢复。没有 root 助手（见下文）时，请在服务器上设置：<code>timedatectl set-timezone Asia/Shanghai</code>。</p>
@@ -30,7 +30,7 @@
 </ul>
 
 <h2 id="server-updates">服务器更新</h2>
-<p><a href="/settings/version">设置 → ControlZit 更新</a>显示正在运行的版本和最新版本。<b>安装</b>会更新服务器：只安装使用 ControlZit 发布密钥签名的版本；安装前服务器会备份数据库和程序，如果新版本无法启动，会自动回退到旧版本。控制台会中断一两分钟。可选：在选定的小时自动安装新版本。</p>
+<p><a href="/settings/version">设置 → RMMZit 更新</a>显示正在运行的版本和最新版本。<b>安装</b>会更新服务器：只安装使用 RMMZit 发布密钥签名的版本；安装前服务器会备份数据库和程序，如果新版本无法启动，会自动回退到旧版本。控制台会中断一两分钟。可选：在选定的小时自动安装新版本。</p>
 <p><b>更新通道</b>：<i>正式版本</i>（默认）或<i>测试</i>，测试通道会在候选版本成为正式版本之前将其提供给测试控制台。生产控制台请保持使用正式版本。</p>
 <div class="callout"><p>更新、时区和网络需要随 Linux 软件包和设备提供的 <b>root 助手</b>。没有它时（例如单独的程序），请使用 <code>install.sh</code> 或该版本的软件包进行更新。</p></div>
 
@@ -38,7 +38,7 @@
 <p>请参阅<a href="/docs/agents#updates">安装代理 → 代理更新</a>。</p>
 
 <h2 id="diagnostics">诊断</h2>
-<p><a href="/settings/diagnostics">设置 → 诊断</a>显示 ControlZit 写入日志的位置、服务器日志的最新行（可按级别或文本筛选）、root 助手的日志以及版本。<b>下载诊断信息（ZIP）</b>会创建一个用于技术支持的文件，包含日志、版本和设置摘要、设备、警报和审计日志。所有显示内容和文件中都会去除密码、令牌、注册码和密钥；不包含脚本及其输出。</p>
+<p><a href="/settings/diagnostics">设置 → 诊断</a>显示 RMMZit 写入日志的位置、服务器日志的最新行（可按级别或文本筛选）、root 助手的日志以及版本。<b>下载诊断信息（ZIP）</b>会创建一个用于技术支持的文件，包含日志、版本和设置摘要、设备、警报和审计日志。所有显示内容和文件中都会去除密码、令牌、注册码和密钥；不包含脚本及其输出。</p>
 
 <h2 id="fields">自定义字段</h2>
 <p>管理员在<a href="/settings/fields">设置 → 自定义字段</a>中为设备和客户添加自己的字段（文本、数字或日期），例如资产编号、保修截止日期或合同。技术人员在设备和客户页面上填写；API 在每台设备中返回这些字段，并通过 <code>PUT /api/v1/devices/{id}/fields</code> 设置。</p>
@@ -47,7 +47,7 @@
 <p><a href="/settings/backup">设置 → 控制台备份</a> 每天在选定的时间备份控制台，也可点击 <b>立即备份</b> 马上备份。备份包含数据库、已保存密码的密钥、代理信任的证书和密钥以及软件库。最新的备份（数量由您选择）保留在数据目录的 <code>backups</code> 文件夹中，可从页面下载。</p>
 <p>设置<b>密码短语</b>后文件会被加密（AES-256-GCM）；请将密码短语另行保存，因为没有它就无法恢复备份。每个备份的副本可以发送到另一台服务器上的 <b>SFTP 文件夹</b>（密码或私钥）。首次测试连接时会显示需要信任的服务器主机密钥；副本只会发送到具有该密钥的服务器。备份或其复制失败时，告警邮件的收件人会收到邮件。</p>
 <p><b>恢复</b>需在服务器停止时进行：在设备上通过设置菜单（<b>Restore a backup</b>），使用 Linux 软件包时：</p>
-<pre>sudo systemctl stop controlzit-server
-sudo -u controlzit sh -c 'set -a; . /etc/controlzit/server.env; controlzit-server -data-dir /var/lib/controlzit -restore /path/controlzit-backup-….czb'
-sudo systemctl start controlzit-server</pre>
-<p>加密备份的密码短语从 <code>CONTROLZIT_BACKUP_PASSPHRASE</code> 或 <code>-restore-passphrase-file</code> 指定的文件读取。数据库一步恢复（失败则不做任何更改）；较新版本的 ControlZit 会在启动时更新恢复的数据库。从备份恢复的新服务器会保留所有代理，因为它们信任同一证书。</p>
+<pre>sudo systemctl stop rmmzit-server
+sudo -u rmmzit sh -c 'set -a; . /etc/rmmzit/server.env; rmmzit-server -data-dir /var/lib/rmmzit -restore /path/rmmzit-backup-….czb'
+sudo systemctl start rmmzit-server</pre>
+<p>加密备份的密码短语从 <code>RMMZIT_BACKUP_PASSPHRASE</code> 或 <code>-restore-passphrase-file</code> 指定的文件读取。数据库一步恢复（失败则不做任何更改）；较新版本的 RMMZit 会在启动时更新恢复的数据库。从备份恢复的新服务器会保留所有代理，因为它们信任同一证书。</p>

@@ -70,8 +70,8 @@ func TOTPVerify(secret, code string, now time.Time, lastUsed int64) (int64, bool
 
 // TOTPURI is the otpauth:// link an authenticator app reads from the QR code.
 func TOTPURI(secret, account string) string {
-	v := url.Values{"secret": {secret}, "issuer": {"ControlZit"}, "algorithm": {"SHA1"}, "digits": {"6"}, "period": {"30"}}
-	return "otpauth://totp/" + url.PathEscape("ControlZit:"+account) + "?" + v.Encode()
+	v := url.Values{"secret": {secret}, "issuer": {"RMMZit"}, "algorithm": {"SHA1"}, "digits": {"6"}, "period": {"30"}}
+	return "otpauth://totp/" + url.PathEscape("RMMZit:"+account) + "?" + v.Encode()
 }
 
 // QR is a QR code as squares for an inline SVG (no images, CSP friendly).

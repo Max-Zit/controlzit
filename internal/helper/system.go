@@ -54,14 +54,14 @@ func (h *Helper) timeZone(ctx context.Context, req Request, res Result) Result {
 	return res
 }
 
-// ---- network (the ControlZit appliance only)
+// ---- network (the RMMZit appliance only)
 
-// ApplianceMarker exists on the ControlZit appliance (written at its first
+// ApplianceMarker exists on the RMMZit appliance (written at its first
 // start). Elsewhere the server's network belongs to its administrator.
-const ApplianceMarker = "/var/lib/controlzit/.appliance"
+const ApplianceMarker = "/var/lib/rmmzit/.appliance"
 
 // NetworkFile is the systemd-networkd file the appliance uses.
-const NetworkFile = "/etc/systemd/network/50-controlzit.network"
+const NetworkFile = "/etc/systemd/network/50-rmmzit.network"
 
 // NetworkConfig is the wanted network configuration.
 type NetworkConfig struct {
@@ -101,7 +101,7 @@ func (c *NetworkConfig) Validate() error {
 	return nil
 }
 
-// IsAppliance reports whether this is the ControlZit appliance.
+// IsAppliance reports whether this is the RMMZit appliance.
 func IsAppliance(root string) bool {
 	_, err := os.Stat(filepath.Join(root, ApplianceMarker))
 	return err == nil
@@ -110,7 +110,7 @@ func IsAppliance(root string) bool {
 // networkFile renders the systemd-networkd file.
 func networkFile(iface string, c NetworkConfig) string {
 	var b strings.Builder
-	fmt.Fprintf(&b, "# Written by ControlZit (Settings → Network).\n[Match]\nName=%s\n\n[Network]\n", iface)
+	fmt.Fprintf(&b, "# Written by RMMZit (Settings → Network).\n[Match]\nName=%s\n\n[Network]\n", iface)
 	if c.DHCP {
 		b.WriteString("DHCP=ipv4\n")
 	} else {
@@ -155,7 +155,7 @@ func (h *Helper) network(ctx context.Context, req Request, res Result) Result {
 		return res
 	}
 	if !IsAppliance(h.Root) {
-		return fail(errors.New("the network can only be changed on the ControlZit appliance"))
+		return fail(errors.New("the network can only be changed on the RMMZit appliance"))
 	}
 	if req.Network == nil {
 		return fail(errors.New("incomplete request"))

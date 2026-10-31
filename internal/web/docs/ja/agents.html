@@ -8,35 +8,35 @@
 </ul>
 
 <h2 id="codes">登録コード</h2>
-<p>エージェントは登録コードで顧客の<b>拠点</b>に参加します。<a href="/customers">顧客</a>で拠点を開き、<b>登録コードを作成</b>をクリックします。有効期間（1～365 日）と使用できるコンピューターの台数を選びます。コード（<code>CZ1-…</code>）にはサーバーのアドレスと証明書のフィンガープリントが含まれるため、インストーラーには他の情報は不要です。表示は一度だけです。不要になったら取り消してください。</p>
+<p>エージェントは登録コードで顧客の<b>拠点</b>に参加します。<a href="/customers">顧客</a>で拠点を開き、<b>登録コードを作成</b>をクリックします。有効期間（1～365 日）と使用できるコンピューターの台数を選びます。コード（<code>RZ1-…</code>）にはサーバーのアドレスと証明書のフィンガープリントが含まれるため、インストーラーには他の情報は不要です。表示は一度だけです。不要になったら取り消してください。</p>
 
 <h2 id="windows">Windows</h2>
 <p>拠点ページで MSI をダウンロード（<b>エージェントをダウンロード（MSI、64 ビット）</b>）し、ダブルクリックしてコードを貼り付けるか、グループポリシー、Intune、スクリプトなどでサイレントインストールします:</p>
-<pre>msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="CZ1-…"</pre>
-<p>エージェントは Windows サービス <i>ControlZit Agent</i> として動作します。時計の横の小さなアイコンが接続状態（緑）を示し、サーバーとコンピューターの管理者を表示するウィンドウを開きます。</p>
+<pre>msiexec /i rmmzit-agent-x64.msi /qn ENROLLCODE="RZ1-…"</pre>
+<p>エージェントは Windows サービス <i>RMMZit Agent</i> として動作します。時計の横の小さなアイコンが接続状態（緑）を示し、サーバーとコンピューターの管理者を表示するウィンドウを開きます。</p>
 <p>アイコン、そのウィンドウ、再起動の確認は、ユーザーの Windows の表示言語を使います (コンソールの 14 言語のいずれか。それ以外は英語)。</p>
 <p>MSI を使わない場合（管理者として PowerShell）:</p>
-<pre>.\controlzit-agent.exe enroll --code "CZ1-…"
-.\controlzit-agent.exe install</pre>
+<pre>.\rmmzit-agent.exe enroll --code "RZ1-…"
+.\rmmzit-agent.exe install</pre>
 
 <h2 id="linux">Linux</h2>
 <p>拠点ページで Linux エージェント（x86-64、または Raspberry Pi と ARM サーバー向けの ARM64）をダウンロードし、マシンにコピーして root として実行します:</p>
-<pre>chmod +x controlzit-agent-linux-amd64
-sudo ./controlzit-agent-linux-amd64 install --code "CZ1-…"</pre>
-<p>自身を <code>/usr/local/bin/controlzit-agent</code> にコピーし、登録して systemd サービス <code>controlzit-agent</code> を開始します。</p>
+<pre>chmod +x rmmzit-agent-linux-amd64
+sudo ./rmmzit-agent-linux-amd64 install --code "RZ1-…"</pre>
+<p>自身を <code>/usr/local/bin/rmmzit-agent</code> にコピーし、登録して systemd サービス <code>rmmzit-agent</code> を開始します。</p>
 
 <h2 id="updates">エージェントの更新</h2>
 <p>サーバーは自身と同じバージョンのエージェントインストーラーを保持しています。<a href="/settings/agents">設定 → エージェントの更新</a>で古いエージェントを確認し、すべてを一度に更新するか、古いエージェントが接続時に自動更新されるようにできます。個別のエージェントはデバイスページで更新します。エージェントは自身の暗号化接続でインストーラーをダウンロードし、署名付き更新コマンドの SHA-256 と一致する場合にのみインストールします。ここで別のインストーラー（MSI または Linux エージェント）をアップロードすることもできます。</p>
 
 <h2 id="windows-update">管理対象コンピューターの Windows Update</h2>
-<p>エージェントはポリシーで Windows Update の自動インストールをオフにし、更新が ControlZit からのみ（手動またはスケジュールで）届くようにします（<a href="/docs/updates">Windows 更新</a>を参照）。以前の設定は保存され、エージェントを削除すると元に戻ります。</p>
+<p>エージェントはポリシーで Windows Update の自動インストールをオフにし、更新が RMMZit からのみ（手動またはスケジュールで）届くようにします（<a href="/docs/updates">Windows 更新</a>を参照）。以前の設定は保存され、エージェントを削除すると元に戻ります。</p>
 
 <h2 id="remove">エージェントの削除</h2>
-<p>デバイスのページで削除します（<b>デバイスを削除</b>）。オンラインの場合、エージェントは数秒で自身をアンインストールし、Windows Update は元の設定に戻ります。オフラインのコンピューターは今後接続できないため、そこで手動でアンインストールしてください（Windows: <i>アプリ → ControlZit Agent → アンインストール</i>、Linux: <code>sudo controlzit-agent uninstall</code>）。</p>
+<p>デバイスのページで削除します（<b>デバイスを削除</b>）。オンラインの場合、エージェントは数秒で自身をアンインストールし、Windows Update は元の設定に戻ります。オフラインのコンピューターは今後接続できないため、そこで手動でアンインストールしてください（Windows: <i>アプリ → RMMZit Agent → アンインストール</i>、Linux: <code>sudo rmmzit-agent uninstall</code>）。</p>
 
 <h2 id="mass">多数のコンピューター: グループ ポリシーと Intune</h2>
 <p>すべてのコンピューター分の使用回数を持つ登録コードを作成すると、サイト ページにそのコードを埋め込んだ次の内容が表示されます。</p>
 <ul>
-  <li><b>グループ ポリシー</b>: PowerShell のスタートアップ スクリプト。コンピューター アカウント (Domain Computers) が読み取れる共有に MSI を置き、そのパスを入力してスクリプトをコピーし、コンピューターの構成 → ポリシー → Windows の設定 → スクリプト → スタートアップ → PowerShell スクリプト に追加します。エージェント (サービス <code>ControlZitAgent</code>) があるコンピューターではスキップされます。インストール ログは <code>%windir%\Temp\controlzit-agent-install.log</code> です。</li>
-  <li><b>Microsoft Intune</b>: エージェントを Windows アプリ (Win32) として追加します。Microsoft の IntuneWinAppUtil で MSI をパッケージ化し、サイト ページのインストール/アンインストール コマンド、インストールの動作<i>システム</i>、検出規則 (ファイル <code>C:\Program Files\ControlZit Agent\controlzit-agent.exe</code>) を使用します。基幹業務 (LOB) MSI として追加しないでください。エージェントは自動更新されるため、Intune が古いバージョンを再インストールしてしまいます。</li>
+  <li><b>グループ ポリシー</b>: PowerShell のスタートアップ スクリプト。コンピューター アカウント (Domain Computers) が読み取れる共有に MSI を置き、そのパスを入力してスクリプトをコピーし、コンピューターの構成 → ポリシー → Windows の設定 → スクリプト → スタートアップ → PowerShell スクリプト に追加します。エージェント (サービス <code>RMMZitAgent</code>) があるコンピューターではスキップされます。インストール ログは <code>%windir%\Temp\rmmzit-agent-install.log</code> です。</li>
+  <li><b>Microsoft Intune</b>: エージェントを Windows アプリ (Win32) として追加します。Microsoft の IntuneWinAppUtil で MSI をパッケージ化し、サイト ページのインストール/アンインストール コマンド、インストールの動作<i>システム</i>、検出規則 (ファイル <code>C:\Program Files\RMMZit Agent\rmmzit-agent.exe</code>) を使用します。基幹業務 (LOB) MSI として追加しないでください。エージェントは自動更新されるため、Intune が古いバージョンを再インストールしてしまいます。</li>
 </ul>

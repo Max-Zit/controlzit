@@ -35,7 +35,7 @@
 <ul>
   <li><b>Slack</b>——频道的传入 Webhook URL。</li>
   <li><b>Microsoft Teams</b>——频道工作流“收到 Teams Webhook 请求时”及其 URL。</li>
-  <li><b>Webhook</b>——任何接受 JSON POST 的 HTTPS URL（工单系统、自动化）。设置密钥后，每个请求都带有 <code>X-ControlZit-Signature: sha256=&lt;请求体的 HMAC&gt;</code>，接收方可以据此验证请求来自您的服务器。</li>
+  <li><b>Webhook</b>——任何接受 JSON POST 的 HTTPS URL（工单系统、自动化）。设置密钥后，每个请求都带有 <code>X-RMMZit-Signature: sha256=&lt;请求体的 HMAC&gt;</code>，接收方可以据此验证请求来自您的服务器。</li>
 </ul>
 <p>为每个频道选择所有警报或仅严重警报，以及是否也发送已解决的警报。<b>发送测试</b>会发送一条测试消息。频道地址以加密方式存储。</p>
 

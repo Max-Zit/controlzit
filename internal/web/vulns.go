@@ -15,8 +15,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // Vulnerability scanning: the installed programs of all devices are
@@ -411,7 +411,7 @@ func (s *Server) fetchNVD(ctx context.Context, vendor, product string, since, un
 		if err != nil {
 			return nil, err
 		}
-		req.Header.Set("User-Agent", "ControlZit/"+s.Version)
+		req.Header.Set("User-Agent", "RMMZit/"+s.Version)
 		if key != "" {
 			req.Header.Set("apiKey", key)
 		}
@@ -521,7 +521,7 @@ func (s *Server) osvLookup(ctx context.Context, qs []osvQuery) (map[osvQuery][]s
 			return out, err
 		}
 		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("User-Agent", "ControlZit/"+s.Version)
+		req.Header.Set("User-Agent", "RMMZit/"+s.Version)
 		resp, err := osvClient.Do(req) // #nosec G704 -- the OSV address (or a test server)
 		if err != nil {
 			return out, err
@@ -620,7 +620,7 @@ func (s *Server) fetchOSVDetail(ctx context.Context, id string) (osvDetail, erro
 	if err != nil {
 		return osvDetail{}, err
 	}
-	req.Header.Set("User-Agent", "ControlZit/"+s.Version)
+	req.Header.Set("User-Agent", "RMMZit/"+s.Version)
 	resp, err := osvClient.Do(req) // #nosec G704 -- the OSV address (or a test server)
 	if err != nil {
 		return osvDetail{}, err

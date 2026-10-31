@@ -3,9 +3,9 @@
 
 <h2 id="console">コンソールにアクセスできない</h2>
 <ul>
-  <li>アドレスが許可されたネットワークに含まれていない可能性があります。接続は TLS の前に切断されるため、ブラウザーには接続エラーが表示されます。サーバーで <code>controlzit-server --reset-allowlist</code> を実行して（アプライアンス: セットアップメニューの項目 5）、すべてのプライベートネットワークを再び許可します。</li>
+  <li>アドレスが許可されたネットワークに含まれていない可能性があります。接続は TLS の前に切断されるため、ブラウザーには接続エラーが表示されます。サーバーで <code>rmmzit-server --reset-allowlist</code> を実行して（アプライアンス: セットアップメニューの項目 5）、すべてのプライベートネットワークを再び許可します。</li>
   <li>ポートを変更した後は、新しいポートでコンソールを開きます。</li>
-  <li>サーバーのサービスを確認します: <code>systemctl status controlzit-server</code> と <code>journalctl -u controlzit-server</code>。</li>
+  <li>サーバーのサービスを確認します: <code>systemctl status rmmzit-server</code> と <code>journalctl -u rmmzit-server</code>。</li>
 </ul>
 
 <h2 id="signin">サインインの問題</h2>
@@ -21,7 +21,7 @@
   <li>コンピューターからエージェントのポートに到達できますか? Windows では <code>Test-NetConnection rmm.example.com -Port 8444</code>。</li>
   <li>エージェント用の公開アドレスは正しいですか? コンソールを localhost で開いていたときに作成したコードは、エージェントを誤ったサーバーに向けます。アドレスを設定して新しいコードを作成してください。</li>
   <li>コードはまだ有効で、使い切っていませんか?</li>
-  <li>エージェントのログ: Windows は <code>C:\ProgramData\ControlZit Agent\agent.log</code>、Linux は <code>/var/lib/controlzit-agent/agent.log</code> と <code>journalctl -u controlzit-agent</code>。接続中のデバイスなら、コンソールの<b>ファイル</b>から開けます。Windows では時計の横のアイコンが接続状態を示します。</li>
+  <li>エージェントのログ: Windows は <code>C:\ProgramData\RMMZit Agent\agent.log</code>、Linux は <code>/var/lib/rmmzit-agent/agent.log</code> と <code>journalctl -u rmmzit-agent</code>。接続中のデバイスなら、コンソールの<b>ファイル</b>から開けます。Windows では時計の横のアイコンが接続状態を示します。</li>
 </ul>
 
 <h2 id="rd">リモートデスクトップに何も表示されない</h2>
@@ -41,11 +41,13 @@
 <p><a href="/settings/monitoring">設定 → 監視とアラート</a>の<b>テストメールを送信</b>を使ってください。メッセージにサーバーの応答が表示されます。パスワードは STARTTLS または TLS でのみ送信されます。</p>
 
 <h2 id="faq">FAQ</h2>
-<h3 id="faq-cloud">ControlZit にクラウドサービスは必要ですか?</h3>
+<h3 id="faq-cloud">RMMZit にクラウドサービスは必要ですか?</h3>
 <p>いいえ。すべてお使いのサーバーで動作し、MaxZit には何も送信されません。サーバーは新しいリリースの確認のために GitHub にアクセスするだけです。</p>
-<h3 id="faq-backup">ControlZit をバックアップするには?</h3>
+<h3 id="faq-backup">RMMZit をバックアップするには?</h3>
 <p><a href="/settings/backup">設定 → コンソールのバックアップ</a>で、サーバーは毎日データベース、秘密鍵、証明書をバックアップします。必要に応じて暗号化し、SFTP サーバーにコピーできます。サーバーの外にもコピーを保管してください。秘密鍵がないと保存されたパスワードを復号できず、エージェントは新しいサーバーを信頼しません。</p>
 <h3 id="faq-move">サーバーを新しいマシンに移行できますか?</h3>
-<p>はい。新しいマシンに ControlZit をインストールし、そこでコンソールのバックアップを復元します(<code>controlzit-server -restore ファイル</code>、アプライアンスではセットアップメニューの項目 7)。同じアドレスを使うか、エージェント用の公開アドレスを変更して古い名前を新しいマシンに向けてください。バックアップにはサーバーの証明書が含まれるため、エージェントはそのまま動作します。</p>
+<p>はい。新しいマシンに RMMZit をインストールし、そこでコンソールのバックアップを復元します(<code>rmmzit-server -restore ファイル</code>、アプライアンスではセットアップメニューの項目 7)。同じアドレスを使うか、エージェント用の公開アドレスを変更して古い名前を新しいマシンに向けてください。バックアップにはサーバーの証明書が含まれるため、エージェントはそのまま動作します。</p>
+<h3 id="faq-name">RMMZit は以前の ControlZit ですか?</h3>
+<p>はい。バージョン 0.12 まで RMMZit は ControlZit という名前でした。ControlZit のインストールは、ほかの新しいバージョンと同じように RMMZit に更新されます。データ、エージェントとその登録、<code>CZ1-</code> で始まる登録コードはそのまま使えます。</p>
 <h3 id="faq-mac">macOS 用のエージェントはありますか?</h3>
 <p>まだありません。Windows と Linux（x86-64、ARM64）に対応しています。</p>

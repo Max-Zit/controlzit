@@ -11,7 +11,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // File manager commands. The agent runs as SYSTEM, so it can reach every

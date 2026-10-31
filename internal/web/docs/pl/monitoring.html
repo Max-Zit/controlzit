@@ -35,7 +35,7 @@
 <ul>
   <li><b>Slack</b> — adres URL przychodzącego webhooka kanału.</li>
   <li><b>Microsoft Teams</b> — przepływ pracy kanału <i>Po odebraniu żądania elementu webhook usługi Teams</i> i jego URL.</li>
-  <li><b>Webhook</b> — dowolny URL HTTPS przyjmujący JSON POST (system zgłoszeń, automatyzacja). Z sekretem każde żądanie zawiera <code>X-ControlZit-Signature: sha256=&lt;HMAC treści&gt;</code>, więc odbiorca może sprawdzić, że pochodzi z Twojego serwera.</li>
+  <li><b>Webhook</b> — dowolny URL HTTPS przyjmujący JSON POST (system zgłoszeń, automatyzacja). Z sekretem każde żądanie zawiera <code>X-RMMZit-Signature: sha256=&lt;HMAC treści&gt;</code>, więc odbiorca może sprawdzić, że pochodzi z Twojego serwera.</li>
 </ul>
 <p>Dla każdego kanału wybierz wszystkie alerty lub tylko krytyczne oraz czy wysyłać też rozwiązane. <b>Wyślij test</b> wysyła wiadomość testową. Adresy kanałów są przechowywane w postaci zaszyfrowanej.</p>
 

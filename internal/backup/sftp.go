@@ -455,8 +455,8 @@ func TestSFTP(ctx context.Context, c SFTP) (string, error) {
 		return fp, err
 	}
 	defer cl.Close()
-	name := ".controlzit-test-" + strconv.FormatInt(time.Now().UnixNano(), 36)
-	if err := cl.upload(c.Dir, name, strings.NewReader("ControlZit backup test\n")); err != nil {
+	name := ".rmmzit-test-" + strconv.FormatInt(time.Now().UnixNano(), 36)
+	if err := cl.upload(c.Dir, name, strings.NewReader("RMMZit backup test\n")); err != nil {
 		return fp, err
 	}
 	return fp, cl.remove(path.Join(c.Dir, name))

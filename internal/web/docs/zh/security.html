@@ -1,7 +1,7 @@
 <h1>安全</h1>
-<p class="lead">RMM 服务器可以控制它管理的每台计算机。ControlZit 的设计目标是：即使攻击者到达控制台、网络甚至服务器，也只能得到尽可能少的东西。</p>
+<p class="lead">RMM 服务器可以控制它管理的每台计算机。RMMZit 的设计目标是：即使攻击者到达控制台、网络甚至服务器，也只能得到尽可能少的东西。</p>
 
-<h2 id="design">ControlZit 如何保护您</h2>
+<h2 id="design">RMMZit 如何保护您</h2>
 <ul>
   <li><b>两个端口。</b>控制台和代理端点监听不同的端口。控制台只接受来自允许网络的连接，并在 TLS 之前检查；代理端口可以公开而不暴露控制台。</li>
   <li><b>出站代理。</b>代理连接到服务器；受管计算机无需开放端口。代理通过指纹固定服务器证书，因此伪造的服务器无法接管它们。</li>
@@ -10,7 +10,7 @@
   <li><b>浏览器防护。</b>每次更改都进行 CSRF 检查，严格的 Content Security Policy（无内联脚本），<code>__Host-</code> 会话 Cookie。</li>
   <li><b>最小权限。</b>按角色和客户授予访问；控制台以非特权用户运行，少量 root 操作（更新、网络、时区）通过单独的 root 助手执行，它只接受固定且经过验证的请求。</li>
   <li><b>审计。</b>每次更改和每个远程操作都记录在哈希链审计日志中。</li>
-  <li><b>已签名的版本。</b>服务器、代理和 <code>install.sh</code> 只安装使用 ControlZit 发布密钥签名的版本。</li>
+  <li><b>已签名的版本。</b>服务器、代理和 <code>install.sh</code> 只安装使用 RMMZit 发布密钥签名的版本。</li>
   <li><b>机密。</b>已保存的密码（邮件、LDAP、频道、Cloudflare）使用服务器的密钥加密；诊断会去除机密。</li>
 </ul>
 
@@ -21,10 +21,10 @@
   <li>使用浏览器信任的证书（Let's Encrypt 或您的 CA），以免用户习惯于忽略警告。</li>
   <li>为每个人分配自己的账户，授予最小角色和所需的客户；禁用离职人员的账户。</li>
   <li>保留一个本地管理员以备紧急情况，并将其恢复码离线保存。</li>
-  <li>尽快安装 ControlZit 更新（或启用自动更新），并保持服务器操作系统为最新；设备会自动安装 Debian 安全更新。</li>
-  <li>定期备份数据库和 <code>/var/lib/controlzit</code>，并将备份存放在远离服务器的地方。</li>
+  <li>尽快安装 RMMZit 更新（或启用自动更新），并保持服务器操作系统为最新；设备会自动安装 Debian 安全更新。</li>
+  <li>定期备份数据库和 <code>/var/lib/rmmzit</code>，并将备份存放在远离服务器的地方。</li>
   <li>不时检查审计日志，并保持远程屏幕提示开启，让用户知道何时有人连接。</li>
 </ol>
 
 <h2 id="report">报告漏洞</h2>
-<p>请通过 <a href="https://github.com/Max-Zit/controlzit/security/advisories/new" target="_blank" rel="noopener">GitHub → Security → Report a vulnerability</a> 私下报告安全问题，而不要在公开 issue 中报告。</p>
+<p>请通过 <a href="https://github.com/Max-Zit/rmmzit/security/advisories/new" target="_blank" rel="noopener">GitHub → Security → Report a vulnerability</a> 私下报告安全问题，而不要在公开 issue 中报告。</p>

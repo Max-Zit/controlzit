@@ -27,7 +27,7 @@
 <p><b>文件</b>无需连接屏幕即可浏览计算机的驱动器。上传文件（最大 4 GB）、下载文件、将文件夹或所选内容下载为 ZIP、创建文件夹、重命名和删除。代理以 SYSTEM（Windows）或 root（Linux）身份执行每个文件操作；每个操作都会以您的名义写入审计日志。</p>
 
 <h2 id="processes">进程和服务</h2>
-<p><b>进程</b>列出正在运行的程序及其内存、线程和会话，并可结束进程。<b>服务</b>列出服务（Windows 服务或 systemd 单元），并可启动、停止或重启它们。ControlZit 代理会保护自身：无法从控制台停止或结束。</p>
+<p><b>进程</b>列出正在运行的程序及其内存、线程和会话，并可结束进程。<b>服务</b>列出服务（Windows 服务或 systemd 单元），并可启动、停止或重启它们。RMMZit 代理会保护自身：无法从控制台停止或结束。</p>
 
 <h2 id="registry">注册表编辑器（Windows）</h2>
 <p>Windows 设备的 <b>Registry</b> 选项卡用于浏览注册表：按路径打开键（例如 <code>HKLM\SOFTWARE\Vendor</code>），或从根键 HKLM、HKU、HKCR 和 HKCC 逐级点开。可以添加、修改和删除值（REG_SZ、REG_EXPAND_SZ、REG_DWORD、REG_QWORD、REG_MULTI_SZ；数字使用十进制或 0x 十六进制）；二进制值以十六进制显示。可以创建键，也可以连同其全部内容删除键；根键、紧邻其下的键以及系统自身的分支受保护。每次更改都会连同被替换的值写入审计日志。各用户的注册表位于 HKU 下（按其 SID）；HKCU 将是 SYSTEM 自己的。需要 0.12 及以上版本的代理。</p>

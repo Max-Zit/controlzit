@@ -1,4 +1,4 @@
-// Package store is the PostgreSQL storage of the ControlZit server.
+// Package store is the PostgreSQL storage of the RMMZit server.
 package store
 
 import (
@@ -38,6 +38,20 @@ type Store struct {
 
 // Open connects to PostgreSQL and applies pending migrations.
 func Open(ctx context.Context, url string) (*Store, error) {
+	s, err := Connect(ctx, url)
+	if err != nil {
+		return nil, err
+	}
+	if err := s.migrate(ctx); err != nil {
+		s.db.Close()
+		return nil, err
+	}
+	return s, nil
+}
+
+// Connect connects to PostgreSQL without changing the database (a backup
+// is made with it before a new version migrates the database).
+func Connect(ctx context.Context, url string) (*Store, error) {
 	cfg, err := pgxpool.ParseConfig(url)
 	if err != nil {
 		return nil, err
@@ -53,12 +67,14 @@ func Open(ctx context.Context, url string) (*Store, error) {
 		pool.Close()
 		return nil, fmt.Errorf("database: %w", err)
 	}
-	s := &Store{db: pool, now: time.Now}
-	if err := s.migrate(ctx); err != nil {
-		pool.Close()
-		return nil, err
-	}
-	return s, nil
+	return &Store{db: pool, now: time.Now}, nil
+}
+
+// HasSchema reports whether the database already holds a console.
+func (s *Store) HasSchema(ctx context.Context) (bool, error) {
+	var ok bool
+	err := s.db.QueryRow(ctx, `SELECT to_regclass('schema_migrations') IS NOT NULL`).Scan(&ok)
+	return ok, err
 }
 
 // Close closes the pool.

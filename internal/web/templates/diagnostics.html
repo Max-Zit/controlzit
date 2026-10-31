@@ -6,9 +6,9 @@
 <div class="settings-body">
 <section class="panel">
   <h2>{{template "icon" "file"}}{{.T "Diagnostics"}}</h2>
-  <p class="muted">{{.T "Where ControlZit writes its logs, and a file for support. Passwords, tokens, enrollment codes and keys are removed from everything shown here and from the file; scripts and their output are not included."}}</p>
+  <p class="muted">{{.T "Where RMMZit writes its logs, and a file for support. Passwords, tokens, enrollment codes and keys are removed from everything shown here and from the file; scripts and their output are not included."}}</p>
   <dl class="facts">
-    <div><dt>{{.T "Version"}}</dt><dd>ControlZit {{.Data.Version}} · {{.Data.OS}} · {{.Data.GoVersion}}</dd></div>
+    <div><dt>{{.T "Version"}}</dt><dd>RMMZit {{.Data.Version}} · {{.Data.OS}} · {{.Data.GoVersion}}</dd></div>
     <div><dt>{{.T "Database"}}</dt><dd>{{.Data.DBInfo}}</dd></div>
   </dl>
   <p class="mt"><a class="btn primary" href="/settings/diagnostics/zip">{{template "icon" "download"}}{{.T "Download diagnostics (ZIP)"}}</a></p>
@@ -18,13 +18,13 @@
   <div class="table-wrap"><table>
     <thead><tr><th>{{.T "Log"}}</th><th>{{.T "Location"}}</th></tr></thead>
     <tbody>
-      <tr><td>{{.T "Server"}}</td><td><code>{{or .Data.ServerLog "—"}}</code><br><small class="muted">{{.T "also in the system journal:"}} <code>journalctl -u controlzit-server</code>; {{.T "older files end in .1 … .4"}}</small></td></tr>
-      <tr><td>{{.T "Root helper (updates, time zone, network)"}}</td><td><code>{{.Data.HelperLog}}</code><br><small class="muted"><code>journalctl -u controlzit-helper</code></small></td></tr>
-      <tr><td>{{.T "Database backups before updates"}}</td><td><code>/var/cache/controlzit/backups</code> <small class="muted">({{.T "readable by root only"}})</small></td></tr>
-      <tr><td>{{.T "Configuration"}}</td><td><code>/etc/controlzit/server.env</code> <small class="muted">({{.T "contains the database password; not shown here"}})</small></td></tr>
+      <tr><td>{{.T "Server"}}</td><td><code>{{or .Data.ServerLog "—"}}</code><br><small class="muted">{{.T "also in the system journal:"}} <code>journalctl -u rmmzit-server</code>; {{.T "older files end in .1 … .4"}}</small></td></tr>
+      <tr><td>{{.T "Root helper (updates, time zone, network)"}}</td><td><code>{{.Data.HelperLog}}</code><br><small class="muted"><code>journalctl -u rmmzit-helper</code></small></td></tr>
+      <tr><td>{{.T "Database backups before updates"}}</td><td><code>/var/cache/rmmzit/backups</code> <small class="muted">({{.T "readable by root only"}})</small></td></tr>
+      <tr><td>{{.T "Configuration"}}</td><td><code>/etc/rmmzit/server.env</code> <small class="muted">({{.T "contains the database password; not shown here"}})</small></td></tr>
       <tr><td>{{.T "Data directory"}}</td><td><code>{{.Data.DataDir}}</code> <small class="muted">({{.T "certificates and the secret key: back it up with the database"}})</small></td></tr>
-      <tr><td>{{.T "Windows agent"}}</td><td><code>C:\ProgramData\ControlZit Agent\agent.log</code><br><small class="muted">{{.T "installer logs:"}} <code>C:\ProgramData\ControlZit Agent\updates\*.log</code>, <code>uninstall.log</code></small></td></tr>
-      <tr><td>{{.T "Linux agent"}}</td><td><code>/var/lib/controlzit-agent/agent.log</code><br><small class="muted"><code>journalctl -u controlzit-agent</code></small></td></tr>
+      <tr><td>{{.T "Windows agent"}}</td><td><code>C:\ProgramData\RMMZit Agent\agent.log</code><br><small class="muted">{{.T "installer logs:"}} <code>C:\ProgramData\RMMZit Agent\updates\*.log</code>, <code>uninstall.log</code></small></td></tr>
+      <tr><td>{{.T "Linux agent"}}</td><td><code>/var/lib/rmmzit-agent/agent.log</code><br><small class="muted"><code>journalctl -u rmmzit-agent</code></small></td></tr>
     </tbody>
   </table></div>
   <p class="small muted mt">{{.T "Agent logs can be opened from the console: device → Files."}}</p>

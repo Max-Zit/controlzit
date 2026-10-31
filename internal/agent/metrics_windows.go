@@ -15,7 +15,7 @@ import (
 	"golang.org/x/sys/windows"
 	"golang.org/x/sys/windows/svc/mgr"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 var (

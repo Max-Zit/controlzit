@@ -14,7 +14,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/max-zit/controlzit/internal/agent"
+	"github.com/max-zit/rmmzit/internal/agent"
 )
 
 func uploadPackage(t *testing.T, e *env, c *client, name string, body []byte) resp {
@@ -62,12 +62,12 @@ func TestAgentSelfUpdate(t *testing.T) {
 		t.Fatalf("settings page without a package: %d", r.code)
 	}
 	// Only Windows Installer files are accepted.
-	uploadPackage(t, e, admin, "controlzit-agent-9.9.9-x64.msi", []byte("MZ not an msi at all"))
-	if _, err := os.Stat(e.srv.DownloadsDir + "/controlzit-agent-x64.msi"); err == nil {
+	uploadPackage(t, e, admin, "rmmzit-agent-9.9.9-x64.msi", []byte("MZ not an msi at all"))
+	if _, err := os.Stat(e.srv.DownloadsDir + "/rmmzit-agent-x64.msi"); err == nil {
 		t.Fatal("a non-MSI file was accepted")
 	}
 	msi := append([]byte("\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1"), bytes.Repeat([]byte("installer"), 50000)...)
-	if r := uploadPackage(t, e, admin, "controlzit-agent-9.9.9-x64.msi", msi); r.code != http.StatusSeeOther {
+	if r := uploadPackage(t, e, admin, "rmmzit-agent-9.9.9-x64.msi", msi); r.code != http.StatusSeeOther {
 		t.Fatalf("upload: %d", r.code)
 	}
 	sum := sha256.Sum256(msi)
@@ -97,7 +97,7 @@ func TestAgentSelfUpdate(t *testing.T) {
 	elf := make([]byte, 4096)
 	copy(elf, "\x7fELF")
 	elf[4], elf[5], elf[18] = 2, 1, 0x3e
-	if r := uploadPackage(t, e, admin, "controlzit-agent-9.9.9-linux-amd64", elf); r.code != http.StatusSeeOther {
+	if r := uploadPackage(t, e, admin, "rmmzit-agent-9.9.9-linux-amd64", elf); r.code != http.StatusSeeOther {
 		t.Fatalf("linux upload: %d", r.code)
 	}
 	if r := admin.get("/settings/agents"); !strings.Contains(r.body, "Linux x86-64") || !strings.Contains(r.body, "Windows (MSI)") {

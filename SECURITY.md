@@ -2,13 +2,13 @@
 
 ## Supported versions
 
-Security fixes are released for the newest ControlZit version. The server checks for updates and installs signed releases from *Settings → Version and updates*; agents update themselves to the server's version.
+Security fixes are released for the newest RMMZit version. The server checks for updates and installs signed releases from *Settings → Version and updates*; agents update themselves to the server's version.
 
 ## Reporting a vulnerability
 
 Please report security problems privately, not in a public issue:
 
-1. Open the [Security tab](https://github.com/Max-Zit/controlzit/security) of this repository.
+1. Open the [Security tab](https://github.com/Max-Zit/rmmzit/security) of this repository.
 2. Click **Report a vulnerability** and describe the problem, the affected version and how to reproduce it.
 
 We confirm reports within a few working days, fix confirmed problems in a new release and credit the reporter in the release notes unless they prefer otherwise.
@@ -24,12 +24,12 @@ We confirm reports within a few working days, fix confirmed problems in a new re
 
 ## How releases are protected
 
-- Every release has a manifest signed with the ControlZit release key (ed25519); the server, the agents and `install.sh` verify the signature and checksums before installing.
+- Every release has a manifest signed with the RMMZit release key (ed25519); the server, the agents and `install.sh` verify the signature and checksums before installing.
 - Release packages are built from tagged commits of this repository; the appliance images carry a written source offer (`SOURCE-CODE.txt`).
 
-## How ControlZit is tested
+## How RMMZit is tested
 
-**On every change (GitHub Actions):** build for Linux and Windows, `go vet`, the full test suite (against an embedded PostgreSQL), staticcheck, gosec, govulncheck, Gitleaks, CodeQL, Dependabot, secret scanning and the [OpenSSF Scorecard](https://scorecard.dev/viewer/?uri=github.com/Max-Zit/controlzit).
+**On every change (GitHub Actions):** build for Linux and Windows, `go vet`, the full test suite (against an embedded PostgreSQL), staticcheck, gosec, govulncheck, Gitleaks, CodeQL, Dependabot, secret scanning and the [OpenSSF Scorecard](https://scorecard.dev/viewer/?uri=github.com/Max-Zit/rmmzit).
 
 **Before releases (manually, in a test lab):** Semgrep, Trivy, an OWASP ZAP scan of the running console signed in as an administrator, OpenVAS / Greenbone and nmap against the appliance, and an end-to-end regression on real Windows and Linux machines (enrollment, monitoring, alerts, remote desktop, terminal, files, scripts, updates, roles, LDAP and SSO).
 

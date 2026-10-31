@@ -23,7 +23,7 @@ import (
 
 	"github.com/coder/websocket"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // pinnedTLS trusts exactly the server certificate with the fingerprint
@@ -87,7 +87,7 @@ func Enroll(ctx context.Context, dir, serverURL, fingerprint, token string) (*Co
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("User-Agent", "controlzit-agent/"+Version)
+	req.Header.Set("User-Agent", "rmmzit-agent/"+Version)
 	resp, err := httpClient(pinnedTLS(fingerprint, cert)).Do(req)
 	if errors.Is(err, ErrPinMismatch) {
 		return nil, &RefusedError{Msg: err.Error()}
@@ -239,7 +239,7 @@ func (a *Agent) session(ctx context.Context) error {
 	hc.Timeout = 0 // the channel is long-lived
 	dctx, dcancel := context.WithTimeout(ctx, 30*time.Second)
 	ws, resp, err := websocket.Dial(dctx, a.Cfg.ServerURL+proto.PathConnect, &websocket.DialOptions{
-		HTTPClient: hc, HTTPHeader: http.Header{"User-Agent": {"controlzit-agent/" + Version}},
+		HTTPClient: hc, HTTPHeader: http.Header{"User-Agent": {"rmmzit-agent/" + Version}},
 		CompressionMode: websocket.CompressionContextTakeover,
 	})
 	dcancel()

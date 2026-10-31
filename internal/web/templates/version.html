@@ -5,7 +5,7 @@
 {{template "settingstabs" .}}
 <div class="settings-body">
 <section class="panel">
-  <h2>{{template "icon" "download"}}{{.T "ControlZit updates"}}</h2>
+  <h2>{{template "icon" "download"}}{{.T "RMMZit updates"}}</h2>
   <dl class="facts">
     <div><dt>{{.T "Running"}}</dt><dd><b>{{.Data.Version}}</b></dd></div>
     <div><dt>{{.T "Newest release"}}</dt><dd>{{with .Data.Latest}}<b>{{.Version}}</b> <span class="muted">({{.Released.Format "2006-01-02"}})</span>{{else}}{{$.T "not checked yet"}}{{end}}</dd></div>
@@ -14,7 +14,7 @@
   </dl>
   {{with .Data.CheckErr}}<div class="flash err mt" role="alert">{{template "icon" "alert"}}<span>{{$.T "The last check failed:"}} {{.}}</span></div>{{end}}
   <form method="post" action="/settings/version/check" class="mt"><button class="secondary">{{template "icon" "refresh"}}{{.T "Check now"}}</button></form>
-  <p class="small muted mt">{{.T "Only releases signed with the ControlZit release key are installed. Before installing, the server backs up its database and program; if the new version does not start, it goes back to the old one by itself."}}</p>
+  <p class="small muted mt">{{.T "Only releases signed with the RMMZit release key are installed. Before installing, the server backs up its database and program; if the new version does not start, it goes back to the old one by itself."}}</p>
 </section>
 {{with .Data.Last}}<div class="flash {{if eq .Status "done"}}ok{{else if eq .Status "running"}}info{{else}}err{{end}}" role="status">{{template "icon" "check"}}<span>{{$.T "Last installation"}} ({{$.Time .Started}}): {{.Message}}</span></div>{{end}}
 {{if .Data.Newer}}{{with .Data.Latest}}
@@ -22,21 +22,34 @@
   <h2>{{$.T "Version %s is available" .Version}}</h2>
   {{with .Notes}}<pre class="notes">{{.}}</pre>{{end}}
   {{if $.Data.Pending}}<p class="flash info">{{$.T "The installation is running; the console restarts when it is done."}}</p>
-  {{else if $.Data.HelperOK}}<form method="post" action="/settings/version/install" data-confirm="{{$.T "Install ControlZit %s now? The console is away for a minute or two; agents reconnect by themselves." .Version}}"><input type="hidden" name="version" value="{{.Version}}"><button class="primary">{{template "icon" "download"}}{{$.T "Install %s" .Version}}</button></form>
-  {{else}}<p class="small muted">{{$.T "This installation has no ControlZit helper (it comes with the Linux packages). Install the new version with install.sh or the package of the release."}}</p>{{end}}
+  {{else if $.Data.HelperOK}}<form method="post" action="/settings/version/install" data-confirm="{{$.T "Install RMMZit %s now? The console is away for a minute or two; agents reconnect by themselves." .Version}}"><input type="hidden" name="version" value="{{.Version}}"><button class="primary">{{template "icon" "download"}}{{$.T "Install %s" .Version}}</button></form>
+  {{else if $.Data.Container}}<p class="small muted">{{$.T "This console runs in a container. Update it on the Docker host; it backs up its database before the new version changes it:"}}</p><pre>docker compose pull &amp;&amp; docker compose up -d</pre>
+  {{else}}<p class="small muted">{{$.T "This installation has no RMMZit helper (it comes with the Linux packages). Install the new version with install.sh or the package of the release."}}</p>{{end}}
 </section>
-{{end}}{{else if .Data.Latest}}<div class="flash ok" role="status">{{template "icon" "check"}}<span>{{.T "ControlZit is up to date."}}</span></div>{{end}}
+{{end}}{{else if .Data.Latest}}<div class="flash ok" role="status">{{template "icon" "check"}}<span>{{.T "RMMZit is up to date."}}</span></div>{{end}}
 {{if .Data.HelperOK}}
 <section class="panel">
   <h2>{{template "icon" "clock"}}{{.T "Automatic updates"}}</h2>
   <form method="post" action="/settings/version/settings" class="stack">
-    <label class="check"><input type="checkbox" name="auto" value="1" {{if .Data.S.Auto}}checked{{end}}>{{.T "Install new ControlZit versions automatically"}}</label>
+    <label class="check"><input type="checkbox" name="auto" value="1" {{if .Data.S.Auto}}checked{{end}}>{{.T "Install new RMMZit versions automatically"}}</label>
     <label>{{.T "In the hour starting at (server time)"}}<select name="hour" class="narrow">{{range .Data.Hours}}<option value="{{.}}" {{if eq . $.Data.S.Hour}}selected{{end}}>{{printf "%02d:00" .}}</option>{{end}}</select></label>
     <label>{{.T "Update channel"}}<select name="channel">
       <option value="" {{if ne .Data.S.Channel "testing"}}selected{{end}}>{{.T "Official releases"}}</option>
       <option value="testing" {{if eq .Data.S.Channel "testing"}}selected{{end}}>{{.T "Testing (release candidates, for test consoles)"}}</option>
     </select></label>
     <p class="small muted">{{.T "Release candidates come before an official release so they can be tried on a test console. Keep production consoles on official releases."}}</p>
+    <div><button class="primary">{{.T "Save"}}</button></div>
+  </form>
+</section>
+{{else if .Data.Container}}
+<section class="panel">
+  <h2>{{template "icon" "clock"}}{{.T "Update channel"}}</h2>
+  <form method="post" action="/settings/version/settings" class="stack">
+    <label>{{.T "Update channel"}}<select name="channel">
+      <option value="" {{if ne .Data.S.Channel "testing"}}selected{{end}}>{{.T "Official releases"}}</option>
+      <option value="testing" {{if eq .Data.S.Channel "testing"}}selected{{end}}>{{.T "Testing (release candidates, for test consoles)"}}</option>
+    </select></label>
+    <p class="small muted">{{.T "Which releases this page reports. The image tag decides what runs: latest for official releases, testing for release candidates."}}</p>
     <div><button class="primary">{{.T "Save"}}</button></div>
   </form>
 </section>

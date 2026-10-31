@@ -14,7 +14,7 @@ import (
 
 	"golang.org/x/sys/windows"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // Files on the clipboard, the way Explorer copies them: CF_HDROP (a
@@ -170,7 +170,7 @@ func StageDir() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	base = filepath.Join(base, "ControlZit")
+	base = filepath.Join(base, "RMMZit")
 	if old, err := os.ReadDir(base); err == nil {
 		for _, e := range old {
 			if info, err := e.Info(); err == nil && e.IsDir() && time.Since(info.ModTime()) > 24*time.Hour {
@@ -191,7 +191,7 @@ func InStage(paths []string) bool {
 	if err != nil || len(paths) == 0 || len(paths) > proto.MaxClipFiles {
 		return false
 	}
-	base = strings.ToLower(filepath.Join(base, "ControlZit")) + `\`
+	base = strings.ToLower(filepath.Join(base, "RMMZit")) + `\`
 	for _, p := range paths {
 		if !strings.HasPrefix(strings.ToLower(filepath.Clean(p)), base) || strings.Contains(p, "..") {
 			return false

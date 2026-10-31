@@ -40,7 +40,7 @@ type Result struct {
 // much clock difference.
 const MaxCommandAge = 2 * time.Minute
 
-const sigContext = "controlzit-command-v1\n"
+const sigContext = "controlzit-command-v1\n" // the name before RMMZit; agents check it
 
 // Sign makes a SignedCommand.
 func Sign(key ed25519.PrivateKey, c Command) (SignedCommand, error) {

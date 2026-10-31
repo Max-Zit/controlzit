@@ -14,7 +14,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // Network checks of a policy, run from the agent's own network.
@@ -91,7 +91,7 @@ func fetchCheck(ctx context.Context, target string) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	req.Header.Set("User-Agent", "ControlZit-Agent/"+Version)
+	req.Header.Set("User-Agent", "RMMZit-Agent/"+Version)
 	resp, err := netHTTP.Do(req) // #nosec G704 -- the address an administrator set in a policy
 	if err != nil {
 		return 0, err

@@ -1,11 +1,11 @@
 #!/bin/sh
 # Uploads the appliance ISO and VM images of VERSION to the GitHub release
 # vVERSION under fixed names, so the documentation can link to
-#   https://github.com/Max-Zit/controlzit/releases/latest/download/<name>
+#   https://github.com/Max-Zit/rmmzit/releases/latest/download/<name>
 #
 #   ./publish-images.sh 0.3.0 /root/appliance/out
 #
-# Files: controlzit-appliance.iso, .ova, .qcow2, controlzit-appliance-vhdx.zip
+# Files: rmmzit-appliance.iso, .ova, .qcow2, rmmzit-appliance-vhdx.zip
 # (GitHub limits release files to 2 GiB, the VHDX is larger) and SHA256SUMS-appliance (the release's own SHA256SUMS covers the programs).
 # Afterwards prune-images.sh removes the images from releases older than the
 # newest 8 (KEEP=n to change it).
@@ -13,9 +13,9 @@
 set -eu
 VERSION=${1:?usage: publish-images.sh <version> <directory with the build output>}
 DIR=$(readlink -f "${2:?directory}")
-SRC="controlzit-appliance-$VERSION"
+SRC="rmmzit-appliance-$VERSION"
 # PREPARE=dir only prepares the files there (upload them elsewhere with
-#   gh release upload vVERSION --repo Max-Zit/controlzit dir/*).
+#   gh release upload vVERSION --repo Max-Zit/rmmzit dir/*).
 if [ -n "${PREPARE:-}" ]; then
     WORK=$PREPARE
     mkdir -p "$WORK"
@@ -25,12 +25,12 @@ else
 fi
 for ext in iso ova qcow2; do
     [ -f "$DIR/$SRC.$ext" ] || { echo "missing $DIR/$SRC.$ext" >&2; exit 1; }
-    ln "$DIR/$SRC.$ext" "$WORK/controlzit-appliance.$ext" 2>/dev/null || cp "$DIR/$SRC.$ext" "$WORK/controlzit-appliance.$ext"
+    ln "$DIR/$SRC.$ext" "$WORK/rmmzit-appliance.$ext" 2>/dev/null || cp "$DIR/$SRC.$ext" "$WORK/rmmzit-appliance.$ext"
 done
 [ -f "$DIR/$SRC.vhdx" ] || { echo "missing $DIR/$SRC.vhdx" >&2; exit 1; }
-ln "$DIR/$SRC.vhdx" "$WORK/controlzit-appliance.vhdx" 2>/dev/null || cp "$DIR/$SRC.vhdx" "$WORK/controlzit-appliance.vhdx"
-(cd "$WORK" && zip -q -1 controlzit-appliance-vhdx.zip controlzit-appliance.vhdx && rm controlzit-appliance.vhdx)
-(cd "$WORK" && sha256sum controlzit-appliance.iso controlzit-appliance.ova controlzit-appliance.qcow2 controlzit-appliance-vhdx.zip > SHA256SUMS-appliance)
+ln "$DIR/$SRC.vhdx" "$WORK/rmmzit-appliance.vhdx" 2>/dev/null || cp "$DIR/$SRC.vhdx" "$WORK/rmmzit-appliance.vhdx"
+(cd "$WORK" && zip -q -1 rmmzit-appliance-vhdx.zip rmmzit-appliance.vhdx && rm rmmzit-appliance.vhdx)
+(cd "$WORK" && sha256sum rmmzit-appliance.iso rmmzit-appliance.ova rmmzit-appliance.qcow2 rmmzit-appliance-vhdx.zip > SHA256SUMS-appliance)
 for f in "$WORK"/*; do
     size=$(stat -c %s "$f")
     [ "$size" -lt 2147483648 ] || { echo "$f is larger than 2 GiB" >&2; exit 1; }
@@ -39,11 +39,11 @@ if [ -n "${PREPARE:-}" ]; then
     echo "prepared the images of $VERSION in $WORK"
     exit 0
 fi
-gh release upload "v$VERSION" --repo Max-Zit/controlzit --clobber "$WORK"/*
+gh release upload "v$VERSION" --repo Max-Zit/rmmzit --clobber "$WORK"/*
 # The asset list shows a label: the VHDX is for generation 1 VMs.
-id=$(gh api "repos/Max-Zit/controlzit/releases/tags/v$VERSION" --jq '.assets[] | select(.name == "controlzit-appliance-vhdx.zip") | .id')
-[ -n "$id" ] && gh api -X PATCH "repos/Max-Zit/controlzit/releases/assets/$id" -f name=controlzit-appliance-vhdx.zip \
-    -f "label=controlzit-appliance-vhdx.zip (Hyper-V, generation 1)" >/dev/null
+id=$(gh api "repos/Max-Zit/rmmzit/releases/tags/v$VERSION" --jq '.assets[] | select(.name == "rmmzit-appliance-vhdx.zip") | .id')
+[ -n "$id" ] && gh api -X PATCH "repos/Max-Zit/rmmzit/releases/assets/$id" -f name=rmmzit-appliance-vhdx.zip \
+    -f "label=rmmzit-appliance-vhdx.zip (Hyper-V, generation 1)" >/dev/null
 echo "uploaded the images of $VERSION"
 # Keep the images only in the newest releases (KEEP, default 8): about 5 GB
 # per release would otherwise pile up on GitHub.

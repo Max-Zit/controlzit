@@ -3,7 +3,7 @@ package agent
 import (
 	"strings"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // parseWingetTable reads the first table of winget output. Columns start

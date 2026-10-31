@@ -35,7 +35,7 @@
 <ul>
   <li><b>Slack</b> — URL dolaznog webhooka kanala.</li>
   <li><b>Microsoft Teams</b> — tok posla kanala <i>When a Teams webhook request is received</i> i njegov URL.</li>
-  <li><b>Webhook</b> — bilo koji HTTPS URL koji prima JSON POST (sistem za tikete, automatizacija). Sa tajnom, svaki zahtev nosi <code>X-ControlZit-Signature: sha256=&lt;HMAC tela&gt;</code>, pa primalac može da proveri da je stigao sa vašeg servera.</li>
+  <li><b>Webhook</b> — bilo koji HTTPS URL koji prima JSON POST (sistem za tikete, automatizacija). Sa tajnom, svaki zahtev nosi <code>X-RMMZit-Signature: sha256=&lt;HMAC tela&gt;</code>, pa primalac može da proveri da je stigao sa vašeg servera.</li>
 </ul>
 <p>Za svaki kanal birate sva upozorenja ili samo kritična i da li se šalju i rešena. <b>Pošalji probu</b> šalje probnu poruku. Adrese kanala se čuvaju šifrovano.</p>
 

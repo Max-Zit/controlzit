@@ -14,17 +14,17 @@
 <p>Dans <a href="/users">Utilisateurs</a>, un administrateur ajoute un utilisateur avec un mot de passe initial ; l'utilisateur doit le changer et configurer la connexion à deux facteurs à la première connexion. Un administrateur peut désactiver un utilisateur (les sessions ouvertes prennent fin), définir un nouveau mot de passe ou réinitialiser la connexion à deux facteurs d'un utilisateur qui a perdu son téléphone et ses codes de récupération. Il reste toujours au moins un administrateur actif.</p>
 
 <h2 id="2fa">Connexion à deux facteurs</h2>
-<p>ControlZit dispose d'un accès administrateur à chaque ordinateur géré, chaque compte local et d'annuaire a donc besoin d'une <b>application d'authentification</b> (Microsoft Authenticator, Google Authenticator, Authy, 1Password, Bitwarden …). Chaque compte reçoit aussi 10 <b>codes de récupération</b> à usage unique ; de nouveaux se créent dans <a href="/account">Compte</a>. Les connexions échouées bloquent l'adresse un moment (plus longtemps à chaque blocage répété) ; les limites sont dans <a href="/settings/security">Paramètres → Connexion et sécurité</a>, avec la durée de session et la déconnexion après inactivité.</p>
+<p>RMMZit dispose d'un accès administrateur à chaque ordinateur géré, chaque compte local et d'annuaire a donc besoin d'une <b>application d'authentification</b> (Microsoft Authenticator, Google Authenticator, Authy, 1Password, Bitwarden …). Chaque compte reçoit aussi 10 <b>codes de récupération</b> à usage unique ; de nouveaux se créent dans <a href="/account">Compte</a>. Les connexions échouées bloquent l'adresse un moment (plus longtemps à chaque blocage répété) ; les limites sont dans <a href="/settings/security">Paramètres → Connexion et sécurité</a>, avec la durée de session et la déconnexion après inactivité.</p>
 
 <h2 id="ldap">Active Directory / LDAP</h2>
-<p>Dans <a href="/settings/ldap">Paramètres → Active Directory / LDAP</a>, les utilisateurs se connectent avec leur compte d'annuaire. L'annuaire vérifie le mot de passe ; ControlZit demande quand même son propre second facteur.</p>
+<p>Dans <a href="/settings/ldap">Paramètres → Active Directory / LDAP</a>, les utilisateurs se connectent avec leur compte d'annuaire. L'annuaire vérifie le mot de passe ; RMMZit demande quand même son propre second facteur.</p>
 <ul>
   <li><b>Serveur :</b> <code>ldaps://dc1.example.local</code> (port 636), ou <code>ldap://</code> (389) avec StartTLS — les mots de passe ne traversent jamais le réseau en clair. Ajoutez le certificat de l'AC si le certificat de l'annuaire provient d'une AC d'entreprise.</li>
   <li><b>Compte de service</b> (DN ou <code>user@domaine</code>) et son mot de passe, le <b>DN de base</b> et le <b>filtre d'utilisateur</b>, p. ex. <code>(&amp;(objectClass=user)(sAMAccountName={username}))</code> pour Active Directory.</li>
   <li><b>Groupes et rôles :</b> associez des groupes de l'annuaire aux rôles Administrateur, Technicien et Lecture seule ; le rôle le plus élevé l'emporte. Les groupes imbriqués d'Active Directory peuvent être inclus.</li>
   <li><b>Groupes de clients :</b> des lignes <code>groupe = client</code> limitent les techniciens et les utilisateurs en lecture seule à ces clients.</li>
 </ul>
-<p><b>Tester</b> vérifie un compte d'annuaire avec les paramètres enregistrés, sans connexion, et montre ce que ControlZit en ferait. Les comptes d'annuaire changent leur mot de passe dans l'annuaire, pas dans ControlZit.</p>
+<p><b>Tester</b> vérifie un compte d'annuaire avec les paramètres enregistrés, sans connexion, et montre ce que RMMZit en ferait. Les comptes d'annuaire changent leur mot de passe dans l'annuaire, pas dans RMMZit.</p>
 
 <h2 id="sso">Authentification unique (OpenID Connect, SAML)</h2>
 <p>Dans <a href="/settings/sso">Paramètres → Authentification unique</a>, les utilisateurs se connectent avec leur compte chez un fournisseur d'identité : <b>OpenID Connect</b> (Microsoft Entra ID, Google, Okta, Keycloak …) ou <b>SAML 2.0</b> (ADFS, Entra ID, Okta …). La page de connexion affiche alors un bouton.</p>
@@ -32,7 +32,7 @@
   <li><b>OpenID Connect :</b> enregistrez une application chez le fournisseur avec l'URI de redirection affichée sur la page, puis saisissez l'émetteur (p. ex. <code>https://login.microsoftonline.com/&lt;tenant&gt;/v2.0</code>), l'ID client et le secret client.</li>
   <li><b>SAML :</b> donnez au fournisseur les métadonnées de la console (lien sur la page) ou son entity ID et son adresse de réponse (ACS), puis saisissez l'URL des métadonnées du fournisseur ou collez son XML.</li>
   <li>Le <b>claim des groupes</b> transporte les groupes (noms ou ID ; Entra ID envoie des ID de groupe), associés aux rôles et aux clients comme avec LDAP.</li>
-  <li>La politique multifacteur du fournisseur d'identité s'applique ; en option, ControlZit demande aussi son propre second facteur.</li>
+  <li>La politique multifacteur du fournisseur d'identité s'applique ; en option, RMMZit demande aussi son propre second facteur.</li>
 </ul>
 <div class="callout tip"><p>Les comptes locaux continuent de fonctionner quand LDAP ou l'authentification unique est actif, un administrateur peut donc toujours se connecter. Gardez un administrateur local pour les urgences.</p></div>
 

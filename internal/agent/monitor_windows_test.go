@@ -6,7 +6,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 func TestEventQuery(t *testing.T) {

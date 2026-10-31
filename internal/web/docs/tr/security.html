@@ -1,7 +1,7 @@
 <h1>Güvenlik</h1>
-<p class="lead">Bir RMM sunucusu yönettiği her bilgisayarı kontrol edebilir. ControlZit, konsola, ağa ve hatta sunucuya ulaşan bir saldırganın mümkün olduğunca az şey elde etmesi için tasarlanmıştır.</p>
+<p class="lead">Bir RMM sunucusu yönettiği her bilgisayarı kontrol edebilir. RMMZit, konsola, ağa ve hatta sunucuya ulaşan bir saldırganın mümkün olduğunca az şey elde etmesi için tasarlanmıştır.</p>
 
-<h2 id="design">ControlZit sizi nasıl korur</h2>
+<h2 id="design">RMMZit sizi nasıl korur</h2>
 <ul>
   <li><b>İki port.</b> Konsol ve ajan uç noktası ayrı portlarda dinler. Konsol yalnızca izin verilen ağlardan gelen ve TLS'den önce denetlenen bağlantıları kabul eder; ajan portu konsolu açığa çıkarmadan herkese açık olabilir.</li>
   <li><b>Giden ajanlar.</b> Ajanlar sunucuya bağlanır; yönetilen bilgisayarlarda açık port gerekmez. Ajanlar sunucu sertifikasını parmak iziyle sabitler, bu yüzden sahte bir sunucu onları ele geçiremez.</li>
@@ -10,7 +10,7 @@
   <li><b>Tarayıcı korumaları.</b> Her değişiklikte CSRF denetimleri, satır içi betik içermeyen katı bir Content Security Policy, <code>__Host-</code> oturum çerezleri.</li>
   <li><b>En az yetki.</b> Roller ve müşteri başına erişim; konsol yetkisiz bir kullanıcı olarak çalışır ve az sayıdaki root işlemi (güncellemeler, ağ, saat dilimi) yalnızca sabit, doğrulanmış istekleri kabul eden ayrı bir root yardımcısından geçer.</li>
   <li><b>Denetim.</b> Her değişikliğin ve her uzak işlemin karma zinciriyle bağlı denetim günlüğü.</li>
-  <li><b>İmzalı sürümler.</b> Sunucu, ajanlar ve <code>install.sh</code> yalnızca ControlZit sürüm anahtarıyla imzalanmış sürümleri kurar.</li>
+  <li><b>İmzalı sürümler.</b> Sunucu, ajanlar ve <code>install.sh</code> yalnızca RMMZit sürüm anahtarıyla imzalanmış sürümleri kurar.</li>
   <li><b>Gizli bilgiler.</b> Kayıtlı parolalar (e-posta, LDAP, kanallar, Cloudflare) sunucunun gizli anahtarıyla şifrelenir; tanılama gizli bilgileri çıkarır.</li>
 </ul>
 
@@ -21,10 +21,10 @@
   <li>Kullanıcıların uyarıları geçmeye alışmaması için tarayıcıların güvendiği bir sertifika (Let's Encrypt veya CA'nız) kullanın.</li>
   <li>Herkese en küçük rolle ve yalnızca ihtiyaç duyduğu müşterilerle kendi hesabını verin; ayrılan kişilerin hesaplarını devre dışı bırakın.</li>
   <li>Kurtarma kodları çevrimdışı saklanan bir yerel yöneticiyi acil durumlar için tutun.</li>
-  <li>ControlZit güncellemelerini hemen kurun (veya otomatik güncellemeleri açın) ve sunucunun işletim sistemini güncel tutun; cihaz Debian güvenlik güncellemelerini kendisi kurar.</li>
-  <li>Veritabanını ve <code>/var/lib/controlzit</code> dizinini düzenli yedekleyin ve yedeği sunucudan uzakta saklayın.</li>
+  <li>RMMZit güncellemelerini hemen kurun (veya otomatik güncellemeleri açın) ve sunucunun işletim sistemini güncel tutun; cihaz Debian güvenlik güncellemelerini kendisi kurar.</li>
+  <li>Veritabanını ve <code>/var/lib/rmmzit</code> dizinini düzenli yedekleyin ve yedeği sunucudan uzakta saklayın.</li>
   <li>Denetim günlüğünü zaman zaman inceleyin ve kullanıcıların birinin bağlı olduğunu bilmesi için uzak ekrandaki bildirimi açık bırakın.</li>
 </ol>
 
 <h2 id="report">Bir güvenlik açığı bildirme</h2>
-<p>Güvenlik sorunlarını herkese açık bir issue yerine <a href="https://github.com/Max-Zit/controlzit/security/advisories/new" target="_blank" rel="noopener">GitHub → Security → Report a vulnerability</a> üzerinden gizli olarak bildirin.</p>
+<p>Güvenlik sorunlarını herkese açık bir issue yerine <a href="https://github.com/Max-Zit/rmmzit/security/advisories/new" target="_blank" rel="noopener">GitHub → Security → Report a vulnerability</a> üzerinden gizli olarak bildirin.</p>

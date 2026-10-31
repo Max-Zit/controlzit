@@ -1,4 +1,4 @@
-// controlzit-server is the ControlZit server: the management console on
+// rmmzit-server is the RMMZit server: the management console on
 // one listener and the agent endpoint on another.
 package main
 
@@ -22,14 +22,15 @@ import (
 
 	embeddedpostgres "github.com/fergusstrange/embedded-postgres"
 
-	"github.com/max-zit/controlzit/internal/auth"
-	"github.com/max-zit/controlzit/internal/backup"
-	"github.com/max-zit/controlzit/internal/helper"
-	"github.com/max-zit/controlzit/internal/logfile"
-	"github.com/max-zit/controlzit/internal/netacl"
-	"github.com/max-zit/controlzit/internal/store"
-	"github.com/max-zit/controlzit/internal/tlsutil"
-	"github.com/max-zit/controlzit/internal/web"
+	"github.com/max-zit/rmmzit/internal/auth"
+	"github.com/max-zit/rmmzit/internal/backup"
+	"github.com/max-zit/rmmzit/internal/helper"
+	"github.com/max-zit/rmmzit/internal/legacy"
+	"github.com/max-zit/rmmzit/internal/logfile"
+	"github.com/max-zit/rmmzit/internal/netacl"
+	"github.com/max-zit/rmmzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/tlsutil"
+	"github.com/max-zit/rmmzit/internal/web"
 )
 
 var version = "dev"
@@ -44,15 +45,21 @@ func main() {
 func defaultDataDir() string {
 	if runtime.GOOS == "windows" {
 		if p := os.Getenv("ProgramData"); p != "" {
-			return filepath.Join(p, "ControlZit")
+			return filepath.Join(p, "RMMZit")
 		}
 	}
-	return "/var/lib/controlzit"
+	// Installations from before the rename that were not moved by the package.
+	if _, err := os.Stat("/var/lib/rmmzit"); err != nil {
+		if fi, err := os.Stat("/var/lib/controlzit"); err == nil && fi.IsDir() {
+			return "/var/lib/controlzit"
+		}
+	}
+	return "/var/lib/rmmzit"
 }
 
 func run() error {
-	dataDir := flag.String("data-dir", env("CONTROLZIT_DATA", defaultDataDir()), "data directory (certificates, secret key)")
-	dbURL := flag.String("db", os.Getenv("CONTROLZIT_DB"), "PostgreSQL URL, e.g. postgres://controlzit:…@localhost/controlzit")
+	dataDir := flag.String("data-dir", env("DATA", defaultDataDir()), "data directory (certificates, secret key)")
+	dbURL := flag.String("db", legacy.Getenv("DB"), "PostgreSQL URL, e.g. postgres://rmmzit:…@localhost/rmmzit")
 	devDB := flag.Bool("dev-embedded-db", false, "start a private PostgreSQL in the data directory (development and evaluation only)")
 	mgmtListen := flag.String("mgmt-listen", "", "console address; overrides the saved setting (e.g. 127.0.0.1:8443)")
 	agentListen := flag.String("agent-listen", "", "agent endpoint address; overrides the saved setting (e.g. :8444)")
@@ -61,27 +68,31 @@ func run() error {
 	resetACL := flag.Bool("reset-allowlist", false, "allow the console again from the private networks (10/8, 172.16/12, 192.168/16, fc00::/7) and exit")
 	unblock := flag.String("unblock-ip", "", "lift the sign-in block of an address (or \"all\") and exit")
 	showVersion := flag.Bool("version", false, "print the version and exit")
-	runHelper := flag.Bool("helper", false, "root helper: handle a request of the console (updates, time zone, network) and exit; started by controlzit-helper.service")
+	runHelper := flag.Bool("helper", false, "root helper: handle a request of the console (updates, time zone, network) and exit; started by rmmzit-helper.service")
 	restoreFile := flag.String("restore", "", "restore this backup file (database and data files) and exit; stop the server first")
-	restorePass := flag.String("restore-passphrase-file", "", "file with the passphrase of an encrypted backup (or set CONTROLZIT_BACKUP_PASSPHRASE)")
+	restorePass := flag.String("restore-passphrase-file", "", "file with the passphrase of an encrypted backup (or set RMMZIT_BACKUP_PASSPHRASE)")
+	healthcheck := flag.Bool("healthcheck", false, "container image: exit 0 when the console answers (used by HEALTHCHECK)")
 	flag.Parse()
 
 	if *showVersion {
-		fmt.Println("controlzit-server", version)
+		fmt.Println(legacy.ProgramName("rmmzit-server", "controlzit-server"), version)
 		return nil
+	}
+	if *healthcheck {
+		return checkHealth(*dataDir)
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	if *runHelper {
 		// Its own log in a directory only root can write (Settings → Diagnostics shows it).
 		out := io.Writer(os.Stdout)
-		if lw, err := logfile.Open("/var/log/controlzit-helper/helper.log", 0o644); err == nil {
-			_ = os.Chmod("/var/log/controlzit-helper", 0o755) // #nosec G302 -- the console reads it, only root writes
+		if lw, err := logfile.Open("/var/log/rmmzit-helper/helper.log", 0o644); err == nil {
+			_ = os.Chmod("/var/log/rmmzit-helper", 0o755) // #nosec G302 -- the console reads it, only root writes
 			defer lw.Close()
 			out = io.MultiWriter(os.Stdout, lw)
 		}
 		log := slog.New(slog.NewTextHandler(out, nil))
-		h := &helper.Helper{DataDir: *dataDir, CacheDir: "/var/cache/controlzit", EnvFile: "/etc/controlzit/server.env", Binary: "/usr/bin/controlzit-server",
+		h := &helper.Helper{DataDir: *dataDir, CacheDir: "/var/cache/rmmzit", EnvFile: "/etc/rmmzit/server.env", Binary: "/usr/bin/rmmzit-server",
 			Run: helper.RunCommand, Log: func(format string, args ...any) { log.Info(fmt.Sprintf(format, args...)) }}
 		return h.Handle(ctx)
 	}
@@ -110,10 +121,24 @@ func run() error {
 		log.Warn("using the embedded development database", "dir", filepath.Join(*dataDir, "pgdata"))
 	}
 	if *dbURL == "" {
-		return errors.New("database URL required (--db or CONTROLZIT_DB)")
+		return errors.New("database URL required (--db or RMMZIT_DB)")
 	}
 	if *restoreFile != "" {
 		return restoreBackup(ctx, *restoreFile, *restorePass, *dataDir, *dbURL)
+	}
+	if inContainer() {
+		// A new image updates the database when it starts: back up the
+		// console first, for going back to the previous image.
+		name, err := backupBeforeUpgrade(ctx, *dbURL, *dataDir, version)
+		if err != nil {
+			return err
+		}
+		if name != "" {
+			log.Warn("new version: backed up the console before updating its database", "file", filepath.Join(*dataDir, "backups", name))
+		}
+		if err := syncImageDownloads(filepath.Join(*dataDir, "downloads")); err != nil {
+			log.Warn("agent installers of the image", "err", err)
+		}
 	}
 	st, err := store.Open(ctx, *dbURL)
 	if err != nil {
@@ -157,6 +182,7 @@ func run() error {
 	srv.DownloadsDir = filepath.Join(*dataDir, "downloads")
 	srv.DataDir = *dataDir
 	srv.LogFile = srvLogFile
+	srv.Container = inContainer()
 	if *devNo2FA {
 		// For development and lab tests only: the console shows a red warning
 		// on every page and the audit log records each start in this mode.
@@ -181,11 +207,11 @@ func run() error {
 	srv.ListenOverride = *mgmtListen != "" || *agentListen != ""
 
 	tlsDir := filepath.Join(*dataDir, "tls")
-	agentCert, err := tlsutil.LoadOrCreate(tlsDir, "agent", "ControlZit agent endpoint", 20)
+	agentCert, err := tlsutil.LoadOrCreate(tlsDir, "agent", "RMMZit agent endpoint", 20)
 	if err != nil {
 		return fmt.Errorf("agent certificate: %w", err)
 	}
-	consoleCert, err := tlsutil.LoadOrCreate(tlsDir, "console", "ControlZit console", 5)
+	consoleCert, err := tlsutil.LoadOrCreate(tlsDir, "console", "RMMZit console", 5)
 	if err != nil {
 		return fmt.Errorf("console certificate: %w", err)
 	}
@@ -226,7 +252,7 @@ func run() error {
 		return nil
 	}
 	srv.TLS = web.NewConsoleTLS(filepath.Join(tlsDir, "web"), consoleCert, log)
-	srv.Port80Addr = env("CONTROLZIT_HTTP80", ":80")
+	srv.Port80Addr = env("HTTP80", ":80")
 	if err := serve(net0.MgmtListen, srv.TLS.Config(), srv.MgmtACL, srv.Handler(), "console"); err != nil {
 		return err
 	}
@@ -243,7 +269,7 @@ func run() error {
 		go func() { errc <- hs.ListenAndServe() }()
 		log.Warn("development HTTP console (no TLS)", "addr", *devHTTP)
 	}
-	log.Info("ControlZit server started", "version", version, "agent_fingerprint", srv.AgentFingerprint)
+	log.Info("RMMZit server started", "version", version, "agent_fingerprint", srv.AgentFingerprint)
 	// For the root helper: which version runs and where (it checks this after an update).
 	if err := helper.WriteServerInfo(*dataDir, helper.ServerInfo{Version: version, MgmtListen: net0.MgmtListen}); err != nil {
 		log.Warn("cannot write the helper information", "err", err)
@@ -281,8 +307,9 @@ func run() error {
 	return nil
 }
 
+// env reads RMMZIT_<k> (or CONTROLZIT_<k>), else def.
 func env(k, def string) string {
-	if v := os.Getenv(k); v != "" {
+	if v := legacy.Getenv(k); v != "" {
 		return v
 	}
 	return def
@@ -294,18 +321,18 @@ func startEmbeddedDB(dir string) (*embeddedpostgres.EmbeddedPostgres, string, er
 	const port = 54329
 	pg := embeddedpostgres.NewDatabase(embeddedpostgres.DefaultConfig().Port(port).
 		DataPath(filepath.Join(dir, "pgdata")).RuntimePath(filepath.Join(dir, "pgrt")).
-		BinariesPath(filepath.Join(dir, "pgbin")).Database("controlzit").Logger(io.Discard))
+		BinariesPath(filepath.Join(dir, "pgbin")).Database("rmmzit").Logger(io.Discard))
 	if err := pg.Start(); err != nil {
 		return nil, "", err
 	}
-	return pg, fmt.Sprintf("postgres://postgres:postgres@127.0.0.1:%d/controlzit?sslmode=disable", port), nil
+	return pg, fmt.Sprintf("postgres://postgres:postgres@127.0.0.1:%d/rmmzit?sslmode=disable", port), nil
 }
 
 // restoreBackup puts a backup back (server stopped): the database in one
 // transaction, then the data files. The server migrates to its own version
 // when it starts.
 func restoreBackup(ctx context.Context, file, passFile, dataDir, dbURL string) error {
-	pass := os.Getenv("CONTROLZIT_BACKUP_PASSPHRASE")
+	pass := legacy.Getenv("BACKUP_PASSPHRASE")
 	if passFile != "" {
 		b, err := os.ReadFile(passFile) // #nosec G304 -- the administrator names the file
 		if err != nil {
@@ -324,7 +351,7 @@ func restoreBackup(ctx context.Context, file, passFile, dataDir, dbURL string) e
 	if err != nil {
 		return fmt.Errorf("restore: %w", err)
 	}
-	fmt.Printf("Restored the backup of %s (ControlZit %s, %d files). Start the server now.\n",
+	fmt.Printf("Restored the backup of %s (RMMZit %s, %d files). Start the server now.\n",
 		m.Created.Local().Format("2006-01-02 15:04"), m.ServerVersion, len(m.Files))
 	return nil
 }

@@ -1,4 +1,4 @@
-module github.com/max-zit/controlzit
+module github.com/max-zit/rmmzit
 
 go 1.27.0
 

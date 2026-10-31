@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/helper"
-	"github.com/max-zit/controlzit/internal/netacl"
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/helper"
+	"github.com/max-zit/rmmzit/internal/netacl"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 type networkData struct {
@@ -82,7 +82,7 @@ func (s *Server) handleNetworkSave(w http.ResponseWriter, r *http.Request) {
 		n.MgmtListen, n.MgmtAllowed, n.AgentListen, n.AgentAllowed, n.PublicAgentURL, old.MgmtListen, old.MgmtAllowed, old.AgentListen, old.AgentAllowed)
 	msg := "Saved. The allowed networks apply immediately."
 	if s.RunningMgmt != "" && !s.ListenOverride && (n.MgmtListen != s.RunningMgmt || n.AgentListen != s.RunningAgent) {
-		msg = "Saved. The allowed networks apply immediately; restart the ControlZit service to use the new ports."
+		msg = "Saved. The allowed networks apply immediately; restart the RMMZit service to use the new ports."
 	}
 	s.redirect(w, r, "/settings/network", msg)
 }

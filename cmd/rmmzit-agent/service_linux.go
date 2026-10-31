@@ -12,25 +12,25 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/agent"
+	"github.com/max-zit/rmmzit/internal/agent"
 )
 
 // On Linux the agent runs under systemd. "install" copies the program to
 // /usr/local/bin, enrolls it (with --code) and starts the service.
 
 const (
-	linuxBin  = "/usr/local/bin/controlzit-agent"
-	linuxUnit = "/etc/systemd/system/controlzit-agent.service"
+	linuxBin  = "/usr/local/bin/rmmzit-agent"
+	linuxUnit = "/etc/systemd/system/rmmzit-agent.service"
 )
 
 const unitFile = `[Unit]
-Description=ControlZit Agent
+Description=RMMZit Agent
 Documentation=https://maxzit.com
 After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart=/usr/local/bin/controlzit-agent run
+ExecStart=/usr/local/bin/rmmzit-agent run
 Restart=always
 RestartSec=10
 User=root
@@ -41,7 +41,7 @@ WantedBy=multi-user.target
 
 func isService() bool { return false }
 
-func runService(string) error { return errors.New("systemd runs: controlzit-agent run") }
+func runService(string) error { return errors.New("systemd runs: rmmzit-agent run") }
 
 func systemctl(args ...string) error {
 	out, err := exec.Command("systemctl", args...).CombinedOutput() // #nosec G204 -- fixed arguments
@@ -95,7 +95,7 @@ func installService(code string) error {
 	dir := agent.DefaultDir()
 	if code != "" {
 		if _, err := agent.LoadConfig(dir); err == nil {
-			fmt.Println("Already enrolled; the code is not used (run 'controlzit-agent enroll --force --code …' to move the device).")
+			fmt.Println("Already enrolled; the code is not used (run 'rmmzit-agent enroll --force --code …' to move the device).")
 		} else {
 			d, err := agent.ParseEnrollCode(code)
 			if err != nil {
@@ -118,19 +118,20 @@ func installService(code string) error {
 			}
 		}
 	}
+	removeLegacyService()
 	if err := os.WriteFile(linuxUnit, []byte(unitFile), 0o644); err != nil { // #nosec G306 -- a systemd unit is world-readable
 		return err
 	}
 	if err := systemctl("daemon-reload"); err != nil {
 		return err
 	}
-	if err := systemctl("enable", "--now", "controlzit-agent.service"); err != nil {
+	if err := systemctl("enable", "--now", "rmmzit-agent.service"); err != nil {
 		return err
 	}
-	if err := systemctl("restart", "controlzit-agent.service"); err != nil { // a new binary on reinstall
+	if err := systemctl("restart", "rmmzit-agent.service"); err != nil { // a new binary on reinstall
 		return err
 	}
-	fmt.Println("The ControlZit agent is installed and running (systemctl status controlzit-agent).")
+	fmt.Println("The RMMZit agent is installed and running (systemctl status rmmzit-agent).")
 	return nil
 }
 
@@ -138,13 +139,59 @@ func uninstallService() error {
 	if os.Geteuid() != 0 {
 		return errors.New("run it as root (sudo)")
 	}
-	_ = systemctl("disable", "--now", "controlzit-agent.service")
+	_ = systemctl("disable", "--now", "rmmzit-agent.service")
+	removeLegacyService()
 	_ = os.Remove(linuxUnit)
 	_ = systemctl("daemon-reload")
 	if err := agent.Forget(agent.DefaultDir()); err != nil && !errors.Is(err, os.ErrNotExist) {
 		fmt.Println("warning:", err)
 	}
 	_ = os.Remove(linuxBin)
-	fmt.Println("The ControlZit agent is removed.")
+	fmt.Println("The RMMZit agent is removed.")
 	return nil
+}
+
+// The service of agents installed before the rename to RMMZit.
+const (
+	legacyBin  = "/usr/local/bin/controlzit-agent"
+	legacyUnit = "/etc/systemd/system/controlzit-agent.service"
+)
+
+// migrateLegacyService moves an agent that runs as the old service (it got
+// this version by self-update) to the rmmzit-agent service: the program is
+// copied to its new place, the new unit written, and a separate systemd job
+// stops the old service (this process) and starts the new one.
+func migrateLegacyService(log interface{ Info(string, ...any) }) {
+	exe, err := os.Executable()
+	if err != nil || os.Geteuid() != 0 || os.Getenv("INVOCATION_ID") == "" {
+		return
+	}
+	if exe, err = filepath.EvalSymlinks(exe); err != nil || exe != legacyBin {
+		return
+	}
+	if _, err := os.Stat(linuxUnit); err == nil {
+		return // already done; the switch is under way
+	}
+	if copySelf() != nil || os.WriteFile(linuxUnit, []byte(unitFile), 0o644) != nil { // #nosec G306 -- a systemd unit is world-readable
+		return
+	}
+	if systemctl("daemon-reload") != nil {
+		return
+	}
+	log.Info("moving to the rmmzit-agent service (the agent was renamed from ControlZit)")
+	script := "systemctl disable --now controlzit-agent.service; rm -f " + legacyUnit + " " + legacyBin +
+		"; systemctl daemon-reload; systemctl enable --now rmmzit-agent.service"
+	_ = exec.Command("systemd-run", "--no-block", "--unit=rmmzit-agent-migrate", "--collect", "/bin/sh", "-c", script).Run() // #nosec G204 -- fixed command
+}
+
+// removeLegacyService removes the old service when the agent is installed
+// again under the new name.
+func removeLegacyService() {
+	if _, err := os.Stat(legacyUnit); err != nil {
+		return
+	}
+	_ = systemctl("disable", "--now", "controlzit-agent.service")
+	_ = os.Remove(legacyUnit)
+	_ = os.Remove(legacyBin)
+	_ = systemctl("daemon-reload")
 }

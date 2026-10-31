@@ -27,7 +27,7 @@
 <p><b>Pliki</b> przegląda dyski komputera bez łączenia się z ekranem. Przesyłaj pliki (do 4 GB), pobieraj pliki, pobierz folder lub zaznaczenie jako ZIP, twórz foldery, zmieniaj nazwy i usuwaj. Agent wykonuje każdą operację na plikach jako SYSTEM (Windows) lub root (Linux); każda trafia do dziennika audytu z Twoim nazwiskiem.</p>
 
 <h2 id="processes">Procesy i usługi</h2>
-<p><b>Procesy</b> pokazuje działające programy z pamięcią, wątkami i sesją oraz kończy proces. <b>Usługi</b> pokazuje usługi (usługi Windows lub jednostki systemd) i je uruchamia, zatrzymuje lub uruchamia ponownie. Agent ControlZit chroni sam siebie: nie można go zatrzymać ani zakończyć z konsoli.</p>
+<p><b>Procesy</b> pokazuje działające programy z pamięcią, wątkami i sesją oraz kończy proces. <b>Usługi</b> pokazuje usługi (usługi Windows lub jednostki systemd) i je uruchamia, zatrzymuje lub uruchamia ponownie. Agent RMMZit chroni sam siebie: nie można go zatrzymać ani zakończyć z konsoli.</p>
 
 <h2 id="registry">Edytor rejestru (Windows)</h2>
 <p>Karta <b>Registry</b> urządzenia z Windows przegląda rejestr: otwórz klucz po ścieżce (na przykład <code>HKLM\SOFTWARE\Vendor</code>) albo przechodź przez klucze od katalogów głównych HKLM, HKU, HKCR i HKCC. Wartości można dodawać, zmieniać i usuwać (REG_SZ, REG_EXPAND_SZ, REG_DWORD, REG_QWORD, REG_MULTI_SZ; liczby dziesiętnie lub szesnastkowo z 0x); wartości binarne są wyświetlane szesnastkowo. Klucze można tworzyć i usuwać z całą zawartością; katalogi główne, klucze bezpośrednio pod nimi i własne gałęzie systemu są chronione. Każda zmiana trafia do dziennika audytu z zastąpioną wartością. Rejestry użytkowników są pod HKU (według SID); HKCU należałby do konta SYSTEM. Agenci 0.12 i nowsi.</p>

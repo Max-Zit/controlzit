@@ -37,7 +37,7 @@ func TestRemoteActions(t *testing.T) {
 	if !strings.Contains(r.body, "EventLog") || strings.Contains(r.body, "Spooler</code>") {
 		t.Fatal("service filter")
 	}
-	if r := admin.post(base+"/services", "name", "ControlZitAgent", "action", "stop"); r.code != http.StatusSeeOther {
+	if r := admin.post(base+"/services", "name", "RMMZitAgent", "action", "stop"); r.code != http.StatusSeeOther {
 		t.Fatalf("service control: %d", r.code)
 	}
 	if r := admin.get(base + "/services"); !strings.Contains(r.body, "cannot stop itself") {

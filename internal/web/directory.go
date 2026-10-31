@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // Groups of a directory (Active Directory / LDAP or single sign-on) decide
@@ -79,7 +79,7 @@ func (s *Server) resolve(ctx context.Context, m GroupMapping, groups []string) (
 	case m.DefaultRole != "":
 		role = m.DefaultRole
 	default:
-		return "", false, nil, uiErr("Your directory account is in no group that may use ControlZit.")
+		return "", false, nil, uiErr("Your directory account is in no group that may use RMMZit.")
 	}
 	if role == store.RoleAdmin {
 		return role, true, nil, nil
@@ -95,7 +95,7 @@ func (s *Server) resolve(ctx context.Context, m GroupMapping, groups []string) (
 		if m.AllByDefault {
 			return role, true, nil, nil
 		}
-		return "", false, nil, uiErr("Your directory account is in no group of a ControlZit customer.")
+		return "", false, nil, uiErr("Your directory account is in no group of an RMMZit customer.")
 	}
 	cs, err := s.store.AllCustomers(ctx)
 	if err != nil {
@@ -109,7 +109,7 @@ func (s *Server) resolve(ctx context.Context, m GroupMapping, groups []string) (
 		}
 	}
 	if len(ids) == 0 {
-		return "", false, nil, uiErr("The customers of your directory groups do not exist in ControlZit.")
+		return "", false, nil, uiErr("The customers of your directory groups do not exist in RMMZit.")
 	}
 	return role, false, ids, nil
 }

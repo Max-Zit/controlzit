@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
-	"github.com/max-zit/controlzit/internal/store"
-	"github.com/max-zit/controlzit/internal/testdb"
+	"github.com/max-zit/rmmzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/testdb"
 )
 
 // A dump restored into another database gives the same rows, ids keep

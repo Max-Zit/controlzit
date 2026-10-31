@@ -1,4 +1,4 @@
-// ControlZit terminal: a small xterm-compatible terminal emulator for the
+// RMMZit terminal: a small xterm-compatible terminal emulator for the
 // Linux root shell (term.start). The agent sends the shell output as binary
 // messages; keystrokes go back as {"t":"i","d":…} and the window size as
 // {"t":"r","cols":…,"rows":…}. It covers what shells and the usual full-

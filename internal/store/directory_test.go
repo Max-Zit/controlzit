@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 func TestDirectoryUsers(t *testing.T) {

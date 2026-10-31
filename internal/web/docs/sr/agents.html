@@ -8,35 +8,35 @@
 </ul>
 
 <h2 id="codes">Kodovi za prijavu</h2>
-<p>Agenti se priključuju <b>lokaciji</b> klijenta pomoću koda za prijavu. Otvorite lokaciju u <a href="/customers">Klijenti</a> i kliknite <b>Napravi kod za prijavu</b>. Birate koliko dugo važi (1–365 dana) i koliko ga računara sme iskoristiti. Kod (<code>CZ1-…</code>) sadrži adresu servera i otisak sertifikata servera, pa instalaciji ne treba ništa drugo. Prikazuje se samo jednom; opozovite ga kad više nije potreban.</p>
+<p>Agenti se priključuju <b>lokaciji</b> klijenta pomoću koda za prijavu. Otvorite lokaciju u <a href="/customers">Klijenti</a> i kliknite <b>Napravi kod za prijavu</b>. Birate koliko dugo važi (1–365 dana) i koliko ga računara sme iskoristiti. Kod (<code>RZ1-…</code>) sadrži adresu servera i otisak sertifikata servera, pa instalaciji ne treba ništa drugo. Prikazuje se samo jednom; opozovite ga kad više nije potreban.</p>
 
 <h2 id="windows">Windows</h2>
 <p>Preuzmite MSI na stranici lokacije (<b>Preuzmi agenta (MSI, 64-bit)</b>) i ili ga pokrenite dvoklikom i nalepite kod, ili ga instalirajte tiho, na primer preko Group Policy-ja, Intune-a ili skripte:</p>
-<pre>msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="CZ1-…"</pre>
-<p>Agent radi kao Windows servis <i>ControlZit Agent</i>. Mala ikonica pored sata pokazuje da li je povezan (zelena) i otvara prozor sa serverom i time ko upravlja računarom.</p>
+<pre>msiexec /i rmmzit-agent-x64.msi /qn ENROLLCODE="RZ1-…"</pre>
+<p>Agent radi kao Windows servis <i>RMMZit Agent</i>. Mala ikonica pored sata pokazuje da li je povezan (zelena) i otvara prozor sa serverom i time ko upravlja računarom.</p>
 <p>Ikonica, njen prozor i pitanje za restart koriste jezik prikaza Windowsa korisnika (jedan od 14 jezika konzole, inače engleski).</p>
 <p>Bez MSI-ja (PowerShell kao administrator):</p>
-<pre>.\controlzit-agent.exe enroll --code "CZ1-…"
-.\controlzit-agent.exe install</pre>
+<pre>.\rmmzit-agent.exe enroll --code "RZ1-…"
+.\rmmzit-agent.exe install</pre>
 
 <h2 id="linux">Linux</h2>
 <p>Preuzmite Linux agenta na stranici lokacije (x86-64, ili ARM64 za Raspberry Pi i ARM servere), kopirajte ga na mašinu i pokrenite kao root:</p>
-<pre>chmod +x controlzit-agent-linux-amd64
-sudo ./controlzit-agent-linux-amd64 install --code "CZ1-…"</pre>
-<p>Kopira se u <code>/usr/local/bin/controlzit-agent</code>, prijavi se i pokrene systemd servis <code>controlzit-agent</code>.</p>
+<pre>chmod +x rmmzit-agent-linux-amd64
+sudo ./rmmzit-agent-linux-amd64 install --code "RZ1-…"</pre>
+<p>Kopira se u <code>/usr/local/bin/rmmzit-agent</code>, prijavi se i pokrene systemd servis <code>rmmzit-agent</code>.</p>
 
 <h2 id="updates">Ažuriranje agenata</h2>
 <p>Server nosi instalacije agenata svoje verzije. U <a href="/settings/agents">Podešavanja → Ažuriranje agenata</a> vidite koji su agenti zastareli, ažurirate ih sve odjednom ili pustite da se zastareli agenti sami ažuriraju kad se povežu. Pojedinačni agent se ažurira na stranici uređaja. Agent preuzima instalaciju preko svoje šifrovane veze i instalira je samo ako se poklapa sa SHA-256 iz potpisane komande. Tu možete otpremiti i drugu instalaciju (MSI ili Linux agenta).</p>
 
 <h2 id="windows-update">Windows Update na računarima</h2>
-<p>Agent pravilom isključuje automatsku instalaciju Windows Update-a, tako da ažuriranja stižu samo iz ControlZit-a, ručno ili po vašem rasporedu (vidi <a href="/docs/updates">Windows ažuriranja</a>). Prethodna podešavanja se čuvaju i vraćaju kad se agent ukloni.</p>
+<p>Agent pravilom isključuje automatsku instalaciju Windows Update-a, tako da ažuriranja stižu samo iz RMMZit-a, ručno ili po vašem rasporedu (vidi <a href="/docs/updates">Windows ažuriranja</a>). Prethodna podešavanja se čuvaju i vraćaju kad se agent ukloni.</p>
 
 <h2 id="remove">Uklanjanje agenta</h2>
-<p>Obrišite uređaj na njegovoj stranici (<b>Ukloni uređaj</b>). Ako je na mreži, agent se sam deinstalira za nekoliko sekundi i Windows Update dobija nazad svoja podešavanja. Računar van mreže više ne može da se poveže; tamo deinstalirajte agenta ručno (Windows: <i>Aplikacije → ControlZit Agent → Deinstaliraj</i>; Linux: <code>sudo controlzit-agent uninstall</code>).</p>
+<p>Obrišite uređaj na njegovoj stranici (<b>Ukloni uređaj</b>). Ako je na mreži, agent se sam deinstalira za nekoliko sekundi i Windows Update dobija nazad svoja podešavanja. Računar van mreže više ne može da se poveže; tamo deinstalirajte agenta ručno (Windows: <i>Aplikacije → RMMZit Agent → Deinstaliraj</i>; Linux: <code>sudo rmmzit-agent uninstall</code>).</p>
 
 <h2 id="mass">Mnogo računara: Group Policy i Intune</h2>
 <p>Napravite kod za upis sa dovoljno korišćenja za sve računare; stranica lokacije zatim prikazuje, popunjeno tim kodom:</p>
 <ul>
-  <li><b>Group Policy</b>: PowerShell startup skriptu. Stavite MSI na deljeni folder koji računarski nalozi (Domain Computers) smeju da čitaju, upišite njegovu putanju, kopirajte skriptu i dodajte je pod Computer Configuration → Policies → Windows Settings → Scripts → Startup → PowerShell Scripts. Računari koji imaju agenta (servis <code>ControlZitAgent</code>) je preskaču; log instalacije je <code>%windir%\Temp\controlzit-agent-install.log</code>.</li>
-  <li><b>Microsoft Intune</b>: dodajte agenta kao Windows aplikaciju (Win32): spakujte MSI Microsoft-ovim alatom IntuneWinAppUtil i koristite komande za instalaciju i deinstalaciju, način instalacije <i>System</i> i pravilo detekcije (fajl <code>C:\Program Files\ControlZit Agent\controlzit-agent.exe</code>) sa stranice lokacije. Ne dodajte ga kao line-of-business MSI: agent se sam ažurira, a Intune bi ponovo instalirao staru verziju.</li>
+  <li><b>Group Policy</b>: PowerShell startup skriptu. Stavite MSI na deljeni folder koji računarski nalozi (Domain Computers) smeju da čitaju, upišite njegovu putanju, kopirajte skriptu i dodajte je pod Computer Configuration → Policies → Windows Settings → Scripts → Startup → PowerShell Scripts. Računari koji imaju agenta (servis <code>RMMZitAgent</code>) je preskaču; log instalacije je <code>%windir%\Temp\rmmzit-agent-install.log</code>.</li>
+  <li><b>Microsoft Intune</b>: dodajte agenta kao Windows aplikaciju (Win32): spakujte MSI Microsoft-ovim alatom IntuneWinAppUtil i koristite komande za instalaciju i deinstalaciju, način instalacije <i>System</i> i pravilo detekcije (fajl <code>C:\Program Files\RMMZit Agent\rmmzit-agent.exe</code>) sa stranice lokacije. Ne dodajte ga kao line-of-business MSI: agent se sam ažurira, a Intune bi ponovo instalirao staru verziju.</li>
 </ul>

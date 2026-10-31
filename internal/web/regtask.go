@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
-	"github.com/max-zit/controlzit/internal/store"
-	"github.com/max-zit/controlzit/internal/update"
+	"github.com/max-zit/rmmzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/update"
 )
 
 // Registry editor and scheduled tasks of Windows devices (agents

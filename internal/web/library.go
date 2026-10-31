@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // Script library: saved scripts that run on many devices at once (jobs) or

@@ -1,11 +1,11 @@
-// controlzit-agent is the ControlZit agent: it runs as a service on a
-// managed machine and connects outbound to the ControlZit server.
+// rmmzit-agent is the RMMZit agent: it runs as a service on a
+// managed machine and connects outbound to the RMMZit server.
 //
-//	controlzit-agent enroll --server https://rmm.example.com:8444 --fingerprint SHA256 --token czet_…
-//	controlzit-agent run          # in the foreground (the service runs this)
-//	controlzit-agent install      # register and start the Windows service (MSI does this itself)
-//	controlzit-agent uninstall
-//	controlzit-agent status | inventory | version
+//	rmmzit-agent enroll --server https://rmm.example.com:8444 --fingerprint SHA256 --token czet_…
+//	rmmzit-agent run          # in the foreground (the service runs this)
+//	rmmzit-agent install      # register and start the Windows service (MSI does this itself)
+//	rmmzit-agent uninstall
+//	rmmzit-agent status | inventory | version
 package main
 
 import (
@@ -22,8 +22,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/agent"
-	"github.com/max-zit/controlzit/internal/rd"
+	"github.com/max-zit/rmmzit/internal/agent"
+	"github.com/max-zit/rmmzit/internal/legacy"
+	"github.com/max-zit/rmmzit/internal/rd"
 )
 
 var version = "dev"
@@ -37,15 +38,15 @@ func main() {
 }
 
 func usage() error {
-	fmt.Fprintln(os.Stderr, `usage: controlzit-agent <command> [options]
+	fmt.Fprintln(os.Stderr, `usage: rmmzit-agent <command> [options]
 
 commands:
-  enroll     join this machine to a ControlZit server
-             --code CZ1-… (or --server URL --fingerprint SHA256 --token TOKEN)
+  enroll     join this machine to an RMMZit server
+             --code RZ1-… (or --server URL --fingerprint SHA256 --token TOKEN)
              [--force] [--if-not-enrolled] [--pending-ok] [--dir DIR]
   forget     remove the enrollment (configuration and key)
   run        run the agent in the foreground
-  install    install and start the service (Linux: --code CZ1-… enrolls too)
+  install    install and start the service (Linux: --code RZ1-… enrolls too)
   uninstall  stop and remove the service
   status     show the enrollment
   inventory  print the inventory of this machine as JSON
@@ -67,7 +68,7 @@ func run(args []string) error {
 	fp := fs.String("fingerprint", "", "SHA-256 fingerprint of the server's agent certificate")
 	token := fs.String("token", "", "enrollment token of the site")
 	force := fs.Bool("force", false, "enroll again even if already enrolled")
-	code := fs.String("code", "", "enrollment code from the console (CZ1-…), instead of --server, --fingerprint and --token")
+	code := fs.String("code", "", "enrollment code from the console (RZ1-…), instead of --server, --fingerprint and --token")
 	ifNot := fs.Bool("if-not-enrolled", false, "do nothing when already enrolled (installer upgrades)")
 	pendingOK := fs.Bool("pending-ok", false, "if the server cannot be reached, let the service finish the enrollment later")
 	session := fs.String("session", "", "remote desktop session (rdhelper, started by the service)")
@@ -81,7 +82,7 @@ func run(args []string) error {
 	defer stop()
 	switch cmd {
 	case "version":
-		fmt.Println("controlzit-agent", version)
+		fmt.Println(legacy.ProgramName("rmmzit-agent", "controlzit-agent"), version)
 		return nil
 	case "enroll":
 		var d agent.EnrollData
@@ -172,6 +173,7 @@ func run(args []string) error {
 }
 
 func runAgent(ctx context.Context, dir string, log *slog.Logger) error {
+	migrateLegacyService(log)
 	// Wait for the enrollment: the MSI enrolls before it starts the service,
 	// or leaves a pending enrollment when the server could not be reached.
 	var cfg *agent.Config
@@ -203,7 +205,7 @@ func runAgent(ctx context.Context, dir string, log *slog.Logger) error {
 		}
 		wait = min(2*wait, 15*time.Minute)
 	}
-	log.Info("ControlZit agent starting", "version", version, "server", cfg.ServerURL, "customer", cfg.Customer, "site", cfg.Site)
+	log.Info("RMMZit agent starting", "version", version, "server", cfg.ServerURL, "customer", cfg.Customer, "site", cfg.Site)
 	a := &agent.Agent{Dir: dir, Cfg: cfg, Log: log}
 	return a.Run(ctx)
 }

@@ -45,7 +45,7 @@
         <label>{{.T "Port"}}<input type="number" name="sftp_port" value="{{if $b.SFTP.Port}}{{$b.SFTP.Port}}{{else}}22{{end}}" min="1" max="65535"></label>
         <label>{{.T "User"}}<input name="sftp_user" value="{{$b.SFTP.User}}" autocomplete="off"></label>
       </div>
-      <label>{{.T "Folder"}} <small>{{.T "created when missing"}}</small><input name="sftp_dir" value="{{$b.SFTP.Dir}}" placeholder="backups/controlzit"></label>
+      <label>{{.T "Folder"}} <small>{{.T "created when missing"}}</small><input name="sftp_dir" value="{{$b.SFTP.Dir}}" placeholder="backups/rmmzit"></label>
       <div class="cols">
         <label>{{.T "Password"}} {{if .Data.HasPw}}<small>{{.T "saved; leave empty to keep it"}}</small>{{end}}<input type="password" name="sftp_password" autocomplete="new-password"></label>
       </div>
@@ -80,14 +80,14 @@
 
 <section class="panel">
   <h2>{{.T "Restore"}}</h2>
-  <p class="small">{{.T "A restore replaces the whole console (database, keys, certificates) with the backup. It runs on the server while ControlZit is stopped:"}}</p>
+  <p class="small">{{.T "A restore replaces the whole console (database, keys, certificates) with the backup. It runs on the server while RMMZit is stopped:"}}</p>
   <ul class="small">
     <li>{{.T "Appliance: the setup menu (sign in on the console of the VM) → Restore a backup."}}</li>
-    <li>{{.T "Linux packages:"}}<pre>sudo systemctl stop controlzit-server
-sudo -u controlzit sh -c 'set -a; . /etc/controlzit/server.env; controlzit-server -data-dir /var/lib/controlzit -restore /path/controlzit-backup-….czb'
-sudo systemctl start controlzit-server</pre></li>
+    <li>{{.T "Linux packages:"}}<pre>sudo systemctl stop rmmzit-server
+sudo -u rmmzit sh -c 'set -a; . /etc/rmmzit/server.env; rmmzit-server -data-dir /var/lib/rmmzit -restore /path/rmmzit-backup-….czb'
+sudo systemctl start rmmzit-server</pre></li>
   </ul>
-  <p class="small muted">{{.T "An encrypted backup asks for its passphrase in CONTROLZIT_BACKUP_PASSPHRASE or a file given with -restore-passphrase-file. A new server restored from a backup keeps the agents: they trust the same certificate."}}</p>
+  <p class="small muted">{{.T "An encrypted backup asks for its passphrase in RMMZIT_BACKUP_PASSPHRASE or a file given with -restore-passphrase-file. A new server restored from a backup keeps the agents: they trust the same certificate."}}</p>
 </section>
 </div>
 </div>

@@ -22,7 +22,7 @@ import (
 	"golang.org/x/sys/windows/svc"
 	"golang.org/x/sys/windows/svc/mgr"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 func init() {
@@ -102,8 +102,8 @@ func controlService(ctx context.Context, raw json.RawMessage) (any, error) {
 	if err := args(raw, &a); err != nil {
 		return nil, err
 	}
-	if strings.EqualFold(a.Name, "ControlZitAgent") && a.Action != "start" {
-		return nil, errors.New("the ControlZit agent cannot stop itself from the console")
+	if (strings.EqualFold(a.Name, "RMMZitAgent") || strings.EqualFold(a.Name, "ControlZitAgent")) && a.Action != "start" {
+		return nil, errors.New("the RMMZit agent cannot stop itself from the console")
 	}
 	m, err := mgr.Connect()
 	if err != nil {
@@ -224,7 +224,7 @@ func killProcess(ctx context.Context, raw json.RawMessage) (any, error) {
 			if !strings.EqualFold(p.Name, a.Name) {
 				return nil, errors.New("the process has changed; refresh the list")
 			}
-			if criticalProcesses[strings.ToLower(p.Name)] || strings.EqualFold(p.Name, "controlzit-agent.exe") {
+			if criticalProcesses[strings.ToLower(p.Name)] || strings.EqualFold(p.Name, "rmmzit-agent.exe") {
 				return nil, errors.New("this process cannot be ended from the console")
 			}
 			found = true

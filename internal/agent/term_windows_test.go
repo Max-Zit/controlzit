@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // A PowerShell on a pseudo console answers a command; ending the session
@@ -33,7 +33,7 @@ func TestWindowsTerminal(t *testing.T) {
 		}
 	}()
 	sh.Resize(120, 40)
-	if _, err := sh.Write([]byte("Write-Output (\"cz\" + \"term \" + $env:CONTROLZIT_TECHNICIAN)\r")); err != nil {
+	if _, err := sh.Write([]byte("Write-Output (\"cz\" + \"term \" + $env:RMMZIT_TECHNICIAN)\r")); err != nil {
 		t.Fatal(err)
 	}
 	var seen bytes.Buffer

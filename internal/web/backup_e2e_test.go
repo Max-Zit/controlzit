@@ -12,9 +12,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/backup"
-	"github.com/max-zit/controlzit/internal/store"
-	"github.com/max-zit/controlzit/internal/testdb"
+	"github.com/max-zit/rmmzit/internal/backup"
+	"github.com/max-zit/rmmzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/testdb"
 )
 
 // Console backups: the daily schedule, an encrypted file to download, the
@@ -37,7 +37,7 @@ func TestConsoleBackup(t *testing.T) {
 	}
 	admin.post("/settings/backup", "enabled", "1", "hour", hour, "keep", "2", "passphrase", pass, "passphrase2", pass)
 
-	names := regexp.MustCompile(`controlzit-backup-\d{8}-\d{6}\.czb`)
+	names := regexp.MustCompile(`rmmzit-backup-\d{8}-\d{6}\.rzb`)
 	backups := func() []string {
 		return uniq(names.FindAllString(admin.get("/settings/backup").body, -1))
 	}

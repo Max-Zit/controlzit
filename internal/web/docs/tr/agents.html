@@ -8,35 +8,35 @@
 </ul>
 
 <h2 id="codes">Kayıt kodları</h2>
-<p>Ajanlar bir müşterinin <b>konumuna</b> bir kayıt koduyla katılır. Konumu <a href="/customers">Müşteriler</a> altında açın ve <b>Kayıt kodu oluştur</b>'a tıklayın. Ne kadar süre geçerli olacağını (1–365 gün) ve kaç bilgisayarın kullanabileceğini seçersiniz. Kod (<code>CZ1-…</code>) sunucu adresini ve sertifika parmak izini içerir, bu yüzden yükleyicinin başka bir şeye ihtiyacı yoktur. Yalnızca bir kez gösterilir; artık gerekmediğinde iptal edin.</p>
+<p>Ajanlar bir müşterinin <b>konumuna</b> bir kayıt koduyla katılır. Konumu <a href="/customers">Müşteriler</a> altında açın ve <b>Kayıt kodu oluştur</b>'a tıklayın. Ne kadar süre geçerli olacağını (1–365 gün) ve kaç bilgisayarın kullanabileceğini seçersiniz. Kod (<code>RZ1-…</code>) sunucu adresini ve sertifika parmak izini içerir, bu yüzden yükleyicinin başka bir şeye ihtiyacı yoktur. Yalnızca bir kez gösterilir; artık gerekmediğinde iptal edin.</p>
 
 <h2 id="windows">Windows</h2>
 <p>MSI'yı konum sayfasından indirin (<b>Ajanı indir (MSI, 64 bit)</b>) ve çift tıklayıp kodu yapıştırın ya da örneğin Grup İlkesi, Intune veya bir betikle sessiz kurun:</p>
-<pre>msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="CZ1-…"</pre>
-<p>Ajan <i>ControlZit Agent</i> Windows hizmeti olarak çalışır. Saatin yanındaki küçük bir simge bağlı olup olmadığını (yeşil) gösterir ve sunucuyu ve bilgisayarı kimin yönettiğini gösteren bir pencere açar.</p>
+<pre>msiexec /i rmmzit-agent-x64.msi /qn ENROLLCODE="RZ1-…"</pre>
+<p>Ajan <i>RMMZit Agent</i> Windows hizmeti olarak çalışır. Saatin yanındaki küçük bir simge bağlı olup olmadığını (yeşil) gösterir ve sunucuyu ve bilgisayarı kimin yönettiğini gösteren bir pencere açar.</p>
 <p>Simge, penceresi ve yeniden başlatma sorusu kullanıcının Windows görüntüleme dilini kullanır (konsolun 14 dilinden biri, aksi halde İngilizce).</p>
 <p>MSI olmadan (yönetici olarak PowerShell):</p>
-<pre>.\controlzit-agent.exe enroll --code "CZ1-…"
-.\controlzit-agent.exe install</pre>
+<pre>.\rmmzit-agent.exe enroll --code "RZ1-…"
+.\rmmzit-agent.exe install</pre>
 
 <h2 id="linux">Linux</h2>
 <p>Linux ajanını konum sayfasından indirin (x86-64 veya Raspberry Pi ve ARM sunucular için ARM64), makineye kopyalayın ve root olarak çalıştırın:</p>
-<pre>chmod +x controlzit-agent-linux-amd64
-sudo ./controlzit-agent-linux-amd64 install --code "CZ1-…"</pre>
-<p>Kendini <code>/usr/local/bin/controlzit-agent</code> konumuna kopyalar, kaydolur ve <code>controlzit-agent</code> systemd hizmetini başlatır.</p>
+<pre>chmod +x rmmzit-agent-linux-amd64
+sudo ./rmmzit-agent-linux-amd64 install --code "RZ1-…"</pre>
+<p>Kendini <code>/usr/local/bin/rmmzit-agent</code> konumuna kopyalar, kaydolur ve <code>rmmzit-agent</code> systemd hizmetini başlatır.</p>
 
 <h2 id="updates">Ajan güncellemeleri</h2>
 <p>Sunucu kendi sürümünün ajan yükleyicilerini taşır. <a href="/settings/agents">Ayarlar → Ajan güncellemeleri</a> altında hangi ajanların eski olduğunu görür, hepsini tek seferde günceller veya eski ajanların bağlandıklarında kendilerini güncellemesine izin verirsiniz. Tek bir ajan cihaz sayfasında güncellenir. Ajan yükleyiciyi kendi şifreli bağlantısı üzerinden indirir ve yalnızca imzalı güncelleme komutundaki SHA-256 ile eşleşirse kurar. Orada başka bir yükleyici de yükleyebilirsiniz (bir MSI veya bir Linux ajanı).</p>
 
 <h2 id="windows-update">Yönetilen bilgisayarlarda Windows Update</h2>
-<p>Ajan, Windows Update'in otomatik kurulumunu ilkeyle kapatır; böylece güncellemeler yalnızca ControlZit'ten, elle veya sizin zamanlamanızla gelir (bkz. <a href="/docs/updates">Windows güncellemeleri</a>). Önceki ayarlar saklanır ve ajan kaldırıldığında geri gelir.</p>
+<p>Ajan, Windows Update'in otomatik kurulumunu ilkeyle kapatır; böylece güncellemeler yalnızca RMMZit'ten, elle veya sizin zamanlamanızla gelir (bkz. <a href="/docs/updates">Windows güncellemeleri</a>). Önceki ayarlar saklanır ve ajan kaldırıldığında geri gelir.</p>
 
 <h2 id="remove">Bir ajanı kaldırma</h2>
-<p>Cihazı kendi sayfasında silin (<b>Cihazı kaldır</b>). Çevrimiçiyse ajan saniyeler içinde kendini kaldırır ve Windows Update kendi ayarlarını geri alır. Çevrimdışı bir bilgisayar artık bağlanamaz; ajanı orada elle kaldırın (Windows: <i>Uygulamalar → ControlZit Agent → Kaldır</i>; Linux: <code>sudo controlzit-agent uninstall</code>).</p>
+<p>Cihazı kendi sayfasında silin (<b>Cihazı kaldır</b>). Çevrimiçiyse ajan saniyeler içinde kendini kaldırır ve Windows Update kendi ayarlarını geri alır. Çevrimdışı bir bilgisayar artık bağlanamaz; ajanı orada elle kaldırın (Windows: <i>Uygulamalar → RMMZit Agent → Kaldır</i>; Linux: <code>sudo rmmzit-agent uninstall</code>).</p>
 
 <h2 id="mass">Çok sayıda bilgisayar: Grup İlkesi ve Intune</h2>
 <p>Tüm bilgisayarlar için yeterli kullanım hakkı olan bir kayıt kodu oluşturun; konum sayfası bu kodla doldurulmuş olarak şunları gösterir:</p>
 <ul>
-  <li><b>Grup İlkesi</b>: bir PowerShell başlangıç betiği. MSI'yi bilgisayar hesaplarının (Domain Computers) okuyabildiği bir paylaşıma koyun, yolunu girin, betiği kopyalayın ve Bilgisayar Yapılandırması → İlkeler → Windows Ayarları → Betikler → Başlangıç → PowerShell Betikleri altına ekleyin. Ajanı olan bilgisayarlar (hizmet <code>ControlZitAgent</code>) atlar; kurulum günlüğü <code>%windir%\Temp\controlzit-agent-install.log</code> dosyasıdır.</li>
-  <li><b>Microsoft Intune</b>: ajanı Windows uygulaması (Win32) olarak ekleyin: MSI'yi Microsoft'un IntuneWinAppUtil aracıyla paketleyin ve konum sayfasındaki kurulum ve kaldırma komutlarını, <i>Sistem</i> kurulum davranışını ve algılama kuralını (dosya <code>C:\Program Files\ControlZit Agent\controlzit-agent.exe</code>) kullanın. İş kolu (LOB) MSI olarak eklemeyin: ajan kendini günceller ve Intune eski sürümü yeniden kurar.</li>
+  <li><b>Grup İlkesi</b>: bir PowerShell başlangıç betiği. MSI'yi bilgisayar hesaplarının (Domain Computers) okuyabildiği bir paylaşıma koyun, yolunu girin, betiği kopyalayın ve Bilgisayar Yapılandırması → İlkeler → Windows Ayarları → Betikler → Başlangıç → PowerShell Betikleri altına ekleyin. Ajanı olan bilgisayarlar (hizmet <code>RMMZitAgent</code>) atlar; kurulum günlüğü <code>%windir%\Temp\rmmzit-agent-install.log</code> dosyasıdır.</li>
+  <li><b>Microsoft Intune</b>: ajanı Windows uygulaması (Win32) olarak ekleyin: MSI'yi Microsoft'un IntuneWinAppUtil aracıyla paketleyin ve konum sayfasındaki kurulum ve kaldırma komutlarını, <i>Sistem</i> kurulum davranışını ve algılama kuralını (dosya <code>C:\Program Files\RMMZit Agent\rmmzit-agent.exe</code>) kullanın. İş kolu (LOB) MSI olarak eklemeyin: ajan kendini günceller ve Intune eski sürümü yeniden kurar.</li>
 </ul>

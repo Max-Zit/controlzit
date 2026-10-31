@@ -19,48 +19,48 @@
   {{else}}<div class="empty">{{template "icon" "devices"}}<p>{{.T "No devices yet. Install the agent with an enrollment code of this site."}}</p></div>{{end}}
 </section>
 {{if .User.CanWrite}}
-{{$code := "CZ1-…"}}{{if .Data.EnrollCode}}{{$code = .Data.EnrollCode}}{{end}}
+{{$code := "RZ1-…"}}{{if .Data.EnrollCode}}{{$code = .Data.EnrollCode}}{{end}}
 <section class="panel install">
   <h2>{{template "icon" "plus"}}{{.T "Add computers"}}</h2>
   <p class="muted">{{.T "The agent connects outbound to the agent port of this server; the computer needs no open ports. It pins the server certificate by its fingerprint, so a fake server cannot take over the agent."}}</p>
   {{if not .Data.EnrollCode}}<p class="small">{{.T "Create an enrollment code below first; the commands then contain it."}}</p>{{end}}
   <h3>{{.T "Installer (MSI)"}}</h3>
-  <p>{{if .Data.MSI}}<a class="btn secondary" href="/downloads/controlzit-agent-x64.msi">{{.T "Download the agent (MSI, 64-bit)"}}</a>{{else}}<span class="small muted">{{.T "The MSI is not on this server yet: copy controlzit-agent-x64.msi into the downloads folder of the data directory."}}</span>{{end}}</p>
+  <p>{{if .Data.MSI}}<a class="btn secondary" href="/downloads/rmmzit-agent-x64.msi">{{.T "Download the agent (MSI, 64-bit)"}}</a>{{else}}<span class="small muted">{{.T "The MSI is not on this server yet: copy rmmzit-agent-x64.msi into the downloads folder of the data directory."}}</span>{{end}}</p>
   <p class="small muted">{{.T "Double-click it and paste the code, or install it silently (GPO, Intune, script):"}}</p>
-  <pre id="msi-cmd">msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="{{$code}}"</pre>
+  <pre id="msi-cmd">msiexec /i rmmzit-agent-x64.msi /qn ENROLLCODE="{{$code}}"</pre>
   <p><button type="button" class="secondary" data-copy="#msi-cmd">{{template "icon" "copy"}}{{.T "Copy"}}</button></p>
   <h3>{{.T "Many Windows computers: Group Policy"}}</h3>
   <p class="small muted">{{.T "Put the MSI on a share that the computer accounts (Domain Computers) may read, then add this script as a computer startup script: Computer Configuration → Policies → Windows Settings → Scripts → Startup → PowerShell Scripts. It installs the agent once; computers that have it skip it. Give the enrollment code enough uses for all computers."}}</p>
-  <label class="small">{{.T "Path of the MSI on the share"}}<input id="gpo-msi" value="\server\share\controlzit-agent-x64.msi" spellcheck="false" class="mono" data-fill="#gpo-script" data-token="@MSI@"></label>
-  <pre id="gpo-script" data-template="# ControlZit agent: computer startup script (Group Policy)
+  <label class="small">{{.T "Path of the MSI on the share"}}<input id="gpo-msi" value="\server\share\rmmzit-agent-x64.msi" spellcheck="false" class="mono" data-fill="#gpo-script" data-token="@MSI@"></label>
+  <pre id="gpo-script" data-template="# RMMZit agent: computer startup script (Group Policy)
 $msi  = '@MSI@'
 $code = '{{$code}}'
-if (Get-Service -Name ControlZitAgent -ErrorAction SilentlyContinue) { exit 0 }
-$log = Join-Path $env:windir 'Temp\controlzit-agent-install.log'
-Start-Process -FilePath msiexec.exe -Wait -ArgumentList @('/i', &quot;`&quot;$msi`&quot;&quot;, '/qn', &quot;ENROLLCODE=$code&quot;, '/l*v', &quot;`&quot;$log`&quot;&quot;)"># ControlZit agent: computer startup script (Group Policy)
-$msi  = '\server\share\controlzit-agent-x64.msi'
+if (Get-Service -Name RMMZitAgent -ErrorAction SilentlyContinue) { exit 0 }
+$log = Join-Path $env:windir 'Temp\rmmzit-agent-install.log'
+Start-Process -FilePath msiexec.exe -Wait -ArgumentList @('/i', &quot;`&quot;$msi`&quot;&quot;, '/qn', &quot;ENROLLCODE=$code&quot;, '/l*v', &quot;`&quot;$log`&quot;&quot;)"># RMMZit agent: computer startup script (Group Policy)
+$msi  = '\server\share\rmmzit-agent-x64.msi'
 $code = '{{$code}}'
-if (Get-Service -Name ControlZitAgent -ErrorAction SilentlyContinue) { exit 0 }
-$log = Join-Path $env:windir 'Temp\controlzit-agent-install.log'
+if (Get-Service -Name RMMZitAgent -ErrorAction SilentlyContinue) { exit 0 }
+$log = Join-Path $env:windir 'Temp\rmmzit-agent-install.log'
 Start-Process -FilePath msiexec.exe -Wait -ArgumentList @('/i', "`"$msi`"", '/qn', "ENROLLCODE=$code", '/l*v', "`"$log`"")</pre>
   <p><button type="button" class="secondary" data-copy="#gpo-script">{{template "icon" "copy"}}{{.T "Copy"}}</button></p>
   <h3>{{.T "Many Windows computers: Microsoft Intune"}}</h3>
-  <p class="small muted">{{.T "Add it as a Windows app (Win32): pack the MSI with Microsoft's IntuneWinAppUtil (IntuneWinAppUtil.exe -c <folder> -s controlzit-agent-x64.msi -o <output>) and use these settings. Not as a line-of-business MSI: the agent updates itself, and Intune would then install the old version again."}}</p>
+  <p class="small muted">{{.T "Add it as a Windows app (Win32): pack the MSI with Microsoft's IntuneWinAppUtil (IntuneWinAppUtil.exe -c <folder> -s rmmzit-agent-x64.msi -o <output>) and use these settings. Not as a line-of-business MSI: the agent updates itself, and Intune would then install the old version again."}}</p>
   <dl class="facts small" id="intune-values">
-    <dt>{{.T "Install command"}}</dt><dd><code class="wrap">msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="{{$code}}"</code></dd>
-    <dt>{{.T "Uninstall command"}}</dt><dd><code class="wrap">powershell.exe -NoProfile -Command "$c = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*' | Where-Object DisplayName -eq 'ControlZit Agent').PSChildName; if ($c) { Start-Process msiexec.exe -Wait -ArgumentList '/x', $c, '/qn' }"</code></dd>
+    <dt>{{.T "Install command"}}</dt><dd><code class="wrap">msiexec /i rmmzit-agent-x64.msi /qn ENROLLCODE="{{$code}}"</code></dd>
+    <dt>{{.T "Uninstall command"}}</dt><dd><code class="wrap">powershell.exe -NoProfile -Command "$c = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*' | Where-Object DisplayName -eq 'RMMZit Agent').PSChildName; if ($c) { Start-Process msiexec.exe -Wait -ArgumentList '/x', $c, '/qn' }"</code></dd>
     <dt>{{.T "Install behavior"}}</dt><dd>{{.T "System"}}</dd>
-    <dt>{{.T "Detection rule"}}</dt><dd>{{.T "File exists:"}} <code class="wrap">C:\Program Files\ControlZit Agent\controlzit-agent.exe</code></dd>
+    <dt>{{.T "Detection rule"}}</dt><dd>{{.T "File exists:"}} <code class="wrap">C:\Program Files\RMMZit Agent\rmmzit-agent.exe</code></dd>
   </dl>
   <h3>{{.T "Without the installer (PowerShell as administrator)"}}</h3>
-  <pre id="install-cmd">.\controlzit-agent.exe enroll --code "{{$code}}"
-.\controlzit-agent.exe install</pre>
+  <pre id="install-cmd">.\rmmzit-agent.exe enroll --code "{{$code}}"
+.\rmmzit-agent.exe install</pre>
   <p><button type="button" class="secondary" data-copy="#install-cmd">{{template "icon" "copy"}}{{.T "Copy"}}</button></p>
   <h3>{{.T "Linux (systemd)"}}</h3>
-  <p>{{if .Data.Linux}}<a class="btn secondary" href="/downloads/controlzit-agent-linux-amd64">{{.T "Download the Linux agent (x86-64)"}}</a>{{if .Data.LinuxARM64}} <a class="btn ghost" href="/downloads/controlzit-agent-linux-arm64">{{.T "ARM64 (Raspberry Pi and other ARM servers)"}}</a>{{end}}{{else}}<span class="small muted">{{.T "The Linux agent is not on this server yet: copy controlzit-agent-linux-amd64 into the downloads folder of the data directory."}}</span>{{end}}</p>
-  <p class="small muted">{{.T "Copy it to the machine and run as root; it installs itself in /usr/local/bin and starts the controlzit-agent service:"}}</p>
-  <pre id="linux-cmd">chmod +x controlzit-agent-linux-amd64
-sudo ./controlzit-agent-linux-amd64 install --code "{{$code}}"</pre>
+  <p>{{if .Data.Linux}}<a class="btn secondary" href="/downloads/rmmzit-agent-linux-amd64">{{.T "Download the Linux agent (x86-64)"}}</a>{{if .Data.LinuxARM64}} <a class="btn ghost" href="/downloads/rmmzit-agent-linux-arm64">{{.T "ARM64 (Raspberry Pi and other ARM servers)"}}</a>{{end}}{{else}}<span class="small muted">{{.T "The Linux agent is not on this server yet: copy rmmzit-agent-linux-amd64 into the downloads folder of the data directory."}}</span>{{end}}</p>
+  <p class="small muted">{{.T "Copy it to the machine and run as root; it installs itself in /usr/local/bin and starts the rmmzit-agent service:"}}</p>
+  <pre id="linux-cmd">chmod +x rmmzit-agent-linux-amd64
+sudo ./rmmzit-agent-linux-amd64 install --code "{{$code}}"</pre>
   <p><button type="button" class="secondary" data-copy="#linux-cmd">{{template "icon" "copy"}}{{.T "Copy"}}</button></p>
   <p class="small muted">{{.T "Server fingerprint (SHA-256):"}} <code class="wrap">{{.Data.Fingerprint}}</code></p>
 </section>

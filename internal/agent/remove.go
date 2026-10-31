@@ -6,7 +6,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // The device was deleted in the console: the agent uninstalls itself (and,

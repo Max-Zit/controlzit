@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 func init() { register(proto.KindEventQuery, queryEvents) }

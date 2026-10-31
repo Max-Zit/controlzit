@@ -1,13 +1,13 @@
 <!--
-  ControlZit Agent MSI (publisher MaxZit).
+  RMMZit Agent MSI (publisher MaxZit).
 
   Interactive: the installer asks for the enrollment code that the console
   shows on a site after "Create token".
 
   Silent (GPO, Intune, RMM, script):
-    msiexec /i controlzit-agent-x64.msi /qn ENROLLCODE="CZ1-…"
+    msiexec /i rmmzit-agent-x64.msi /qn ENROLLCODE="RZ1-…"
   or with the parts:
-    msiexec /i controlzit-agent-x64.msi /qn SERVER_URL="https://rmm:8444" FINGERPRINT="…" TOKEN="czet_…"
+    msiexec /i rmmzit-agent-x64.msi /qn SERVER_URL="https://rmm:8444" FINGERPRINT="…" TOKEN="czet_…"
 
   Enrollment runs as SYSTEM before the service starts. If the server cannot
   be reached (no network yet at boot), the service finishes it later; a
@@ -16,7 +16,7 @@
 -->
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
      xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
-  <Package Name="ControlZit Agent"
+  <Package Name="RMMZit Agent"
            Manufacturer="MaxZit"
            Version="$(var.Version)"
            UpgradeCode="3F6A2D1C-8E4B-4C7A-9B15-6D2E7F0A4C93"
@@ -24,15 +24,15 @@
            InstallerVersion="500"
            Compressed="yes">
 
-    <SummaryInformation Description="ControlZit Agent $(var.Version)" Manufacturer="MaxZit" />
+    <SummaryInformation Description="RMMZit Agent $(var.Version)" Manufacturer="MaxZit" />
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" />
 
-    <Icon Id="ControlZitIcon" SourceFile="$(var.ArtDir)\controlzit.ico" />
+    <Icon Id="RMMZitIcon" SourceFile="$(var.ArtDir)\rmmzit.ico" />
     <WixVariable Id="WixUIDialogBmp" Value="$(var.ArtDir)\dialog.bmp" />
     <WixVariable Id="WixUIBannerBmp" Value="$(var.ArtDir)\banner.bmp" />
-    <Property Id="ARPPRODUCTICON" Value="ControlZitIcon" />
-    <Property Id="ARPCOMMENTS" Value="Remote monitoring and management agent for the ControlZit server" />
+    <Property Id="ARPPRODUCTICON" Value="RMMZitIcon" />
+    <Property Id="ARPCOMMENTS" Value="Remote monitoring and management agent for the RMMZit server" />
     <Property Id="ARPCONTACT" Value="MaxZit" />
     <Property Id="ARPURLINFOABOUT" Value="https://maxzit.com" />
     <Property Id="ARPNOMODIFY" Value="1" />
@@ -45,20 +45,22 @@
     <Property Id="SKIPENROLL" Secure="yes" />
     <!-- Written by the agent after a successful enrollment. -->
     <Property Id="ALREADYENROLLED" Secure="yes">
-      <RegistrySearch Id="EnrolledSearch" Root="HKLM" Key="SOFTWARE\MaxZit\ControlZit Agent" Name="Enrolled" Type="raw" Bitness="always64" />
+      <RegistrySearch Id="EnrolledSearch" Root="HKLM" Key="SOFTWARE\MaxZit\RMMZit Agent" Name="Enrolled" Type="raw" Bitness="always64" />
+      <!-- Agents installed before the rename to RMMZit. -->
+      <RegistrySearch Id="EnrolledSearchLegacy" Root="HKLM" Key="SOFTWARE\MaxZit\ControlZit Agent" Name="Enrolled" Type="raw" Bitness="always64" />
     </Property>
 
     <Launch Condition="VersionNT64" Message="This package requires 64-bit Windows." />
-    <Launch Condition="Privileged" Message="Installing the ControlZit Agent requires administrator rights." />
+    <Launch Condition="Privileged" Message="Installing the RMMZit Agent requires administrator rights." />
 
     <StandardDirectory Id="ProgramFiles64Folder">
-      <Directory Id="INSTALLFOLDER" Name="ControlZit Agent">
+      <Directory Id="INSTALLFOLDER" Name="RMMZit Agent">
         <Component Id="AgentExe" Bitness="always64">
-          <File Id="AgentExeFile" Source="$(var.AgentExe)" Name="controlzit-agent.exe" KeyPath="yes" />
+          <File Id="AgentExeFile" Source="$(var.AgentExe)" Name="rmmzit-agent.exe" KeyPath="yes" />
           <ServiceInstall Id="AgentService"
-                          Name="ControlZitAgent"
-                          DisplayName="ControlZit Agent"
-                          Description="ControlZit remote monitoring and management agent (MaxZit)."
+                          Name="RMMZitAgent"
+                          DisplayName="RMMZit Agent"
+                          Description="RMMZit remote monitoring and management agent (MaxZit)."
                           Type="ownProcess"
                           Start="auto"
                           ErrorControl="normal"
@@ -67,13 +69,13 @@
             <util:ServiceConfig FirstFailureActionType="restart" SecondFailureActionType="restart" ThirdFailureActionType="restart"
                                 RestartServiceDelayInSeconds="30" ResetPeriodInDays="1" />
           </ServiceInstall>
-          <ServiceControl Id="AgentServiceControl" Name="ControlZitAgent" Start="install" Stop="both" Remove="uninstall" Wait="yes" />
-          <RegistryValue Root="HKLM" Key="SOFTWARE\MaxZit\ControlZit Agent\Install" Name="InstallDir" Value="[INSTALLFOLDER]" Type="string" />
+          <ServiceControl Id="AgentServiceControl" Name="RMMZitAgent" Start="install" Stop="both" Remove="uninstall" Wait="yes" />
+          <RegistryValue Root="HKLM" Key="SOFTWARE\MaxZit\RMMZit Agent\Install" Name="InstallDir" Value="[INSTALLFOLDER]" Type="string" />
         </Component>
         <!-- Icon in the notification area of every user session (status of the agent). -->
         <Component Id="TrayExe" Bitness="always64">
-          <File Id="TrayExeFile" Source="$(var.TrayExe)" Name="controlzit-tray.exe" KeyPath="yes" />
-          <RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Run" Name="ControlZit Agent" Value="&quot;[INSTALLFOLDER]controlzit-tray.exe&quot;" Type="string" />
+          <File Id="TrayExeFile" Source="$(var.TrayExe)" Name="rmmzit-tray.exe" KeyPath="yes" />
+          <RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Run" Name="RMMZit Agent" Value="&quot;[INSTALLFOLDER]rmmzit-tray.exe&quot;" Type="string" />
         </Component>
         <Component Id="License" Bitness="always64">
           <File Id="LicenseFile" Source="$(var.RootDir)\LICENSE" Name="LICENSE.txt" KeyPath="yes" />
@@ -99,7 +101,8 @@
                   ExeCommand="enroll --force --pending-ok --server &quot;[SERVER_URL]&quot; --fingerprint &quot;[FINGERPRINT]&quot; --token &quot;[TOKEN]&quot;"
                   Execute="deferred" Impersonate="no" Return="check" HideTarget="yes" />
     <!-- Close the tray icons so their file can be replaced or removed. -->
-    <util:CloseApplication Id="CloseTray" Target="controlzit-tray.exe" TerminateProcess="0" RebootPrompt="no" />
+    <util:CloseApplication Id="CloseTray" Target="rmmzit-tray.exe" TerminateProcess="0" RebootPrompt="no" />
+    <util:CloseApplication Id="CloseTrayLegacy" Target="controlzit-tray.exe" TerminateProcess="0" RebootPrompt="no" />
 
     <!-- Uninstall (not an upgrade): remove the enrollment and key. -->
     <CustomAction Id="Forget" FileRef="AgentExeFile" ExeCommand="forget"
@@ -113,12 +116,12 @@
       <Custom Action="Forget" Before="RemoveFiles" Condition="REMOVE~=&quot;ALL&quot; AND NOT UPGRADINGPRODUCTCODE" />
     </InstallExecuteSequence>
 
-    <UI Id="ControlZitUI">
+    <UI Id="RMMZitUI">
       <TextStyle Id="WixUI_Font_Normal" FaceName="Segoe UI" Size="9" />
       <TextStyle Id="WixUI_Font_Bigger" FaceName="Segoe UI" Size="12" />
       <TextStyle Id="WixUI_Font_Title" FaceName="Segoe UI" Size="9" Bold="yes" />
       <Property Id="DefaultUIFont" Value="WixUI_Font_Normal" />
-      <Property Id="WIXUI_EXITDIALOGOPTIONALTEXT" Value="The agent runs in the background. This computer appears in your ControlZit console within a minute." />
+      <Property Id="WIXUI_EXITDIALOGOPTIONALTEXT" Value="The agent runs in the background. This computer appears in your RMMZit console within a minute." />
 
       <DialogRef Id="ErrorDlg" />
       <DialogRef Id="FatalError" />
@@ -134,12 +137,12 @@
 
       <Dialog Id="EnrollDlg" Width="370" Height="270" Title="[ProductName] Setup">
         <Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" TabSkip="no" Text="!(loc.WelcomeDlgBitmap)" />
-        <Control Id="Title" Type="Text" X="135" Y="20" Width="220" Height="40" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Bigger}Connect to your ControlZit server" />
+        <Control Id="Title" Type="Text" X="135" Y="20" Width="220" Height="40" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Bigger}Connect to your RMMZit server" />
         <Control Id="Intro" Type="Text" X="135" Y="64" Width="220" Height="52" Transparent="yes" NoPrefix="yes"
-                 Text="In the ControlZit console open the customer's site, click Create token and copy the enrollment code. Paste it here:" />
+                 Text="In the RMMZit console open the customer's site, click Create token and copy the enrollment code. Paste it here:" />
         <Control Id="CodeEdit" Type="Edit" X="135" Y="120" Width="220" Height="18" Property="ENROLLCODE" Text="{2048}" />
         <Control Id="Skip" Type="CheckBox" X="135" Y="148" Width="220" Height="17" Property="SKIPENROLL" CheckBoxValue="1"
-                 Text="Enroll later (controlzit-agent enroll --code …)" />
+                 Text="Enroll later (rmmzit-agent enroll --code …)" />
         <Control Id="Hint" Type="Text" X="135" Y="172" Width="220" Height="50" Transparent="yes" NoPrefix="yes" HideCondition="ALREADYENROLLED"
                  Text="The code contains the server address and the fingerprint of its certificate, so the agent cannot be taken over by a wrong server." />
         <Control Id="Already" Type="Text" X="135" Y="172" Width="220" Height="56" Transparent="yes" NoPrefix="yes" HideCondition="NOT ALREADYENROLLED"
@@ -147,9 +150,9 @@
         <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
         <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Disabled="yes" Text="!(loc.WixUIBack)" />
         <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="Install">
-          <Publish Event="SpawnDialog" Value="BadCodeDlg" Condition="NOT SKIPENROLL AND NOT (ENROLLCODE &lt;&lt; &quot;CZ1-&quot;) AND NOT (ALREADYENROLLED AND NOT ENROLLCODE)" />
-          <Publish Property="FORCEENROLL" Value="1" Condition="ALREADYENROLLED AND (ENROLLCODE &lt;&lt; &quot;CZ1-&quot;)" />
-          <Publish Event="EndDialog" Value="Return" Condition="SKIPENROLL OR (ENROLLCODE &lt;&lt; &quot;CZ1-&quot;) OR (ALREADYENROLLED AND NOT ENROLLCODE)" />
+          <Publish Event="SpawnDialog" Value="BadCodeDlg" Condition="NOT SKIPENROLL AND NOT (ENROLLCODE &lt;&lt; &quot;RZ1-&quot; OR ENROLLCODE &lt;&lt; &quot;CZ1-&quot;) AND NOT (ALREADYENROLLED AND NOT ENROLLCODE)" />
+          <Publish Property="FORCEENROLL" Value="1" Condition="ALREADYENROLLED AND (ENROLLCODE &lt;&lt; &quot;RZ1-&quot; OR ENROLLCODE &lt;&lt; &quot;CZ1-&quot;)" />
+          <Publish Event="EndDialog" Value="Return" Condition="SKIPENROLL OR (ENROLLCODE &lt;&lt; &quot;RZ1-&quot; OR ENROLLCODE &lt;&lt; &quot;CZ1-&quot;) OR (ALREADYENROLLED AND NOT ENROLLCODE)" />
         </Control>
         <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
           <Publish Event="SpawnDialog" Value="CancelDlg" />
@@ -158,7 +161,7 @@
 
       <Dialog Id="BadCodeDlg" Width="260" Height="95" Title="[ProductName] Setup" NoMinimize="yes">
         <Control Id="Text" Type="Text" X="20" Y="15" Width="220" Height="45" NoPrefix="yes"
-                 Text="Paste the enrollment code from the console (it starts with CZ1-), or tick &quot;Enroll later&quot;." />
+                 Text="Paste the enrollment code from the console (it starts with RZ1-), or tick &quot;Enroll later&quot;." />
         <Control Id="OK" Type="PushButton" X="102" Y="68" Width="56" Height="17" Default="yes" Cancel="yes" Text="OK">
           <Publish Event="EndDialog" Value="Return" />
         </Control>

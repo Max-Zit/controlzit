@@ -7,7 +7,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // A definition update found by the last scan is replaced by the one Windows

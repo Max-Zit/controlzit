@@ -10,7 +10,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
-	"github.com/max-zit/controlzit/internal/auth"
+	"github.com/max-zit/rmmzit/internal/auth"
 )
 
 // Roles.

@@ -1,4 +1,4 @@
-// Package agent is the ControlZit agent: it enrolls with a server, keeps
+// Package agent is the RMMZit agent: it enrolls with a server, keeps
 // an outbound channel open and reports status and inventory.
 package agent
 
@@ -20,7 +20,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // Version is set at build time.
@@ -50,13 +50,17 @@ const (
 
 // DefaultDir is the agent's data directory.
 func DefaultDir() string {
+	return adoptLegacyDir(newDir())
+}
+
+func newDir() string {
 	if runtime.GOOS == "windows" {
 		if p := os.Getenv("ProgramData"); p != "" {
-			return filepath.Join(p, "ControlZit Agent")
+			return filepath.Join(p, "RMMZit Agent")
 		}
-		return `C:\ProgramData\ControlZit Agent`
+		return `C:\ProgramData\RMMZit Agent`
 	}
-	return "/var/lib/controlzit-agent"
+	return "/var/lib/rmmzit-agent"
 }
 
 // EnsureDir creates the data directory, readable only by SYSTEM and
@@ -166,7 +170,7 @@ func LoadOrCreateKey(dir string) (ed25519.PrivateKey, error) {
 func clientCert(priv ed25519.PrivateKey) (tls.Certificate, error) {
 	tpl := &x509.Certificate{
 		SerialNumber: big.NewInt(1),
-		Subject:      pkix.Name{CommonName: "controlzit-agent"},
+		Subject:      pkix.Name{CommonName: "rmmzit-agent"},
 		NotBefore:    time.Now().Add(-24 * time.Hour),
 		NotAfter:     time.Now().AddDate(30, 0, 0),
 		KeyUsage:     x509.KeyUsageDigitalSignature,

@@ -11,9 +11,11 @@
 #
 # Needs the GitHub CLI (gh), logged in with rights to the repository.
 set -eu
-REPO=Max-Zit/controlzit
+REPO=Max-Zit/rmmzit
 KEEP=${KEEP:-8}
-IMAGES='controlzit-appliance.iso controlzit-appliance.ova controlzit-appliance.qcow2 controlzit-appliance-vhdx.zip'
+# The second line: releases from before the rename to RMMZit.
+IMAGES='rmmzit-appliance.iso rmmzit-appliance.ova rmmzit-appliance.qcow2 rmmzit-appliance-vhdx.zip
+        controlzit-appliance.iso controlzit-appliance.ova controlzit-appliance.qcow2 controlzit-appliance-vhdx.zip'
 freed=0
 n=0
 # Newest first (by creation time; drafts and the testing channel excluded).

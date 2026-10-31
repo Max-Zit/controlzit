@@ -21,7 +21,7 @@
   <details class="mt"><summary class="btn secondary sm">{{template "icon" "upload"}}{{.T "Upload a new installer"}}</summary>
     <form method="post" action="/settings/agents/package" enctype="multipart/form-data" class="stack mt">
       <input type="file" name="file" required aria-label="{{.T "Installer"}}">
-      <label>{{.T "Version"}} <small>{{.T "optional: read from the file name, such as controlzit-agent-0.2.8-x64.msi or controlzit-agent-0.2.8-linux-amd64"}}</small><input name="version" placeholder="0.2.8" pattern="\d+\.\d+\.\d+" class="narrow"></label>
+      <label>{{.T "Version"}} <small>{{.T "optional: read from the file name, such as rmmzit-agent-0.2.8-x64.msi or rmmzit-agent-0.2.8-linux-amd64"}}</small><input name="version" placeholder="0.2.8" pattern="\d+\.\d+\.\d+" class="narrow"></label>
       <div><button class="primary">{{.T "Upload"}}</button></div>
     </form>
   </details>

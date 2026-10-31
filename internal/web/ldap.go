@@ -13,11 +13,11 @@ import (
 
 	"github.com/go-ldap/ldap/v3"
 
-	"github.com/max-zit/controlzit/internal/store"
+	"github.com/max-zit/rmmzit/internal/store"
 )
 
 // Sign-in with Active Directory or another LDAP directory (Settings →
-// Active Directory / LDAP). The directory checks the password; ControlZit
+// Active Directory / LDAP). The directory checks the password; RMMZit
 // still asks for its own second factor. Roles and customers follow the
 // groups at every sign-in.
 
@@ -280,7 +280,7 @@ func (s *Server) handleLDAPSave(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleLDAPTest signs a user in against the directory without opening a
-// session, and shows what ControlZit would make of the account.
+// session, and shows what RMMZit would make of the account.
 func (s *Server) handleLDAPTest(w http.ResponseWriter, r *http.Request) {
 	c := s.LDAP(r.Context())
 	res := &ldapTestResult{}

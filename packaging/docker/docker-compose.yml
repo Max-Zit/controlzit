@@ -1,0 +1,50 @@
+# RMMZit server with its PostgreSQL database.
+#
+#   1. Put this file and .env (from .env.example) into a folder.
+#   2. docker compose up -d
+#   3. Open https://<this host>:8443 and finish the setup with the setup token:
+#      docker compose exec rmmzit cat /var/lib/rmmzit/setup-token.txt
+#      (or: docker compose logs rmmzit)
+#
+# Update: docker compose pull && docker compose up -d
+# Guide: https://github.com/Max-Zit/rmmzit (in the console: Documentation -> Installing the server)
+services:
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: rmmzit
+      POSTGRES_DB: rmmzit
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rmmzit -d rmmzit"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  rmmzit:
+    image: ghcr.io/max-zit/rmmzit:${RMMZIT_TAG:-latest}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      RMMZIT_DB: postgres://rmmzit:${DB_PASSWORD}@db:5432/rmmzit?sslmode=disable
+      TZ: ${TZ:-UTC}
+    ports:
+      - "8443:8443"   # console: keep it inside your own networks
+      - "8444:8444"   # agent endpoint: open it where agents connect from
+      # For a trusted certificate (Let's Encrypt over HTTP) set up under
+      # Settings -> Certificate:
+      # - "80:80"
+    sysctls:
+      # Lets the server (not root in the container) use port 80 for Let's Encrypt.
+      net.ipv4.ip_unprivileged_port_start: "0"
+    volumes:
+      - data:/var/lib/rmmzit
+
+volumes:
+  db:
+  data:

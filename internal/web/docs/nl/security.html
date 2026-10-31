@@ -1,7 +1,7 @@
 <h1>Beveiliging</h1>
-<p class="lead">Een RMM-server kan elke computer besturen die hij beheert. ControlZit is zo gebouwd dat een aanvaller die de console, het netwerk of zelfs de server bereikt, zo weinig mogelijk krijgt.</p>
+<p class="lead">Een RMM-server kan elke computer besturen die hij beheert. RMMZit is zo gebouwd dat een aanvaller die de console, het netwerk of zelfs de server bereikt, zo weinig mogelijk krijgt.</p>
 
-<h2 id="design">Hoe ControlZit u beschermt</h2>
+<h2 id="design">Hoe RMMZit u beschermt</h2>
 <ul>
   <li><b>Twee poorten.</b> De console en het agent-eindpunt luisteren op aparte poorten. De console accepteert alleen verbindingen uit toegestane netwerken, gecontroleerd vóór TLS; de agentpoort kan openbaar zijn zonder de console bloot te stellen.</li>
   <li><b>Uitgaande agents.</b> Agents maken verbinding met de server; beheerde computers hebben geen open poorten nodig. Agents zetten het servercertificaat vast via de vingerafdruk, zodat een valse server ze niet kan overnemen.</li>
@@ -10,7 +10,7 @@
   <li><b>Browserbescherming.</b> CSRF-controles bij elke wijziging, een strikte Content Security Policy zonder inline-scripts, <code>__Host-</code>-sessiecookies.</li>
   <li><b>Minimale rechten.</b> Rollen en toegang per klant; de console draait als gebruiker zonder rechten, en de paar root-acties (updates, netwerk, tijdzone) gaan via een aparte root-helper die alleen vaste, gecontroleerde verzoeken aanneemt.</li>
   <li><b>Audit.</b> Een met hashes gekoppeld auditlogboek van elke wijziging en elke actie op afstand.</li>
-  <li><b>Ondertekende releases.</b> De server, de agents en <code>install.sh</code> installeren alleen releases die zijn ondertekend met de ControlZit-releasesleutel.</li>
+  <li><b>Ondertekende releases.</b> De server, de agents en <code>install.sh</code> installeren alleen releases die zijn ondertekend met de RMMZit-releasesleutel.</li>
   <li><b>Geheimen.</b> Opgeslagen wachtwoorden (e-mail, LDAP, kanalen, Cloudflare) worden versleuteld met de geheime sleutel van de server; de diagnose verwijdert geheimen.</li>
 </ul>
 
@@ -21,10 +21,10 @@
   <li>Gebruik een certificaat dat browsers vertrouwen (Let's Encrypt of uw CA), zodat gebruikers niet leren waarschuwingen weg te klikken.</li>
   <li>Geef iedereen een eigen account met de kleinste rol en alleen de nodige klanten; schakel accounts uit van mensen die vertrekken.</li>
   <li>Houd één lokale beheerder voor noodgevallen, met offline bewaarde herstelcodes.</li>
-  <li>Installeer ControlZit-updates snel (of schakel automatische updates in) en houd het besturingssysteem van de server bijgewerkt; de appliance installeert Debian-beveiligingsupdates zelf.</li>
-  <li>Maak regelmatig een back-up van de database en <code>/var/lib/controlzit</code>, en bewaar die buiten de server.</li>
+  <li>Installeer RMMZit-updates snel (of schakel automatische updates in) en houd het besturingssysteem van de server bijgewerkt; de appliance installeert Debian-beveiligingsupdates zelf.</li>
+  <li>Maak regelmatig een back-up van de database en <code>/var/lib/rmmzit</code>, en bewaar die buiten de server.</li>
   <li>Bekijk af en toe het auditlogboek en laat de melding op het externe scherm aan, zodat gebruikers weten wanneer iemand verbonden is.</li>
 </ol>
 
 <h2 id="report">Een kwetsbaarheid melden</h2>
-<p>Meld beveiligingsproblemen vertrouwelijk via <a href="https://github.com/Max-Zit/controlzit/security/advisories/new" target="_blank" rel="noopener">GitHub → Security → Report a vulnerability</a>, niet in een openbaar issue.</p>
+<p>Meld beveiligingsproblemen vertrouwelijk via <a href="https://github.com/Max-Zit/rmmzit/security/advisories/new" target="_blank" rel="noopener">GitHub → Security → Report a vulnerability</a>, niet in een openbaar issue.</p>

@@ -13,3 +13,6 @@ func installService(string) error {
 }
 
 func uninstallService() error { return installService("") }
+
+// migrateLegacyService is needed on Linux only.
+func migrateLegacyService(interface{ Info(string, ...any) }) {}

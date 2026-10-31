@@ -13,7 +13,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/max-zit/controlzit/internal/proto"
+	"github.com/max-zit/rmmzit/internal/proto"
 )
 
 // Remote desktop on Linux works with X11 desktops. The service finds the

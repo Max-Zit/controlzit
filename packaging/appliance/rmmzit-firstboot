@@ -1,0 +1,25 @@
+#!/bin/sh
+# First start of the RMMZit appliance: SSH keys, database, configuration,
+# console.
+set -e
+if ! ls /etc/ssh/ssh_host_*_key >/dev/null 2>&1; then
+    ssh-keygen -A
+    systemctl reset-failed ssh.service 2>/dev/null || true
+    systemctl restart ssh 2>/dev/null || true
+fi
+# Wait for the network, so the console's certificate names the address.
+for i in $(seq 120); do
+    ip -4 route get 1.1.1.1 >/dev/null 2>&1 && break
+    sleep 1
+done
+DB_PASS=$(head -c 32 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c 24)
+systemctl start postgresql
+su postgres -s /bin/sh -c "cd /; psql -qc \"SET password_encryption = 'scram-sha-256'; CREATE USER rmmzit PASSWORD '$DB_PASS';\"" 2>/dev/null ||
+    su postgres -s /bin/sh -c "cd /; psql -qc \"SET password_encryption = 'scram-sha-256'; ALTER USER rmmzit PASSWORD '$DB_PASS';\""
+su postgres -s /bin/sh -c "cd /; createdb -O rmmzit rmmzit" 2>/dev/null || true
+ENV=/etc/rmmzit/server.env
+sed -i "s#^RMMZIT_DB=.*#RMMZIT_DB=postgres://rmmzit:$DB_PASS@127.0.0.1:5432/rmmzit?sslmode=disable#" $ENV
+systemctl enable --now rmmzit-server
+for i in $(seq 60); do [ -f /var/lib/rmmzit/setup-token.txt ] && break; sleep 1; done
+/usr/local/sbin/rmmzit-appliance-boot issue || true
+touch /var/lib/rmmzit/.appliance-ready
