@@ -94,6 +94,10 @@ if [ -f /var/lib/rmmzit/.appliance ]; then
     fi
     [ -f /var/lib/rmmzit/.appliance-ready ] && /usr/local/sbin/rmmzit-appliance-boot issue >/dev/null 2>&1 || true
 fi
+# The old system user, once nothing runs under it any more.
+if [ -n "$MIGRATED" ] && getent passwd controlzit >/dev/null; then
+    userdel controlzit >/dev/null 2>&1 || true
+fi
 # Appliances from before the rename to RMMZit: their own copies of the
 # setup menu, start-up script and settings under the old name.
 if [ -f /var/lib/rmmzit/.appliance ] && [ -e /usr/local/sbin/controlzit-setup ]; then
