@@ -11,7 +11,6 @@ RMMZit keeps an inventory of every computer, watches it and raises alerts, lets 
 
 - **Your own server, your own network.** No cloud service; the console never has to be reachable from the internet. Agents connect outbound, so managed computers need no open ports.
 - **Free and open source** under the AGPLv3. [MaxZit](https://github.com/Max-Zit) offers commercial support.
-- **Formerly ControlZit.** RMMZit was called ControlZit until version 0.12; ControlZit servers and agents update to RMMZit like to any new version.
 - **14 languages**: English, German, French, Spanish, Italian, Portuguese, Dutch, Polish, Czech, Serbian, Turkish, Russian, Chinese and Japanese — the console and its built-in user guide.
 
 **Download:** [latest release](https://github.com/Max-Zit/rmmzit/releases/latest) · **Install:** [quick start](#installation) · **Guide:** built into the console under *Documentation*

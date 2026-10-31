@@ -47,7 +47,5 @@
 <p>U <a href="/settings/backup">Podešavanja → Rezervna kopija konzole</a> server svakog dana pravi kopiju baze, tajnog ključa i sertifikata, po želji šifrovanu i kopiranu na SFTP server. Čuvajte kopiju van servera: bez tajnog ključa sačuvane lozinke ne mogu da se dešifruju, a agenti ne bi verovali novom serveru.</p>
 <h3 id="faq-move">Mogu li da preselim server na novu mašinu?</h3>
 <p>Da: instalirajte RMMZit na novu mašinu i tamo vratite rezervnu kopiju konzole (<code>rmmzit-server -restore FAJL</code>, na appliance-u stavka 7 menija za podešavanje). Zadržite istu adresu ili promenite javnu adresu za agente i usmerite staro ime na novu mašinu; agenti nastavljaju da rade jer kopija sadrži sertifikate servera.</p>
-<h3 id="faq-name">Da li je RMMZit nekadašnji ControlZit?</h3>
-<p>Da. Do verzije 0.12 RMMZit se zvao ControlZit. Instalacije ControlZit-a se ažuriraju na RMMZit kao na svaku novu verziju: podaci, agenti i njihova registracija, kao i kodovi za registraciju koji počinju sa <code>CZ1-</code>, nastavljaju da rade.</p>
 <h3 id="faq-mac">Postoji li agent za macOS?</h3>
 <p>Još ne. Podržani su Windows i Linux (x86-64, ARM64).</p>

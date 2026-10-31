@@ -47,7 +47,5 @@
 <p>Unter <a href="/settings/backup">Einstellungen → Konsolensicherung</a> sichert der Server täglich seine Datenbank, den geheimen Schlüssel und die Zertifikate, auf Wunsch verschlüsselt und auf einen SFTP-Server kopiert. Bewahren Sie eine Kopie außerhalb des Servers auf: Ohne den geheimen Schlüssel lassen sich gespeicherte Kennwörter nicht entschlüsseln, und Agenten würden einem neuen Server nicht vertrauen.</p>
 <h3 id="faq-move">Kann ich den Server auf einen neuen Rechner umziehen?</h3>
 <p>Ja: Installieren Sie RMMZit auf dem neuen Rechner und stellen Sie dort eine Konsolensicherung wieder her (<code>rmmzit-server -restore DATEI</code>, auf der Appliance Punkt 7 des Setup-Menüs). Behalten Sie dieselbe Adresse oder ändern Sie die öffentliche Agentenadresse und leiten Sie den alten Namen auf den neuen Rechner; die Agenten arbeiten weiter, weil die Sicherung die Zertifikate des Servers enthält.</p>
-<h3 id="faq-name">Ist RMMZit das frühere ControlZit?</h3>
-<p>Ja. Bis Version 0.12 hieß RMMZit ControlZit. Installationen von ControlZit werden wie auf jede neue Version auf RMMZit aktualisiert: Die Daten, die Agenten und ihre Registrierung sowie Registrierungscodes mit <code>CZ1-</code> funktionieren weiter.</p>
 <h3 id="faq-mac">Gibt es einen macOS-Agent?</h3>
 <p>Noch nicht. Unterstützt werden Windows und Linux (x86-64, ARM64).</p>

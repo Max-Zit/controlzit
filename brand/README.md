@@ -1,6 +1,6 @@
 # RMMZit logo
 
-Variant A (chosen by Stefan 2026-10-20): a monitor with a pulse line — monitoring and management. White symbol on an indigo square with rounded corners; the name in Inter SemiBold — "RMM" in the text color, "Zit" in indigo. The name was ControlZit until 2026-10-30 (same icon).
+Variant A (chosen by Stefan 2026-10-20): a monitor with a pulse line — monitoring and management. White symbol on an indigo square with rounded corners; the name in Inter SemiBold — "RMM" in the text color, "Zit" in indigo.
 
 ## Files
 | File | Use |

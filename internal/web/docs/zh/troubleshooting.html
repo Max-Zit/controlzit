@@ -47,7 +47,5 @@
 <p>在<a href="/settings/backup">设置 → 控制台备份</a>中，服务器每天备份其数据库、密钥和证书，可选择加密并复制到 SFTP 服务器。请在服务器之外保留一份副本：没有密钥，已保存的密码无法解密，代理也不会信任新服务器。</p>
 <h3 id="faq-move">可以把服务器迁移到新机器吗？</h3>
 <p>可以：在新机器上安装 RMMZit，并在那里恢复控制台备份（<code>rmmzit-server -restore 文件</code>，在设备镜像上为设置菜单第 7 项）。保持相同的地址，或修改代理的公共地址并将旧名称指向新机器；由于备份包含服务器证书，代理会继续工作。</p>
-<h3 id="faq-name">RMMZit 就是以前的 ControlZit 吗？</h3>
-<p>是的。在 0.12 版本之前，RMMZit 名为 ControlZit。ControlZit 的安装会像升级到任何新版本一样更新到 RMMZit：数据、代理及其注册，以及以 <code>CZ1-</code> 开头的注册码都会继续有效。</p>
 <h3 id="faq-mac">有 macOS 代理吗？</h3>
 <p>暂时没有。支持 Windows 和 Linux（x86-64、ARM64）。</p>

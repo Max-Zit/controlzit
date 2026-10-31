@@ -47,7 +47,5 @@
 <p>Dans <a href="/settings/backup">Paramètres → Sauvegarde de la console</a>, le serveur sauvegarde chaque jour sa base de données, sa clé secrète et ses certificats, chiffrés si vous le souhaitez et copiés sur un serveur SFTP. Gardez une copie hors du serveur : sans la clé secrète, les mots de passe enregistrés ne peuvent pas être déchiffrés et les agents ne feraient pas confiance à un nouveau serveur.</p>
 <h3 id="faq-move">Puis-je déplacer le serveur sur une nouvelle machine ?</h3>
 <p>Oui : installez RMMZit sur la nouvelle machine et restaurez-y une sauvegarde de la console (<code>rmmzit-server -restore FICHIER</code>, sur l'appliance l'élément 7 du menu de configuration). Gardez la même adresse, ou modifiez l'adresse publique des agents et faites pointer l'ancien nom vers la nouvelle machine ; les agents continuent de fonctionner car la sauvegarde contient les certificats du serveur.</p>
-<h3 id="faq-name">RMMZit est-il l'ancien ControlZit ?</h3>
-<p>Oui. Jusqu'à la version 0.12, RMMZit s'appelait ControlZit. Les installations de ControlZit passent à RMMZit comme à toute nouvelle version : les données, les agents et leur enregistrement, ainsi que les codes d'enregistrement commençant par <code>CZ1-</code>, continuent de fonctionner.</p>
 <h3 id="faq-mac">Existe-t-il un agent macOS ?</h3>
 <p>Pas encore. Windows et Linux (x86-64, ARM64) sont pris en charge.</p>

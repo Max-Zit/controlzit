@@ -47,7 +47,5 @@
 <p>Onder <a href="/settings/backup">Instellingen → Back-up van de console</a> maakt de server elke dag een back-up van zijn database, geheime sleutel en certificaten, desgewenst versleuteld en gekopieerd naar een SFTP-server. Bewaar een kopie buiten de server: zonder de geheime sleutel kunnen opgeslagen wachtwoorden niet worden ontsleuteld en zouden agents een nieuwe server niet vertrouwen.</p>
 <h3 id="faq-move">Kan ik de server naar een nieuwe machine verhuizen?</h3>
 <p>Ja: installeer RMMZit op de nieuwe machine en zet daar een back-up van de console terug (<code>rmmzit-server -restore BESTAND</code>, op de appliance item 7 van het setupmenu). Houd hetzelfde adres, of wijzig het openbare agentadres en laat de oude naam naar de nieuwe machine wijzen; agents blijven werken omdat de back-up de certificaten van de server bevat.</p>
-<h3 id="faq-name">Is RMMZit het vroegere ControlZit?</h3>
-<p>Ja. Tot versie 0.12 heette RMMZit ControlZit. Installaties van ControlZit worden net als naar elke nieuwe versie bijgewerkt naar RMMZit: de gegevens, de agents en hun registratie, en registratiecodes die met <code>CZ1-</code> beginnen, blijven werken.</p>
 <h3 id="faq-mac">Is er een macOS-agent?</h3>
 <p>Nog niet. Windows en Linux (x86-64, ARM64) worden ondersteund.</p>

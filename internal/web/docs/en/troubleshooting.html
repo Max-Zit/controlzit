@@ -47,7 +47,5 @@
 <p>Under <a href="/settings/backup">Settings → Console backup</a> the server backs up its database, secret key and certificates every day, optionally encrypted and copied to an SFTP server. Keep a copy outside the server: without the secret key, stored passwords cannot be decrypted and agents would not trust a new server.</p>
 <h3 id="faq-move">Can I move the server to a new machine?</h3>
 <p>Yes: install RMMZit on the new machine and restore a console backup there (<code>rmmzit-server -restore FILE</code>, on the appliance item 7 of the setup menu). Keep the same address, or update the public agent address and point the old name to the new machine; agents keep working because the backup holds the server's certificates.</p>
-<h3 id="faq-name">Is RMMZit the former ControlZit?</h3>
-<p>Yes. Until version 0.12 RMMZit was called ControlZit. Installations of ControlZit update to RMMZit like to any new version: the data, the agents and their enrollment, and enrollment codes starting with <code>CZ1-</code> keep working.</p>
 <h3 id="faq-mac">Is there a macOS agent?</h3>
 <p>Not yet. Windows and Linux (x86-64, ARM64) are supported.</p>

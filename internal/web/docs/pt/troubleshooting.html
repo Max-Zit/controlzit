@@ -47,7 +47,5 @@
 <p>Em <a href="/settings/backup">Configurações → Backup da consola</a> o servidor guarda todos os dias a base de dados, a chave secreta e os certificados, opcionalmente cifrados e copiados para um servidor SFTP. Guarde uma cópia fora do servidor: sem a chave secreta, as palavras-passe guardadas não podem ser decifradas e os agentes não confiariam num servidor novo.</p>
 <h3 id="faq-move">Posso mudar o servidor para outra máquina?</h3>
 <p>Sim: instale o RMMZit na nova máquina e restaure lá um backup da consola (<code>rmmzit-server -restore FICHEIRO</code>, no appliance a opção 7 do menu de configuração). Mantenha o mesmo endereço, ou altere o endereço público dos agentes e aponte o nome antigo para a nova máquina; os agentes continuam a funcionar porque o backup contém os certificados do servidor.</p>
-<h3 id="faq-name">O RMMZit é o antigo ControlZit?</h3>
-<p>Sim. Até à versão 0.12, o RMMZit chamava-se ControlZit. As instalações do ControlZit atualizam-se para o RMMZit como para qualquer nova versão: os dados, os agentes e o seu registo, e os códigos de registo que começam por <code>CZ1-</code> continuam a funcionar.</p>
 <h3 id="faq-mac">Existe um agente para macOS?</h3>
 <p>Ainda não. São suportados Windows e Linux (x86-64, ARM64).</p>

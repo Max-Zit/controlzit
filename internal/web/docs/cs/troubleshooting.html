@@ -47,7 +47,5 @@
 <p>V <a href="/settings/backup">Nastavení → Záloha konzole</a> server každý den zálohuje svou databázi, tajný klíč a certifikáty, volitelně šifrované a zkopírované na server SFTP. Uchovávejte kopii mimo server: bez tajného klíče nelze uložená hesla dešifrovat a agenti by novému serveru nedůvěřovali.</p>
 <h3 id="faq-move">Mohu server přesunout na nový stroj?</h3>
 <p>Ano: nainstalujte RMMZit na nový stroj a obnovte tam zálohu konzole (<code>rmmzit-server -restore SOUBOR</code>, na appliance položka 7 nabídky nastavení). Ponechte stejnou adresu, nebo změňte veřejnou adresu pro agenty a nasměrujte starý název na nový stroj; agenti fungují dál, protože záloha obsahuje certifikáty serveru.</p>
-<h3 id="faq-name">Je RMMZit dřívější ControlZit?</h3>
-<p>Ano. Do verze 0.12 se RMMZit jmenoval ControlZit. Instalace ControlZit se aktualizují na RMMZit jako na každou novou verzi: data, agenti a jejich registrace i registrační kódy začínající <code>CZ1-</code> fungují dál.</p>
 <h3 id="faq-mac">Existuje agent pro macOS?</h3>
 <p>Zatím ne. Podporovány jsou Windows a Linux (x86-64, ARM64).</p>

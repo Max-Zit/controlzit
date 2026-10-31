@@ -178,7 +178,7 @@ func migrateLegacyService(log interface{ Info(string, ...any) }) {
 	if systemctl("daemon-reload") != nil {
 		return
 	}
-	log.Info("moving to the rmmzit-agent service (the agent was renamed from ControlZit)")
+	log.Info("moving to the rmmzit-agent service (from the service of an older version)")
 	script := "systemctl disable --now controlzit-agent.service; rm -f " + legacyUnit + " " + legacyBin +
 		"; systemctl daemon-reload; systemctl enable --now rmmzit-agent.service"
 	_ = exec.Command("systemd-run", "--no-block", "--unit=rmmzit-agent-migrate", "--collect", "/bin/sh", "-c", script).Run() // #nosec G204 -- fixed command
